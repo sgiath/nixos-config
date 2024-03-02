@@ -66,9 +66,15 @@
   programs = {
     home-manager.enable = true;
 
-    neovim = {
+    # neovim = {
+    #   enable = true;
+    #   defaultEditor = true;
+    # };
+
+    NvChad = {
       enable = true;
       defaultEditor = true;
+      otherConfigs = ./NvChad;
     };
 
     git = {

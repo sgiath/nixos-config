@@ -1,5 +1,23 @@
 {
   "nodes": {
+    "NvChad": {
+      "inputs": {
+        "nixpkgs": "nixpkgs"
+      },
+      "locked": {
+        "lastModified": 1709124965,
+        "narHash": "sha256-U2JYGQVbTmJFykpRtVZbNGUc6FIkJctDJMOKBTqylAU=",
+        "owner": "NvChad",
+        "repo": "nix",
+        "rev": "33a2b8fb24b5b00e50e33c5f2a4ffb2314f893fc",
+        "type": "github"
+      },
+      "original": {
+        "owner": "NvChad",
+        "repo": "nix",
+        "type": "github"
+      }
+    },
     "home-manager": {
       "inputs": {
         "nixpkgs": [
@@ -22,6 +40,22 @@
     },
     "nixpkgs": {
       "locked": {
+        "lastModified": 1701282334,
+        "narHash": "sha256-MxCVrXY6v4QmfTwIysjjaX0XUhqBbxTWWB4HXtDYsdk=",
+        "owner": "NixOS",
+        "repo": "nixpkgs",
+        "rev": "057f9aecfb71c4437d2b27d3323df7f93c010b7e",
+        "type": "github"
+      },
+      "original": {
+        "owner": "NixOS",
+        "ref": "23.11",
+        "repo": "nixpkgs",
+        "type": "github"
+      }
+    },
+    "nixpkgs_2": {
+      "locked": {
         "lastModified": 1709237383,
         "narHash": "sha256-cy6ArO4k5qTx+l5o+0mL9f5fa86tYUX3ozE1S+Txlds=",
         "owner": "NixOS",
@@ -38,8 +72,9 @@
     },
     "root": {
       "inputs": {
+        "NvChad": "NvChad",
         "home-manager": "home-manager",
-        "nixpkgs": "nixpkgs"
+        "nixpkgs": "nixpkgs_2"
       }
     }
   },

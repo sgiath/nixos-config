@@ -9,9 +9,11 @@
       url = "github:nix-community/home-manager";
       inputs.nixpkgs.follows = "nixpkgs";
     };
+
+    NvChad.url = "github:NvChad/nix";
   };
 
-  outputs = { self, nixpkgs, home-manager, ... }:
+  outputs = { self, nixpkgs, home-manager, NvChad, ... }@inputs:
     let
       system = "x86_64-linux";
       pkgs = nixpkgs.legacyPackages.${system};
@@ -29,7 +31,7 @@
     homeConfigurations = {
       sgiath = home-manager.lib.homeManagerConfiguration {
         inherit pkgs;
-        modules = [ ./home.nix ];
+        modules = [ NvChad.homeManagerModules.default ./home.nix ];
       };
     };
   };

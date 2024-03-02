@@ -11,9 +11,13 @@
     ];
 
   # Use the systemd-boot EFI boot loader.
-  boot.loader = {
-    systemd-boot.enable = true;
-    efi.canTouchEfiVariables = true;
+  boot = {
+    kernelPackages = pkgs.linuxPackages_zen;
+    extraModulePackages = with config.boot.kernelPackages; [ zenpower ];
+    loader = {
+      systemd-boot.enable = true;
+      efi.canTouchEfiVariables = true;
+    };
   };
 
   networking = {
@@ -24,6 +28,7 @@
 
   # Set your time zone.
   time.timeZone = "UTC";
+  services.timesyncd.enable = true;
 
   # Configure network proxy if necessary
   # networking.proxy.default = "http://user:password@proxy:port/";
@@ -41,6 +46,7 @@
   services = {
     xserver = {
       enable = true;
+      excludePackages = [ pkgs.xterm ];
 
       # managed by home-manager
       desktopManager.session = [
@@ -60,6 +66,13 @@
           enable = true;
           user = "sgiath";
         };
+
+
+        sessionCommands = ''
+          xset s off
+          xset -dpms
+          xset s noblank
+        '';
       };
 
       # Configure keymap in X11
@@ -69,16 +82,50 @@
       };
     };
 
-    # Enable CUPS to print documents.
-    printing.enable = true;
-
     # OpenSSH
     openssh.enable = true;
   };
 
+  # printing
+  services.printing.enable = true;
+  services.avahi.enable = true;
+  services.avahi.nssmdns4 = true;
+  services.avahi.openFirewall = true;
+
   # Enable sound.
   sound.enable = true;
-  hardware.pulseaudio.enable = true;
+  security.rtkit.enable = true;
+  services.pipewire = {
+    enable = true;
+    alsa.enable = true;
+    alsa.support32Bit = true;
+    pulse.enable = true;
+    jack.enable = true;
+  };
+
+  # Enable bluetooth
+  hardware.bluetooth.enable = true;
+  services.blueman.enable = true;
+
+  # OpenGL
+  hardware.opengl.enable = true;
+
+  # Power settings
+  services.tlp = {
+    enable = true;
+    settings = {
+      CPU_SCALING_GOVERNOR_ON_AC = "performance";
+      CPU_SCALING_GOVERNOR_ON_BAT = "schedutil";
+
+      CPU_ENERGY_PERF_POLICY_ON_BAT = "power";
+      CPU_ENERGY_PERF_POLICY_ON_AC = "performance";
+
+      CPU_MIN_PERF_ON_AC = 0;
+      CPU_MAX_PERF_ON_AC = 100;
+      CPU_MIN_PERF_ON_BAT = 0;
+      CPU_MAX_PERF_ON_BAT = 80;
+    };
+  };
 
   # Enable touchpad support (enabled default in most desktopManager).
   # services.xserver.libinput.enable = true;
