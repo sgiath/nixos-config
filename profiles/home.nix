@@ -7,6 +7,7 @@
     ../user/zsh.nix
     ../user/tmux.nix
     ../user/ssh.nix
+    ../user/nvim.nix
   ];
 
   home = {
@@ -59,12 +60,6 @@
 
   programs = {
     home-manager.enable = true;
-
-    NvChad = {
-      enable = true;
-      defaultEditor = true;
-      otherConfigs = ../user/NvChad;
-    };
 
     git = {
       enable = true;
