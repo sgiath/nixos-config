@@ -7,7 +7,7 @@
 
     # desktop has GUI
     (./. + "../../../user/${userSettings.wm}/default.nix")
-    ../../user/polybar.nix
+    ../../user/polybar/polybar.nix
     ../../user/wezterm.nix
     ../../user/browser.nix
   ];
