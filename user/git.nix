@@ -1,10 +1,6 @@
 { config, pkgs, userSettings, ... }:
 
 {
-  home.packages = [
-    pkgs.delta
-  ];
-
   home.file = {
     ".git/commit-template".text = ''
       type:
@@ -16,7 +12,14 @@
   programs.git = {
     enable = true;
 
+    delta = {
+      enable = true;
+      options = {};
+      package = pkgs.delta;
+    };
+
     aliases = {
+      d = "diff";
       aa = "add --all";
       cm = "commit --signoff";
       ps = "push --progress";
@@ -37,9 +40,8 @@
     ];
 
     extraConfig = {
-      init = {
-        defaultBranch = "master";
-      };
+      init.defaultBranch = "master";
+      safe.directory = "/home/${userSettings.username}/.dotfiles";
 
       user = {
         name = userSettings.username;
@@ -47,9 +49,7 @@
         signingKey = "0x70F9C7DE34CB3BC8";
       };
 
-      core = {
-        editor = "${pkgs.neovim}/bin/nvim";
-      };
+      core.editor = "${pkgs.neovim}/bin/nvim";
 
       commit = {
         gpgSign = true;
@@ -76,17 +76,9 @@
         showUntrackedFiles = "all";
       };
 
-      tag = {
-        gpgSign = true;
-      };
-
-      blame = {
-        date = "short";
-      };
-
-      fetch = {
-        prune = true;
-      };
+      tag.gpgSign = true;
+      blame.date = "short";
+      fetch.prune = true;
 
       color = {
         branch = "auto";

@@ -13,32 +13,10 @@
   ];
 
   stylix = {
-    polarity = "dark";
-
-    image = ./wallpaper.jpg;
-    base16Scheme = ./theme.yaml;
-
     fonts = {
-      monospace = {
-        package = (pkgs.nerdfonts.override { fonts = [ "RobotoMono" ]; });
-        name = "RobotoMono Nerd Font Mono";
-      };
-      serif = {
-        package = (pkgs.nerdfonts.override { fonts = [ "RobotoMono" ]; });
-        name = "RobotoMono Nerd Font Mono";
-      };
-      sansSerif = {
-        package = (pkgs.nerdfonts.override { fonts = [ "RobotoMono" ]; });
-        name = "RobotoMono Nerd Font Mono";
-      };
-      emoji = {
-        name = "Noto Color Emoji";
-        package = pkgs.noto-fonts-emoji-blob-bin;
-      };
-
       sizes = {
-        applications = 10;
-        terminal = 10;
+        applications = 12;
+        terminal = 12;
       };
     };
   };
@@ -57,6 +35,7 @@
       extraConfig = {
         modi = "window,ssh,drun,filebrowser";
         drun-show-actions = true;
+        display-drun = "";
       };
     };
 

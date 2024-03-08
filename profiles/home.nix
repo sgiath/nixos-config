@@ -9,6 +9,7 @@
     ../user/ssh.nix
     ../user/nvim.nix
     ../user/git.nix
+    ../user/stylix.nix
   ];
 
   home = {
