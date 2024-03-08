@@ -60,6 +60,8 @@
 
     ssh-agent.enable = true;
 
+    pass-secret-service.enable = true;
+
   };
 
   programs = {
@@ -78,5 +80,11 @@
     btop = {
       enable = true;
     };
+
+    password-store.enable = true;
+
+    nix-index.enable = true;
+    nix-index-database.comma.enable = true;
+    command-not-found.enable = true;
   };
 }
