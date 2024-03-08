@@ -13,13 +13,9 @@
     ../../system/sound.nix
     ../../system/printing.nix
     ../../system/gaming.nix
+    ../../system/bluetooth.nix
   ];
 
   # AMD GPU
   services.xserver.videoDrivers = [ "amdgpu" ];
-
-  # Enable bluetooth
-  hardware.bluetooth.enable = true;
-  services.blueman.enable = true;
-
 }

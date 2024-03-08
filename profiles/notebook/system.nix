@@ -13,6 +13,7 @@
     ../../system/sound.nix
     ../../system/printing.nix
     ../../system/gaming.nix
+    ../../system/bluetooth.nix
   ];
 
   # Nvidia and AMD GPUs
@@ -27,7 +28,7 @@
     powerManagement.finegrained = false;
     open = false;
     nvidiaSettings = true;
-    package = config.boot.kernelPackages.nvidiaPackages.stable;
+    package = config.boot.kernelPackages.nvidiaPackages.beta;
     prime = {
       sync.enable = true;
       amdgpuBusId = "PCI:101:0:0";
@@ -35,8 +36,4 @@
     };
   };
   environment.systemPackages = [ pkgs.lshw ];
-
-  # Enable bluetooth
-  hardware.bluetooth.enable = true;
-  services.blueman.enable = true;
 }

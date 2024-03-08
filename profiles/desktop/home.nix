@@ -10,6 +10,7 @@
     ../../user/polybar.nix
     ../../user/wezterm.nix
     ../../user/browser.nix
+    ../../user/email_client.nix
   ];
 
   stylix = {
