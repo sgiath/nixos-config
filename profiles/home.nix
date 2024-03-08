@@ -8,6 +8,7 @@
     ../user/tmux.nix
     ../user/ssh.nix
     ../user/nvim.nix
+    ../user/git.nix
   ];
 
   home = {
@@ -60,12 +61,6 @@
 
   programs = {
     home-manager.enable = true;
-
-    git = {
-      enable = true;
-      userName = userSettings.username;
-      userEmail = userSettings.email;
-    };
 
     direnv = {
       enable = true;
