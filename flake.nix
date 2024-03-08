@@ -24,7 +24,7 @@
       systemSettings = {
         system = "x86_64-linux";
         hostname = "nixos";
-        profile = "desktop";
+        profile = "notebook";
         timezone = "UTC";
         locale = "en_US.UTF-8";
       };

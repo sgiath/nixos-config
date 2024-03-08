@@ -2,7 +2,7 @@
 
 {
   # VirtualBox
-  virtualisation.virtualbox.guest.enable = true;
+  # virtualisation.virtualbox.guest.enable = true;
 
   # Use the systemd-boot EFI boot loader.
   boot = {
@@ -62,7 +62,7 @@
     users = {
       ${userSettings.username} = {
         isNormalUser = true;
-        extraGroups = [ "networkmanager" "wheel" "vboxsf" ];
+        extraGroups = [ "networkmanager" "wheel" ];
       };
     };
   };
