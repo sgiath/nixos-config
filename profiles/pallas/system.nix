@@ -19,6 +19,7 @@
   # razer notebook specific packages
   environment.systemPackages = with pkgs; [
     lshw
+    razergenie
     openrazer-daemon
     sof-firmware
   ];
@@ -44,5 +45,8 @@
   };
 
   # Razer
-  hardware.openrazer.enable = true;
+  hardware.openrazer {
+    enable = true;
+    users = [ userSettings.username ];
+  };
 }
