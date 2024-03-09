@@ -51,6 +51,7 @@
         specialArgs = {
           inherit systemSettings;
           inherit userSettings;
+          hostname = "ceres";
 
           inherit inputs;
         };
@@ -63,6 +64,7 @@
         specialArgs = {
           inherit systemSettings;
           inherit userSettings;
+          hostname = "vesta";
 
           inherit inputs;
         };
@@ -75,6 +77,7 @@
         specialArgs = {
           inherit systemSettings;
           inherit userSettings;
+          hostname = "pallas";
 
           inherit inputs;
         };

@@ -1,11 +1,17 @@
-{ config, lib, pkgs, systemSettings, userSettings, ... }:
+{ config, lib, pkgs, systemSettings, userSettings, hostname, ... }:
 
 {
   # Use the systemd-boot EFI boot loader.
   boot = {
     extraModulePackages = with config.boot.kernelPackages; [ zenpower ];
     loader = {
-      systemd-boot.enable = true;
+      grub = {
+        enable = true;
+        device = "nodev";
+        useOSProber = true;
+        configurationName = "NixOS";
+        configurationLimit = 5;
+      };
       efi.canTouchEfiVariables = true;
     };
     kernel.sysctl = {
@@ -15,7 +21,7 @@
   };
 
   networking = {
-    # hostName = systemSettings.profile;
+    hostName = hostname;
     networkmanager.enable = true;
     firewall.enable = false;
   };
