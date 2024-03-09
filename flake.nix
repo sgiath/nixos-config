@@ -87,7 +87,7 @@
       ${userSettings.username} = home-manager.lib.homeManagerConfiguration {
         inherit pkgs;
         modules = [
-          ( ./. + "/profiles/${( builtins.getEnv "HOST" )}/home.nix" )
+          ./profiles/pallas/home.nix
           stylix.homeManagerModules.stylix
           NvChad.homeManagerModules.default
         ];
