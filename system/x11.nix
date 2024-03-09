@@ -13,7 +13,7 @@
       # managed by home-manager
       desktopManager.session = [
         {
-          name = userSettings.wm;
+          name = "xmonad";
           start = ''
             ${pkgs.runtimeShell} $HOME/.xsession &
             waitPID=$!
