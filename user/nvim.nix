@@ -15,4 +15,7 @@
     enable = true;
     configFile.nvim.source = ./nvim;
   };
+
+  # ripgrep
+  programs.ripgrep.enable = true;
 }

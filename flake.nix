@@ -17,7 +17,7 @@
     nix-citizen.inputs.nix-gaming.follows = "nix-gaming";
   };
 
-  outputs = { self, nixpkgs, home-manager, NvChad, stylix, ... }@inputs:
+  outputs = { self, nixpkgs, home-manager, stylix, ... }@inputs:
     let
       # ---- SYSTEM SETTINGS ---- #
       systemSettings = {
