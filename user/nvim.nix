@@ -13,7 +13,7 @@
   # config files
   xdg = {
     enable = true;
-    configFile.nvim.source = ./nvim;
+    configFile.nvim.source = config.lib.file.mkOutOfStoreSymlink ./nvim;
   };
 
   # ripgrep
