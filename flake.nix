@@ -45,58 +45,82 @@
       # desktop
       ceres = nixpkgs.lib.nixosSystem {
         system = systemSettings.system;
-        modules = [ ./profiles/ceres/system.nix ];
-        specialArgs = {
+        specialArgs = inputs // {
           inherit systemSettings;
           inherit userSettings;
-          hostname = "ceres";
-
-          inherit inputs;
         };
+        modules = [
+          stylix.nixosModules.stylix
+
+          home-manager.nixosModules.home-manager {
+            home-manager = {
+              useGlobalPkgs = true;
+              useUserPackages = true;
+              extraSpecialArgs = inputs // {
+                inherit systemSettings;
+                inherit userSettings;
+              };
+
+              users.${userSettings.username} = import ./profiles/ceres/home.nix;
+            };
+          }
+
+          ./profiles/ceres/system.nix
+        ];
       };
 
       # server
       vesta = nixpkgs.lib.nixosSystem {
         system = systemSettings.system;
-        modules = [ ./profiles/vesta/system.nix ];
-        specialArgs = {
+        specialArgs = inputs // {
           inherit systemSettings;
           inherit userSettings;
-          hostname = "vesta";
-
-          inherit inputs;
         };
+        modules = [
+          stylix.nixosModules.stylix
+
+          home-manager.nixosModules.home-manager {
+            home-manager = {
+              useGlobalPkgs = true;
+              useUserPackages = true;
+              extraSpecialArgs = inputs // {
+                inherit systemSettings;
+                inherit userSettings;
+              };
+
+              users.${userSettings.username} = import ./profiles/vesta/home.nix;
+            };
+          }
+
+          ./profiles/vesta/system.nix
+        ];
       };
 
       # notebook
       pallas = nixpkgs.lib.nixosSystem {
         system = systemSettings.system;
-        modules = [ ./profiles/pallas/system.nix ];
-        specialArgs = {
+        specialArgs = inputs // {
           inherit systemSettings;
           inherit userSettings;
-          hostname = "pallas";
-
-          inherit inputs;
         };
-      };
-    };
-
-    # home
-    homeConfigurations = {
-      ${userSettings.username} = home-manager.lib.homeManagerConfiguration {
-        inherit pkgs;
         modules = [
-          ./profiles/pallas/home.nix
-          stylix.homeManagerModules.stylix
-          NvChad.homeManagerModules.default
-        ];
-        extraSpecialArgs = {
-          inherit systemSettings;
-          inherit userSettings;
+          stylix.nixosModules.stylix
 
-          inherit inputs;
-        };
+          home-manager.nixosModules.home-manager {
+            home-manager = {
+              useGlobalPkgs = true;
+              useUserPackages = true;
+              extraSpecialArgs = inputs // {
+                inherit systemSettings;
+                inherit userSettings;
+              };
+
+              users.${userSettings.username} = import ./profiles/pallas/home.nix;
+            };
+          }
+
+          ./profiles/pallas/system.nix
+        ];
       };
     };
   };

@@ -1,6 +1,10 @@
 { config, lib, pkgs, systemSettings, userSettings, hostname, ... }:
 
 {
+  imports = [
+    ./../system/stylix.nix
+  ];
+
   # Use the systemd-boot EFI boot loader.
   boot = {
     extraModulePackages = with config.boot.kernelPackages; [ zenpower ];
@@ -18,7 +22,6 @@
   };
 
   networking = {
-    hostName = hostname;
     networkmanager.enable = true;
     firewall.enable = false;
   };

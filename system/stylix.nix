@@ -9,8 +9,8 @@ in
   stylix = {
     polarity = "dark";
 
-    image = ./wallpaper.jpg;
-    base16Scheme = ./theme.yaml;
+    image = ./../wallpaper.jpg;
+    base16Scheme = ./../theme.yaml;
 
     fonts = {
       monospace = font;

@@ -9,5 +9,7 @@
     ./hardware.nix
   ];
 
+  networking.hostName = "vesta";
+
   boot.kernelPackages = pkgs.linuxPackages_zen;
 }

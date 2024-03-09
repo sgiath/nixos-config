@@ -9,7 +9,6 @@
     ../user/ssh.nix
     ../user/nvim.nix
     ../user/git.nix
-    ../user/stylix.nix
   ];
 
   home = {
@@ -24,8 +23,7 @@
       (pkgs.writeShellScriptBin "upgrade" ''
         pushd ${userSettings.dotfilesDir}
         nix flake update
-        sudo nixos-rebuild switch --flake .
-        home-manager switch --flake .
+        sudo nixos-rebuild switch --flake ${userSettings.dotfilesDir}
         popd
       '')
     ];
@@ -76,7 +74,6 @@
     };
 
     password-store.enable = true;
-
     command-not-found.enable = true;
   };
 }

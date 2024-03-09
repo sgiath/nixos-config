@@ -16,13 +16,12 @@
     ../../system/bluetooth.nix
   ];
 
+  networking.hostName = "pallas";
+
   # razer notebook specific packages
   environment.systemPackages = with pkgs; [
-    lshw
-    lsusb
     razergenie
     openrazer-daemon
-    sof-firmware
   ];
 
   # Nvidia and AMD GPUs

@@ -1,15 +1,24 @@
-{ config, inputs, ... }:
+{ config, nix-gaming, ... }:
 
 {
-  # imports = [
-  #   inputs.nix-gaming.nixosModules.pipewireLowLatency
-  # ];
+  imports = [
+    nix-gaming.nixosModules.pipewireLowLatency
+  ];
 
-  sound.enable = true;
+  # realtime audio
   security.rtkit.enable = true;
 
+  # pipewire misbehaves when enabled
+  sound.enable = false;
+  hardware.pulseaudio.enable = false;
+
+  # sof-firmware
+  # hardware.enableAllFirmware = true;
+
+  # configure pipewire
   services.pipewire = {
     enable = true;
+    audio.enable = true;
 
     alsa = {
       enable = true;
@@ -17,13 +26,13 @@
     };
 
     pulse.enable = true;
-    jack.enable = true;
+    # jack.enable = true;
     wireplumber.enable = true;
 
-    # lowLatency = {
-    #   enable = true;
-    #   quantum = 64;
-    #   rate = 48000;
-    # };
+    lowLatency = {
+      enable = true;
+      quantum = 64;
+      rate = 48000;
+    };
   };
 }

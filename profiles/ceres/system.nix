@@ -16,6 +16,8 @@
     ../../system/bluetooth.nix
   ];
 
+  networking.hostName = "ceres";
+
   # AMD GPU
   services.xserver.videoDrivers = [ "amdgpu" ];
 }

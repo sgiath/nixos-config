@@ -1,6 +1,9 @@
 { config, pkgs, ... }:
 
 {
-  home.packages = [ pkgs.qpwgraph ];
+  home.packages = with pkgs; [
+    qpwgraph
+  ];
+
   services.easyeffects.enable = true;
 }
