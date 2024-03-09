@@ -2,7 +2,7 @@
 
 {
   # nixd LSP
-  home.packages = with pkgs; [ neovim nixd gcc make];
+  home.packages = with pkgs; [ neovim nixd gcc gnumake];
 
   # config files
   xdg = {
