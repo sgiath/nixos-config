@@ -1,6 +1,8 @@
 { config, pkgs, userSettings, ...}:
 
 {
+  home.sessionVariables."EDITOR" = "${pkgs.neovim}/bin/nvim";
+
   # nixd LSP
   home.packages = with pkgs; [ neovim nixd gcc gnumake];
 

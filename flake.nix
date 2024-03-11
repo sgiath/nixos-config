@@ -37,7 +37,10 @@
 
       pkgs = import nixpkgs {
         system = systemSettings.system;
-        config.allowUnfree = true;
+        config = {
+          allowUnfree = true;
+          permittedInsecurePackages = [ "nix-2.16.2" ];
+        };
       };
     in {
     nixosConfigurations = nixpkgs.lib.genAttrs hosts (host: nixpkgs.lib.nixosSystem {

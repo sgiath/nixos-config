@@ -49,4 +49,9 @@
     enable = true;
     users = [ userSettings.username ];
   };
+
+  # Docker
+  virtualisation.docker = {
+    enable = true;
+  };
 }

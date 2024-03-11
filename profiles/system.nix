@@ -64,12 +64,15 @@
     users = {
       ${userSettings.username} = {
         isNormalUser = true;
-        extraGroups = [ "networkmanager" "wheel" "openrazer" ];
+        extraGroups = [ "networkmanager" "wheel" "openrazer" "docker" ];
       };
     };
   };
 
-  nixpkgs.config.allowUnfree = true;
+  nixpkgs.config = {
+    allowUnfree = true;
+    permittedInsecurePackages = [ "nix-2.16.2" ];
+  };
 
   environment = {
     shells = with pkgs; [ bash zsh ];

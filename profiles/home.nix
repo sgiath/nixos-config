@@ -73,7 +73,10 @@
       enable = true;
     };
 
-    password-store.enable = true;
+    password-store = {
+      enable = true;
+      package = pkgs.pass.withExtensions (exts: [ exts.pass-otp ]);
+    };
     command-not-found.enable = true;
   };
 }
