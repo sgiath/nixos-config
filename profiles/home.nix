@@ -26,6 +26,9 @@
         sudo nixos-rebuild switch --flake ${userSettings.dotfilesDir}
         popd
       '')
+
+      pkgs.zip
+      pkgs.unzip
     ];
 
     file = {

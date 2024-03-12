@@ -15,6 +15,9 @@
     ../../system/printing.nix
     ../../system/gaming.nix
     ../../system/bluetooth.nix
+
+    # work
+    ../../work/nginx.nix
   ];
 
   networking.hostName = "ceres";
@@ -24,10 +27,4 @@
 
   # temporary, move it out
   virtualisation.docker.enable = true;
-
-  services.nginx = {
-    enable = true;
-    config = ''
-    '';
-  };
 }
