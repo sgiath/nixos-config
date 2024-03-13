@@ -11,6 +11,7 @@
       pkgs.winetricks
 
       # Star Citizen
+      pkgs-citizen.star-citizen
       pkgs-citizen.star-citizen-helper
       pkgs-citizen.lug-helper
     ];

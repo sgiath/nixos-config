@@ -1,7 +1,7 @@
 { config, pkgs, ... }:
 
 {
-  home.packages = with pkgs; [ ungoogled-chromium ];
+  home.packages = with pkgs; [ ungoogled-chromium firefox ];
 
   xdg.configFile."chromium-flags.conf".text = ''
     --enable-features=WebUIDarkMode,DisableQRGenerator

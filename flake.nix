@@ -9,17 +9,25 @@
       url = "github:nix-community/home-manager";
       inputs.nixpkgs.follows = "nixpkgs";
     };
+    disko = {
+      url = "github:nix-community/disko";
+      inputs.nixpkgs.follows = "nixpkgs";
+    };
 
     hyprland.url = "github:hyprwm/Hyprland";
-
     stylix.url = "github:danth/stylix";
 
-    nix-citizen.url = "github:LovingMelody/nix-citizen";
-    nix-gaming.url = "github:fufexan/nix-gaming";
-    nix-citizen.inputs.nix-gaming.follows = "nix-gaming";
+    nix-gaming = {
+      url = "github:fufexan/nix-gaming";
+      inputs.nixpkgs.follows = "nixpkgs";
+    };
+    nix-citizen = {
+      url = "github:LovingMelody/nix-citizen";
+      inputs.nix-gaming.follows = "nix-gaming";
+    };
   };
 
-  outputs = { self, nixpkgs, nix-gaming, nix-citizen, home-manager, stylix, ... }@inputs:
+  outputs = { self, nixpkgs, nix-gaming, nix-citizen, home-manager, disko, stylix, ... }@inputs:
     let
       # ---- SYSTEM SETTINGS ---- #
       systemSettings = {
@@ -37,13 +45,7 @@
 
       hosts = [ "ceres" "vesta" "pallas" ];
 
-      pkgs = import nixpkgs {
-        system = systemSettings.system;
-        config = {
-          allowUnfree = true;
-          permittedInsecurePackages = [ "nix-2.16.2" ];
-        };
-      };
+      pkgs = nixpkgs.legacyPackages.${systemSettings.system};
       pkgs-gaming = nix-gaming.packages.${systemSettings.system};
       pkgs-citizen = nix-citizen.packages.${systemSettings.system};
     in {
@@ -54,6 +56,7 @@
         inherit userSettings;
       };
       modules = [
+        disko.nixosModules.disko
         stylix.nixosModules.stylix
 
         home-manager.nixosModules.home-manager {
@@ -73,6 +76,11 @@
 
         ( ./profiles + "/${host}/system.nix" )
       ];
-    });
+    }) // {
+      installIso = nixpkgs.lib.nixosSystem {
+        specialArgs = inputs // { inherit systemSettings; };
+        modules = [ ./profiles/isoimage/system.nix ];
+      };
+    };
   };
 }

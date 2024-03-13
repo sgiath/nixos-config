@@ -2,6 +2,7 @@
 
 {
   imports = [
+    # (import ./disko.nix { device = "/dev/nvme1n1"; })
     (modulesPath + "/installer/scan/not-detected.nix")
   ];
 
