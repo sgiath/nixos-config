@@ -9,8 +9,8 @@
     ../../user/audio.nix
 
     # GUI apps
-    ../../user/xmonad/default.nix
-    ../../user/polybar/polybar.nix
+    ../../user/xmonad.nix
+    ../../user/polybar.nix
     ../../user/rofi.nix
     ../../user/wezterm.nix
     ../../user/browser.nix

@@ -7,9 +7,9 @@
     windowManager.xmonad = {
       enable = true;
       enableContribAndExtras = true;
-      config = ./xmonad.hs;
+      config = ./xmonad/xmonad.hs;
       libFiles = {
-        "Colors.hs" = ./lib/Colors/Yoru.hs;
+        "Colors.hs" = ./xmonad/lib/Colors/Yoru.hs;
       };
     };
   };

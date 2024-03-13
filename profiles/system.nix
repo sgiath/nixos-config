@@ -22,7 +22,11 @@
   };
 
   networking = {
-    networkmanager.enable = true;
+    resolvconf.enable = false;
+    networkmanager = {
+      enable = true;
+      insertNameservers = [ "192.168.1.2" ];
+    };
     firewall.enable = false;
   };
 
@@ -76,7 +80,7 @@
 
   environment = {
     shells = with pkgs; [ bash zsh ];
-    systemPackages = with pkgs; [ neovim git ];
+    systemPackages = with pkgs; [ neovim git dig ];
   };
 
   programs = {

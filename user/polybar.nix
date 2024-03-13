@@ -1,7 +1,7 @@
 { config, ... }:
 let
   base16-polybar = config.lib.stylix.colors {
-    template = builtins.readFile ./theme.mustache;
+    template = builtins.readFile ./polybar/theme.mustache;
   };
 in
 {
@@ -16,7 +16,7 @@ in
       monospace = "${config.stylix.fonts.monospace.name}:size=10:style=Bold;2"
 
       ; actual config
-      ${builtins.readFile ./polybar.ini}
+      ${builtins.readFile ./polybar/polybar.ini}
     '';
   };
 
