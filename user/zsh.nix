@@ -1,4 +1,4 @@
-{ config, pkgs, ... }:
+{ config, nixpkgs, pkgs, ... }:
 
 {
   home.packages = with pkgs; [
@@ -14,6 +14,8 @@
 
   programs.eza = {
     enable = true;
+    git = true;
+    icons = true;
   };
 
   programs.zsh = {
@@ -22,8 +24,8 @@
     shellAliases = {
       mkdir = "mkdir -p";
       tree = "ls --tree --ignore-glob='node_modules'";
-      ls = "eza --all --time-style=long-iso";
-      ll = "ls --long --binary --git";
+      ls = nixpkgs.lib.mkForce "eza --icons --all --time-style=long-iso";
+      ll = nixpkgs.lib.mkForce "ls --long --binary --git";
       cat = "bat";
       du = "dust -x";
       df = "duf";

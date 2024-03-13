@@ -9,16 +9,13 @@
   security.rtkit.enable = true;
 
   # pipewire misbehaves when enabled
-  sound.enable = false;
-  hardware.pulseaudio.enable = false;
-
-  # sof-firmware
-  # hardware.enableAllFirmware = true;
+  # sound.enable = false;
+  # hardware.pulseaudio.enable = false;
 
   # configure pipewire
   services.pipewire = {
     enable = true;
-    audio.enable = true;
+    # audio.enable = true;
 
     alsa = {
       enable = true;
@@ -27,7 +24,7 @@
 
     pulse.enable = true;
     # jack.enable = true;
-    wireplumber.enable = true;
+    # wireplumber.enable = true;
 
     lowLatency = {
       enable = true;
