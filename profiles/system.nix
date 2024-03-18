@@ -36,10 +36,6 @@
 
   # Select internationalisation properties.
   i18n.defaultLocale = "en_US.UTF-8";
-  environment.variables = {
-    LANGUAGE = "en_US.UTF-8";
-    LC_ALL = "en_US.UTF-8";
-  };
 
   console.useXkbConfig = true;
 
@@ -83,6 +79,10 @@
   environment = {
     shells = with pkgs; [ bash zsh ];
     systemPackages = with pkgs; [ neovim git ];
+    variables = {
+      LANGUAGE = "en_US.UTF-8";
+      LC_ALL = "en_US.UTF-8";
+    };
   };
 
   programs = {

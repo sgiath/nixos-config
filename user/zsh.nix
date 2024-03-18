@@ -9,8 +9,6 @@
     procs
     curlie
     tldr
-    zig
-    dig
   ];
 
   programs.eza = {

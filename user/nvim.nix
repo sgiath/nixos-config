@@ -7,7 +7,7 @@
   };
 
   # nixd LSP
-  home.packages = with pkgs; [ neovim nixd lua-language-server stylua gcc gnumake];
+  home.packages = with pkgs; [ neovim nixd lua-language-server stylua gcc gnumake ];
   # ripgrep
   programs.ripgrep.enable = true;
 

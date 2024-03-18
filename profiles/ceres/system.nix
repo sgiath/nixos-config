@@ -1,3 +1,5 @@
+{ pkgs, ... }:
+
 {
   imports = [
     # default values
@@ -22,6 +24,13 @@
 
   # AMD GPU
   services.xserver.videoDrivers = [ "amdgpu" ];
+  systemd.tmpfiles.rules = [
+    "L+    /opt/rocm/hip   -    -    -     -    ${pkgs.rocmPackages.clr}"
+  ];
+  hardware.opengl = {
+    extraPackages = with pkgs; [ rocmPackages.clr.icd amdvlk ];
+    extraPackages32 = with pkgs; [ driversi686Linux.amdvlk ];
+  };
 
   # temporary, move it out
   virtualisation.docker.enable = true;

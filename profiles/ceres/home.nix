@@ -11,6 +11,7 @@
     ../../user/audio.nix
     ../../user/gui.nix
     ../../user/games.nix
+    ../../user/ollama.nix
   ];
 
   home.packages = [

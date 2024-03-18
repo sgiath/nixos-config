@@ -33,10 +33,7 @@
       };
 
       # Configure keymap in X11
-      xkb = {
-        layout = "us";
-        options = "caps:escape";
-      };
+      xkb.layout = "us";
 
       # Enable touchpad support
       libinput = {

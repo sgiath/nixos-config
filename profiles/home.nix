@@ -42,6 +42,7 @@
       pkgs.zip
       pkgs.unzip
       pkgs.wget
+      pkgs.dig
       pkgs.killall
       pkgs.inotify-tools
     ];
