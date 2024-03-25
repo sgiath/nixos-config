@@ -39,6 +39,7 @@
         popd
       '')
 
+      # general programs I want to have always available
       pkgs.imagemagick
       pkgs.ffmpeg
       pkgs.zip
@@ -50,20 +51,11 @@
     ];
   };
 
-  services = {
-    gpg-agent = {
-      enable = true;
-      enableSshSupport = true;
-      sshKeys = [
-        "191203A373DD9867A125EC6A9D3EC96416186FEE"
-      ];
-    };
-
-    ssh-agent.enable = true;
-  };
-
   programs = {
     home-manager.enable = true;
+    bat.enable = true;
+    btop.enable = true;
+    command-not-found.enable = true;
 
     direnv = {
       enable = true;
@@ -71,18 +63,9 @@
       nix-direnv.enable = true;
     };
 
-    bat = {
-      enable = true;
-    };
-
-    btop = {
-      enable = true;
-    };
-
     password-store = {
       enable = true;
       package = pkgs.pass.withExtensions (exts: [ exts.pass-otp ]);
     };
-    command-not-found.enable = true;
   };
 }
