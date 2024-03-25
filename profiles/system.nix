@@ -120,8 +120,6 @@
   # Nix config
   nix = {
     settings.experimental-features = [ "nix-command" "flakes" ];
-    gc.automatic = true;
-    optimise.automatic = true;
     package = pkgs.nixVersions.nix_2_17;
   };
 }

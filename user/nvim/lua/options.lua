@@ -11,4 +11,5 @@ vim.opt.rnu = true
 vim.opt.undofile = true
 
 -- Place a column line
-vim.opt.colorcolumn = "98"
+vim.opt.textwidth = 98
+vim.opt.colorcolumn = "+1"
