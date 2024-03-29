@@ -1,30 +1,34 @@
-{ config, ... }:
+{ config, lib, ... }:
 let
   base16-polybar = config.lib.stylix.colors {
     template = builtins.readFile ./polybar/theme.mustache;
   };
 in {
-  services.polybar = {
-    enable = true;
-    script = "";
-    extraConfig = ''
-      ; generated theme
-      include-file = ${base16-polybar}
+  options.sgiath.polybar = { enable = lib.mkEnableOption "polybar"; };
 
-      [fonts]
-      monospace = "${config.stylix.fonts.monospace.name}:size=10:style=Bold;2"
+  config = lib.mkIf config.sgiath.polybar.enable {
+    services.polybar = {
+      enable = true;
+      script = "";
+      extraConfig = ''
+        ; generated theme
+        include-file = ${base16-polybar}
 
-      ; actual config
-      ${builtins.readFile ./polybar/polybar.ini}
-    '';
-  };
+        [fonts]
+        monospace = "${config.stylix.fonts.monospace.name}:size=10:style=Bold;2"
 
-  xsession = {
-    enable = true;
-    initExtra = ''
-      polybar main0 &
-      polybar main1 &
-      polybar main2 &
-    '';
+        ; actual config
+        ${builtins.readFile ./polybar/polybar.ini}
+      '';
+    };
+
+    xsession = {
+      enable = true;
+      initExtra = ''
+        polybar main0 &
+        polybar main1 &
+        polybar main2 &
+      '';
+    };
   };
 }

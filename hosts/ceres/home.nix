@@ -2,28 +2,27 @@
 
 {
   imports = [
-    # default values
-    ../home.nix
+    ../../home-manager
 
     # CrazyEgg
-    ../../work/default.nix
-
-    ../../home-manager/audio.nix
-    ../../home-manager/gui.nix
-    ../../home-manager/games.nix
-    ../../home-manager/ollama.nix
+    ../../work
   ];
 
-  home.packages = [ pkgs.nitrogen pkgs.cinnamon.nemo-with-extensions ];
+  sgiath = {
+    audio.enable = true;
+    browser.enable = true;
+    claws.enable = true;
+    games.enable = true;
+    ollama.enable = true;
+    polybar.enable = true;
+    rofi.enable = true;
+    xmonad.enable = true;
+  };
 
-  stylix = {
-    fonts = {
-      sizes = {
-        applications = 10;
-        desktop = 10;
-        popups = 10;
-        terminal = 10;
-      };
-    };
+  stylix.fonts.sizes = {
+    applications = 10;
+    desktop = 10;
+    popups = 10;
+    terminal = 10;
   };
 }

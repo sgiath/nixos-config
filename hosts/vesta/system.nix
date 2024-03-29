@@ -2,13 +2,10 @@
 
 {
   imports = [
-    # default values
-    ../system.nix
-
     # hardware
     ./hardware.nix
 
-    # bitcoin
+    ../../nixos
     ../../nixos/bitcoin.nix
   ];
 

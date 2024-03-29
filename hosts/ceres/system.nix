@@ -2,19 +2,12 @@
 
 {
   imports = [
-    # default values
-    ../system.nix
-
     # hardware
     ./hardware.nix
     ./monitors.nix
 
     # modules
-    ../../nixos/x11.nix
-    ../../nixos/sound.nix
-    ../../nixos/printing.nix
-    ../../nixos/gaming.nix
-    ../../nixos/bluetooth.nix
+    ../../nixos
 
     # work
     ../../work/nginx.nix
@@ -22,13 +15,14 @@
 
   networking.hostName = "ceres";
 
-  # AMD GPU
-  services.xserver.videoDrivers = [ "amdgpu" ];
-  systemd.tmpfiles.rules =
-    [ "L+    /opt/rocm/hip   -    -    -     -    ${pkgs.rocmPackages.clr}" ];
-  hardware.opengl = {
-    extraPackages = with pkgs; [ rocmPackages.clr rocmPackages.clr.icd amdvlk ];
-    extraPackages32 = with pkgs; [ driversi686Linux.amdvlk ];
+  sgiath = {
+    audio.enable = true;
+    amd-gpu.enable = true;
+    bluetooth.enable = true;
+    printing.enable = true;
+    gaming.enable = true;
+    x11.enable = true;
+    networking.localDNS.enable = true;
   };
 
   # temporary, move it out

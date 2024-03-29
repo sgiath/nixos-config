@@ -2,13 +2,22 @@
 
 {
   imports = [
-    ../home-manager/gnupg.nix
-    ../home-manager/starship.nix
-    ../home-manager/zsh.nix
-    ../home-manager/tmux.nix
-    ../home-manager/ssh.nix
-    ../home-manager/nvim.nix
-    ../home-manager/git.nix
+    ./gnupg.nix
+    ./starship.nix
+    ./zsh.nix
+    ./tmux.nix
+    ./ssh.nix
+    ./nvim.nix
+    ./git.nix
+    ./xmonad.nix
+    ./audio.nix
+    ./browser.nix
+    ./email_client.nix
+    ./games.nix
+    ./ollama.nix
+    ./polybar.nix
+    ./rofi.nix
+    ./wezterm.nix
   ];
 
   home = {

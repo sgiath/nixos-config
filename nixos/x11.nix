@@ -1,54 +1,58 @@
-{ pkgs, userSettings, ... }:
+{ config, lib, pkgs, userSettings, ... }:
 
 {
-  services = {
-    xserver = {
-      enable = true;
-      excludePackages = [ pkgs.xterm ];
+  options.sgiath.x11 = { enable = lib.mkEnableOption "X11"; };
 
-      # managed by home-manager
-      desktopManager.session = [{
-        name = "xmonad";
-        start = ''
-          ${pkgs.runtimeShell} $HOME/.xsession &
-          waitPID=$!
-        '';
-      }];
+  config = lib.mkIf config.sgiath.x11.enable {
+    services = {
+      xserver = {
+        enable = true;
+        excludePackages = [ pkgs.xterm ];
 
-      displayManager = {
-        lightdm.enable = true;
+        # managed by home-manager
+        desktopManager.session = [{
+          name = "xmonad";
+          start = ''
+            ${pkgs.runtimeShell} $HOME/.xsession &
+            waitPID=$!
+          '';
+        }];
 
-        autoLogin = {
-          enable = true;
-          user = userSettings.username;
+        displayManager = {
+          lightdm.enable = true;
+
+          autoLogin = {
+            enable = true;
+            user = userSettings.username;
+          };
+
+          sessionCommands = ''
+            xset s off
+            xset -dpms
+            xset s noblank
+          '';
         };
 
-        sessionCommands = ''
-          xset s off
-          xset -dpms
-          xset s noblank
-        '';
+        # Configure keymap in X11
+        xkb.layout = "us";
+
+        # Enable touchpad support
+        libinput = {
+          enable = true;
+          touchpad.naturalScrolling = true;
+        };
       };
 
-      # Configure keymap in X11
-      xkb.layout = "us";
-
-      # Enable touchpad support
-      libinput = {
+      dbus = {
         enable = true;
-        touchpad.naturalScrolling = true;
+        packages = [ pkgs.dconf ];
       };
     };
 
-    dbus = {
+    # OpenGL
+    hardware.opengl = {
       enable = true;
-      packages = [ pkgs.dconf ];
+      driSupport32Bit = true;
     };
-  };
-
-  # OpenGL
-  hardware.opengl = {
-    enable = true;
-    driSupport32Bit = true;
   };
 }

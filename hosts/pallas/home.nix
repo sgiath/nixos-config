@@ -1,30 +1,23 @@
 {
   imports = [
     # default values
-    ../home.nix
-
-    # audio
-    ../../home-manager/audio.nix
-
-    # GUI apps
-    ../../home-manager/xmonad.nix
-    ../../home-manager/polybar.nix
-    ../../home-manager/rofi.nix
-    ../../home-manager/wezterm.nix
-    ../../home-manager/browser.nix
-    ../../home-manager/email_client.nix
+    ../../home-manager
 
     # CrazyEgg
-    ../../work/aws.nix
-    ../../work/nginx.nix
+    ../../work
   ];
 
-  stylix = {
-    fonts = {
-      sizes = {
-        applications = 12;
-        terminal = 14;
-      };
-    };
+  sgiath = {
+    audio.enable = true;
+    browser.enable = true;
+    claws.enable = true;
+    polybar.enable = true;
+    rofi.enable = true;
+    xmonad.enable = true;
+  };
+
+  stylix.fonts.sizes = {
+    applications = 12;
+    terminal = 14;
   };
 }

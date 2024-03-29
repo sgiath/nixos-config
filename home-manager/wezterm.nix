@@ -1,13 +1,19 @@
+{ config, lib, ... }:
+
 {
-  programs.wezterm = {
-    enable = true;
-    extraConfig = ''
-      local config = wezterm.config_builder()
+  options.sgiath.wezterm = { enable = lib.mkEnableOption "wezterm"; };
 
-      config.enable_tab_bar = false
-      config.warn_about_missing_glyphs = false
+  config = lib.mkIf config.sgiath.wezterm.enable {
+    programs.wezterm = {
+      enable = true;
+      extraConfig = ''
+        local config = wezterm.config_builder()
 
-      return config
-    '';
+        config.enable_tab_bar = false
+        config.warn_about_missing_glyphs = false
+
+        return config
+      '';
+    };
   };
 }

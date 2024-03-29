@@ -1,7 +1,16 @@
 { config, pkgs, userSettings, ... }:
 
 {
-  imports = [ ../nixos/stylix.nix ];
+  imports = [
+    ./amd-gpu.nix
+    ./bluetooth.nix
+    ./gaming.nix
+    ./stylix.nix
+    ./sound.nix
+    ./x11.nix
+    ./printing.nix
+    ./networking.nix
+  ];
 
   # Use the systemd-boot EFI boot loader.
   boot = {
@@ -17,15 +26,6 @@
       "vm.max_map_count" = 16777216;
       "fs.file-max" = 524288;
     };
-  };
-
-  networking = {
-    resolvconf.enable = false;
-    networkmanager = {
-      enable = true;
-      insertNameservers = [ "192.168.1.2" ];
-    };
-    firewall.enable = false;
   };
 
   # Set your time zone.

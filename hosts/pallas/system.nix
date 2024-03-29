@@ -2,13 +2,11 @@
 
 {
   imports = [
-    # default values
-    ../system.nix
-
     # hardware
     ./hardware.nix
 
     # modules
+    ../../nixos
     ../../nixos/x11.nix
     ../../nixos/sound.nix
     ../../nixos/printing.nix
@@ -17,6 +15,14 @@
   ];
 
   networking.hostName = "pallas";
+
+  sgiath = {
+    audio.enable = true;
+    bluetooth.enable = true;
+    printing.enable = true;
+    gaming.enable = true;
+    x11.enable = true;
+  };
 
   # monitor config
   services.xserver = {

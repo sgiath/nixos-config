@@ -1,25 +1,30 @@
-{ inputs, ... }:
+{ config, lib, inputs, ... }:
 
 {
   imports = [ inputs.nix-gaming.nixosModules.pipewireLowLatency ];
 
-  # realtime audio
-  security.rtkit.enable = true;
+  options.sgiath.audio = { enable = lib.mkEnableOption "audio"; };
 
-  sound.enable = true;
-  hardware.pulseaudio.enable = false;
+  config = lib.mkIf config.sgiath.audio.enable {
 
-  # configure pipewire
-  services.pipewire = {
-    enable = true;
+    # realtime audio
+    security.rtkit.enable = true;
 
-    alsa.enable = true;
-    pulse.enable = true;
+    sound.enable = true;
+    hardware.pulseaudio.enable = false;
 
-    lowLatency = {
+    # configure pipewire
+    services.pipewire = {
       enable = true;
-      quantum = 64;
-      rate = 48000;
+
+      alsa.enable = true;
+      pulse.enable = true;
+
+      lowLatency = {
+        enable = true;
+        quantum = 64;
+        rate = 48000;
+      };
     };
   };
 }

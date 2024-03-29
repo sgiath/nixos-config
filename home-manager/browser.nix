@@ -1,31 +1,35 @@
-{ pkgs, ... }:
+{ config, lib, pkgs, ... }:
 
 {
-  home.packages = with pkgs; [ ungoogled-chromium firefox ];
+  options.sgiath.browser = { enable = lib.mkEnableOption "browser"; };
 
-  xdg.configFile."chromium-flags.conf".text = ''
-    --enable-features=WebUIDarkMode,DisableQRGenerator
+  config = lib.mkIf config.sgiath.browser.enable {
+    home.packages = with pkgs; [ ungoogled-chromium firefox ];
 
-    --force-dark-mode
+    xdg.configFile."chromium-flags.conf".text = ''
+      --enable-features=WebUIDarkMode,DisableQRGenerator
 
-    --vulkan
-    --use-vulkan
-    --webview-enable-vulkan
+      --force-dark-mode
 
-    --ignore-gpu-blocklist
-    --enable-gpu-rasterization
-    --enable-zero-copy
+      --vulkan
+      --use-vulkan
+      --webview-enable-vulkan
 
-    --disable-search-engine-collection
-    --keep-old-history
-    --max-connections-per-host=15
-    --popups-to-tabs
-    --close-window-with-last-tab=never
+      --ignore-gpu-blocklist
+      --enable-gpu-rasterization
+      --enable-zero-copy
 
-    --fingerprinting-canvas-image-data-noise
-    --fingerprinting-canvas-measuretext-noise
-    --fingerprinting-client-rects-noise
+      --disable-search-engine-collection
+      --keep-old-history
+      --max-connections-per-host=15
+      --popups-to-tabs
+      --close-window-with-last-tab=never
 
-    --ssl-key-log-file=/home/sgiath/.ssl_keylog
-  '';
+      --fingerprinting-canvas-image-data-noise
+      --fingerprinting-canvas-measuretext-noise
+      --fingerprinting-client-rects-noise
+
+      --ssl-key-log-file=/home/sgiath/.ssl_keylog
+    '';
+  };
 }

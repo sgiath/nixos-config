@@ -1,6 +1,10 @@
-{ pkgs, ... }:
+{ config, lib, pkgs, ... }:
 
 {
-  home.packages = [ pkgs.qpwgraph ];
-  services.easyeffects.enable = true;
+  options.sgiath.audio = { enable = lib.mkEnableOption "audio"; };
+
+  config = lib.mkIf config.sgiath.audio.enable {
+    home.packages = [ pkgs.qpwgraph ];
+    services.easyeffects.enable = true;
+  };
 }

@@ -1,16 +1,20 @@
-{ pkgs, ... }:
+{ config, lib, pkgs, ... }:
 
 {
-  home = {
-    packages = [ pkgs.claws-mail ];
+  options.sgiath.claws = { enable = lib.mkEnableOption "Claws Email"; };
 
-    file.".signature".text = ''
-      Filip Vavera
+  config = lib.mkIf config.sgiath.claws.enable {
+    home = {
+      packages = [ pkgs.claws-mail ];
 
-      https://sgiath.dev
-      GPG: 0x70F9C7DE34CB3BC8
+      file.".signature".text = ''
+        Filip Vavera
 
-      Why is HTML email a security nightmare? See https://useplaintext.email/
-    '';
+        https://sgiath.dev
+        GPG: 0x70F9C7DE34CB3BC8
+
+        Why is HTML email a security nightmare? See https://useplaintext.email/
+      '';
+    };
   };
 }

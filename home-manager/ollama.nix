@@ -1,18 +1,22 @@
-{ pkgs, ... }:
+{ config, lib, pkgs, ... }:
 
 {
-  home.packages = [ pkgs.ollama ];
+  options.sgiath.ollama = { enable = lib.mkEnableOption "ollama"; };
 
-  systemd.user.services.ollama = {
-    Unit = {
-      Description = "Ollama Service";
-      After = "network-online.target";
-    };
-    Install = { WantedBy = [ "default.target" ]; };
-    Service = {
-      ExecStart = "${pkgs.ollama}/bin/ollama serve";
-      Restart = "always";
-      RestartSec = 3;
+  config = lib.mkIf config.sgiath.ollama.enable {
+    home.packages = [ pkgs.ollama ];
+
+    systemd.user.services.ollama = {
+      Unit = {
+        Description = "Ollama Service";
+        After = "network-online.target";
+      };
+      Install = { WantedBy = [ "default.target" ]; };
+      Service = {
+        ExecStart = "${pkgs.ollama}/bin/ollama serve";
+        Restart = "always";
+        RestartSec = 3;
+      };
     };
   };
 }

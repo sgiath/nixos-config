@@ -1,23 +1,28 @@
-{ pkgs, ... }:
+{ config, lib, pkgs, ... }:
 
 {
-  xsession = {
-    enable = true;
+  options.sgiath.xmonad = { enable = lib.mkEnableOption "xmonad"; };
 
-    windowManager.xmonad = {
+  config = lib.mkIf config.sgiath.xmonad.enable {
+    home.packages = [ pkgs.nitrogen pkgs.cinnamon.nemo-with-extensions ];
+    xsession = {
       enable = true;
-      enableContribAndExtras = true;
-      config = ./xmonad/xmonad.hs;
-      libFiles."Colors.hs" = ./xmonad/lib/Colors/Yoru.hs;
-    };
-  };
 
-  services.dunst = {
-    enable = true;
-    iconTheme = {
-      name = "Paper";
-      package = pkgs.paper-icon-theme;
+      windowManager.xmonad = {
+        enable = true;
+        enableContribAndExtras = true;
+        config = ./xmonad/xmonad.hs;
+        libFiles."Colors.hs" = ./xmonad/lib/Colors/Yoru.hs;
+      };
     };
+
+    services.dunst = {
+      enable = true;
+      iconTheme = {
+        name = "Paper";
+        package = pkgs.paper-icon-theme;
+      };
+    };
+    services.flameshot.enable = true;
   };
-  services.flameshot.enable = true;
 }
