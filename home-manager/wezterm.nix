@@ -1,7 +1,9 @@
 { config, lib, ... }:
 
 {
-  options.sgiath.wezterm = { enable = lib.mkEnableOption "wezterm"; };
+  options.sgiath.wezterm = {
+    enable = lib.mkEnableOption "wezterm";
+  };
 
   config = lib.mkIf config.sgiath.wezterm.enable {
     programs.wezterm = {

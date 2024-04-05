@@ -40,7 +40,11 @@
       "*.jpg binary"
     ];
 
-    ignores = [ ".direnv" ".elixir_ls" "result" ];
+    ignores = [
+      ".direnv"
+      ".elixir_ls"
+      "result"
+    ];
 
     extraConfig = {
       init.defaultBranch = "master";

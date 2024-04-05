@@ -1,7 +1,14 @@
-{ config, lib, pkgs, ... }:
+{
+  config,
+  lib,
+  pkgs,
+  ...
+}:
 
 {
-  options.sgiath.claws = { enable = lib.mkEnableOption "Claws Email"; };
+  options.sgiath.claws = {
+    enable = lib.mkEnableOption "Claws Email";
+  };
 
   config = lib.mkIf config.sgiath.claws.enable {
     home = {

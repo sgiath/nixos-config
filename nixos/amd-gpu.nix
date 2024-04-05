@@ -1,7 +1,14 @@
-{ config, lib, pkgs, ... }:
+{
+  config,
+  lib,
+  pkgs,
+  ...
+}:
 
 {
-  options.sgiath.amd-gpu = { enable = lib.mkEnableOption "AMD GPU"; };
+  options.sgiath.amd-gpu = {
+    enable = lib.mkEnableOption "AMD GPU";
+  };
 
   config = lib.mkIf config.sgiath.amd-gpu.enable {
     boot = {
@@ -11,8 +18,7 @@
 
     services.xserver.videoDrivers = [ "amdgpu" ];
 
-    systemd.tmpfiles.rules =
-      [ "L+    /opt/rocm/hip   -    -    -     -    ${pkgs.rocmPackages.clr}" ];
+    systemd.tmpfiles.rules = [ "L+    /opt/rocm/hip   -    -    -     -    ${pkgs.rocmPackages.clr}" ];
 
     hardware.opengl = {
       extraPackages = with pkgs; [

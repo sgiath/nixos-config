@@ -21,8 +21,9 @@
     bluetooth.enable = true;
     printing.enable = true;
     gaming.enable = true;
-    x11.enable = true;
     networking.localDNS.enable = true;
+    x11.enable = true;
+    # wayland.enable = true;
   };
 
   # temporary, move it out

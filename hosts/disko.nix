@@ -1,4 +1,8 @@
-{ inputs, device ? throw "You need to set your disk", ... }:
+{
+  inputs,
+  device ? throw "You need to set your disk",
+  ...
+}:
 
 {
   imports = [ inputs.disko.nixosModules.disko ];
@@ -30,15 +34,24 @@
               extraArgs = [ "-f" ];
               subvolumes = {
                 "/root" = {
-                  mountOptions = [ "compress=zstd" "noatime" ];
+                  mountOptions = [
+                    "compress=zstd"
+                    "noatime"
+                  ];
                   mountpoint = "/";
                 };
                 "/home" = {
-                  mountOptions = [ "compress=zstd" "noatime" ];
+                  mountOptions = [
+                    "compress=zstd"
+                    "noatime"
+                  ];
                   mountpoint = "/home";
                 };
                 "/nix" = {
-                  mountOptions = [ "compress=zstd" "noatime" ];
+                  mountOptions = [
+                    "compress=zstd"
+                    "noatime"
+                  ];
                   mountpoint = "/nix";
                 };
               };

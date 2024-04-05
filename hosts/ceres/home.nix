@@ -14,9 +14,16 @@
     claws.enable = true;
     games.enable = true;
     ollama.enable = true;
+
+    # Wayland
+    # hyprland.enable = true;
+    # kitty.enable = true;
+
+    # X11
     polybar.enable = true;
-    rofi.enable = true;
     xmonad.enable = true;
+    rofi.enable = true;
+    wezterm.enable = true;
   };
 
   stylix.fonts.sizes = {

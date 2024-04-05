@@ -1,7 +1,14 @@
-{ config, lib, pkgs, ... }:
+{
+  config,
+  lib,
+  pkgs,
+  ...
+}:
 
 {
-  options.sgiath.rofi = { enable = lib.mkEnableOption "rofi"; };
+  options.sgiath.rofi = {
+    enable = lib.mkEnableOption "rofi";
+  };
 
   config = lib.mkIf config.sgiath.rofi.enable {
     programs = {

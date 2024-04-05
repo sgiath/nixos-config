@@ -1,7 +1,9 @@
 { config, lib, ... }:
 
 {
-  options.sgiath.printing = { enable = lib.mkEnableOption "printing"; };
+  options.sgiath.printing = {
+    enable = lib.mkEnableOption "printing";
+  };
 
   config = lib.mkIf config.sgiath.printing.enable {
     services = {

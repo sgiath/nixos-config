@@ -3,8 +3,11 @@ let
   base16-polybar = config.lib.stylix.colors {
     template = builtins.readFile ./polybar/theme.mustache;
   };
-in {
-  options.sgiath.polybar = { enable = lib.mkEnableOption "polybar"; };
+in
+{
+  options.sgiath.polybar = {
+    enable = lib.mkEnableOption "polybar";
+  };
 
   config = lib.mkIf config.sgiath.polybar.enable {
     services.polybar = {

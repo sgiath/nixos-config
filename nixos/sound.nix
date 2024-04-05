@@ -1,9 +1,16 @@
-{ config, lib, inputs, ... }:
+{
+  config,
+  lib,
+  inputs,
+  ...
+}:
 
 {
   imports = [ inputs.nix-gaming.nixosModules.pipewireLowLatency ];
 
-  options.sgiath.audio = { enable = lib.mkEnableOption "audio"; };
+  options.sgiath.audio = {
+    enable = lib.mkEnableOption "audio";
+  };
 
   config = lib.mkIf config.sgiath.audio.enable {
 

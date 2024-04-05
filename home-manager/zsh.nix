@@ -1,7 +1,15 @@
 { lib, pkgs, ... }:
 
 {
-  home.packages = with pkgs; [ du-dust duf fd gping procs curlie tldr ];
+  home.packages = with pkgs; [
+    du-dust
+    duf
+    fd
+    gping
+    procs
+    curlie
+    tldr
+  ];
 
   programs.eza = {
     enable = true;
@@ -42,8 +50,8 @@
         "archive"
         "docker"
         "git"
-        "gpg"
-        "ssh"
+        # "gpg"
+        # "ssh"
         "completion"
         "syntax-highlighting"
         "history-substring-search"

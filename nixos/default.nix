@@ -1,4 +1,9 @@
-{ config, pkgs, userSettings, ... }:
+{
+  config,
+  pkgs,
+  userSettings,
+  ...
+}:
 
 {
   imports = [
@@ -8,6 +13,7 @@
     ./stylix.nix
     ./sound.nix
     ./x11.nix
+    ./wayland.nix
     ./printing.nix
     ./networking.nix
   ];
@@ -18,7 +24,7 @@
     loader = {
       systemd-boot = {
         enable = true;
-        configurationLimit = 10;
+        configurationLimit = 100;
       };
       efi.canTouchEfiVariables = true;
     };
@@ -67,21 +73,31 @@
     users = {
       ${userSettings.username} = {
         isNormalUser = true;
-        extraGroups = [ "networkmanager" "wheel" "openrazer" "docker" ];
-        hashedPassword =
-          "$y$j9T$EBb/Mjo7nNHfmtbiP1GST0$CctYXT62gX0cMDHzRzYxlix43xC3U6kzSDNvyqZOcj4";
+        extraGroups = [
+          "networkmanager"
+          "wheel"
+          "openrazer"
+          "docker"
+        ];
+        hashedPassword = "$y$j9T$EBb/Mjo7nNHfmtbiP1GST0$CctYXT62gX0cMDHzRzYxlix43xC3U6kzSDNvyqZOcj4";
       };
     };
   };
 
   nixpkgs.config = {
     allowUnfree = true;
-    permittedInsecurePackages = [ "nix-2.17.1" ];
+    permittedInsecurePackages = [ ];
   };
 
   environment = {
-    shells = with pkgs; [ bash zsh ];
-    systemPackages = with pkgs; [ neovim git ];
+    shells = with pkgs; [
+      bash
+      zsh
+    ];
+    systemPackages = with pkgs; [
+      neovim
+      git
+    ];
     variables = {
       LANGUAGE = "en_US.UTF-8";
       LC_ALL = "en_US.UTF-8";
@@ -92,11 +108,10 @@
     mtr.enable = true;
     zsh.enable = true;
     dconf.enable = true;
-
     gnupg.agent = {
       enable = true;
       enableSSHSupport = true;
-      pinentryPackage = pkgs.pinentry-gnome3;
+      pinentryPackage = pkgs.pinentry-curses;
     };
   };
 
@@ -117,11 +132,24 @@
   };
   environment.shellAliases.sudo = "doas";
 
+  # OpenGL
+  hardware.opengl = {
+    enable = true;
+    driSupport32Bit = true;
+  };
+
   system.stateVersion = "23.11";
 
   # Nix config
   nix = {
-    settings.experimental-features = [ "nix-command" "flakes" ];
-    package = pkgs.nixVersions.nix_2_17;
+    settings.experimental-features = [
+      "nix-command"
+      "flakes"
+    ];
+    package = pkgs.nixVersions.nix_2_21;
+    gc = {
+      automatic = true;
+      dates = "weekly";
+    };
   };
 }

@@ -1,7 +1,15 @@
-{ config, lib, pkgs, userSettings, ... }:
+{
+  config,
+  lib,
+  pkgs,
+  userSettings,
+  ...
+}:
 
 {
-  options.sgiath.x11 = { enable = lib.mkEnableOption "X11"; };
+  options.sgiath.x11 = {
+    enable = lib.mkEnableOption "X11";
+  };
 
   config = lib.mkIf config.sgiath.x11.enable {
     services = {
@@ -10,13 +18,15 @@
         excludePackages = [ pkgs.xterm ];
 
         # managed by home-manager
-        desktopManager.session = [{
-          name = "xmonad";
-          start = ''
-            ${pkgs.runtimeShell} $HOME/.xsession &
-            waitPID=$!
-          '';
-        }];
+        desktopManager.session = [
+          {
+            name = "xmonad";
+            start = ''
+              ${pkgs.runtimeShell} $HOME/.xsession &
+              waitPID=$!
+            '';
+          }
+        ];
 
         displayManager = {
           lightdm.enable = true;
@@ -47,12 +57,6 @@
         enable = true;
         packages = [ pkgs.dconf ];
       };
-    };
-
-    # OpenGL
-    hardware.opengl = {
-      enable = true;
-      driSupport32Bit = true;
     };
   };
 }

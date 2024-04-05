@@ -1,10 +1,20 @@
-{ config, lib, pkgs, ... }:
+{
+  config,
+  lib,
+  pkgs,
+  ...
+}:
 
 {
-  options.sgiath.browser = { enable = lib.mkEnableOption "browser"; };
+  options.sgiath.browser = {
+    enable = lib.mkEnableOption "browser";
+  };
 
   config = lib.mkIf config.sgiath.browser.enable {
-    home.packages = with pkgs; [ ungoogled-chromium firefox ];
+    home.packages = with pkgs; [
+      ungoogled-chromium
+      firefox
+    ];
 
     xdg.configFile."chromium-flags.conf".text = ''
       --enable-features=WebUIDarkMode,DisableQRGenerator

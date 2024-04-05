@@ -9,12 +9,18 @@
     ./ssh.nix
     ./nvim.nix
     ./git.nix
-    ./xmonad.nix
     ./audio.nix
     ./browser.nix
     ./email_client.nix
     ./games.nix
     ./ollama.nix
+
+    # Wayland
+    ./hyprland.nix
+    ./kitty.nix
+
+    # X11 apps
+    ./xmonad.nix
     ./polybar.nix
     ./rofi.nix
     ./wezterm.nix

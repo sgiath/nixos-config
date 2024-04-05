@@ -1,10 +1,20 @@
-{ config, lib, pkgs, ... }:
+{
+  config,
+  lib,
+  pkgs,
+  ...
+}:
 
 {
-  options.sgiath.xmonad = { enable = lib.mkEnableOption "xmonad"; };
+  options.sgiath.xmonad = {
+    enable = lib.mkEnableOption "xmonad";
+  };
 
   config = lib.mkIf config.sgiath.xmonad.enable {
-    home.packages = [ pkgs.nitrogen pkgs.cinnamon.nemo-with-extensions ];
+    home.packages = [
+      pkgs.nitrogen
+      pkgs.cinnamon.nemo-with-extensions
+    ];
     xsession = {
       enable = true;
 
