@@ -42,7 +42,7 @@ baseConfig =
       borderWidth = 0
     }
 
-myWorkspaces = ["term", "web", "work", "3", "Firefox", "5", "6", "7", "8", "9", "audio", "email", "chat"]
+myWorkspaces = ["term", "web", "work", "firefox", "5", "6", "7", "audio", "email", "chat"]
 myFont = "xft:RobotoMono Nerd Font Mono:regular:size=9:antialias=true:hinting=true"
 myLayoutHook =
     avoidStruts $
@@ -82,12 +82,12 @@ myManageHook =
       className =? "download" --> doFloat,
       className =? "error" --> doFloat,
       className =? "notification" --> doFloat,
-      className =? "pinentry-gtk-3" --> doFloat,
       className =? "splash" --> doFloat,
       className =? "toolbar" --> doFloat,
       isFullscreen --> doFullFloat,
       -- Default WS
       className =? "wezterm" --> doShift "term",
+      className =? "kitty" --> doShift "term",
       className =? "Chromium-browser" --> doShift "web",
       className =? "Google-chrome" --> doShift "work",
       className =? "firefox" --> doShift "Firefox",
@@ -96,7 +96,7 @@ myManageHook =
       className =? "Claws-mail" --> doShift "email",
       className =? "Slack" --> doShift "chat",
       className =? "TelegramDesktop" --> doShift "chat",
-      className =? "discord" --> doShift "chat"
+      className =? "WebCord" --> doShift "chat"
     ]
 
 myKeys =
@@ -110,32 +110,26 @@ myKeys =
     ("M-<Right>", nextWS),
     ("M-<Left>", prevWS),
     -- Halmak rebinding
-    ("M-`", windows $ W.greedyView (myWorkspaces !! 0)),
-    ("M-1", windows $ W.greedyView (myWorkspaces !! 1)),
-    ("M-2", windows $ W.greedyView (myWorkspaces !! 2)),
-    ("M-3", windows $ W.greedyView (myWorkspaces !! 3)),
-    ("M-4", windows $ W.greedyView (myWorkspaces !! 4)),
-    ("M-5", windows $ W.greedyView (myWorkspaces !! 5)),
-    ("M-6", windows $ W.greedyView (myWorkspaces !! 6)),
-    ("M-7", windows $ W.greedyView (myWorkspaces !! 7)),
-    ("M-8", windows $ W.greedyView (myWorkspaces !! 8)),
-    ("M-9", windows $ W.greedyView (myWorkspaces !! 9)),
-    ("M-0", windows $ W.greedyView (myWorkspaces !! 10)),
-    ("M--", windows $ W.greedyView (myWorkspaces !! 11)),
-    ("M-=", windows $ W.greedyView (myWorkspaces !! 12)),
-    ("M-S-`", windows $ W.shift (myWorkspaces !! 0)),
-    ("M-S-1", windows $ W.shift (myWorkspaces !! 1)),
-    ("M-S-2", windows $ W.shift (myWorkspaces !! 2)),
-    ("M-S-3", windows $ W.shift (myWorkspaces !! 3)),
-    ("M-S-4", windows $ W.shift (myWorkspaces !! 4)),
-    ("M-S-5", windows $ W.shift (myWorkspaces !! 5)),
-    ("M-S-6", windows $ W.shift (myWorkspaces !! 6)),
-    ("M-S-7", windows $ W.shift (myWorkspaces !! 7)),
-    ("M-S-8", windows $ W.shift (myWorkspaces !! 8)),
-    ("M-S-9", windows $ W.shift (myWorkspaces !! 9)),
-    ("M-S-0", windows $ W.shift (myWorkspaces !! 10)),
-    ("M-S--", windows $ W.shift (myWorkspaces !! 11)),
-    ("M-S-=", windows $ W.shift (myWorkspaces !! 12))
+    ("M-1", windows $ W.greedyView (myWorkspaces !! 0)),
+    ("M-2", windows $ W.greedyView (myWorkspaces !! 1)),
+    ("M-3", windows $ W.greedyView (myWorkspaces !! 2)),
+    ("M-4", windows $ W.greedyView (myWorkspaces !! 3)),
+    ("M-5", windows $ W.greedyView (myWorkspaces !! 4)),
+    ("M-6", windows $ W.greedyView (myWorkspaces !! 5)),
+    ("M-7", windows $ W.greedyView (myWorkspaces !! 6)),
+    ("M-8", windows $ W.greedyView (myWorkspaces !! 7)),
+    ("M-9", windows $ W.greedyView (myWorkspaces !! 8)),
+    ("M-0", windows $ W.greedyView (myWorkspaces !! 9)),
+    ("M-S-1", windows $ W.shift (myWorkspaces !! 0)),
+    ("M-S-2", windows $ W.shift (myWorkspaces !! 1)),
+    ("M-S-3", windows $ W.shift (myWorkspaces !! 2)),
+    ("M-S-4", windows $ W.shift (myWorkspaces !! 3)),
+    ("M-S-5", windows $ W.shift (myWorkspaces !! 4)),
+    ("M-S-6", windows $ W.shift (myWorkspaces !! 5)),
+    ("M-S-7", windows $ W.shift (myWorkspaces !! 6)),
+    ("M-S-8", windows $ W.shift (myWorkspaces !! 7)),
+    ("M-S-9", windows $ W.shift (myWorkspaces !! 8)),
+    ("M-S-0", windows $ W.shift (myWorkspaces !! 9))
   ]
 
 main :: IO ()

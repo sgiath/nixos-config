@@ -1,12 +1,15 @@
 { pkgs, ... }:
 
 {
-  services.gpg-agent = {
-    enable = true;
-    enableSshSupport = true;
-    enableZshIntegration = true;
-    pinentryPackage = pkgs.pinentry-curses;
-    sshKeys = [ "191203A373DD9867A125EC6A9D3EC96416186FEE" ];
+  services = {
+    ssh-agent.enable = true;
+    gpg-agent = {
+      enable = true;
+      enableSshSupport = true;
+      enableZshIntegration = true;
+      pinentryPackage = pkgs.pinentry-curses;
+      sshKeys = [ "191203A373DD9867A125EC6A9D3EC96416186FEE" ];
+    };
   };
   programs.gpg = {
     enable = true;

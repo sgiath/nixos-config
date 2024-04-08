@@ -51,7 +51,7 @@
         metrics.crazyeggdev.com 'http://127.0.0.1:4007';
 
         # Auth service
-        auth.app.crazyeggdev.com 'http://127.0.0.1:4040';
+        auth.app.crazyeggdev.com 'http://127.0.0.1:4041';
 
         # Core v2 shell, shell
         core.crazyeggdev.com 'http://127.0.0.1:8080';

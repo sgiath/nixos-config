@@ -8,6 +8,10 @@
     ../../work
   ];
 
+  home.packages = [
+    pkgs.ani-cli
+  ];
+
   sgiath = {
     audio.enable = true;
     browser.enable = true;

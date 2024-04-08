@@ -4,7 +4,6 @@
   imports = [
     # hardware
     ./hardware.nix
-    ./monitors.nix
 
     # modules
     ../../nixos
