@@ -23,6 +23,8 @@
         # startup
         exec-once = [
           "${pkgs.kitty}/bin/kitty"
+          # "${pkgs.ungoogled-chromium}/bin/chromium"
+          "${pkgs.claws-mail}/bin/claws-mail"
           "${pkgs.slack}/bin/slack"
           "${pkgs.webcord}/bin/webcord"
         ];
@@ -43,6 +45,7 @@
         bind = [
           "$mod, Return, exec, ${pkgs.kitty}/bin/kitty"
           "$mod, slash, exec, ${pkgs.wofi}/bin/wofi --show drun"
+          "$mod SHIFT, Q, exec, ${pkgs.wlogout}/bin/wlogout"
 
           "$mod SHIFT, C, killactive,"
           "$mod, R, togglesplit,"
@@ -97,25 +100,29 @@
         ];
 
         workspace = [
-          "1,defaultName:term,monitor:DP-1,default:true,persistent:true"
-          "2,defaultName:web,monitor:DP-3,default:true,persistent:true"
-          "3,defaultName:work,monitor:DP-3,persistent:true"
-          "4,defaultName:firefox,monitor:DP-3,persistent:true"
+          "1,monitor:DP-1,default:true,persistent:true"
+          "2,monitor:DP-3,default:true,persistent:true"
+          "3,monitor:DP-3,persistent:true"
+          "4,monitor:DP-1,persistent:true"
           "5,monitor:DP-3,persistent:true"
           "6,monitor:DP-3,persistent:true"
           "7,monitor:DP-3,persistent:true"
           "8,monitor:DP-3,persistent:true"
           "9,monitor:DP-3,persistent:true"
-          "10,defaultName:chat,monitor:DP-2,default:true,gapsin:0,gapsout:0,border:false,persistent:true"
+          "10,monitor:DP-2,default:true,gapsin:0,gapsout:0,border:false,persistent:true"
         ];
 
         windowrulev2 = [
           # terminal in special workspace
           "workspace 1, class:(kitty)"
 
+          # browsers
           "workspace 2 silent, class:(Chromium-browser)"
           "workspace 3 silent, class:(Google-chrome)"
           "workspace 4 silent, class:(firefox)"
+
+          # email
+          "workspace 9 silent, class:(claws-mail)"
 
           # messaging apps
           "workspace 10 silent, class:(Slack)"
@@ -126,7 +133,13 @@
     };
 
     home = {
-      packages = [ pkgs.hyprpaper ];
+      packages = with pkgs; [
+        (writeShellScriptBin "screenshot" ''
+          ${grim}/bin/grim -g "$(${slurp}/bin/slurp)" - | ${swappy}/bin/swappy -f -
+        '')
+        wl-clipboard-rs
+        wlogout
+      ];
       sessionVariables = {
         NIXOS_OZONE_WL = "1";
       };
@@ -151,6 +164,7 @@
               "memory"
               "cpu"
               "clock"
+              "custom/wlogout"
               "tray"
             ];
 
@@ -169,10 +183,29 @@
               format = "CPU: {usage}% ({max_frequency}GHz)";
             };
             clock = {
-              format = "{:%H%M}";
+              format = "{:%Y-%m-%d %H%M}";
             };
 
-            "hyprland/workspaces" = { };
+            "custom/logout" = {
+              exec = "wlogout";
+              format = "logout";
+            };
+
+            "hyprland/workspaces" = {
+              format = "{icon}";
+              format-icons = {
+                "1" = "term";
+                "2" = "web";
+                "3" = "work";
+                "4" = "firefox";
+                "5" = "5";
+                "6" = "6";
+                "7" = "7";
+                "8" = "8";
+                "9" = "mail";
+                "10" = "chat";
+              };
+            };
           };
         };
       };
@@ -186,18 +219,13 @@
     };
 
     xdg = {
-      configFile."hypr/hyprpaper.conf" = {
-        enable = false;
-        text = ''
-          preload = /home/sgiath/Pictures/Wallpapers/mars.jpg
-          wallpaper = /home/sgiath/Pictures/Wallpapers/mars.jpg
-        '';
-      };
       portal = {
         enable = true;
+        config.common.default = "hyprland";
+        xdgOpenUsePortal = true;
         extraPortals = [
-          # pkgs.xdg-desktop-portal-gtk
           pkgs.xdg-desktop-portal-hyprland
+          pkgs.xdg-desktop-portal-gtk
         ];
       };
     };

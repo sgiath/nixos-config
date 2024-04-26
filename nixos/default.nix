@@ -78,6 +78,7 @@
           "wheel"
           "openrazer"
           "docker"
+          "dialout"
         ];
         hashedPassword = "$y$j9T$EBb/Mjo7nNHfmtbiP1GST0$CctYXT62gX0cMDHzRzYxlix43xC3U6kzSDNvyqZOcj4";
       };
@@ -98,9 +99,10 @@
       neovim
       git
     ];
-    variables = {
+    sessionVariables = {
       LANGUAGE = "en_US.UTF-8";
       LC_ALL = "en_US.UTF-8";
+      FLAKE = "/home/sgiath/.dotfiles";
     };
   };
 
@@ -111,7 +113,7 @@
     gnupg.agent = {
       enable = true;
       enableSSHSupport = true;
-      pinentryPackage = pkgs.pinentry-curses;
+      pinentryPackage = pkgs.pinentry-gnome3;
     };
   };
 

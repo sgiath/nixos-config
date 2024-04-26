@@ -13,7 +13,10 @@
         enable = true;
         insertNameservers =
           if config.sgiath.networking.localDNS.enable then
-            [ "192.168.1.2" ]
+            [
+              "192.168.1.2"
+              "192.168.1.3"
+            ]
           else
             [
               "8.8.8.8"

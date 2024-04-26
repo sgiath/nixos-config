@@ -63,6 +63,7 @@
       pkgs.dig
       pkgs.killall
       pkgs.inotify-tools
+      pkgs.xfce.thunar
     ];
   };
 

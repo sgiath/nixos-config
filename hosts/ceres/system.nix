@@ -21,8 +21,17 @@
     printing.enable = true;
     gaming.enable = true;
     networking.localDNS.enable = true;
-    x11.enable = true;
-    # wayland.enable = true;
+    # x11.enable = true;
+    wayland.enable = true;
+  };
+
+  services.udev = {
+    enable = true;
+    extraRules = ''
+      # DFU (Internal bootloader for STM32 and AT32 MCUs)
+      ACTION=="add", SUBSYSTEM=="usb", ATTRS{idVendor}=="2e3c", ATTRS{idProduct}=="df11", MODE="0664", GROUP="plugdev"
+      ACTION=="add", SUBSYSTEM=="usb", ATTRS{idVendor}=="0483", ATTRS{idProduct}=="df11", MODE="0664", GROUP="plugdev"
+    '';
   };
 
   # temporary, move it out

@@ -72,7 +72,6 @@
         plugin = tmuxPlugins.resurrect;
         extraConfig = ''
           set -g @resurrect-strategy-nvim 'session'
-          set -g @resurrect-dir '$HOME/.config/tmux/resurrect'
         '';
       }
       {
