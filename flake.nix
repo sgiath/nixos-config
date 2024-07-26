@@ -3,8 +3,9 @@
   description = "Default flake";
 
   inputs = {
-    nixpkgs.url = "nixpkgs/nixos-unstable";
-    nixpkgs-stable.url = "nixpkgs/nixos-23.11";
+    # nixpkgs.url = "nixpkgs/nixos-unstable";
+    nixpkgs.url = "nixpkgs/master";
+    nixpkgs-stable.url = "nixpkgs/nixos-24.05";
     # nur.url = "github:nix-community/NUR";
 
     home-manager = {
@@ -43,7 +44,6 @@
   outputs =
     {
       nixpkgs,
-      hyprland,
       home-manager,
       ...
     }@inputs:
@@ -73,7 +73,6 @@
               inherit userSettings;
             };
             modules = [
-              hyprland.nixosModules.default
               home-manager.nixosModules.home-manager
               {
                 home-manager = {

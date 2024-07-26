@@ -25,8 +25,9 @@
     audio.enable = true;
     bluetooth.enable = true;
     printing.enable = true;
-    gaming.enable = true;
-    x11.enable = true;
+    # gaming.enable = true;
+    # x11.enable = true;
+    wayland.enable = true;
   };
 
   # monitor config
@@ -50,10 +51,7 @@
   ];
 
   # Nvidia and AMD GPUs
-  hardware.opengl = {
-    enable = true;
-    driSupport = true;
-  };
+  hardware.graphics.enable = true;
   hardware.nvidia = {
     modesetting.enable = true;
     powerManagement.enable = true;

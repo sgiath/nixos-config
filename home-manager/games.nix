@@ -31,6 +31,7 @@ in
         pkgs.winetricks
 
         # Star Citizen
+        # I need ALSA for audio to work correctly
         (pkgs-citizen.star-citizen.override {
           tricks = [
             "arial"
@@ -38,6 +39,12 @@ in
             "win10"
             "sound=alsa"
           ];
+        })
+
+        # Factorio
+        (pkgs.factorio.override {
+          username = "Sgiath";
+          token = "3d566066aa44a3fc69b9ec6782cfa9";
         })
       ];
 

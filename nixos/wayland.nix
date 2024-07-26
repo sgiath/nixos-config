@@ -2,6 +2,7 @@
   config,
   lib,
   pkgs,
+  inputs,
   ...
 }:
 
@@ -11,6 +12,13 @@
   };
 
   config = lib.mkIf config.sgiath.wayland.enable {
+    programs.hyprland = {
+      enable = true;
+      xwayland.enable = true;
+      package = inputs.hyprland.packages.${pkgs.system}.hyprland;
+    };
+    environment.sessionVariables.NIXOS_OZONE_WL = "1";
+
     services.greetd = {
       enable = true;
       settings = {

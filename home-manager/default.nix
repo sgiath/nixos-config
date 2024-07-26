@@ -65,6 +65,11 @@
       pkgs.inotify-tools
       pkgs.xfce.thunar
       pkgs.fastfetch
+      pkgs.mumble
+      pkgs.obsidian
+      pkgs.asdf-vm
+      pkgs.telegram-desktop
+      pkgs.jetbrains.datagrip
     ];
   };
 

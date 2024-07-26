@@ -24,7 +24,7 @@
     loader = {
       systemd-boot = {
         enable = true;
-        configurationLimit = 100;
+        configurationLimit = 10;
       };
       efi.canTouchEfiVariables = true;
     };
@@ -122,6 +122,10 @@
     gvfs.enable = true;
     udisks2.enable = true;
     dbus.packages = [ pkgs.gcr ];
+
+    livebook = {
+      enableUserService = true;
+    };
   };
 
   # do not require password for sudo
@@ -135,11 +139,7 @@
   environment.shellAliases.sudo = "doas";
 
   # OpenGL
-  hardware.opengl = {
-    enable = true;
-    driSupport = true;
-    driSupport32Bit = true;
-  };
+  hardware.graphics.enable = true;
 
   system.stateVersion = "23.11";
 

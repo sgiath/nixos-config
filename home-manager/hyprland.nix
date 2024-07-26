@@ -2,13 +2,10 @@
   config,
   lib,
   pkgs,
-  inputs,
   ...
 }:
 
 {
-  imports = [ inputs.hyprland.homeManagerModules.default ];
-
   options.sgiath.hyprland = {
     enable = lib.mkEnableOption "hyprland";
   };
@@ -17,7 +14,11 @@
     wayland.windowManager.hyprland = {
       enable = true;
       xwayland.enable = true;
-      systemd.enable = true;
+      systemd = {
+        enable = true;
+        enableXdgAutostart = true;
+        variables = ["--all"];
+      };
 
       settings = {
         # startup
@@ -137,7 +138,8 @@
         (writeShellScriptBin "screenshot" ''
           ${grim}/bin/grim -g "$(${slurp}/bin/slurp)" - | ${swappy}/bin/swappy -f -
         '')
-        wl-clipboard-rs
+        wl-clipboard
+        wl-clipboard-x11
         wlogout
       ];
       sessionVariables = {
