@@ -48,7 +48,7 @@
 
     extraConfig = {
       init.defaultBranch = "master";
-      safe.directory = "/home/${userSettings.username}/.dotfiles";
+      safe.directory = "/home/${userSettings.username}/.dotfiles/";
 
       user = {
         name = userSettings.username;

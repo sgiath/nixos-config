@@ -1,6 +1,6 @@
 local M = {}
 
-M.ui = {
+M.base64 = {
   theme = "yoru",
 }
 

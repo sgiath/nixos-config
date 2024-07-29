@@ -17,7 +17,7 @@
       systemd = {
         enable = true;
         enableXdgAutostart = true;
-        variables = ["--all"];
+        variables = [ "--all" ];
       };
 
       settings = {
@@ -31,10 +31,16 @@
         ];
 
         monitor = [
+          # Desktop
           "DP-1,highres,0x2560,1"
           "DP-3,highres,0x1120,1"
           "DP-2,highres,3440x0,1,transform,1"
+
+          # Notebook
+          "eDP-1,2560x1600@240,0x0,1"
         ];
+
+        input.touchpad.natural_scroll = true;
 
         master = {
           mfact = 0.66;
@@ -133,7 +139,21 @@
       };
     };
 
+    gtk = pkgs.lib.mkForce {
+      enable = true;
+      theme = {
+        package = pkgs.flat-remix-gtk;
+        name = "Flat-Remix-GTK-Grey-Darkest";
+      };
+      iconTheme = {
+        package = pkgs.adwaita-icon-theme;
+        name = "Adwaita";
+      };
+    };
+
     home = {
+      pointerCursor.gtk.enable = true;
+
       packages = with pkgs; [
         (writeShellScriptBin "screenshot" ''
           ${grim}/bin/grim -g "$(${slurp}/bin/slurp)" - | ${swappy}/bin/swappy -f -
@@ -166,7 +186,6 @@
               "memory"
               "cpu"
               "clock"
-              "custom/wlogout"
               "tray"
             ];
 
@@ -187,26 +206,34 @@
             clock = {
               format = "{:%Y-%m-%d %H%M}";
             };
+          };
+          notebookBar = {
+            height = 28;
+            spacing = 12;
+            output = [
+              "eDP-1"
+            ];
+            modules-left = [ "hyprland/workspaces" ];
+            modules-right = [
+              "network"
+              "memory"
+              "cpu"
+              "clock"
+              "tray"
+            ];
 
-            "custom/logout" = {
-              exec = "wlogout";
-              format = "logout";
+            network = {
+              interface = "wlp3s0";
+              format = "{ipaddr}: {bandwidthUpBytes} / {bandwidthDownBytes}";
             };
-
-            "hyprland/workspaces" = {
-              # format = "{icon}";
-              # format-icons = {
-              #   "1" = "term";
-              #   "2" = "web";
-              #   "3" = "work";
-              #   "4" = "firefox";
-              #   "5" = "5";
-              #   "6" = "6";
-              #   "7" = "7";
-              #   "8" = "8";
-              #   "9" = "mail";
-              #   "10" = "chat";
-              # };
+            memory = {
+              format = "RAM: {used} GiB / {total} GiB";
+            };
+            cpu = {
+              format = "CPU: {usage}% ({max_frequency}GHz)";
+            };
+            clock = {
+              format = "{:%Y-%m-%d %H%M}";
             };
           };
         };

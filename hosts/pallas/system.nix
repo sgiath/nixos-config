@@ -12,36 +12,17 @@
 
     # modules
     ../../nixos
-    ../../nixos/x11.nix
-    ../../nixos/sound.nix
-    ../../nixos/printing.nix
-    ../../nixos/gaming.nix
-    ../../nixos/bluetooth.nix
   ];
 
   networking.hostName = "pallas";
 
   sgiath = {
+    nvidia-gpu.enable = true;
     audio.enable = true;
     bluetooth.enable = true;
     printing.enable = true;
-    # gaming.enable = true;
-    # x11.enable = true;
+    gaming.enable = true;
     wayland.enable = true;
-  };
-
-  # monitor config
-  services.xserver = {
-    videoDrivers = [
-      "amdgpu"
-      "nvidia"
-    ];
-    resolutions = [
-      {
-        x = 2560;
-        y = 1440;
-      }
-    ];
   };
 
   # razer notebook specific packages
@@ -50,22 +31,6 @@
     openrazer-daemon
   ];
 
-  # Nvidia and AMD GPUs
-  hardware.graphics.enable = true;
-  hardware.nvidia = {
-    modesetting.enable = true;
-    powerManagement.enable = true;
-    powerManagement.finegrained = false;
-    open = false;
-    nvidiaSettings = true;
-    package = config.boot.kernelPackages.nvidiaPackages.beta;
-    prime = {
-      sync.enable = true;
-      amdgpuBusId = "PCI:101:0:0";
-      nvidiaBusId = "PCI:1:0:0";
-    };
-  };
-
   # Razer
   hardware.openrazer = {
     enable = true;
@@ -73,7 +38,5 @@
   };
 
   # Docker
-  virtualisation.docker = {
-    enable = true;
-  };
+  virtualisation.docker.enable = true;
 }

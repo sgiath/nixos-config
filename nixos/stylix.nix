@@ -18,6 +18,12 @@ in
 
     base16Scheme = ./../theme.yaml;
 
+    cursor = {
+      package = pkgs.bibata-cursors;
+      name = "Bibata-Modern-Classic";
+      size = 24;
+    };
+
     fonts = {
       monospace = font;
       serif = font;

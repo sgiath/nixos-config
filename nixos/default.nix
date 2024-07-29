@@ -8,6 +8,7 @@
 {
   imports = [
     ./amd-gpu.nix
+    ./nvidia-gpu.nix
     ./bluetooth.nix
     ./gaming.nix
     ./stylix.nix
@@ -130,7 +131,11 @@
 
   # do not require password for sudo
   security = {
-    sudo.enable = false;
+    sudo = {
+      enable = true;
+      wheelNeedsPassword = false;
+    };
+
     doas = {
       enable = true;
       wheelNeedsPassword = false;

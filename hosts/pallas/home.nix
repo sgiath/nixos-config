@@ -1,3 +1,5 @@
+{ pkgs, ... }:
+
 {
   imports = [
     # default values
@@ -5,6 +7,10 @@
 
     # CrazyEgg
     ../../work
+  ];
+
+  home.packages = [
+    pkgs.lshw
   ];
 
   sgiath = {
@@ -22,6 +28,8 @@
 
   stylix.fonts.sizes = {
     applications = 12;
-    terminal = 14;
+    desktop = 12;
+    popups = 12;
+    terminal = 12;
   };
 }

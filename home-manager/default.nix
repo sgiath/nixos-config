@@ -18,12 +18,6 @@
     # Wayland
     ./hyprland.nix
     ./kitty.nix
-
-    # X11 apps
-    ./xmonad.nix
-    ./polybar.nix
-    ./rofi.nix
-    ./wezterm.nix
   ];
 
   home = {
@@ -37,14 +31,14 @@
 
       (pkgs.writeShellScriptBin "update" ''
         pushd ~/.dotfiles
-        doas nixos-rebuild switch --flake .
+        nixos-rebuild switch --use-remote-sudo --flake .
         popd
       '')
 
       (pkgs.writeShellScriptBin "upgrade" ''
         pushd ~/.dotfiles
         nix flake update
-        doas nixos-rebuild switch --flake .
+        nixos-rebuild switch --use-remote-sudo --flake .
         popd
       '')
 
@@ -65,11 +59,8 @@
       pkgs.inotify-tools
       pkgs.xfce.thunar
       pkgs.fastfetch
-      pkgs.mumble
       pkgs.obsidian
-      pkgs.asdf-vm
       pkgs.telegram-desktop
-      pkgs.jetbrains.datagrip
     ];
   };
 

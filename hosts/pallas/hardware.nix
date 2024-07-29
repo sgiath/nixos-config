@@ -8,17 +8,24 @@
 {
   imports = [ (modulesPath + "/installer/scan/not-detected.nix") ];
 
-  boot.initrd.availableKernelModules = [
-    "nvme"
-    "xhci_pci"
-    "thunderbolt"
-    "usbhid"
-    "usb_storage"
-    "sd_mod"
-  ];
-  boot.initrd.kernelModules = [ ];
-  boot.kernelModules = [ "kvm-amd" ];
-  boot.extraModulePackages = [ ];
+  hardware.nvidia.prime = {
+    sync.enable = true;
+    amdgpuBusId = "PCI:101:0:0";
+    nvidiaBusId = "PCI:1:0:0";
+  };
+
+  boot = {
+    initrd.availableKernelModules = [
+      "nvme"
+      "xhci_pci"
+      "thunderbolt"
+      "usbhid"
+      "usb_storage"
+      "sd_mod"
+    ];
+    extraModulePackages = [ ];
+    kernelModules = [ "kvm-amd" ];
+  };
 
   services.nfs.server.enable = true;
 
@@ -33,10 +40,10 @@
       fsType = "vfat";
     };
 
-    "/nas/homes" = {
-      device = "192.168.1.4:/volume1/homes";
-      fsType = "nfs";
-    };
+    # "/nas/homes" = {
+    #   device = "192.168.1.4:/volume1/homes";
+    #   fsType = "nfs";
+    # };
   };
 
   swapDevices = [ { device = "/dev/disk/by-uuid/72100ef2-5b3d-4210-82c8-30de00b05fc0"; } ];
