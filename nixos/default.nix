@@ -150,7 +150,7 @@
       "nix-command"
       "flakes"
     ];
-    package = pkgs.nixVersions.nix_2_21;
+    package = pkgs.nixVersions.nix;
     gc = {
       automatic = true;
       dates = "weekly";
