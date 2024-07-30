@@ -36,8 +36,6 @@
         git commit --signoff -m "changes"
 
         nixos-rebuild switch --use-remote-sudo --flake .
-
-        nix-collect-garbage
         popd
       '')
 
@@ -52,8 +50,6 @@
         git commit --signoff -m "flake update"
 
         nixos-rebuild switch --use-remote-sudo --flake .
-
-        nix-collect-garbage
         popd
       '')
 

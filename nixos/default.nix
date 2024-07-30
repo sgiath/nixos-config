@@ -153,7 +153,7 @@
     package = pkgs.nixVersions.nix_2_23;
     gc = {
       automatic = true;
-      dates = "weekly";
+      dates = "daily";
     };
   };
 }
