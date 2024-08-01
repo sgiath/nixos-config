@@ -72,6 +72,7 @@
       pkgs.fastfetch
       pkgs.obsidian
       pkgs.telegram-desktop
+      pkgs.signal-desktop-beta
     ];
   };
 
