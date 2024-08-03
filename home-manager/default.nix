@@ -34,6 +34,7 @@
 
         git add --all
         git commit --signoff -m "changes"
+        git push
 
         nixos-rebuild switch --use-remote-sudo --flake .
         popd
@@ -48,6 +49,7 @@
         nix flake update
         git add --all
         git commit --signoff -m "flake update"
+        git push
 
         nixos-rebuild switch --use-remote-sudo --flake .
         popd
