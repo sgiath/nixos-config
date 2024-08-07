@@ -150,9 +150,9 @@
       "nix-command"
       "flakes"
     ];
-    package = pkgs.nixVersions.nix_2_23;
+    # package = pkgs.nixVersions.nix_2_23;
     gc = {
-      automatic = true;
+      automatic = false;
       dates = "daily";
     };
   };
