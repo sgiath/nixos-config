@@ -13,7 +13,7 @@ in
 
     polarity = "dark";
 
-    image = ./../wallpaper.jpg;
+    image = ./../wallpapers/girl.png;
     imageScalingMode = "fit";
 
     base16Scheme = ./../theme.yaml;
