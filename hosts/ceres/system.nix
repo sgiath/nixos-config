@@ -18,7 +18,7 @@
     bluetooth.enable = true;
     printing.enable = true;
     gaming.enable = true;
-    networking.localDNS.enable = true;
+    networking.localDNS.enable = false;
     wayland.enable = true;
   };
 
