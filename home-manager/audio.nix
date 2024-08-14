@@ -12,6 +12,6 @@
 
   config = lib.mkIf config.sgiath.audio.enable {
     home.packages = [ pkgs.qpwgraph ];
-    services.easyeffects.enable = false;
+    services.easyeffects.enable = true;
   };
 }
