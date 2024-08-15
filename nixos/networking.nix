@@ -6,23 +6,18 @@
   };
 
   config = {
-
     networking = {
-      resolvconf.enable = false;
-      networkmanager = {
-        enable = true;
-        insertNameservers =
-          if config.sgiath.networking.localDNS.enable then
-            [
-              "192.168.1.2"
-              "192.168.1.3"
-            ]
-          else
-            [
-              "8.8.8.8"
-              "8.8.4.4"
-            ];
+      hosts = {
+        "192.168.1.2" = [ "sgiath.dev" "dns.sgiath" ];
+        "192.168.1.3" = [ "sgiath.dev" "dns.sgiath" ];
+        "192.168.1.4" = [ "nas.sgiath" ];
+        "192.168.1.5" = [ "nas.sgiath" ];
+        "192.168.1.150" = [ "mix.sgiath" ];
       };
+      nameservers = [
+        "192.168.1.2"
+      ];
+      networkmanager.enable = true;
       firewall.enable = false;
     };
   };
