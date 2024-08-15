@@ -14,7 +14,7 @@
     lfs.enable = true;
 
     delta = {
-      enable = true;
+      enable = false;
     };
 
     aliases = {
