@@ -1,5 +1,13 @@
-{ pkgs, userSettings, ... }:
+{
+  pkgs,
+  userSettings,
+  inputs,
+  ...
+}:
 
+let
+  pkgs-stable = import inputs.nixpkgs-stable { system = pkgs.system; };
+in
 {
   home.file = {
     ".git/commit-template".text = ''
@@ -12,7 +20,10 @@
   programs.git = {
     enable = true;
     lfs.enable = true;
-    delta.enable = false;
+    delta = {
+      enable = false;
+      package = pkgs-stable.delta;
+    };
 
     aliases = {
       d = "diff";
