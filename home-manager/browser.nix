@@ -14,6 +14,7 @@
     home.packages = with pkgs; [
       ungoogled-chromium
       firefox
+      ladybird
     ];
 
     xdg.configFile."chromium-flags.conf".text = ''
