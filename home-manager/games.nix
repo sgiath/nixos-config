@@ -27,6 +27,7 @@ in
             jdk8
           ];
         })
+        pkgs.ckan
 
         pkgs.winetricks
 
