@@ -76,6 +76,7 @@
       pkgs.telegram-desktop
       pkgs.signal-desktop-beta
       pkgs.obs-studio
+      pkgs.android-udev-rules
     ];
   };
 
