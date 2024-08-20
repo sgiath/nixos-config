@@ -79,7 +79,6 @@
       # privacy
       pkgs.signal-desktop-beta
       pkgs.python312Packages.nomadnet
-      pkgs.python312Packages.sbapp
     ];
   };
 
