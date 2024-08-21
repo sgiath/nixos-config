@@ -1,7 +1,0 @@
-keys:
-  - &sgiath 90D8064DBB63C072B60792B0FF403922638C899B
-creation_rules:
-  - path_regex: secrets.yaml$
-    key_groups:
-    - pgp:
-      - *sgiath

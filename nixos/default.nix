@@ -16,7 +16,6 @@
     ./wayland.nix
     ./printing.nix
     ./networking.nix
-    ./sops.nix
   ];
 
   # Use the systemd-boot EFI boot loader.

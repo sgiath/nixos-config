@@ -17,11 +17,6 @@
       inputs.nixpkgs.follows = "nixpkgs";
     };
 
-    sops-nix = {
-      url = "github:Mic92/sops-nix";
-      inputs.nixpkgs.follows = "nixpkgs";
-    };
-
     nix-bitcoin = {
       url = "github:fort-nix/nix-bitcoin";
       inputs.nixpkgs.follows = "nixpkgs";
@@ -96,9 +91,6 @@
 
               # configuration of the selected system
               (./. + "/hosts/${host}/system.nix")
-
-              # secrets
-              sops-nix.nixosModules.sops
             ];
           }
         )
