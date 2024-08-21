@@ -9,12 +9,18 @@ let
   pkgs-stable = import inputs.nixpkgs-stable { system = pkgs.system; };
 in
 {
-  home.file = {
-    ".git/commit-template".text = ''
-      type:
+  home = {
+    packages = [
+      pkgs.git-crypt
+    ];
 
-      # feat fix docs style refactor perf build test none
-    '';
+    file = {
+      ".git/commit-template".text = ''
+        type:
+
+        # feat fix docs style refactor perf build test none
+      '';
+    };
   };
 
   programs.git = {
