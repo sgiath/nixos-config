@@ -45,6 +45,7 @@
     {
       nixpkgs,
       home-manager,
+      disko,
       ...
     }@inputs:
     let
@@ -76,6 +77,7 @@
               inherit secrets;
             };
             modules = [
+              disko.nixosModules.disko
               # home manager
               home-manager.nixosModules.home-manager
               {
