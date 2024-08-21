@@ -32,13 +32,13 @@ in
     ];
 
     file = {
-      ".docker/config.json".text = pkgs.formats.json.generate {
+      ".docker/config.json".text = (pkgs.formats.json {
         credHelpers = {
           "public.ecr.aws" = "ecr-login";
           "173509387151.dkr.ecr.us-east-1.amazonaws.com" = "ecr-login";
           "173509387151.dkr.ecr.us-west-2.amazonaws.com" = "ecr-login";
         };
-      };
+      }).generate;
 
       ".kube/config".text = ''
         apiVersion: v1
