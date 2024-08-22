@@ -1,10 +1,23 @@
 { lib, pkgs, ... }:
 
 {
-  programs.eza = {
-    enable = true;
-    git = true;
-    icons = true;
+  programs = {
+    eza = {
+      enable = true;
+      git = true;
+      icons = true;
+    };
+    bat.enable = true;
+    broot = {
+      enable = true;
+      enableZshIntegration = true;
+    };
+    btop.enable = true;
+    command-not-found.enable = true;
+    fd.enable = true;
+    fzf.enable = true;
+    lsd.enable = true;
+    mcfly.enable = true;
   };
 
   programs.zsh = {

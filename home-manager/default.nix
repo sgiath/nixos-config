@@ -71,10 +71,8 @@
       killall
       inotify-tools
       xfce.thunar
-      fastfetch
       obsidian
       telegram-desktop
-      obs-studio
 
       # privacy
       signal-desktop-beta
@@ -84,9 +82,9 @@
 
   programs = {
     home-manager.enable = true;
-    bat.enable = true;
-    btop.enable = true;
-    command-not-found.enable = true;
+    fastfetch.enable = true;
+    hexchat.enable = true;
+    obs-studio.enable = true;
 
     direnv = {
       enable = true;
@@ -103,6 +101,6 @@
   };
 
   services = {
-    pass-secret-service.enable = true;
+    pass-secret-service.enable = false;
   };
 }
