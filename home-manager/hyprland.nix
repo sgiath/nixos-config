@@ -25,7 +25,8 @@
         exec-once = [
           "${pkgs.kitty}/bin/kitty"
           # "${pkgs.ungoogled-chromium}/bin/chromium"
-          "${pkgs.claws-mail}/bin/proton-mail"
+          "${pkgs.freetube}/bin/freetube"
+          "${pkgs.protonmail-desktop}/bin/proton-mail"
           "${pkgs.slack}/bin/slack"
           "${pkgs.webcord}/bin/webcord"
           "${pkgs.signal-desktop-beta}/bin/signal-desktop-beta"
@@ -130,6 +131,7 @@
           "workspace 2 silent, class:(chromium-browser)"
           "workspace 3 silent, class:(google-chrome)"
           "workspace 4 silent, class:(firefox)"
+          "workspace 5 silent, class:(FreeTube)"
 
           # email
           "workspace 9 silent, class:(claws-mail)"
