@@ -28,6 +28,8 @@
           { id = "eimadpbcbfnmbkopoojfekhnkhdbieeh"; }
           # proton pass
           { id = "ghmbeldphafepmbegfdlkpapadhbakde"; }
+          # Browserpass
+          { id = "naepdomgkenhinolocfifgehidddafch"; }
           # social focus
           { id = "abocjojdmemdpiffeadpdnicnlhcndcg"; }
           # uBlock origin
@@ -39,6 +41,10 @@
 
           "--force-dark-mode"
 
+          # Wayland
+          "--ozone-platform-hint=auto"
+
+          # Vulkan
           "--vulkan"
           "--use-vulkan"
           "--webview-enable-vulkan"
@@ -62,14 +68,6 @@
       };
 
       firefox = {
-        enable = true;
-      };
-
-      librewolf = {
-        enable = false;
-      };
-
-      qutebrowser = {
         enable = true;
       };
     };
