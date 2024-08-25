@@ -73,6 +73,7 @@
       xfce.thunar
       obsidian
       telegram-desktop
+      davinci-resolve-studio
 
       # privacy
       signal-desktop-beta

@@ -28,21 +28,14 @@
           { id = "eimadpbcbfnmbkopoojfekhnkhdbieeh"; }
           # proton pass
           { id = "ghmbeldphafepmbegfdlkpapadhbakde"; }
-          # Browserpass
-          { id = "naepdomgkenhinolocfifgehidddafch"; }
           # social focus
           { id = "abocjojdmemdpiffeadpdnicnlhcndcg"; }
-          # uBlock origin
-          { id = "cjpalhdlnbpafiamejdnhcphjbkeiagm"; }
         ];
         dictionaries = [ pkgs.hunspellDictsChromium.en_US ];
         commandLineArgs = [
           "--enable-features=WebUIDarkMode,DisableQRGenerator"
 
           "--force-dark-mode"
-
-          # Wayland
-          "--ozone-platform-hint=auto"
 
           # Vulkan
           "--vulkan"
