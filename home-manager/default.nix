@@ -14,6 +14,7 @@
     ./email_client.nix
     ./games.nix
     ./ollama.nix
+    ./davinci.nix
 
     # Wayland
     ./hyprland.nix
@@ -73,7 +74,6 @@
       xfce.thunar
       obsidian
       telegram-desktop
-      davinci-resolve-studio
 
       # privacy
       signal-desktop-beta

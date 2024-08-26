@@ -23,6 +23,7 @@
     ollama.enable = false;
     hyprland.enable = true;
     kitty.enable = true;
+    davinci.enable = true;
   };
 
   stylix.fonts.sizes = {
