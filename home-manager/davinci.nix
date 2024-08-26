@@ -13,6 +13,7 @@
   config = lib.mkIf config.sgiath.davinci.enable {
     home.packages = with pkgs; [
       davinci-resolve-studio
+      vlc
 
       # audio convertor
       (writeShellScriptBin "convert-audio" ''
