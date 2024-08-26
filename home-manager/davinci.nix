@@ -17,7 +17,7 @@
       # audio convertor
       (writeShellScriptBin "convert-audio" ''
         for i in *.mp4; do
-          ${ffmpeg}/bin/ffmpeg -i "$i" -c:v copy -c:a pcm_s321e "''${i%.*}.mov"
+          ${ffmpeg}/bin/ffmpeg -i "$i" -c:v copy -c:a pcm_s32le "''${i%.*}.mov"
         done
       '')
     ];
