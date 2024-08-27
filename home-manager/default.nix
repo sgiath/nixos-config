@@ -1,4 +1,5 @@
 {
+  lib,
   pkgs,
   userSettings,
   ...
@@ -27,7 +28,7 @@
 
   home = {
     username = userSettings.username;
-    homeDirectory = "/home/${userSettings.username}";
+    homeDirectory = lib.mkForce "/home/${userSettings.username}";
 
     stateVersion = "23.11";
 
