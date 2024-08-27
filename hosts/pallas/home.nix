@@ -15,7 +15,6 @@
 
   sgiath = {
     audio.enable = true;
-    browser.enable = true;
     claws.enable = true;
     hyprland.enable = true;
     kitty.enable = true;

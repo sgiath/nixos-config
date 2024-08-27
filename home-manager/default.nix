@@ -13,7 +13,6 @@
     ./ssh.nix
     ./nvim.nix
     ./git.nix
-    ./browser.nix
     ./email_client.nix
     ./games.nix
     ./ollama.nix

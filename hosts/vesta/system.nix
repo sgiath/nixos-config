@@ -12,6 +12,7 @@
     nvidia-gpu.enable = false;
     audio.enable = false;
     bluetooth.enable = false;
+    browser.enable = false;
     docker.enable = true;
     gaming.enable = false;
     networking.localDNS.enable = false;

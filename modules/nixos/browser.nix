@@ -12,14 +12,6 @@
 
   config = lib.mkIf config.sgiath.browser.enable {
     programs = {
-      browserpass = {
-        enable = true;
-        browsers = [
-          "chromium"
-          "firefox"
-        ];
-      };
-
       chromium = {
         enable = true;
         package = pkgs.ungoogled-chromium;

@@ -17,7 +17,6 @@
 
   sgiath = {
     audio.enable = true;
-    browser.enable = true;
     claws.enable = true;
     games.enable = true;
     ollama.enable = false;
