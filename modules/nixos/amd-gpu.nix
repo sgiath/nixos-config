@@ -4,13 +4,15 @@
   pkgs,
   ...
 }:
-
+let
+  cfg = config.sgiath.amd-gpu;
+in 
 {
   options.sgiath.amd-gpu = {
     enable = lib.mkEnableOption "AMD GPU";
   };
 
-  config = lib.mkIf config.sgiath.amd-gpu.enable {
+  config = lib.mkIf cfg.enable {
     boot = {
       initrd.kernelModules = [ "amdgpu" ];
       kernelModules = [ "kvm-amd" ];
