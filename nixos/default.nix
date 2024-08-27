@@ -8,6 +8,7 @@
 
 {
   imports = [
+    outputs.nixosModules
     ./nvidia-gpu.nix
     ./bluetooth.nix
     ./gaming.nix
