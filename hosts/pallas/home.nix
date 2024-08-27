@@ -2,10 +2,6 @@
 
 {
   imports = [
-    # default values
-    ../../home-manager
-
-    # CrazyEgg
     ../../work
   ];
 
