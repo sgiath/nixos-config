@@ -13,7 +13,6 @@
     # enable switch
     ./amd-gpu.nix
     ./audio.nix
-    ./bitcoin.nix
     ./bluetooth.nix
     ./gaming.nix
     ./nvidia-gpu.nix
