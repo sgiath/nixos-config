@@ -57,6 +57,7 @@
         {
           nixosConfigurations = {
             ceres = self.nixos-flake.lib.mkLinuxSystem {
+              nixpkgs.hostPlatform = "x86_64-linux";
               imports = [
                 ./hosts/ceres/system.nix
 
@@ -69,16 +70,6 @@
               ];
             };
           };
-        };
-
-      perSystem =
-        { pkgs, self', ... }:
-        {
-          packages.default = self'.packages.activate;
-          devShells.default = pkgs.mkShell {
-            buildInputs = [ pkgs.nixpkgs-fmt ];
-          };
-          formatter = pkgs.nixpkgs-fmt;
         };
     };
 }
