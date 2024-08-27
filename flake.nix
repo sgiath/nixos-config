@@ -92,7 +92,7 @@
             };
             modules = [
               inputs.disko.nixosModules.disko
-              outputs.nixosModules.sgiath
+              outputs.nixosModules
 
               home-manager.nixosModules.home-manager
               {
@@ -103,7 +103,7 @@
                     inherit inputs outputs;
                     inherit userSettings secrets;
                   };
-                  sharedModules = [ outputs.homeManagerModules.sgiath ];
+                  sharedModules = [ outputs.homeManagerModules ];
 
                   users.${userSettings.username} = import (./. + "/hosts/${host}/home.nix");
                 };
