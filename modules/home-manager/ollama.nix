@@ -6,11 +6,11 @@
 }:
 
 {
-  options.sgiath.ollama = {
+  options.services.ollama = {
     enable = lib.mkEnableOption "ollama";
   };
 
-  config = lib.mkIf config.sgiath.ollama.enable {
+  config = lib.mkIf config.services.ollama.enable {
     systemd.user.services.ollama = {
       Unit = {
         Description = "Ollama Service";

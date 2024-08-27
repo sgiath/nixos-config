@@ -16,22 +16,28 @@
   ];
 
   programs = {
+    chromium.enable = true;
+    davinci.enable = true;
+    firefox.enable = true;
     git.enable = true;
     gpg.enable = true;
+    hyprland.enable = true;
+    kitty.enable = true;
+    nvim.enable = true;
+    ssh.enable = true;
+    starship.enable = true;
+    tmux.enable = true;
+    waybar.enable = true;
+  };
+
+  services = {
+    ollama.enable = false;
   };
 
   sgiath = {
     audio.enable = true;
-    browser.enable = true;
-    davinci.enable = true;
     email_client.enable = true;
     games.enable = true;
-    hyprland.enable = true;
-    kitty.enable = true;
-
-    waybar.enable = true;
-
-    ollama.enable = false;
   };
 
   stylix.fonts.sizes = {

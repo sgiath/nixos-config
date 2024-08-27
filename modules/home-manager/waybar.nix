@@ -5,13 +5,8 @@
 }:
 
 {
-  options.sgiath.waybar = {
-    enable = lib.mkEnableOption "waybar";
-  };
-
-  config = lib.mkIf config.sgiath.waybar.enable {
+  config = lib.mkIf config.programs.waybar.enable {
     programs.waybar = {
-      enable = true;
       systemd.enable = true;
       settings = {
         mainBar = {

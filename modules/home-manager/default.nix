@@ -1,22 +1,19 @@
 {
   imports = [
     ./audio.nix
-    ./browser.nix
+    ./chromium.nix
     ./davinci.nix
     ./email_client.nix
     ./games.nix
     ./git.nix
     ./gnupg.nix
     ./hyprland.nix
-    ./kitty.nix
-    ./ollama.nix
-    ./waybar.nix
-
-    # always enabled
     ./nvim.nix
+    ./ollama.nix
     ./ssh.nix
     ./starship.nix
     ./tmux.nix
+    ./waybar.nix
     ./zsh.nix
   ];
 }

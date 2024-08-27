@@ -6,11 +6,11 @@
 }:
 
 {
-  options.sgiath.davinci = {
+  options.programs.davinci = {
     enable = lib.mkEnableOption "DaVinci Resolve";
   };
 
-  config = lib.mkIf config.sgiath.davinci.enable {
+  config = lib.mkIf config.programs.davinci.enable {
     home.packages = with pkgs; [
       davinci-resolve-studio
       vlc

@@ -1,49 +1,56 @@
-{ config, pkgs, ... }:
+{
+  config,
+  lib,
+  pkgs,
+  ...
+}:
 
 {
-  home.sessionVariables = {
-    EDITOR = "nvim";
-    VISUAL = "nvim";
-  };
+  config = lib.mkIf config.programs.nvim.enable {
+    home.sessionVariables = {
+      EDITOR = "nvim";
+      VISUAL = "nvim";
+    };
 
-  # nixd LSP
-  home.packages = with pkgs; [
-    # base deps
-    gcc
-    gnumake
-    neovim
+    # nixd LSP
+    home.packages = with pkgs; [
+      # base deps
+      gcc
+      gnumake
+      neovim
 
-    # Nix
-    nixd
-    nixfmt-rfc-style
+      # Nix
+      nixd
+      nixfmt-rfc-style
 
-    # Lua
-    lua-language-server
-    stylua
+      # Lua
+      lua-language-server
+      stylua
 
-    # Markdown formatter
-    # https://github.com/executablebooks/mdformat
-    python312Packages.mdformat
-    python312Packages.mdformat-gfm
-    python312Packages.mdformat-frontmatter
-    python312Packages.mdformat-footnote
+      # Markdown formatter
+      # https://github.com/executablebooks/mdformat
+      python312Packages.mdformat
+      python312Packages.mdformat-gfm
+      python312Packages.mdformat-frontmatter
+      python312Packages.mdformat-footnote
 
-    # shell
-    shfmt
+      # shell
+      shfmt
 
-    # general formatter
-    codespell
-  ];
+      # general formatter
+      codespell
+    ];
 
-  # ripgrep
-  programs.ripgrep.enable = true;
+    # ripgrep
+    programs.ripgrep.enable = true;
 
-  # config files
-  xdg = {
-    enable = true;
-    configFile.nvim = {
-      source = config.lib.file.mkOutOfStoreSymlink ./nvim;
-      recursive = true;
+    # config files
+    xdg = {
+      enable = true;
+      configFile.nvim = {
+        source = config.lib.file.mkOutOfStoreSymlink ./nvim;
+        recursive = true;
+      };
     };
   };
 }

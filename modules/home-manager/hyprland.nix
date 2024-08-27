@@ -6,11 +6,11 @@
 }:
 
 {
-  options.sgiath.hyprland = {
+  options.programs.hyprland = {
     enable = lib.mkEnableOption "hyprland";
   };
 
-  config = lib.mkIf config.sgiath.hyprland.enable {
+  config = lib.mkIf config.programs.hyprland.enable {
     wayland.windowManager.hyprland = {
       enable = true;
       xwayland.enable = true;
