@@ -66,6 +66,10 @@
       secrets = builtins.fromJSON (builtins.readFile ./secrets.json);
     in
     {
+      packages = {
+        sbapp = pkgs.callPackage ./pkgs/sbapp.nix { };
+      };
+
       nixosConfigurations =
         nixpkgs.lib.genAttrs hosts (
           host:
