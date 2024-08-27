@@ -8,7 +8,6 @@
 
 {
   imports = [
-    ./amd-gpu.nix
     ./nvidia-gpu.nix
     ./bluetooth.nix
     ./gaming.nix
