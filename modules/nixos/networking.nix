@@ -15,7 +15,7 @@
         "192.168.1.150" = [ "mix.sgiath" ];
       };
       nameservers =
-        if config.sgiath.networking.localDNS then
+        if config.sgiath.networking.localDNS.enable then
           [ "192.168.1.2" ]
         else
           [ "8.8.8.8" "8.8.4.4" ];
