@@ -8,7 +8,7 @@
     ./security.nix
     ./stylix.nix
     ./time_lang.nix
-    ./udev_rules.nix
+    ./udev.nix
 
     # enable switch
     ./amd-gpu.nix
