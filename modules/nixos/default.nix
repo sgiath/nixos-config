@@ -14,7 +14,6 @@
     ./amd-gpu.nix
     ./audio.nix
     ./bluetooth.nix
-    ./browser.nix
     ./docker.nix
     ./gaming.nix
     ./nvidia-gpu.nix

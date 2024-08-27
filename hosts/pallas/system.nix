@@ -7,7 +7,6 @@
     amd-gpu.enable = false;
     nvidia-gpu.enable = true;
     audio.enable = true;
-    browser.enable = true;
     bluetooth.enable = true;
     docker.enable = true;
     gaming.enable = true;
