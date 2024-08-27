@@ -21,10 +21,12 @@
     davinci.enable = true;
     email_client.enable = true;
     games.enable = true;
-
-    ollama.enable = false;
     hyprland.enable = true;
     kitty.enable = true;
+
+    waybar.enable = true;
+
+    ollama.enable = false;
   };
 
   stylix.fonts.sizes = {

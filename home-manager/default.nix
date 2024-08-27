@@ -5,20 +5,6 @@
 }:
 
 {
-  imports = [
-    ./gnupg.nix
-    ./starship.nix
-    ./zsh.nix
-    ./tmux.nix
-    ./ssh.nix
-    ./nvim.nix
-    ./ollama.nix
-
-    # Wayland
-    ./hyprland.nix
-    ./kitty.nix
-  ];
-
   home = {
     username = userSettings.username;
     homeDirectory = "/home/${userSettings.username}";
@@ -99,10 +85,6 @@
     };
 
     freetube.enable = true;
-  };
-
-  services = {
-    pass-secret-service.enable = false;
   };
 
   systemd.user.startServices = "sd-switch";
