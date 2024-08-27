@@ -20,7 +20,7 @@
     ./printing.nix
     ./razer.nix
     ./wayland.nix
-  ];
 
-  options = {};
+    ./crazyegg
+  ];
 }

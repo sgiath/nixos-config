@@ -80,8 +80,7 @@
       lib = import ./lib { inherit (nixpkgs) lib; };
 
       nixosModules.default = self.nixosModules.sgiath;
-      nixosModules.sgiath = import ./modules/nixos;
-      nixosModules.crazyegg = import ./modules/nixos/crazyegg;
+      nixosModules.sgiath.imports = [ ./modules/nixos ];
 
       homeManagerModules.default = self.homeManagerModules.sgiath;
       homeManagerModules.sgiath.imports = [ ./modules/home-manager ];
@@ -97,9 +96,7 @@
             };
             modules = [
               inputs.disko.nixosModules.disko
-
               outputs.nixosModules.sgiath
-              outputs.nixosModules.crazyegg
 
               home-manager.nixosModules.home-manager
               {
