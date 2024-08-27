@@ -20,8 +20,5 @@
     ./printing.nix
     ./razer.nix
     ./wayland.nix
-
-    # CrazyEgg
-    ./crazyegg
   ];
 }

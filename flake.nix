@@ -77,8 +77,14 @@
       packages = import ./pkgs pkgs;
       formatter = pkgs.nixpkgs-fmt;
       overlays = import ./overlays { inherit inputs; };
-      nixosModules = import ./modules/nixos;
-      homeManagerModules = import ./modules/home-manager;
+      lib = import ./lib { inherit (nixpkgs) lib; };
+
+      nixosModules.default = self.nixosModules.sgiath;
+      nixosModules.sgiath.imports = [ ./modules/nixos ];
+      nixosModules.crazyegg.imports = [ ./modules/nixos/crazyegg ];
+
+      homeManagerModules.default = self.homeManagerModules.sgiath;
+      homeManagerModules.sgiath.imports = [ ./modules/home-manager ];
 
       nixosConfigurations =
         nixpkgs.lib.genAttrs hosts (
@@ -91,7 +97,9 @@
             };
             modules = [
               inputs.disko.nixosModules.disko
-              outputs.nixosModules
+
+              outputs.nixosModules.sgiath
+              outputs.nixosModules.crazyegg
 
               home-manager.nixosModules.home-manager
               {
@@ -102,7 +110,7 @@
                     inherit inputs outputs;
                     inherit userSettings secrets;
                   };
-                  sharedModules = [ outputs.homeManagerModules ];
+                  sharedModules = [ outputs.homeManagerModules.sgiath ];
 
                   users.${userSettings.username} = import (./. + "/hosts/${host}/home.nix");
                 };
