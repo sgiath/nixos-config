@@ -1,18 +1,19 @@
 {
+
+  description = "Sgiath system config flake";
+
   inputs = {
     nixpkgs.url = "nixpkgs/nixos-unstable";
     # nixpkgs.url = "nixpkgs/master";
     nixpkgs-stable.url = "nixpkgs/nixos-24.05";
 
-    flake-parts.url = "github:hercules-ci/flake-parts";
-    nixos-flake.url = "github:srid/nixos-flake";
+    utils.url = "github:gytis-ivaskevicius/flake-utils-plus";
 
     nur.url = "github:nix-community/NUR";
 
     home-manager = {
       url = "github:nix-community/home-manager";
       inputs.nixpkgs.follows = "nixpkgs";
-      inputs.utils.follows = "utils";
     };
     disko = {
       url = "github:nix-community/disko";
@@ -44,31 +45,74 @@
   };
 
   outputs =
-    inputs@{ self, ... }:
-    inputs.flake-parts.lib.mkFlake { inherit inputs; } {
-      systems = [ "x86_64-linux" ];
-      imports = [ inputs.nixos-flake.flakeModule ];
+    {
+      nixpkgs,
+      home-manager,
+      disko,
+      ...
+    }@inputs:
+    let
+      system = "x86_64-linux";
 
-      flake =
-        let
-          userSettings.username = "sgiath";
-          secrets = builtins.fromJSON (builtins.readFile ./secrets.json);
-        in
-        {
-          nixosConfigurations = {
-            ceres = self.nixos-flake.lib.mkLinuxSystem {
-              nixpkgs.hostPlatform = "x86_64-linux";
-              imports = [
-                ./hosts/ceres/system.nix
+      # ---- USER SETTINGS ---- #
+      userSettings = {
+        username = "sgiath";
+        email = "sgiath@sgiath.dev";
+      };
 
-                self.nixosModules.home-manager
-                {
-                  home-manager.users.${userSettings.username} = import ./hosts/ceres/home.nix {
-                    inherit userSettings secrets;
-                  };
-                }
-              ];
+      hosts = [
+        "ceres"
+        "vesta"
+        "pallas"
+      ];
+
+      pkgs = import nixpkgs { inherit system; };
+      secrets = builtins.fromJSON (builtins.readFile ./secrets.json);
+    in
+    {
+      packages = {
+        sbapp = pkgs.callPackage ./pkgs/sbapp.nix { };
+      };
+
+      nixosConfigurations =
+        nixpkgs.lib.genAttrs hosts (
+          host:
+          nixpkgs.lib.nixosSystem {
+            system = pkgs.system;
+            specialArgs = {
+              inherit inputs;
+              inherit userSettings;
+              inherit secrets;
             };
+            modules = [
+              disko.nixosModules.disko
+              # home manager
+              home-manager.nixosModules.home-manager
+              {
+                home-manager = {
+                  useGlobalPkgs = true;
+                  useUserPackages = true;
+                  extraSpecialArgs = {
+                    inherit inputs;
+                    inherit userSettings;
+                    inherit secrets;
+                  };
+
+                  users.${userSettings.username} = import (./. + "/hosts/${host}/home.nix");
+                };
+              }
+
+              # configuration of the selected system
+              (./. + "/hosts/${host}/system.nix")
+            ];
+          }
+        )
+        // {
+          installIso = nixpkgs.lib.nixosSystem {
+            specialArgs = {
+              inherit inputs;
+            };
+            modules = [ ./hosts/isoimage/system.nix ];
           };
         };
     };
