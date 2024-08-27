@@ -6,6 +6,10 @@
 }:
 
 {
+  options.programs.nvim = {
+    enable = lib.mkEnableOption "Neovim";
+  };
+
   config = lib.mkIf config.programs.nvim.enable {
     home.sessionVariables = {
       EDITOR = "nvim";
