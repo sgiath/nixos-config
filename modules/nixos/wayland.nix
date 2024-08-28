@@ -6,7 +6,11 @@
 }:
 
 {
-  config = lib.mkIf config.graphical.enable {
+  options.sgiath.wayland = {
+    enable = lib.mkEnableOption "wayland";
+  };
+
+  config = lib.mkIf config.sgiath.wayland.enable {
     environment.sessionVariables.NIXOS_OZONE_WL = "1";
 
     services.greetd = {
