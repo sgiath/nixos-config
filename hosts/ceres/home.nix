@@ -25,6 +25,7 @@
     starship.enable = true;
     tmux.enable = true;
     waybar.enable = true;
+    zsh.enable = true;
   };
 
   services = {
