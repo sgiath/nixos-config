@@ -16,6 +16,7 @@
     ./bluetooth.nix
     ./docker.nix
     ./gaming.nix
+    ./graphics.nix
     ./nvidia-gpu.nix
     ./printing.nix
     ./razer.nix
