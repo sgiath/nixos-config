@@ -7,7 +7,7 @@
     description = "What GPU configuration to use";
   };
 
-  config = lib.mkIf config.sgiath.gpu != null {
+  config = lib.mkIf (config.sgiath.gpu != null) {
     hardware.graphics.enable = true;
   };
 }
