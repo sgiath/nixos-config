@@ -111,9 +111,6 @@
                 };
               }
 
-              # default config
-              ./nixos
-
               # configuration of the selected system
               (./. + "/hosts/${host}/system.nix")
             ];
