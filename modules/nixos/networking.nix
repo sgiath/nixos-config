@@ -40,6 +40,7 @@ pkgs,
         "192.168.1.150" = [ "mix.sgiath" ];
       };
 
+      networkmanager.enable = false;
       resolvconf.enable = lib.mkForce false;
       dhcpcd.extraConfig = "nohook resolv.conf";
       firewall.enable = false;
