@@ -1,15 +1,18 @@
 {
   config,
   lib,
+pkgs,
   userSettings,
   ...
 }:
 
 {
-  config =  lib.mkIf config.sgiath.enable {
+  config = lib.mkIf config.sgiath.enable {
+    environment.systemPackages = with pkgs; [ wpa_supplicant_gui ];
     networking = {
       wireless = {
         enable = true;
+        userControlled.enable = true;
         networks = {
           Starlink = {
             priority = 10;
@@ -22,6 +25,7 @@
         };
       };
       hosts = {
+        "192.168.1.1" = [ "router.sgiath" ];
         "192.168.1.2" = [
           "sgiath.dev"
           "dns.sgiath"
