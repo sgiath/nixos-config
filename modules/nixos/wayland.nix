@@ -13,26 +13,29 @@
   config = lib.mkIf config.sgiath.wayland.enable {
     environment.sessionVariables.NIXOS_OZONE_WL = "1";
 
-    services.greetd = {
-      enable = true;
-      settings = {
-        default_session = {
-          command = "${pkgs.greetd.tuigreet}/bin/tuigreet --time --asterisks --remember --cmd Hyprland";
-          user = "greeter";
-        };
-      };
-    };
+    services.desktopManager.cosmic.enable = true;
+    services.displayManager.cosmic-greeter.enable = true;
 
-    systemd.services.greetd.serviceConfig = {
-      Type = "idle";
-      StandardInput = "tty";
-      StandardOutput = "tty";
-      StandardError = "journal"; # Without this errors will spam on screen
-      # Without these bootlogs will spam on screen
-      TTYReset = true;
-      TTYVHangup = true;
-      TTYVTDisallocate = true;
-    };
+    # services.greetd = {
+    #   enable = true;
+    #   settings = {
+    #     default_session = {
+    #       command = "${pkgs.greetd.tuigreet}/bin/tuigreet --time --asterisks --remember --cmd Hyprland";
+    #       user = "greeter";
+    #     };
+    #   };
+    # };
+    #
+    # systemd.services.greetd.serviceConfig = {
+    #   Type = "idle";
+    #   StandardInput = "tty";
+    #   StandardOutput = "tty";
+    #   StandardError = "journal"; # Without this errors will spam on screen
+    #   # Without these bootlogs will spam on screen
+    #   TTYReset = true;
+    #   TTYVHangup = true;
+    #   TTYVTDisallocate = true;
+    # };
 
     nix.settings = {
       substituters = [ "https://hyprland.cachix.org" ];

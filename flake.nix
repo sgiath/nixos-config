@@ -29,6 +29,12 @@
       url = "git+https://github.com/hyprwm/Hyprland?submodules=1";
       inputs.nixpkgs.follows = "nixpkgs";
     };
+
+    nixos-cosmic = {
+      url = "github:lilyinstarlight/nixos-cosmic";
+      inputs.nixpkgs.follows = "nixpkgs";
+    };
+
     stylix = {
       url = "github:danth/stylix";
       inputs.nixpkgs.follows = "nixpkgs";
@@ -92,6 +98,7 @@
             };
             modules = [
               inputs.disko.nixosModules.disko
+              inputs.nixos-cosmic.nixosModules.defult
               outputs.nixosModules
 
               home-manager.nixosModules.home-manager
