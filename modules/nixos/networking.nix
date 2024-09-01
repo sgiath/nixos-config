@@ -12,6 +12,7 @@ pkgs,
     networking = {
       wireless = {
         enable = true;
+        athUserRegulatoryDomain = true;
         userControlled.enable = true;
         networks = {
           Starlink = {
