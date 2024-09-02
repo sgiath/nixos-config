@@ -26,7 +26,10 @@
     };
 
     hyprland = {
-      url = "git+https://github.com/hyprwm/Hyprland?submodules=1";
+      type = "git";
+      url = "https://github.com/hyprwm/Hyprland";
+      # rev = "";
+      submodules = true;
       inputs.nixpkgs.follows = "nixpkgs";
     };
 
@@ -80,12 +83,16 @@
       secrets = builtins.fromJSON (builtins.readFile ./secrets.json);
     in
     {
-      packages = import ./pkgs pkgs;
-      formatter = pkgs.nixpkgs-fmt;
-      overlays = import ./overlays { inherit inputs; };
-      lib = import ./lib { inherit (nixpkgs) lib; };
       nixosModules = import ./modules/nixos;
       homeManagerModules = import ./modules/home-manager;
+
+      formatter = pkgs.nixfmt-rfc-style;
+
+      overlays = import ./overlays { inherit inputs; };
+      packages = import ./pkgs pkgs;
+      lib = import ./lib { inherit (nixpkgs) lib; };
+
+      devShells = import ./shell.nix { inherit pkgs; };
 
       nixosConfigurations =
         nixpkgs.lib.genAttrs hosts (

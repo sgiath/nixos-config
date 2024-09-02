@@ -29,6 +29,16 @@
       };
     };
 
+    security.pam.services.greetd = {
+      allowNullPassword = true;
+      startSession = true;
+      enableGnomeKeyring = false;
+      gnupg = {
+        enable = true;
+        noAutostart = true;
+      };
+    };
+
     # systemd.services.greetd.serviceConfig = {
     #   Type = "idle";
     #   StandardInput = "tty";

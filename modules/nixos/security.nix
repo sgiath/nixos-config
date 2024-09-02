@@ -21,12 +21,15 @@
 
     environment.shellAliases.sudo = "doas";
 
-    services.openssh = {
-      enable = true;
-      settings = {
-        PermitRootLogin = "no";
-        PasswordAuthentication = false;
+    services = {
+      openssh = {
+        enable = true;
+        settings = {
+          PermitRootLogin = "no";
+          PasswordAuthentication = false;
+        };
       };
+      # gnome.gnome-keyring.enable = true;
     };
 
     programs = {
