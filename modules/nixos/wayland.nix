@@ -43,7 +43,8 @@
       Type = "idle";
       StandardInput = "tty";
       StandardOutput = "tty";
-      StandardError = "journal"; # Without this errors will spam on screen
+      # Without this errors will spam on screen
+      StandardError = "journal";
       # Without these bootlogs will spam on screen
       TTYReset = true;
       TTYVHangup = true;

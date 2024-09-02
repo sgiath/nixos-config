@@ -13,7 +13,7 @@
     home.packages = [ pkgs.qpwgraph ];
     services.easyeffects = {
       enable = true;
-      package = pkgs.stable.easyeffects;
+      package = pkgs.easyeffects;
     };
   };
 }
