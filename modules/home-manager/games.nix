@@ -1,14 +1,10 @@
 {
   config,
   lib,
-  inputs,
   pkgs,
   secrets,
   ...
 }:
-let
-  pkgs-citizen = inputs.nix-citizen.packages.${pkgs.system};
-in
 {
   options.sgiath.games = {
     enable = lib.mkEnableOption "games";
@@ -27,20 +23,19 @@ in
             jdk8
           ];
         })
-        pkgs.ckan
 
         pkgs.winetricks
 
         # Star Citizen
         # I need ALSA for audio to work correctly
-        (pkgs-citizen.star-citizen.override {
-          tricks = [
-            "arial"
-            "vcrun2019"
-            "win10"
-            "sound=alsa"
-          ];
-        })
+        # (pkgs-citizen.star-citizen.override {
+        #   tricks = [
+        #     "arial"
+        #     "vcrun2019"
+        #     "win10"
+        #     "sound=alsa"
+        #   ];
+        # })
 
         # Factorio
         (pkgs.factorio.override {
