@@ -15,8 +15,6 @@
       packages = [
         # general tools
         pkgs.webcord
-        pkgs.lutris
-        pkgs.protonup
         (pkgs.prismlauncher.override {
           jdks = with pkgs; [
             jdk21
@@ -25,17 +23,6 @@
         })
 
         pkgs.winetricks
-
-        # Star Citizen
-        # I need ALSA for audio to work correctly
-        # (pkgs-citizen.star-citizen.override {
-        #   tricks = [
-        #     "arial"
-        #     "vcrun2019"
-        #     "win10"
-        #     "sound=alsa"
-        #   ];
-        # })
 
         # Factorio
         (pkgs.factorio.override {
