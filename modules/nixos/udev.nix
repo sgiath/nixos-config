@@ -3,6 +3,7 @@
   config = lib.mkIf config.sgiath.enable {
     services.udev = {
       enable = true;
+      packages = [ pkgs.ffado ];
       extraRules = ''
         # DFU (Internal bootloader for STM32 and AT32 MCUs)
         ACTION=="add", SUBSYSTEM=="usb", ATTRS{idVendor}=="2e3c", ATTRS{idProduct}=="df11", MODE="0664", GROUP="plugdev"
