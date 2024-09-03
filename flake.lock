@@ -724,6 +724,21 @@
         "url": "https://github.com/NixOS/nixpkgs/archive/a5d394176e64ab29c852d03346c1fc9b0b7d33eb.tar.gz"
       }
     },
+    "nixpkgs-master": {
+      "locked": {
+        "lastModified": 1725354820,
+        "narHash": "sha256-KzhpCkDWf5juzvYDGDfjKe3iiFiyjoiMp/PEGUCAMiw=",
+        "owner": "NixOS",
+        "repo": "nixpkgs",
+        "rev": "e95622a6fffd5e058adb127dcdeec1ee5518108c",
+        "type": "github"
+      },
+      "original": {
+        "id": "nixpkgs",
+        "ref": "master",
+        "type": "indirect"
+      }
+    },
     "nixpkgs-stable": {
       "locked": {
         "lastModified": 1725001927,
@@ -811,6 +826,7 @@
         "nix-gaming": "nix-gaming",
         "nixos-cosmic": "nixos-cosmic",
         "nixpkgs": "nixpkgs_2",
+        "nixpkgs-master": "nixpkgs-master",
         "nixpkgs-stable": "nixpkgs-stable_2",
         "nur": "nur",
         "stylix": "stylix",
