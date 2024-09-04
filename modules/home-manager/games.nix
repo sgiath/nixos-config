@@ -12,17 +12,21 @@
 
   config = lib.mkIf config.sgiath.games.enable {
     home = {
-      packages = [
+      packages = with pkgs; [
+        (lutris.override {
+          extraPkgs = pkgs: [ pkgs.gnome3.adwaita-icon-theme ];
+        })
+
         # Minecraft
-        (pkgs.prismlauncher.override {
-          jdks = with pkgs; [
+        (prismlauncher.override {
+          jdks = [
             jdk21
             jdk8
           ];
         })
 
         # Factorio
-        (pkgs.factorio.override {
+        (factorio.override {
           username = "Sgiath";
           token = secrets.factorio_token;
         })
