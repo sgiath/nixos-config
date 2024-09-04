@@ -16,6 +16,7 @@
         (lutris.override {
           extraPkgs = pkgs: [ pkgs.adwaita-icon-theme ];
         })
+        ckan
 
         # Minecraft
         (prismlauncher.override {
