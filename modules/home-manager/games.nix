@@ -19,7 +19,7 @@
 
             # libraries for Principia
             pkgs.llvmPackages_17.libcxx
-            pkgs.llvmPackages_17.libcxxabi
+            pkgs.rocmPackages.llvm.libcxxabi
             pkgs.libunwind
 
             # default icons
