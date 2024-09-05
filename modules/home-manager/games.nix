@@ -13,6 +13,7 @@
   config = lib.mkIf config.sgiath.games.enable {
     home = {
       packages = with pkgs; [
+        llvm.stdenv
         llvmPackages.libcxx
         llvmPackages.libunwind
         # rocmPackages.llvm.libcxxabi
