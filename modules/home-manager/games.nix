@@ -15,7 +15,7 @@
       packages = with pkgs; [
         llvmPackages.libcxx
         llvmPackages.libunwind
-        rocmPackages.llvm.libcxxabi
+        # rocmPackages.llvm.libcxxabi
 
         (lutris.override {
           extraPkgs = pkgs: [
