@@ -185,6 +185,7 @@ in
     xdg = {
       portal = {
         enable = true;
+        config.common.default = "hyprland";
         xdgOpenUsePortal = true;
         configPackages = [
           package.xdg-desktop-portal-hyprland
