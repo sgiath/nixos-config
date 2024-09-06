@@ -17,6 +17,7 @@
           extraLibraries = pkgs: [
             # libraries for Principia
             pkgs.stdenv.cc.cc.lib
+            pkgs.libunwind
             # pkgs.llvmPackages.libcxx
             # pkgs.llvmPackages.libunwind
           ];
