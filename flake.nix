@@ -94,6 +94,7 @@
               inherit userSettings secrets;
             };
             modules = [
+              inputs.nur.nixosModules.nur
               inputs.disko.nixosModules.disko
               inputs.nix-bitcoin.nixosModules.default
               outputs.nixosModules
