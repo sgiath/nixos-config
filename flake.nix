@@ -32,6 +32,11 @@
       inputs.nixpkgs.follows = "nixpkgs";
     };
 
+    nix-bitcoin = {
+      url = "github:fort-nix/nix-bitcoin";
+      inputs.nixpkgs.follows = "nixpkgs";
+    };
+
     stylix = {
       url = "github:danth/stylix";
       inputs.nixpkgs.follows = "nixpkgs";
@@ -90,6 +95,7 @@
             };
             modules = [
               inputs.disko.nixosModules.disko
+              inputs.nix-bitcoin.nixosModules.default
               outputs.nixosModules
 
               home-manager.nixosModules.home-manager
