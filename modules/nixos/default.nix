@@ -12,6 +12,7 @@
     # always enabled
     ./bitcoin.nix
     ./boot.nix
+    ./mailserver.nix
     ./mounting_usb.nix
     ./networking.nix
     ./optimizations.nix
