@@ -102,6 +102,7 @@
               inputs.nur.nixosModules.nur
               inputs.disko.nixosModules.disko
               inputs.nix-bitcoin.nixosModules.default
+              inputs.simple-nixos-mailserver.nixosModules.mailserver
               outputs.nixosModules
 
               home-manager.nixosModules.home-manager
