@@ -3,12 +3,13 @@
   description = "Sgiath system config flake";
 
   inputs = {
-    nixpkgs.url = "nixpkgs/nixos-unstable";
+    chaotic.url = "github:chaotic-cx/nyx/nyxpkgs-unstable";
     nixpkgs-master.url = "nixpkgs/master";
+    nixpkgs.url = "nixpkgs/nixos-unstable";
     nixpkgs-stable.url = "nixpkgs/nixos-24.05";
-    nur.url = "github:nix-community/NUR";
 
-    utils.url = "github:gytis-ivaskevicius/flake-utils-plus";
+    nur.url = "github:nix-community/NUR";
+    # utils.url = "github:gytis-ivaskevicius/flake-utils-plus";
 
     home-manager = {
       url = "github:nix-community/home-manager";
@@ -99,6 +100,7 @@
               inherit userSettings secrets;
             };
             modules = [
+              inputs.chaotic.nixosModules.default
               inputs.nur.nixosModules.nur
               inputs.disko.nixosModules.disko
               inputs.nix-bitcoin.nixosModules.default
