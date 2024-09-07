@@ -5,6 +5,7 @@
   outputs,
   pkgs,
   userSettings,
+  secrets,
   ...
 }:
 {
@@ -83,6 +84,18 @@
         extraGroups = [ "wheel" ];
         hashedPassword = userSettings.hashedPassword;
       };
+    };
+
+    home-manager = {
+      useGlobalPkgs = true;
+      useUserPackages = true;
+      extraSpecialArgs = {
+        inherit inputs outputs;
+        inherit userSettings secrets;
+      };
+      sharedModules = [
+        outputs.homeManagerModules
+      ];
     };
   };
 }

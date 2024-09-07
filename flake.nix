@@ -52,7 +52,6 @@
     {
       self,
       nixpkgs,
-      home-manager,
       ...
     }@inputs:
     let
@@ -99,28 +98,12 @@
               inherit userSettings secrets;
             };
             modules = [
+              inputs.home-manager.nixosModules.home-manager
               inputs.nur.nixosModules.nur
               inputs.disko.nixosModules.disko
               inputs.nix-bitcoin.nixosModules.default
               inputs.simple-nixos-mailserver.nixosModules.mailserver
               outputs.nixosModules
-
-              home-manager.nixosModules.home-manager
-              {
-                home-manager = {
-                  useGlobalPkgs = true;
-                  useUserPackages = true;
-                  extraSpecialArgs = {
-                    inherit inputs outputs;
-                    inherit userSettings secrets;
-                  };
-                  sharedModules = [
-                    outputs.homeManagerModules
-                  ];
-
-                  users.${userSettings.username} = import (./. + "/hosts/${host}/home.nix");
-                };
-              }
 
               # configuration of the selected system
               (./. + "/hosts/${host}/system.nix")

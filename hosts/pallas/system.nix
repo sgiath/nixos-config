@@ -1,7 +1,9 @@
+{ userSettings, ... }:
 {
   imports = [ ./hardware.nix ];
 
   networking.hostName = "pallas";
+  users.${userSettings.username} = import ./home.nix;
 
   sgiath = {
     enable = true;
