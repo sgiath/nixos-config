@@ -61,6 +61,17 @@
         "pallas"
       ];
 
+      userSettings = {
+        users.users.sgiath = {
+          isNormalUser = true;
+          extraGroups = [ "wheel" ];
+          hashedPassword = "$y$j9T$EBb/Mjo7nNHfmtbiP1GST0$CctYXT62gX0cMDHzRzYxlix43xC3U6kzSDNvyqZOcj4";
+          openssh.authorizedKeys.keys = [
+            "ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAIOGJYz3V8IxqdAJw9LLj0RMsdCu4QpgPmItoDoe73w/3"
+          ];
+        };
+      };
+
       pkgs = import nixpkgs { inherit system; };
       secrets = builtins.fromJSON (builtins.readFile ./secrets.json);
     in
@@ -85,16 +96,7 @@
               inherit inputs outputs secrets;
             };
             modules = [
-              {
-                users.users.sgiath = {
-                  isNormalUser = true;
-                  extraGroups = [ "wheel" ];
-                  hashedPassword = "$y$j9T$EBb/Mjo7nNHfmtbiP1GST0$CctYXT62gX0cMDHzRzYxlix43xC3U6kzSDNvyqZOcj4";
-                  openssh.authorizedKeys.keys = [
-                    "ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAIOGJYz3V8IxqdAJw9LLj0RMsdCu4QpgPmItoDoe73w/3"
-                  ];
-                };
-              }
+              userSettings
               home-manager.nixosModules.home-manager
               inputs.nur.nixosModules.nur
               inputs.disko.nixosModules.disko
