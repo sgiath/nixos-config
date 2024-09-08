@@ -13,7 +13,7 @@
     wayland.windowManager.hyprland = {
       enable = true;
       package = pkgs.hyprland;
-      # portalPackage = package.xdg-desktop-portal-hyprland;
+      portalPackage = pkgs.xdg-desktop-portal-hyprland;
       xwayland.enable = true;
       systemd = {
         enable = true;
@@ -26,12 +26,14 @@
         exec-once = [
           "${pkgs.kitty}/bin/kitty"
           # "${pkgs.ungoogled-chromium}/bin/chromium"
-          "${pkgs.freetube}/bin/freetube"
+          # "${pkgs.freetube}/bin/freetube"
+          "${pkgs.obsidian}/bin/obsidian"
           "${pkgs.protonmail-desktop}/bin/proton-mail"
           "${pkgs.slack}/bin/slack"
           "${pkgs.webcord}/bin/webcord"
           "${pkgs.signal-desktop-beta}/bin/signal-desktop-beta"
           "${pkgs.telegram-desktop}/bin/telegram-desktop"
+          "${pkgs.hexchat}/bin/hexchat"
         ];
 
         monitor = [
@@ -132,7 +134,8 @@
           "workspace 2 silent, class:(chromium-browser)"
           "workspace 3 silent, class:(google-chrome)"
           "workspace 4 silent, class:(firefox)"
-          "workspace 5 silent, class:(FreeTube)"
+
+          "workspace 5 silent, class:(obsidian)"
 
           # email
           "workspace 9 silent, class:(claws-mail)"
@@ -143,6 +146,7 @@
           "workspace 10 silent, class:(WebCord)"
           "workspace 10 silent, class:(signalbeta)"
           "workspace 10 silent, class:(org.telegram.desktop)"
+          "workspace 10 silent, class:(Hexchat)"
         ];
       };
     };

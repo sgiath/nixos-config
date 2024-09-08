@@ -90,7 +90,6 @@
       fastfetch.enable = true;
       hexchat.enable = true;
       obs-studio.enable = true;
-      freetube.enable = true;
 
       direnv = {
         enable = true;
