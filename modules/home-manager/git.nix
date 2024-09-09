@@ -49,6 +49,7 @@
 
       ignores = [
         ".direnv"
+        ".devenv"
         ".elixir_ls"
         "result"
       ];

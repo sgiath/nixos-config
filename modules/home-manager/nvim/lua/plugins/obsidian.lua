@@ -14,14 +14,6 @@ return {
           name = "personal",
           path = "~/notes/sgiath",
         },
-        {
-          name = "the expanse",
-          path = "~/notes/expanse",
-        },
-        {
-          name = "DnD",
-          path = "~/notes/dnd",
-        },
       },
       notes_subdir = "notes",
       daily_notes = {
