@@ -9,15 +9,13 @@
         line_break.disabled = false;
 
         character = {
-          success_symbol = " [](#6791c9)";
-          error_symbol = " [](#df5b61)";
-          vicmd_symbol = "[  ](#78b892)";
+          # success_symbol = " [](#6791c9)";
+          # error_symbol = " [](#df5b61)";
+          # vicmd_symbol = "[  ](#78b892)";
         };
 
         hostname = {
-          ssh_only = true;
           format = "[$hostname](bold blue) ";
-          disabled = false;
         };
 
         cmd_duration = {
@@ -42,34 +40,17 @@
         git_status = {
           format = "[](fg:#232526 bg:none)[$all_status$ahead_behind]($style)[](fg:#232526 bg:#232526)[](fg:#67afc1 bg:#232526)[](fg:#232526 bg:#67afc1)[](fg:#67afc1 bg:none) ";
           style = "fg:#edeff0 bg:#232526";
-          # conflicted = "=";
-          # ahead = "⇡\${count} ";
-          # behind = "⇣\${count} ";
-          # diverged = "⇕⇡\${ahead_count}⇣\${behind_count} ";
-          # up_to_date = "";
-          # untracked = "?\${count} ";
-          # stashed = "";
-          # modified = "!\${count} ";
-          # staged = "+\${count} ";
-          # renamed = "»\${count} ";
-          # deleted = "\${count} ";
-        };
-
-        git_commit = {
-          format = "[\\($hash\\)]($style) [\\($tag\\)]($style)";
-          style = "green";
-        };
-
-        git_state = {
-          rebase = "REBASING";
-          merge = "MERGING";
-          revert = "REVERTING";
-          cherry_pick = "CHERRY-PICKING";
-          bisect = "BISECTING";
-          am = "AM";
-          am_or_rebase = "AM/REBASE";
-          style = "yellow";
-          format = "([$state( $progress_current/$progress_total)]($style)) ";
+          conflicted = "=";
+          ahead = "⇡\${count} ";
+          behind = "⇣\${count} ";
+          diverged = "⇕⇡\${ahead_count}⇣\${behind_count} ";
+          # up_to_date = "";
+          untracked = "?\${count} ";
+          stashed = "$\${count} ";
+          modified = "!\${count} ";
+          staged = "+\${count} ";
+          renamed = "»\${count} ";
+          deleted = "✘\${count} ";
         };
 
         time = {
@@ -80,7 +61,7 @@
         };
 
         elixir = {
-          symbol = "";
+          symbol = " ";
           format = "[](fg:#232526 bg:none)[$version (OTP $otp_version)]($style)[](fg:#232526 bg:#232526)[](fg:purple bg:#232526)[$symbol](fg:#232526 bg:purple)[](fg:purple bg:none) ";
           style = "fg:#edeff0 bg:#232526";
         };
