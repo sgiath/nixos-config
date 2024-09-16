@@ -11,9 +11,6 @@
 
   config = lib.mkIf config.sgiath.apps.enable {
     home.packages = with pkgs; [
-      winePackages.wayland
-      winetricks
-
       xfce.thunar
       obsidian
       webcord
