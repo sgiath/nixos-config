@@ -16,19 +16,19 @@
       webcord
       telegram-desktop
       signal-desktop-beta
-      gimp
+      # gimp
 
-      vscodium-fhs
+      # vscodium-fhs
 
-      betaflight-configurator
-      bisq-desktop
-      trezor-suite
-      trezor-udev-rules
+      # betaflight-configurator
+      # bisq-desktop
+      # trezor-suite
+      # trezor-udev-rules
     ];
 
     programs = {
-      hexchat.enable = true;
-      obs-studio.enable = true;
+      hexchat.enable = false;
+      obs-studio.enable = false;
     };
   };
 }

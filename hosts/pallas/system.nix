@@ -11,7 +11,7 @@
     audio.enable = true;
     bluetooth.enable = true;
     docker.enable = true;
-    xamond.enable = true;
+    xamond.enable = false;
     printing.enable = true;
     razer.enable = true;
     wayland.enable = true;

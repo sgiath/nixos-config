@@ -3,7 +3,7 @@
 
   programs = {
     chromium.enable = true;
-    davinci.enable = true;
+    davinci.enable = false;
     firefox.enable = true;
     git.enable = true;
     gpg.enable = true;
