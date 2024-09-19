@@ -9,7 +9,7 @@
     telegram-desktop
     signal-desktop-beta
     gimp
-    youtube-dl
+    yt-dlp
 
     vscodium-fhs
 
