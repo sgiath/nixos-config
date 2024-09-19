@@ -1,5 +1,14 @@
+{ pkgs, ... }:
 {
   imports = [ ../../work ];
+
+  home.packages = with pkgs; [
+    xfce.thunar
+    obsidian
+    webcord
+    telegram-desktop
+    signal-desktop-beta
+  ];
 
   programs = {
     chromium.enable = true;
@@ -23,7 +32,6 @@
 
   sgiath = {
     enable = true;
-    apps.enable = true;
     audio.enable = true;
     email_client.enable = true;
     games.enable = false;

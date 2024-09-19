@@ -1,5 +1,22 @@
+{ pkgs, ... }:
 {
   imports = [ ../../work ];
+
+  home.packages = with pkgs; [
+    xfce.thunar
+    obsidian
+    webcord
+    telegram-desktop
+    signal-desktop-beta
+    gimp
+
+    vscodium-fhs
+
+    betaflight-configurator
+    bisq-desktop
+    trezor-suite
+    trezor-udev-rules
+  ];
 
   programs = {
     chromium.enable = true;
@@ -10,6 +27,7 @@
     hyprland.enable = true;
     kitty.enable = true;
     nvim.enable = true;
+    obs-studio.enable = false;
     ssh.enable = true;
     starship.enable = true;
     tmux.enable = true;
@@ -23,7 +41,6 @@
 
   sgiath = {
     enable = true;
-    apps.enable = true;
     audio.enable = true;
     email_client.enable = true;
     games.enable = true;
