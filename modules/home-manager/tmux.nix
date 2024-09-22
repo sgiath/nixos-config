@@ -7,6 +7,10 @@
 
 {
   config = lib.mkIf config.programs.tmux.enable {
+    home.packages = [
+      pkgs.tmux-sessionizer
+    ];
+
     programs.tmux = {
       shell = "${pkgs.zsh}/bin/zsh";
       terminal = "xterm-256color";
