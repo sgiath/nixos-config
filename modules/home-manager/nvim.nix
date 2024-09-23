@@ -22,6 +22,7 @@
       neovim
 
       # Zig
+      zig
       zls
 
       # Nix
