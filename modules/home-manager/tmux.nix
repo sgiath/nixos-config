@@ -14,6 +14,12 @@
     xdg = {
       enable = true;
       configFile."tms/config.toml".text = ''
+        default_session = "Main"
+
+        [picker_colors]
+        highlight_color = "#de8f78"
+        border_color = "#6791c9"
+
         [[search_dirs]]
         path = "/home/sgiath"
         depth = 1
@@ -34,7 +40,8 @@
       extraConfig = ''
         unbind c
         bind c display-popup -E "tms"
-        bind C-j display-popup -E "tms switch"
+        unbind s
+        bind s display-popup -E "tms switch"
 
         # Config reload
         bind r source-file ~/.config/tmux/tmux.conf \; display-message "Config reloaded..."
