@@ -11,6 +11,19 @@
       pkgs.tmux-sessionizer
     ];
 
+    xdg = {
+      enable = true;
+      configFile.tms."config.toml".text = ''
+        [[search_dirs]]
+        path = "/home/sgiath"
+        depth = 1
+
+        [[search_dirs]]
+        path = "/home/sgiath/develop"
+        depth = 2
+      '';
+    };
+
     programs.tmux = {
       shell = "${pkgs.zsh}/bin/zsh";
       terminal = "xterm-256color";
