@@ -21,6 +21,9 @@
       # base deps
       neovim
 
+      # Zig
+      zls
+
       # Nix
       nixd
       nixfmt-rfc-style
