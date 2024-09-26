@@ -11,6 +11,10 @@
   };
 
   config = lib.mkIf config.services.ollama.enable {
+    home.packages = [
+      pkgs.ollama-rocm
+    ];
+
     systemd.user.services.ollama = {
       Unit = {
         Description = "Ollama Service";
@@ -20,7 +24,7 @@
         WantedBy = [ "default.target" ];
       };
       Service = {
-        ExecStart = "${pkgs.ollama}/bin/ollama serve";
+        ExecStart = "${pkgs.ollama-rocm}/bin/ollama serve";
         Restart = "always";
         RestartSec = 3;
       };

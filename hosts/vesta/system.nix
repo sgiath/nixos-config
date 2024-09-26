@@ -15,4 +15,13 @@
     razer.enable = false;
     wayland.enable = false;
   };
+
+  services.wyoming.faster-whisper.servers = {
+    "home-assistant" = {
+      enable = true;
+      beamSize = 5;
+      model = "large-v3";
+      language = "auto";
+    };
+  };
 }
