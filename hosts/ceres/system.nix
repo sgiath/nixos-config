@@ -18,4 +18,12 @@
   };
 
   crazyegg.enable = true;
+
+  services.ollama = {
+    enable = true;
+    acceleration = "rocm";
+    loadModels = [
+      "llama3.2"
+    ];
+  };
 }

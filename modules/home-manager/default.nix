@@ -15,7 +15,6 @@
     ./gnupg.nix
     ./hyprland.nix
     ./nvim.nix
-    ./ollama.nix
     ./ssh.nix
     ./starship.nix
     ./tmux.nix

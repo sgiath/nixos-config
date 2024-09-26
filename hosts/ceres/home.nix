@@ -38,10 +38,6 @@
     zsh.enable = true;
   };
 
-  services = {
-    ollama.enable = true;
-  };
-
   sgiath = {
     enable = true;
     audio.enable = true;

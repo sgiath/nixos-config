@@ -26,10 +26,6 @@
     zsh.enable = true;
   };
 
-  services = {
-    ollama.enable = false;
-  };
-
   sgiath = {
     enable = true;
     audio.enable = true;
