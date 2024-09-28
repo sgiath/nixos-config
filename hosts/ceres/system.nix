@@ -20,12 +20,15 @@
 
   crazyegg.enable = true;
 
-  services.ollama = {
-    enable = true;
-    acceleration = "rocm";
-    loadModels = [
-      "llama3.2"
-    ];
-    package = pkgs.master.ollama-rocm;
+  services.ollama.enable = true;
+
+  programs = {
+    gamescope.enable = true;
+    gamemode.enable = true;
+    steam = {
+      enable = true;
+      protontricks.enable = true;
+      extraCompatPackages = [ pkgs.proton-ge-bin ];
+    };
   };
 }

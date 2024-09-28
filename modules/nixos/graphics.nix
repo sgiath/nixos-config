@@ -1,7 +1,6 @@
 {
   config,
   lib,
-  pkgs,
   ...
 }:
 {
@@ -19,16 +18,5 @@
 
   config = lib.mkIf (config.sgiath.gpu != null) {
     hardware.graphics.enable = true;
-    programs = {
-      gamescope.enable = true;
-      gamemode.enable = true;
-      steam = {
-        enable = true;
-        protontricks.enable = true;
-        extraCompatPackages = [
-          pkgs.proton-ge-bin
-        ];
-      };
-    };
   };
 }
