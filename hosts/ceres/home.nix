@@ -18,7 +18,7 @@
     trezor-suite
     trezor-udev-rules
 
-    stt
+    node2nix
   ];
 
   programs = {

@@ -77,10 +77,10 @@
       nixosModules = import ./modules/nixos;
       homeManagerModules = import ./modules/home-manager;
 
-      formatter = pkgs.nixfmt-rfc-style;
+      formatter.${system} = pkgs.nixfmt-rfc-style;
 
       overlays = import ./overlays { inherit inputs system; };
-      packages = import ./pkgs pkgs;
+      packages.${system} = import ./pkgs pkgs;
       lib = import ./lib { inherit (nixpkgs) lib; };
 
       devShells = import ./shell.nix { inherit pkgs; };

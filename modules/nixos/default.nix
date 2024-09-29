@@ -33,6 +33,7 @@
     ./wayland.nix
 
     ./crazyegg
+    # ./server
   ];
 
   options.sgiath.enable = lib.mkEnableOption "sgiath config";
