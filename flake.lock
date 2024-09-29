@@ -286,6 +286,26 @@
         "type": "github"
       }
     },
+    "foundryvtt": {
+      "inputs": {
+        "nixpkgs": [
+          "nixpkgs"
+        ]
+      },
+      "locked": {
+        "lastModified": 1726638033,
+        "narHash": "sha256-+hcgXKG5t/9wibv+8T9WASWItBAWb0tsmcZXH+VIYdw=",
+        "owner": "reckenrode",
+        "repo": "nix-foundryvtt",
+        "rev": "bf07f9dd916a97a091f8ab83358c2f295bea9ec9",
+        "type": "github"
+      },
+      "original": {
+        "owner": "reckenrode",
+        "repo": "nix-foundryvtt",
+        "type": "github"
+      }
+    },
     "fromYaml": {
       "flake": false,
       "locked": {
@@ -783,6 +803,7 @@
     "root": {
       "inputs": {
         "disko": "disko",
+        "foundryvtt": "foundryvtt",
         "home-manager": "home-manager",
         "hyprland": "hyprland",
         "nix-bitcoin": "nix-bitcoin",

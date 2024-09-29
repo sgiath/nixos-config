@@ -1,6 +1,6 @@
 { config, lib, ... }:
 {
-  config = lib.mkIf config.sgiath.server.enable && config.services.home-assistant.enable {
+  config = lib.mkIf (config.sgiath.server.enable && config.services.home-assistant.enable) {
     services = {
       nginx = {
         upstreams."home-assistant".servers = {
