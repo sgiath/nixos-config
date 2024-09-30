@@ -54,7 +54,7 @@
     xdg = {
       enable = true;
       configFile.nvim = {
-        source = config.lib.file.mkOutOfStoreSymlink "${config.home.homeDirectory}/.dotfiles/modules/home-manager/nvim";
+        source = config.lib.file.mkOutOfStoreSymlink "${config.home.homeDirectory}/.dotfiles/modules/home-manager/sgiath/nvim";
         recursive = true;
       };
     };
