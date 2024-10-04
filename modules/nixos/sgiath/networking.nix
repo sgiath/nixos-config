@@ -28,6 +28,7 @@
         "192.168.1.1" = [ "router.sgiath" ];
         "192.168.1.2" = [
           "sgiath.dev"
+          "wp.sgiath.dev"
           "dns.sgiath"
           "homeassistant.sgiath"
         ];
