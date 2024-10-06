@@ -5,6 +5,8 @@
   };
 
   config = lib.mkIf (config.sgiath.server.enable && config.services.pi-hole.enable) {
+    networking.networkmanager.dns = lib.mkForce "none";
+
     services.nginx = {
       virtualHosts."dns.sgiath" = {
         rejectSSL = true;
@@ -27,7 +29,7 @@
       ports = [
         "53:53/tcp"
         "53:53/udp"
-        "8053:80/tcp"
+        "8053:8053/tcp"
       ];
       volumes = [
         "pihole:/var/lib/pihole"
@@ -37,6 +39,8 @@
         "--network=host"
       ];
       environment = {
+        WEBPASSWORD = "Sgiath0913";
+        WEB_PORT = "8053";
         TZ = "UTC";
       };
     };

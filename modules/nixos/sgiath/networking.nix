@@ -28,14 +28,11 @@
         "192.168.1.1" = [ "router.sgiath" ];
         "192.168.1.107" = [
           "sgiath.dev"
-          # "wp.sgiath.dev"
           "dns.sgiath"
-          "homeassistant.sgiath"
         ];
         "192.168.1.207" = [
           "sgiath.dev"
           "dns.sgiath"
-          "homeassistant.sgiath"
         ];
         "192.168.1.4" = [ "nas.sgiath" ];
         "192.168.1.5" = [ "nas.sgiath" ];
@@ -50,7 +47,7 @@
     environment.etc."resolv.conf".text = ''
       search sgiath.dev
 
-      nameserver 192.168.1.2
+      nameserver 192.168.1.207
       nameserver 192.168.1.1
       nameserver 8.8.8.8
     '';
