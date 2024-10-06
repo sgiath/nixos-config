@@ -10,7 +10,7 @@
     yt-dlp
 
     vscodium-fhs
-    gparted
+    parted
 
     betaflight-configurator
     bisq-desktop
