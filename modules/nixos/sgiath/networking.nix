@@ -26,13 +26,13 @@
       };
       hosts = {
         "192.168.1.1" = [ "router.sgiath" ];
-        "192.168.1.2" = [
+        "192.168.1.107" = [
           "sgiath.dev"
           # "wp.sgiath.dev"
           "dns.sgiath"
           "homeassistant.sgiath"
         ];
-        "192.168.1.3" = [
+        "192.168.1.207" = [
           "sgiath.dev"
           "dns.sgiath"
           "homeassistant.sgiath"

@@ -9,8 +9,14 @@
 {
   config = lib.mkIf (config.sgiath.server.enable && config.services.foundryvtt.enable) {
     services.nginx.virtualHosts."foundry.sgiath.dev" = {
-      forceSSL = true;
+      # SSL
+      onlySSL = true;
       enableACME = true;
+      kTLS = true;
+
+      # QUIC
+      http3_hq = true;
+      quic = true;
 
       locations."/" = {
         proxyPass = "http://127.0.0.1:30000";

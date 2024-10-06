@@ -7,7 +7,13 @@
 
 {
   config = lib.mkIf (config.sgiath.server.enable && config.services.searx.enable) {
-    services.searx.package = pkgs.searxng;
+    services.searx = {
+      package = pkgs.searxng;
+      settings = {
+        server.port = 8080;
+        server.secret_key = "dsfhjsdklfhskdjhfkdshf";
+      };
+    };
 
     services.nginx.virtualHosts."search.sgiath.dev" = {
       # SSL

@@ -24,15 +24,19 @@
 
     virtualisation.oci-containers.containers.pihole = {
       image = "pihole/pihole:2024.07.0";
+      ports = [
+        "53:53/tcp"
+        "53:53/udp"
+        "8053:80/tcp"
+      ];
       volumes = [
-        "pihole:/etc/pihole"
+        "pihole:/var/lib/pihole"
         "dnsmasq:/etc/dnsmasq.d"
       ];
       extraOptions = [
         "--network=host"
       ];
       environment = {
-        WEB_PORT = "8053";
         TZ = "UTC";
       };
     };

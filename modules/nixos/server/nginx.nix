@@ -11,6 +11,7 @@
       defaults = {
         email = "server@sgiath.dev";
         dnsProvider = "cloudflare";
+        server = "https://acme-staging-v02.api.letsencrypt.org/directory";
       };
     };
 
@@ -22,8 +23,8 @@
         worker_connections 2048;
       '';
       defaultListen = [
-        { addr = "192.168.1.2"; }
-        { addr = "192.168.1.3"; }
+        # { addr = "192.168.1.107"; }
+        { addr = "192.168.1.207"; }
       ];
       resolver.addresses = [ "127.0.0.1:53" ];
 
@@ -57,6 +58,16 @@
       '';
 
       virtualHosts = {
+        default = {
+          default = true;
+          locations."/.well-known/acme-challenge/" = {
+            root = "/var/lib/acme/acme-challenge";
+            extraConfig = ''
+              allow all;
+            '';
+          };
+        };
+
         "nas.sgiath.dev" = {
           # SSL
           onlySSL = true;
