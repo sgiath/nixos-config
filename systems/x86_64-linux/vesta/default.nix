@@ -12,7 +12,7 @@
   };
 
   services = {
-    dnd5etools.enable = true;
+    dnd5etools.enable = false;
     audiobookshelf.enable = true;
     pi-hole.enable = true;
     foundryvtt.enable = true;

@@ -6,13 +6,9 @@
 
   config = lib.mkIf (config.sgiath.server.enable && config.services.pi-hole.enable) {
     services.nginx = {
-      upstreams."pi-hole".servers = {
-        address = "localhost:8053";
-      };
-
       virtualHosts."dns.sgiath" = {
         rejectSSL = true;
-        locations."/".proxyPass = "http://pi-hole";
+        locations."/".proxyPass = "http://127.0.0.1:8053";
         extraConfig = ''
           location = / {
             return 301 /admin/;

@@ -3,10 +3,6 @@
   config = lib.mkIf (config.sgiath.server.enable && config.services.home-assistant.enable) {
     services = {
       nginx = {
-        upstreams."home-assistant".servers = {
-          address = "localhost:8123";
-        };
-
         virtualHosts."home-assistant.sgiath.dev" = {
           # SSL
           onlySSL = true;
@@ -20,7 +16,7 @@
           # static files
           locations."/" = {
             proxyWebsockets = true;
-            proxyPass = "http://home-assistant";
+            proxyPass = "http://127.0.0.1:8123";
             # does not work with X-Forwarded-For
             recommendedProxySettings = false;
             extraConfig = ''

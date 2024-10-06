@@ -6,7 +6,16 @@
 }:
 {
   config = lib.mkIf config.sgiath.server.enable {
+    security.acme = {
+      acceptTerms = true;
+      defaults = {
+        email = "server@sgiath.dev";
+        dnsProvider = "cloudflare";
+      };
+    };
+
     services.nginx = {
+      enable = true;
       package = pkgs.nginxQuic;
       eventsConfig = ''
         multi_accept on;
@@ -20,7 +29,7 @@
 
       clientMaxBodySize = "128M";
       enableQuicBPF = true;
-      mapHashBucketSize = 256;
+      mapHashBucketSize = 128;
       mapHashMaxSize = 4096;
       serverNamesHashBucketSize = 128;
       serverNamesHashMaxSize = 2048;

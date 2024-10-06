@@ -10,6 +10,7 @@
 }:
 let
   version = "1.210.4";
+  pname = "5etools";
 
   # https://github.com/5etools-mirror-2/5etools-img/releases/tag/v1.210.4
   imgHashes = [
@@ -64,9 +65,8 @@ let
 
   nodeDependencies = (callPackage ./deps { inherit nodejs; }).nodeDependencies;
 in
-stdenv.mkDerivation rec {
-  inherit version;
-  pname = "5etools";
+stdenv.mkDerivation {
+  inherit version pname;
 
   src = fetchzip {
     url = "https://github.com/5etools-mirror-3/5etools-src/releases/download/v${version}/${pname}-v${version}.zip";

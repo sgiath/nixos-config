@@ -1,11 +1,13 @@
 {
+  inputs,
+  system,
   config,
   lib,
   ...
 }:
 
 {
-  config = lib.mkIf (config.sgiath.server.enable && config.service.foundryvtt.enable) {
+  config = lib.mkIf (config.sgiath.server.enable && config.services.foundryvtt.enable) {
     services.nginx.virtualHosts."foundry.sgiath.dev" = {
       forceSSL = true;
       enableACME = true;
@@ -34,6 +36,7 @@
 
     services.foundryvtt = {
       hostName = "foundry.sgiath.dev";
+      package = inputs.foundryvtt.packages.${system}.foundryvtt_12;
       minifyStaticFiles = true;
       proxySSL = true;
       proxyPort = 443;
