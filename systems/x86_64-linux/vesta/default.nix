@@ -1,5 +1,8 @@
 {
-  imports = [ ./hardware.nix ];
+  imports = [
+    ./hardware.nix
+    ./disko.nix
+  ];
 
   networking.hostName = "vesta";
 

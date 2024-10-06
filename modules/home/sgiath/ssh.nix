@@ -10,8 +10,8 @@
         Port 22
         Protocol 2
 
-        PasswordAuthentication no
-        ChallengeResponseAuthentication no
+        PasswordAuthentication yes
+        ChallengeResponseAuthentication yes
         PubkeyAuthentication yes
         PreferredAuthentications publickey
 
