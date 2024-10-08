@@ -8,6 +8,7 @@
     ./nginx.nix
     ./pi-hole.nix
     ./search.nix
+    ./wordpress.nix
   ];
 
   options.sgiath.server = {

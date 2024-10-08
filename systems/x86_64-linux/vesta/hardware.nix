@@ -21,6 +21,13 @@
   boot.kernelModules = [ "kvm-amd" ];
   boot.extraModulePackages = [ ];
 
+  fileSystems = {
+    "/data" = {
+      device = "/dev/nvme1n1p1";
+      fsType = "ext4";
+    };
+  };
+
   networking.useDHCP = lib.mkDefault true;
   # networking.interfaces.enp1s0.useDHCP = lib.mkDefault true;
   # networking.interfaces.enp7s0.useDHCP = lib.mkDefault true;

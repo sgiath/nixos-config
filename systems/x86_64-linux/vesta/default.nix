@@ -8,6 +8,7 @@
 
   sgiath = {
     enable = true;
+    docker.enable = true;
     server.enable = true;
   };
 
@@ -17,5 +18,6 @@
     pi-hole.enable = true;
     foundryvtt.enable = true;
     home-assistant.enable = true;
+    searx.enable = true;
   };
 }

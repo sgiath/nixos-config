@@ -66,7 +66,7 @@
       channel.enable = false;
       optimise.automatic = true;
       gc = {
-        automatic = true;
+        automatic = false;
         dates = "16:00";
         persistent = true;
       };

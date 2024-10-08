@@ -2,8 +2,6 @@
 {
   config = lib.mkIf (config.sgiath.server.enable && config.services.audiobookshelf.enable) {
     services = {
-      audiobookshelf.port = 8081;
-
       nginx.virtualHosts."audio.sgiath.dev" = {
         # SSL
         onlySSL = true;
@@ -16,7 +14,7 @@
 
         locations."/" = {
           proxyWebsockets = true;
-          proxyPass = "http://127.0.0.1:8081";
+          proxyPass = "http://127.0.0.1:8000";
         };
       };
     };

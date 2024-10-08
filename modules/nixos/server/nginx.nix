@@ -28,7 +28,7 @@
       ];
       resolver.addresses = [ "127.0.0.1:53" ];
 
-      clientMaxBodySize = "128M";
+      clientMaxBodySize = "2048M";
       enableQuicBPF = true;
       mapHashBucketSize = 128;
       mapHashMaxSize = 4096;

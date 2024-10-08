@@ -42,6 +42,17 @@
           popd
         '')
 
+        (writeShellScriptBin "update-server" ''
+          pushd ~/.dotfiles
+
+          git add --all
+          git commit --signoff -m "server changes"
+          git push
+
+          nixos-rebuild switch --use-remote-sudo --flake . --target-host 'sgiath@192.168.1.207'
+          popd
+        '')
+
         (writeShellScriptBin "upgrade" ''
           pushd ~/.dotfiles
 
