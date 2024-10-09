@@ -68,6 +68,9 @@
     lib.mkFlake {
       channels-config = {
         allowUnfree = true;
+        permittedInsecurePackages = [
+          "jitsi-meet-1.0.8043"
+        ];
       };
 
       overlays = with inputs; [

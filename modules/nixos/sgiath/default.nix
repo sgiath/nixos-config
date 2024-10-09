@@ -65,9 +65,6 @@
       };
       channel.enable = false;
       optimise.automatic = true;
-      permittedInsecurePackages = [
-        "jitsi-meet-1.0.8043"
-      ];
       gc = {
         automatic = false;
         dates = "16:00";
