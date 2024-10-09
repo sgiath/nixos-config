@@ -11,6 +11,7 @@
 
     vscodium-fhs
     parted
+    cinny-desktop
 
     betaflight-configurator
     bisq-desktop
