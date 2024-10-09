@@ -62,6 +62,7 @@ in
 
         "matrix.sgiath.dev" = {
           # SSL
+          onlySSL = true;
           enableACME = true;
           kTLS = true;
 

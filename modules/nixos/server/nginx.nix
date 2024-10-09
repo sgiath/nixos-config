@@ -4,13 +4,39 @@
   pkgs,
   ...
 }:
+let
+  secrets = builtins.fromJSON (builtins.readFile ./../../../secrets.json);
+in
 {
   config = lib.mkIf config.sgiath.server.enable {
     security.acme = {
       acceptTerms = true;
+      # certs = {
+      #   "sgiath.dev" = {
+      #     extraDomainNames = [
+      #       "5e.sgiath.dev"
+      #       "audio.sgiath.dev"
+      #       "foundry.sgiath.dev"
+      #       "home-assistant.sgiath.dev"
+      #       "matrix.sgiath.dev"
+      #       "meet.sgiath.dev"
+      #       "nas.sgiath.dev"
+      #       "osm.sgiath.dev"
+      #       "plex.sgiath.dev"
+      #       "search.sgiath.dev"
+      #       "tak.sgiath.dev"
+      #       "wp.sgiath.dev"
+      #       "xmpp.sgiath.dev"
+      #     ];
+      #   };
+      # };
       defaults = {
         email = "server@sgiath.dev";
         dnsProvider = "cloudflare";
+        credentialFiles = {
+          CLOUDFLARE_EMAIL = "filipvavera@sgiath.dev";
+          CLOUDFLARE_DNS_API_TOKEN = secrets.cloudflare_token;
+        };
         server = "https://acme-staging-v02.api.letsencrypt.org/directory";
       };
     };
@@ -22,10 +48,6 @@
         multi_accept on;
         worker_connections 2048;
       '';
-      defaultListen = [
-        # { addr = "192.168.1.107"; }
-        { addr = "192.168.1.207"; }
-      ];
       resolver.addresses = [ "127.0.0.1:53" ];
 
       clientMaxBodySize = "2048M";
