@@ -1,10 +1,26 @@
-{ config, lib, ... }:
+{
+  config,
+  lib,
+  pkgs,
+  ...
+}:
 {
   options.services.monitoring = {
     enable = lib.mkEnableOption "monitoring";
   };
 
   config = lib.mkIf (config.sgiath.server.enable && config.services.monitoring.enable) {
+    systemd.services.promtail = {
+      description = "Promtail service for Loki";
+      wantedBy = [ "multi-user.target" ];
+
+      serviceConfig = {
+        ExecStart = ''
+          ${pkgs.grafana-loki}/bin/promtail --config.file ${./promtail.yaml}
+        '';
+      };
+    };
+
     services = {
       prometheus = {
         enable = true;
@@ -33,6 +49,41 @@
           server = {
             root_url = "https://monitoring.sgiath.dev";
           };
+        };
+      };
+
+      loki = {
+        enable = true;
+        configuration = {
+          server = {
+            http_listen_port = 28183;
+            grpc_listen_port = 0;
+          };
+
+          positions.filename = "/tmp/positions.yaml";
+
+          clients = [
+            { url = "http://127.0.0.1:3100/loki/api/v1/push"; }
+          ];
+
+          scrape_configs = [
+            {
+              job_name = "journal";
+              journal = {
+                max_age = "12h";
+                labels = {
+                  job = "systemd-journal";
+                  host = "vesta";
+                };
+              };
+              relabel_configs = [
+                {
+                  source_labels = [ "__journal__systemd_unit" ];
+                  target_label = "unit";
+                }
+              ];
+            }
+          ];
         };
       };
 
