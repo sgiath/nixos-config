@@ -62,7 +62,7 @@ in
 
         "matrix.sgiath.dev" = {
           # SSL
-          # onlySSL = true;
+          onlySSL = true;
           kTLS = true;
 
           # ACME
@@ -70,13 +70,13 @@ in
           acmeRoot = null;
 
           # QUIC
-          # http3_hq = true;
-          # quic = true;
+          http3_hq = true;
+          quic = true;
 
-          listen = [
-            { addr = "0.0.0.0"; port = 443; ssl = true; }
-            { addr = "0.0.0.0"; port = 8448; ssl = true; }
-          ];
+          # listen = [
+          #   { addr = "0.0.0.0"; port = 443; ssl = true; }
+          #   { addr = "0.0.0.0"; port = 8448; ssl = true; }
+          # ];
 
           # static files
           locations."/" = {
