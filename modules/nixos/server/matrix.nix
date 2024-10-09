@@ -1,14 +1,14 @@
 {
   config,
   lib,
-pkgs,
+  pkgs,
   ...
 }:
 let
   secrets = builtins.fromJSON (builtins.readFile ./../../../secrets.json);
 in
 {
-  config = lib.mkIf (config.sgiath.server.enable && config.services.matrix-synapse.enable) {
+  config = lib.mkIf (config.sgiath.server.enable && config.services.matrix-conduit.enable) {
     services = {
       matrix-conduit = {
         package = pkgs.conduwuit.all-features;
