@@ -10,17 +10,6 @@
   };
 
   config = lib.mkIf (config.sgiath.server.enable && config.services.monitoring.enable) {
-    systemd.services.promtail = {
-      description = "Promtail service for Loki";
-      wantedBy = [ "multi-user.target" ];
-
-      serviceConfig = {
-        ExecStart = ''
-          ${pkgs.grafana-loki}/bin/promtail --config.file ${./promtail.yaml}
-        '';
-      };
-    };
-
     services = {
       prometheus = {
         enable = true;
@@ -85,6 +74,10 @@
             }
           ];
         };
+      };
+
+      alloy = {
+        enable = true;
       };
 
       nginx.virtualHosts."monitoring.sgiath.dev" = {
