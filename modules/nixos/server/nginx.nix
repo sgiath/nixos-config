@@ -8,34 +8,14 @@
   config = lib.mkIf config.sgiath.server.enable {
     security.acme = {
       acceptTerms = true;
-      # certs = {
-      #   "sgiath.dev" = {
-      #     extraDomainNames = [
-      #       "5e.sgiath.dev"
-      #       "audio.sgiath.dev"
-      #       "foundry.sgiath.dev"
-      #       "home-assistant.sgiath.dev"
-      #       "matrix.sgiath.dev"
-      #       "meet.sgiath.dev"
-      #       "nas.sgiath.dev"
-      #       "osm.sgiath.dev"
-      #       "plex.sgiath.dev"
-      #       "search.sgiath.dev"
-      #       "tak.sgiath.dev"
-      #       "wp.sgiath.dev"
-      #       "xmpp.sgiath.dev"
-      #     ];
-      #   };
-      # };
       defaults = {
         email = "server@sgiath.dev";
         dnsProvider = "cloudflare";
         dnsResolver = "1.1.1.1:53";
         credentialFiles = {
-          CLOUDFLARE_EMAIL_FILE = "/run/secrets/cloudflare-email";
-          CLOUDFLARE_DNS_API_TOKEN_FILE = "/run/secrets/cloudflare-token";
+          CLOUDFLARE_EMAIL_FILE = "/data/secrets/cloudflare-email";
+          CLOUDFLARE_DNS_API_TOKEN_FILE = "/data/secrets/cloudflare-token";
         };
-        # server = "https://acme-staging-v02.api.letsencrypt.org/directory";
       };
     };
 
@@ -82,16 +62,6 @@
       '';
 
       virtualHosts = {
-        # default = {
-        #   default = true;
-        #   locations."/.well-known/acme-challenge/" = {
-        #     root = "/var/lib/acme/acme-challenge";
-        #     extraConfig = ''
-        #       allow all;
-        #     '';
-        #   };
-        # };
-
         "nas.sgiath.dev" = {
           # SSL
           onlySSL = true;
