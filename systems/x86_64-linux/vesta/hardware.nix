@@ -21,10 +21,27 @@
   boot.kernelModules = [ "kvm-amd" ];
   boot.extraModulePackages = [ ];
 
+  services = {
+    nfs.server.enable = true;
+    fstrim.enable = true;
+  };
+
   fileSystems = {
     "/data" = {
       device = "/dev/disk/by-uuid/f87c6afb-7e94-452a-a6d7-8e5fc2cf43fb";
       fsType = "ext4";
+    };
+    "/data2" = {
+      device = "/dev/sda1";
+      fsType = "ext4";
+    };
+    "/data3" = {
+      device = "/dev/sdb1";
+      fsType = "ext4";
+    };
+    "/nas/homes" = {
+      device = "192.168.1.4:/volume1/homes";
+      fsType = "nfs";
     };
   };
 
