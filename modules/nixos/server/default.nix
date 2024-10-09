@@ -5,6 +5,7 @@
     ./audiobookshelf.nix
     ./foundry.nix
     ./home-assistant.nix
+    ./jitsi.nix
     ./matrix.nix
     ./nginx.nix
     ./osm.nix

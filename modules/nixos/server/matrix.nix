@@ -8,9 +8,14 @@ let
   secrets = builtins.fromJSON (builtins.readFile ./../../../secrets.json);
 in
 {
-  config = lib.mkIf (config.sgiath.server.enable && config.services.matrix-conduit.enable) {
+  options.services.matrix = {
+    enable = lib.mkEnableOption "matrix server";
+  };
+
+  config = lib.mkIf (config.sgiath.server.enable && config.services.matrix.enable) {
     services = {
       matrix-conduit = {
+        enable = true;
         package = pkgs.conduwuit.all-features;
         settings.global = {
           # server
