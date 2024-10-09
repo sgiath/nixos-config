@@ -5,8 +5,11 @@
       nginx.virtualHosts."audio.sgiath.dev" = {
         # SSL
         onlySSL = true;
-        enableACME = true;
         kTLS = true;
+
+        # ACME
+        enableACME = true;
+        acmeRoot = null;
 
         # QUIC
         http3_hq = true;

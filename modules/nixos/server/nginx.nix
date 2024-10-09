@@ -30,6 +30,7 @@
       defaults = {
         email = "server@sgiath.dev";
         dnsProvider = "cloudflare";
+        dnsResolver = "1.1.1.1:53";
         credentialFiles = {
           CLOUDFLARE_EMAIL_FILE = "/run/secrets/cloudflare-email";
           CLOUDFLARE_DNS_API_TOKEN_FILE = "/run/secrets/cloudflare-token";
@@ -94,8 +95,11 @@
         "nas.sgiath.dev" = {
           # SSL
           onlySSL = true;
-          enableACME = true;
           kTLS = true;
+
+          # ACME
+          enableACME = true;
+          acmeRoot = null;
 
           # QUIC
           http3_hq = true;
@@ -117,8 +121,11 @@
         "plex.sgiath.dev" = {
           # SSL
           onlySSL = true;
-          enableACME = true;
           kTLS = true;
+
+          # ACME
+          enableACME = true;
+          acmeRoot = null;
 
           # QUIC
           http3_hq = true;

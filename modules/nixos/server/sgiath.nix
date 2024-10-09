@@ -3,6 +3,18 @@
   config = lib.mkIf (config.sgiath.server.enable) {
     services = {
       nginx.virtualHosts."sgiath.dev" = {
+        # SSL
+        onlySSL = true;
+        kTLS = true;
+
+        # ACME
+        enableACME = true;
+        acmeRoot = null;
+
+        # QUIC
+        http3_hq = true;
+        quic = true;
+
         root = "/data/www/sgiath.dev";
 
         locations = {
