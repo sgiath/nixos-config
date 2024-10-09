@@ -25,7 +25,7 @@
 
       # static files
       root = "${pkgs.dnd5etools}";
-      # locations."/".root = "${pkgs.dnd5etools}";
+      locations."/".root = "${pkgs.dnd5etools}";
     };
   };
 }
