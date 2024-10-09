@@ -1,20 +1,20 @@
 {
   config,
   lib,
-  pkgs,
+pkgs,
   ...
 }:
 let
   secrets = builtins.fromJSON (builtins.readFile ./../../../secrets.json);
 in
 {
-  config = lib.mkIf (config.sgiath.server.enable && config.services.matrix-conduit.enable) {
+  config = lib.mkIf (config.sgiath.server.enable && config.services.matrix-synapse.enable) {
     services = {
       matrix-conduit = {
         package = pkgs.conduwuit.all-features;
         settings.global = {
           # server
-          server_name = "matrix.sgiath.dev";
+          server_name = "sgiath.dev";
           address = "127.0.0.1";
           port = 6167;
 
@@ -30,27 +30,28 @@ in
         };
       };
 
-      # matrix-synapse = {
-      #   settings = {
-      #     public_baseurl = "https://matrix.sgiath.dev";
-      #     enable_registration = true;
-      #   };
-      # };
-
       nginx.virtualHosts = {
         "sgiath.dev".locations = {
           "/.well-known/matrix/server" = {
             extraConfig = ''
+              add_header Access-Control-Allow-Origin '*';
+              add_header Cross-Origin-Resource-Policy 'cross-origin';
+
               default_type application/json;
+
+              return 200 '{"m.server":"matrix.sgiath.dev"}';
             '';
-            return = "200 '{\"m.server\":\"matrix.sgiath.dev\"}'";
           };
 
           "/.well-known/matrix/client" = {
             extraConfig = ''
+              add_header Access-Control-Allow-Origin '*';
+              add_header Cross-Origin-Resource-Policy 'cross-origin';
+
               default_type application/json;
+
+              return 200 '{"m.homeserver":{"base_url":"matrix.sgiath.dev"}}';
             '';
-            return = "200 '{\"m.homeserver\":{\"base_url\":\"matrix.sgiath.dev\"}}'";
           };
         };
 
