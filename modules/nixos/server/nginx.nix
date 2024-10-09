@@ -34,7 +34,7 @@
           CLOUDFLARE_EMAIL_FILE = "/run/secrets/cloudflare-email";
           CLOUDFLARE_DNS_API_TOKEN_FILE = "/run/secrets/cloudflare-token";
         };
-        server = "https://acme-staging-v02.api.letsencrypt.org/directory";
+        # server = "https://acme-staging-v02.api.letsencrypt.org/directory";
       };
     };
 
@@ -81,15 +81,15 @@
       '';
 
       virtualHosts = {
-        default = {
-          default = true;
-          locations."/.well-known/acme-challenge/" = {
-            root = "/var/lib/acme/acme-challenge";
-            extraConfig = ''
-              allow all;
-            '';
-          };
-        };
+        # default = {
+        #   default = true;
+        #   locations."/.well-known/acme-challenge/" = {
+        #     root = "/var/lib/acme/acme-challenge";
+        #     extraConfig = ''
+        #       allow all;
+        #     '';
+        #   };
+        # };
 
         "nas.sgiath.dev" = {
           # SSL
