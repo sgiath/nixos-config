@@ -17,6 +17,7 @@
     dnd5etools.enable = false;
     foundryvtt.enable = true;
     home-assistant.enable = true;
+    matrix-conduit.enable = true;
     pi-hole.enable = true;
     searx.enable = true;
   };

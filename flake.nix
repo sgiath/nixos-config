@@ -46,6 +46,11 @@
       inputs.nixpkgs.follows = "nixpkgs";
     };
 
+    conduwuit = {
+      url = "github:girlbossceo/conduwuit";
+      inputs.nixpkgs.follows = "nixpkgs";
+    };
+
     stylix = {
       url = "github:danth/stylix";
       inputs.nixpkgs.follows = "nixpkgs";
