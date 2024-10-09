@@ -70,6 +70,7 @@
         allowUnfree = true;
         permittedInsecurePackages = [
           "jitsi-meet-1.0.8043"
+          "cinny-4.2.1"
         ];
       };
 
