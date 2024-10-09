@@ -70,8 +70,8 @@ in
           acmeRoot = null;
 
           # QUIC
-          http3_hq = true;
-          quic = true;
+          # http3_hq = true;
+          # quic = true;
 
           listen = [
             { addr = "0.0.0.0"; port = 443; ssl = true; }
