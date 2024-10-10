@@ -7,6 +7,10 @@
 
 {
   config = lib.mkIf config.programs.chromium.enable {
+    home.packages = [
+      pkgs.tor-browser
+    ];
+
     programs.chromium = {
       package = pkgs.ungoogled-chromium;
       extensions = [
