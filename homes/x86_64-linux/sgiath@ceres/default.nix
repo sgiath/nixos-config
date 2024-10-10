@@ -10,6 +10,7 @@
     telegram-desktop
     signal-desktop-beta
     cinny-desktop
+    simplex-chat-desktop
 
     yt-dlp
     parted
