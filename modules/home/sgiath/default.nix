@@ -51,7 +51,7 @@
           git commit --signoff -m "server changes"
           git push
 
-          nixos-rebuild switch --use-remote-sudo --flake . --target-host 'sgiath@192.168.1.207'
+          nixos-rebuild switch --use-remote-sudo --flake . --target-host 'sgiath@192.168.1.2'
           popd
         '')
 

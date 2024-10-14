@@ -26,11 +26,11 @@
       };
       hosts = {
         "192.168.1.1" = [ "router.sgiath" ];
-        "192.168.1.107" = [
+        "192.168.1.2" = [
           "sgiath.dev"
           "dns.sgiath"
         ];
-        "192.168.1.207" = [
+        "192.168.1.3" = [
           "sgiath.dev"
           "dns.sgiath"
         ];
@@ -47,7 +47,7 @@
     environment.etc."resolv.conf".text = ''
       search sgiath.dev
 
-      nameserver 192.168.1.207
+      nameserver 192.168.1.2
       nameserver 192.168.1.1
       nameserver 8.8.8.8
     '';
