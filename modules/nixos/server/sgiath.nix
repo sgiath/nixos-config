@@ -18,6 +18,22 @@
         root = "/data/www/sgiath.dev";
 
         locations = {
+          "/profile" = {
+            extraConfig = ''
+              add_header Access-Control-Allow-Origin '*';
+              add_header Cross-Origin-Resource-Policy 'cross-origin';
+            '';
+          };
+
+          "/presentations" = {
+            extraConfig = ''
+              rewrite ^/presentations(/index.html)?$ /presentations/ permanent;
+              rewrite ^/presentations/(.+)/$ /presentations/$1 permanent;
+            '';
+
+            tryFiles = "$uri $uri.html $uri/index.html =404";
+          };
+
           "/download" = {
             extraConfig = ''
               autoindex on;
@@ -31,6 +47,11 @@
             extraConfig = ''
               add_header Content-Disposition 'attachment';
             '';
+          };
+
+          "/" = {
+            proxyWebsockets = true;
+            proxyPass = "http://127.0.0.1:4000";
           };
         };
       };
