@@ -27,11 +27,15 @@
       hosts = {
         "192.168.1.1" = [ "router.sgiath" ];
         "192.168.1.2" = [
-          # "sgiath.dev"
-          "dns.sgiath"
-        ];
-        "192.168.1.3" = [
-          # "sgiath.dev"
+          "sgiath.dev"
+          "5e.sgiath.dev"
+          "foundry.sgiath.dev"
+          "wp.sgiath.dev"
+          "search.sgiath.dev"
+          "audio.sgiath.dev"
+          "meet.sgiath.dev"
+          "matrix.sgiath.dev"
+          "home-assistant.sgiath.dev"
           "dns.sgiath"
         ];
         "192.168.1.4" = [ "nas.sgiath" ];
