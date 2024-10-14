@@ -1683,16 +1683,15 @@
         "tinted-tmux": "tinted-tmux"
       },
       "locked": {
-        "lastModified": 1728508267,
+        "lastModified": 1728640680,
         "narHash": "sha256-JH2+RXJNooFtZIN6ZhaGZWn2KChMrso4H7Fkp1Ujrdo=",
-        "owner": "trueNAHO",
+        "owner": "danth",
         "repo": "stylix",
-        "rev": "ed91a20c84a80a525780dcb5ea3387dddf6cd2de",
+        "rev": "f95022bb6e74f726a87975aec982a5aa9fad8691",
         "type": "github"
       },
       "original": {
-        "owner": "trueNAHO",
-        "ref": "stylix-downgrade-and-lock-tinted-kitty-input",
+        "owner": "danth",
         "repo": "stylix",
         "type": "github"
       }
