@@ -26,6 +26,14 @@
 
       # static files
       root = "${pkgs.${namespace}.dnd5etools}";
+
+      locations = {
+        "/" = {
+          extraConfig = ''
+            add_header Access-Control-Allow-Origin 'https://foundry.sgiath.dev';
+          '';
+        };
+      };
     };
   };
 }
