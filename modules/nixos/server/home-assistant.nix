@@ -30,15 +30,6 @@
           ];
         extraComponents = [
           # default
-          "config"
-          "dhcp"
-          "energy"
-          "history"
-          "image_upload"
-          "mobile_app"
-          "ssdp"
-          "sun"
-          "zeroconf"
           "map"
 
           # custom
@@ -52,7 +43,6 @@
           "bitcoin"
         ];
         config = {
-          default_config = {};
           http = {
             server_host = [ "127.0.0.1" ];
             server_port = 8123;
@@ -70,6 +60,19 @@
             time_zone = "UTC";
             unit_system = "metric";
           };
+
+          # default config
+          # backup = { };
+          config = { };
+          dhcp = { };
+          energy = { };
+          history = { };
+          image_upload = { };
+          mobile_app = { };
+          sshp = { };
+          sun = { };
+          zeroconf = { };
+          map = { };
         };
       };
     };
