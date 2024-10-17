@@ -11,6 +11,7 @@
     home.packages = with pkgs; [
       yt-dlp
       parted
+      google-cloud-sdk
     ];
 
     programs = {

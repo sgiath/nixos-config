@@ -8,7 +8,7 @@
         kTLS = true;
 
         # ACME
-        enableACME = true;
+        enableACME = false;
         acmeRoot = null;
 
         # QUIC
@@ -47,11 +47,6 @@
             extraConfig = ''
               add_header Content-Disposition 'attachment';
             '';
-          };
-
-          "/" = {
-            proxyWebsockets = true;
-            proxyPass = "http://127.0.0.1:4000";
           };
         };
       };

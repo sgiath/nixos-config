@@ -36,30 +36,6 @@ in
       };
 
       nginx.virtualHosts = {
-        "sgiath.dev".locations = {
-          "/.well-known/matrix/server" = {
-            extraConfig = ''
-              add_header Access-Control-Allow-Origin '*';
-              add_header Cross-Origin-Resource-Policy 'cross-origin';
-
-              default_type application/json;
-
-              return 200 '{"m.server":"matrix.sgiath.dev:443"}';
-            '';
-          };
-
-          "/.well-known/matrix/client" = {
-            extraConfig = ''
-              add_header Access-Control-Allow-Origin '*';
-              add_header Cross-Origin-Resource-Policy 'cross-origin';
-
-              default_type application/json;
-
-              return 200 '{"m.server":"https://matrix.sgiath.dev","m.homeserver":{"base_url":"https://matrix.sgiath.dev"}}';
-            '';
-          };
-        };
-
         "matrix.sgiath.dev" = {
           # SSL
           onlySSL = true;
