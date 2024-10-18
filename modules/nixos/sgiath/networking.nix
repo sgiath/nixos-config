@@ -27,6 +27,8 @@
       hosts = {
         "192.168.1.1" = [ "router.sgiath" ];
         "192.168.1.2" = [
+          "sgiath.dev"
+          "5e.sgiath.dev"
           "foundry.sgiath.dev"
           "search.sgiath.dev"
           "audio.sgiath.dev"
