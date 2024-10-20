@@ -14,7 +14,7 @@ in
     services = {
       matrix-conduit = {
         enable = true;
-        package = pkgs.conduwuit.all-features;
+        package = pkgs.conduwuit;
         settings.global = {
           # server
           server_name = "sgiath.dev";
