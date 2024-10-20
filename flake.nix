@@ -48,6 +48,8 @@
 
     conduwuit = {
       url = "github:girlbossceo/conduwuit";
+      # version 0.4.6
+      rev = "8f7ade4c22533a3177bfd8f175e178573ba6c1d4";
       inputs.nixpkgs.follows = "nixpkgs";
     };
 
