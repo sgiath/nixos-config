@@ -20,13 +20,13 @@
     jitsi-meet.enable = true;
     matrix.enable = true;
     monitoring.enable = true;
-    nas-proxy.enable = true;
-    osm.proxy = false;
     pi-hole.enable = true;
     searx.enable = true;
+
+    # proxies
+    nas-proxy.enable = true;
     sgiath-dev.proxy = true;
     sinai-camp.proxy = true;
-    wordpress.proxy = false;
-    xmpp.enable = false;
+    wordpress.proxy = true;
   };
 }
