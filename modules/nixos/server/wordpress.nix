@@ -8,7 +8,7 @@
 
   config = lib.mkIf (config.sgiath.server.enable && config.services.wordpress.proxy) {
     services = {
-      nginx.virtualHosts."mv.sgiath.dev" = {
+      nginx.virtualHosts."skylark.sgiath.dev" = {
         # SSL
         onlySSL = true;
         kTLS = true;
