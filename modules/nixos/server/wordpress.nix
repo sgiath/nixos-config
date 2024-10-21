@@ -22,7 +22,7 @@
         quic = true;
 
         locations."/" = {
-          proxyPass = "http://127.0.0.1:2368";
+          proxyPass = "http://127.0.0.1:8081";
         };
       };
     };
