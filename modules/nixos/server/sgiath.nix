@@ -18,6 +18,7 @@
         quic = true;
 
         root = "/data/www/sgiath.dev";
+        tryFiles = "$uri $uri.html $uri/index.html =404";
 
         locations = {
           "/profile" = {
