@@ -18,7 +18,6 @@
         quic = true;
 
         root = "/data/www/sgiath.dev";
-        tryFiles = "$uri $uri.html $uri/index.html =404";
 
         locations = {
           "/profile" = {
@@ -52,10 +51,9 @@
             '';
           };
 
-          # "/" = {
-          #   proxyWebsockets = true;
-          #   proxyPass = "http://127.0.0.1:4000";
-          # };
+          "/" = {
+            tryFiles = "$uri $uri.html $uri/index.html =404";
+          };
         };
       };
     };
