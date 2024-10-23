@@ -7,5 +7,5 @@ in
   hyprland = pkgs-hyperland.hyprland;
   xdg-desktop-portal-hyprland = pkgs-hyperland.xdg-desktop-portal-hyprland;
 
-  conduwuit = inputs.conduwuit.packages.${prev.system}.all-features;
+  # conduwuit = inputs.conduwuit.packages.${prev.system}.all-features;
 }
