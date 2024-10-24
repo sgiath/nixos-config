@@ -43,7 +43,7 @@ in
         })
 
         # Factorio
-        (factorio.override {
+        (master.factorio-space-age.override {
           username = "Sgiath";
           token = secrets.factorio_token;
         })
