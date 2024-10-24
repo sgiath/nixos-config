@@ -7,7 +7,7 @@ in
   # master version of packages
   master = import inputs.nixpkgs-master {
     system = prev.system;
-    allowUnfree = true;
+    config.allowUnfree = true;
   };
 
   # Hyprland main repo overrides
