@@ -15,5 +15,5 @@ in
   xdg-desktop-portal-hyprland = pkgs-hyperland.xdg-desktop-portal-hyprland;
 
   # conduwuit is now broken in the main repo, so using the nixpkgs version
-  # conduwuit = inputs.conduwuit.packages.${prev.system}.all-features;
+  conduwuit = inputs.conduwuit.packages.${prev.system}.all-features;
 }
