@@ -14,7 +14,7 @@
     home = {
       packages = with pkgs; [
         claws-mail
-        master.protonmail-bridge-gui
+        stable.protonmail-bridge-gui
 
         protonmail-desktop
       ];

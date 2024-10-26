@@ -9,6 +9,10 @@ in
     system = prev.system;
     config.allowUnfree = true;
   };
+  stable = import inputs.nixpkgs-stable {
+    system = prev.system;
+    config.allowUnfree = true;
+  };
 
   # Hyprland main repo overrides
   hyprland = pkgs-hyperland.hyprland;
