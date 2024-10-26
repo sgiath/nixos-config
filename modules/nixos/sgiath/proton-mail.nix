@@ -1,6 +1,6 @@
 {
   config = {
-    sevices.protonmail-bridge = {
+    services.protonmail-bridge = {
       enable = true;
     };
   };
