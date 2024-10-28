@@ -19,8 +19,6 @@
     ./time_lang.nix
     ./udev.nix
 
-    ./proton-mail.nix
-
     # enable switch
     ./amd-gpu.nix
     ./audio.nix

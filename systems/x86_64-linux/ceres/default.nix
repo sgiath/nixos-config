@@ -18,7 +18,10 @@
 
   crazyegg.enable = true;
 
-  services.ollama.enable = true;
+  services = {
+    ollama.enable = true;
+    protonmail-bridge.enable = true;
+  };
 
   programs = {
     gamescope.enable = true;
