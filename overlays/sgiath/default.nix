@@ -2,17 +2,18 @@
 final: prev:
 let
   pkgs-hyperland = inputs.hyprland.packages.${prev.system};
+  pkgs-master = import inputs.nixpkgs-master {
+    system = prev.system;
+    config.allowUnfree = true;
+  };
+  pkgs-stable = import inputs.nixpkgs-stable {
+    system = prev.system;
+    config.allowUnfree = true;
+  };
 in
 {
-  # master version of packages
-  master = import inputs.nixpkgs-master {
-    system = prev.system;
-    config.allowUnfree = true;
-  };
-  stable = import inputs.nixpkgs-stable {
-    system = prev.system;
-    config.allowUnfree = true;
-  };
+  # get Factorio updates as soon as possible
+  factorio = pkgs-master.factorio-space-age-experimental;
 
   # Hyprland main repo overrides
   hyprland = pkgs-hyperland.hyprland;

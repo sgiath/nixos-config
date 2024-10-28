@@ -3,6 +3,6 @@
   services.ollama = {
     acceleration = "rocm";
     loadModels = [ "llama3.2" ];
-    package = pkgs.master.ollama-rocm;
+    package = pkgs.ollama-rocm;
   };
 }
