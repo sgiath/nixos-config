@@ -15,10 +15,10 @@ in
   # get Factorio updates as soon as possible
   factorio = pkgs-master.factorio-space-age-experimental;
 
-  # Hyprland main repo overrides
+  # Hyprland Nix native versions
   hyprland = pkgs-hyperland.hyprland;
   xdg-desktop-portal-hyprland = pkgs-hyperland.xdg-desktop-portal-hyprland;
 
-  # conduwuit is now broken in the main repo, so using the nixpkgs version
+  # conduwuit Nix native version
   conduwuit = inputs.conduwuit.packages.${prev.system}.all-features;
 }

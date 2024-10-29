@@ -443,11 +443,11 @@
         ]
       },
       "locked": {
-        "lastModified": 1730045523,
-        "narHash": "sha256-W5Avk1THhZALXITHGazKfZbIZ5+Bc4nSYvAYHUn96EU=",
+        "lastModified": 1730135292,
+        "narHash": "sha256-QUU1P8x42b8moaUsxJkamfcRXdyNjIq79ZThzT3CVUA=",
         "owner": "nix-community",
         "repo": "disko",
-        "rev": "89e458a3bb3693e769bfb2b2447c3fe72092d498",
+        "rev": "0e55423bf8c241cf18676a8b8424c7eadd170ffc",
         "type": "github"
       },
       "original": {
@@ -1075,11 +1075,11 @@
         "xdph": "xdph"
       },
       "locked": {
-        "lastModified": 1730072482,
-        "narHash": "sha256-3Aotvc0dFS9J2iDnrSVjjngdZcaD9ghfroVU3jl84Gk=",
+        "lastModified": 1730143527,
+        "narHash": "sha256-3uRuQHxAd/+8PptDpIZZlC588O0eTV1mTa+z8v4cWPU=",
         "ref": "refs/heads/main",
-        "rev": "6cf193e1662f6f750e964a3e174ae017246b4d48",
-        "revCount": 5385,
+        "rev": "d679d200299ed4670f0d0f138c793d5f507b7cec",
+        "revCount": 5390,
         "submodules": true,
         "type": "git",
         "url": "https://github.com/hyprwm/Hyprland"
@@ -1515,11 +1515,11 @@
     },
     "nixpkgs-master": {
       "locked": {
-        "lastModified": 1730101005,
-        "narHash": "sha256-+rgjm0UA5XJpkoKrvWHLgR0SEzvhmm+moRm/v0DXLxI=",
+        "lastModified": 1730186115,
+        "narHash": "sha256-ZSrNEk6c2LQkJLslko0XlFWzhIVOWGgFh1F8Fa0zh2c=",
         "owner": "NixOS",
         "repo": "nixpkgs",
-        "rev": "038f62138aabdbd410977694bcc545fb18cdd675",
+        "rev": "355e12b665339290efd7d08180d423973d70228f",
         "type": "github"
       },
       "original": {
@@ -1665,11 +1665,11 @@
         ]
       },
       "locked": {
-        "lastModified": 1730078867,
-        "narHash": "sha256-kY96WUIEgmQCqv/lvK9mu5omxFBmeEr9KqvmxFD9HRA=",
+        "lastModified": 1730183307,
+        "narHash": "sha256-gNcVyjXzNvZ+gK0os8+797nyk22YGY4q+HtZCVBySoo=",
         "owner": "nix-community",
         "repo": "nixpkgs-wayland",
-        "rev": "16e73f902d59bc14e72fd2cfc4f60a647cb00561",
+        "rev": "e5084f5130fe566dec8ab0220f4f315e15734cec",
         "type": "github"
       },
       "original": {
@@ -1937,11 +1937,11 @@
         ]
       },
       "locked": {
-        "lastModified": 1719005984,
-        "narHash": "sha256-mpFl3Jv4fKnn+5znYXG6SsBjfXHJdRG5FEqNSPx0GLA=",
+        "lastModified": 1730136121,
+        "narHash": "sha256-tfVayj13Zw+zzOKrmJhnvBod7Hdb9ixBR6/4GUlyMA0=",
         "owner": "snowfallorg",
         "repo": "lib",
-        "rev": "c6238c83de101729c5de3a29586ba166a9a65622",
+        "rev": "dd348182c1a010993e68004eada86cf0341fe2c4",
         "type": "github"
       },
       "original": {
