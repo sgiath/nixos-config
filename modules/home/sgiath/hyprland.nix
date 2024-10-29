@@ -135,7 +135,9 @@
           "workspace 3 silent, class:(google-chrome)"
           "workspace 4 silent, class:(firefox)"
 
+          # other apps
           "workspace 5 silent, class:(obsidian)"
+          "workspace 6 silent, class:(.factorio-wrapped)"
 
           # email
           "workspace 9 silent, class:(claws-mail)"

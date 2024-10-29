@@ -20,7 +20,6 @@
 
   services = {
     ollama.enable = true;
-    protonmail-bridge.enable = true;
   };
 
   programs = {
