@@ -3,6 +3,7 @@
   imports = [
     ./5e.nix
     ./audiobookshelf.nix
+    ./cryptpad.nix
     ./foundry.nix
     ./home-assistant.nix
     ./jitsi.nix

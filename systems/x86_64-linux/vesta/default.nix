@@ -15,6 +15,7 @@
   services = {
     dnd5etools.enable = true;
     audiobookshelf.enable = true;
+    cryptpad.enable = true;
     foundryvtt.enable = true;
     home-assistant.enable = true;
     jitsi-meet.enable = true;
