@@ -7,7 +7,7 @@
     services.cryptpad = {
       configureNginx = true;
       settings = {
-        # httpSafeOrigin = "https://cryptpad.sgiath.dev";
+        httpSafeOrigin = "https://cryptpad-safe.sgiath.dev";
         httpUnsafeOrigin = "https://cryptpad.sgiath.dev";
       };
     };
