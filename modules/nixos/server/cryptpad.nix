@@ -8,6 +8,7 @@
       cryptpad = {
         configureNginx = true;
         settings = {
+          httpPort = 3001;
           httpSafeOrigin = "https://cryptpad-safe.sgiath.dev";
           httpUnsafeOrigin = "https://cryptpad.sgiath.dev";
         };
