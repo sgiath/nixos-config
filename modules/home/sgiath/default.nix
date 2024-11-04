@@ -46,7 +46,7 @@
               ;;
 
             --vesta)
-              nixos-rebuild switch --use-remote-sudo --flake '.#vesta' --target-host 'sgiath@vesta.sgiath.dev'
+              nixos-rebuild switch --use-remote-sudo --flake '.#vesta' --target-host 'sgiath@vesta.local'
               ;;
 
             --hygiea)
