@@ -46,7 +46,7 @@
     system = {
       stateVersion = "23.11";
       extraDependencies = [
-        inputs.foundryvtt.packages.${system}.foundryvtt_12.src
+        # inputs.foundryvtt.packages.${system}.foundryvtt_12.src
       ];
     };
 
