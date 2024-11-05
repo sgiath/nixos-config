@@ -9,46 +9,49 @@
   ...
 }:
 let
-  version = "1.210.4";
+  version = "2.4.2";
   pname = "5etools";
 
-  # https://github.com/5etools-mirror-2/5etools-img/releases/tag/v1.210.4
   imgHashes = [
     {
       name = "img-v${version}.zip";
-      hash = "sha256-kTNd2EzfEj+XYJ8yqV8bRRhIyPki9k26ocCpv9JuiV8=";
+      hash = "sha256-t+f6NtlqPlVh0O5xMPH1+ktShtcXZCtCG/p5SLZxrFY=";
     }
     {
       name = "img-v${version}.z01";
-      hash = "sha256-3TP3PW97Qop5nhDWI1rzSfwWwaEWBpXnmZsWMMKapSM=";
+      hash = "sha256-j+svveFC7/6tRwoloaSFC7pBkB0Ga6Htoxe1/QYe2bg=";
     }
     {
       name = "img-v${version}.z02";
-      hash = "sha256-g+N7XvASAwnNa65qNa2P4iPkbDH/I0dWelf1AVU4X74=";
+      hash = "sha256-4AVMpcSOAKI/U8wGWHKEfeJ8boGhWRzCTSPbJtfix40=";
     }
     {
       name = "img-v${version}.z03";
-      hash = "sha256-0C/9w4nvUnUwjtFAaG0DFzyvB9k9jAX9h7pHVJBnw7o=";
+      hash = "sha256-yYUEwwzb+tITiPxL4pAaMhNEBUYzq2MNgP59bpOoSy8=";
     }
     {
       name = "img-v${version}.z04";
-      hash = "sha256-Z9EyT1jFQEvCAjBtxmb/4yZjC48ZpSXlWzSV+PnoxMc=";
+      hash = "sha256-yeTVWsRuS1VCjP4yjAigQLROGRNMHwHLWEy6gowyzvE=";
     }
     {
       name = "img-v${version}.z05";
-      hash = "sha256-SKqRelXWIvLN5F6YPhI42V62s6DAlC/i2BGJDWtIy+Y=";
+      hash = "sha256-4S7iGv91530N+r/jOWwS0zhnnWjV9m+uYKiGAxtmJVw=";
     }
     {
       name = "img-v${version}.z06";
-      hash = "sha256-saFFM5aof1/yUFy8r3H+/mE5te9g7PD0Se4WgPCsDMI=";
+      hash = "sha256-jmKtH8ndiJEGc7xzCAWjp/3qXnvm5UKQWKK8VN79jWw=";
     }
     {
       name = "img-v${version}.z07";
-      hash = "sha256-uYaC4/9cWSw6uxM/WI2muewLqj97wkjhPz+ixO/L+J4=";
+      hash = "sha256-q9ikjM2BIl8G/xbzHJAkAUg1lKerQafMPOMnuVG8OPM=";
     }
     {
       name = "img-v${version}.z08";
-      hash = "sha256-Okh60+yXjWqJ/GPOYORVfMmqJCtC8wEhHhEUjVbySYc=";
+      hash = "sha256-poivWmyjTVZZT3BZpGAnJHRzqpFB9atJ0kzbmUOEVqc=";
+    }
+    {
+      name = "img-v${version}.z09";
+      hash = "sha256-WERb9BJei9qX1p2wwIQRBcTiKmAt4HJuipVx0OS6WWE=";
     }
   ];
 
