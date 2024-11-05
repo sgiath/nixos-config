@@ -74,7 +74,7 @@ stdenv.mkDerivation {
   src = fetchzip {
     url = "https://github.com/5etools-mirror-3/5etools-src/releases/download/v${version}/${pname}-v${version}.zip";
     stripRoot = false;
-    hash = "sha256-kIXgWA9KZp/vIGApH5kCnzYr4HB65uG4tQmBcUK8VbM=";
+    hash = "sha256-AeB1AoAY3slRHC4P3EGWEyH4IPbetv+XPFZeluWfkVc=";
   };
 
   buildInputs = [
