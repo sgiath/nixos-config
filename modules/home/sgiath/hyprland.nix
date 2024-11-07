@@ -10,7 +10,7 @@
   };
 
   config = lib.mkIf config.programs.hyprland.enable {
-    stylix.targets.hyprland.enable = false;
+    # stylix.targets.hyprland.enable = false;
     wayland.windowManager.hyprland = {
       enable = true;
       package = pkgs.hyprland;
