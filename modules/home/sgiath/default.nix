@@ -92,7 +92,7 @@
         killall
         inotify-tools
         lshw
-        aria
+        vlc
 
         python312Packages.rns
         python312Packages.nomadnet
