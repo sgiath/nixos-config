@@ -92,6 +92,7 @@
         killall
         inotify-tools
         lshw
+        aria
 
         python312Packages.rns
         python312Packages.nomadnet
