@@ -3,7 +3,7 @@
     nixpkgs-master.url = "nixpkgs/master";
     nixpkgs.url = "nixpkgs/nixos-unstable";
     nixpkgs-stable.url = "nixpkgs/nixos-24.05";
-    nixpkgs-proton = "github:daniel-fahey/nixpkgs/protonmail-bridge-gui-qt68support";
+    nixpkgs-proton.url = "github:daniel-fahey/nixpkgs/protonmail-bridge-gui-qt68support";
 
     home-manager = {
       url = "github:nix-community/home-manager";
