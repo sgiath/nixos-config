@@ -9,8 +9,8 @@ return {
 
 				sh = { "shfmt" },
         md = { "mdformat" },
-        -- nix = { "nixfmt" },
-        nix = { "alejandra" },
+        nix = { "nixfmt" },
+        -- nix = { "alejandra" },
 
         elixir = { "mix" },
 

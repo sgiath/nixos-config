@@ -3,18 +3,15 @@
   lib,
   pkgs,
   ...
-}:
-let
+}: let
   font = {
-    package = (pkgs.nerdfonts.override { fonts = [ "RobotoMono" ]; });
+    package = pkgs.nerdfonts.override {fonts = ["RobotoMono"];};
     name = "RobotoMono Nerd Font Mono";
   };
-in
-{
+in {
   config = lib.mkIf config.sgiath.enable {
     stylix = {
       enable = true;
-      homeManagerIntegration.autoImport = false;
 
       polarity = "dark";
 

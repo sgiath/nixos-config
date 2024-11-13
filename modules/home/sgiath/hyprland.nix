@@ -3,8 +3,7 @@
   lib,
   pkgs,
   ...
-}:
-{
+}: {
   options.programs.hyprland = {
     enable = lib.mkEnableOption "hyprland";
   };
@@ -19,7 +18,7 @@
       systemd = {
         enable = true;
         enableXdgAutostart = true;
-        variables = [ "--all" ];
+        variables = ["--all"];
       };
 
       settings = {
