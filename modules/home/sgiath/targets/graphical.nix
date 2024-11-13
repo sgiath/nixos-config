@@ -14,6 +14,7 @@
       vscodium-fhs
       obsidian
       gimp
+      vlc
 
       # comm
       webcord

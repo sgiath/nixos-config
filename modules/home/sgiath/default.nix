@@ -82,7 +82,6 @@
         '')
 
         # general programs I want to have always available
-        appimage-run
         imagemagick
         ffmpeg
         zip
@@ -92,10 +91,9 @@
         killall
         inotify-tools
         lshw
-        vlc
 
-        python312Packages.rns
-        python312Packages.nomadnet
+        # python312Packages.rns
+        # python312Packages.nomadnet
       ];
     };
 
