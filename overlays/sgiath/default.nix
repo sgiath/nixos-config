@@ -21,4 +21,7 @@ in
 
   # conduwuit Nix native version
   conduwuit = inputs.conduwuit.packages.${prev.system}.all-features;
+
+  # fix protonmail
+  protonmail-bridge-gui = inputs.nixpkgs-proton.legacyPackages.${prev.system}.protonmail-bridge-gui;
 }
