@@ -17,7 +17,6 @@
     ./nvim.nix
     ./ssh.nix
     ./starship.nix
-    ./stylix.nix
     ./tmux.nix
     ./waybar.nix
     ./zsh.nix

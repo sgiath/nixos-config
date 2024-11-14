@@ -83,15 +83,15 @@
       ];
 
       systems.modules.nixos = with inputs; [
-        # stylix.nixosModules.stylix
+        stylix.nixosModules.stylix
         disko.nixosModules.disko
         nix-bitcoin.nixosModules.default
         simple-nixos-mailserver.nixosModules.mailserver
         foundryvtt.nixosModules.foundryvtt
       ];
 
-      homes.modules = with inputs; [
-        stylix.homeManagerModules.stylix
-      ];
+      # homes.modules = with inputs; [
+      #   stylix.homeManagerModules.stylix
+      # ];
     };
 }
