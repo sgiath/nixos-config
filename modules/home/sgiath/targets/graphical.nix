@@ -15,6 +15,7 @@
       obsidian
       gimp
       vlc
+      okular
 
       # comm
       webcord
