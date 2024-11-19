@@ -10,7 +10,7 @@ let
   awsSecrets = pkgs.writeShellScriptBin "aws-secrets" ''
     exp=$(date -d $(${pkgs.jq}/bin/jq -r '.Expiration' /home/sgiath/.aws-cred) +"%Y-%m-%dT%H:%M:%S%z")
     now=$(date +"%Y-%m-%dT%H:%M:%S%z")
-    if [ $now -ge $exp ]; then
+    if [[ $now > $exp ]]; then
       mfa="arn:aws:iam::173509387151:mfa/filip"
       token=$(${pass}/bin/pass otp 2fa/amazon/code)
       cred=$(${awscli}/bin/aws sts get-session-token --profile crazyegg --serial-number $mfa --token-code $token | ${pkgs.jq}/bin/jq -r '.Credentials' | ${pkgs.jq}/bin/jq '. += {"Version": 1}')
