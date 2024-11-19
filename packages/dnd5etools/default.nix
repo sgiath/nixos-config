@@ -9,49 +9,53 @@
   ...
 }:
 let
-  version = "2.4.2";
+  version = "2.5.1";
   pname = "5etools";
 
   imgHashes = [
     {
-      name = "img-v${version}.zip";
-      hash = "sha256-t+f6NtlqPlVh0O5xMPH1+ktShtcXZCtCG/p5SLZxrFY=";
+      name = "zip";
+      hash = "sha256-l1ZNLP80GCREH3cjeBy8oDM+dbWu152AaiQLyUKYTWc=";
     }
     {
-      name = "img-v${version}.z01";
-      hash = "sha256-j+svveFC7/6tRwoloaSFC7pBkB0Ga6Htoxe1/QYe2bg=";
+      name = "z01";
+      hash = "sha256-jwSoihKNck8Gn/wruOiuOpv5M8owBCTd/jesFE+XXHk=";
     }
     {
-      name = "img-v${version}.z02";
-      hash = "sha256-4AVMpcSOAKI/U8wGWHKEfeJ8boGhWRzCTSPbJtfix40=";
+      name = "z02";
+      hash = "sha256-jvkCikDQEDT+EOO/U6l4qTLgvBFTkNONZprsByhsE+o=";
     }
     {
-      name = "img-v${version}.z03";
-      hash = "sha256-yYUEwwzb+tITiPxL4pAaMhNEBUYzq2MNgP59bpOoSy8=";
+      name = "z03";
+      hash = "sha256-B4opcwTEtLtBns0mbYXapXoWU8M0HLPUSKTCF/dCr8c=";
     }
     {
-      name = "img-v${version}.z04";
-      hash = "sha256-yeTVWsRuS1VCjP4yjAigQLROGRNMHwHLWEy6gowyzvE=";
+      name = "z04";
+      hash = "sha256-ffdwUTV1W9UdVLBDayyJw4rXsjOvmMjwDAVKt2zE96Q=";
     }
     {
-      name = "img-v${version}.z05";
-      hash = "sha256-4S7iGv91530N+r/jOWwS0zhnnWjV9m+uYKiGAxtmJVw=";
+      name = "z05";
+      hash = "sha256-YZLUNMgV5vJK/OYEK4y1NHckAbYX8cLeWImQPd970bY=";
     }
     {
-      name = "img-v${version}.z06";
-      hash = "sha256-jmKtH8ndiJEGc7xzCAWjp/3qXnvm5UKQWKK8VN79jWw=";
+      name = "z06";
+      hash = "sha256-mpCJFH7OcoewKuMiH6fzeqlzfIGrqCIJ3ktg6ZaNH90=";
     }
     {
-      name = "img-v${version}.z07";
-      hash = "sha256-q9ikjM2BIl8G/xbzHJAkAUg1lKerQafMPOMnuVG8OPM=";
+      name = "z07";
+      hash = "sha256-V+RY+USBsUfu73T4YQpQ5+nbTZ+z+Jk7dotVkJYwMCo=";
     }
     {
-      name = "img-v${version}.z08";
-      hash = "sha256-poivWmyjTVZZT3BZpGAnJHRzqpFB9atJ0kzbmUOEVqc=";
+      name = "z08";
+      hash = "sha256-JMv9MgZcpgN2Yf89ZW4chmPY2rT/ZTn7vOVTW9qhpaA=";
     }
     {
-      name = "img-v${version}.z09";
-      hash = "sha256-WERb9BJei9qX1p2wwIQRBcTiKmAt4HJuipVx0OS6WWE=";
+      name = "z09";
+      hash = "sha256-toTq8qI2YoWjJKDCHjNwKasWd9N/ZW4emRnDEw7+r8g=";
+    }
+    {
+      name = "z10";
+      hash = "sha256-h7HdMkmDnY7hDWBx6+oYO9MmKE4bJdwZbLdvw7mUal0=";
     }
   ];
 
@@ -59,11 +63,13 @@ let
     v:
     let
       img = fetchurl {
+        pname = "5etools-img-${v.name}";
+        inherit version;
         inherit (v) hash;
-        url = "https://github.com/5etools-mirror-2/5etools-img/releases/download/v${version}/${v.name}";
+        url = "https://github.com/5etools-mirror-2/5etools-img/releases/download/v${version}/img-v${version}.${v.name}";
       };
     in
-    "cp ${img} ${v.name}"
+    "cp ${img} img-v${version}.${v.name}"
   );
 
   nodeDependencies = (callPackage ./deps { inherit nodejs; }).nodeDependencies;
@@ -72,9 +78,11 @@ stdenv.mkDerivation {
   inherit version pname;
 
   src = fetchzip {
+    pname = "5etools-src";
+    inherit version;
     url = "https://github.com/5etools-mirror-3/5etools-src/releases/download/v${version}/${pname}-v${version}.zip";
     stripRoot = false;
-    hash = "sha256-AeB1AoAY3slRHC4P3EGWEyH4IPbetv+XPFZeluWfkVc=";
+    hash = "sha256-73R5DeNDw5I2Xk800Vszmd3o9EpUgC0ZErBxaJ+S7zE=";
   };
 
   buildInputs = [
