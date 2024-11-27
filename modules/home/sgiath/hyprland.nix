@@ -32,7 +32,7 @@
           "${pkgs.slack}/bin/slack"
           "${pkgs.webcord}/bin/webcord"
           # "${pkgs.cinny-desktop}/bin/cinny"
-          "${pkgs.signal-desktop-beta}/bin/signal-desktop-beta"
+          "${pkgs.signal-desktop}/bin/signal-desktop"
           "${pkgs.telegram-desktop}/bin/telegram-desktop"
         ];
 
