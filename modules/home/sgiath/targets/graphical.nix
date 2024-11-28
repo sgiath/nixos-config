@@ -36,16 +36,23 @@
       betaflight-configurator
     ];
 
-    wayland.windowManager.hyprland.settings.exec-once = [
-      # tools
-      "${pkgs.obsidian}/bin/obsidian"
+    wayland.windowManager.hyprland.settings = {
+      exec-once = [
+        # tools
+        "${pkgs.kitty}/bin/kitty"
+        "${pkgs.obsidian}/bin/obsidian"
 
-      # comms
-      "${pkgs.webcord}/bin/webcord"
-      "${pkgs.telegram-desktop}/bin/telegram-desktop"
-      "${pkgs.signal-desktop}/bin/signal-desktop"
-      "${pkgs.cinny-desktop}/bin/cinny"
-    ];
+        # comms
+        "${pkgs.webcord}/bin/webcord"
+        "${pkgs.telegram-desktop}/bin/telegram-desktop"
+        "${pkgs.signal-desktop}/bin/signal-desktop"
+        "${pkgs.cinny-desktop}/bin/cinny"
+      ];
+      bind = [
+        "$mod, Return, exec, ${pkgs.kitty}/bin/kitty"
+        "$mod, slash, exec, ${pkgs.wofi}/bin/wofi --show drun"
+      ];
+    };
 
     programs = {
       # hyprland

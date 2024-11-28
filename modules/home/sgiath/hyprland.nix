@@ -22,11 +22,6 @@
       };
 
       settings = {
-        # startup
-        exec-once = [
-          "${pkgs.kitty}/bin/kitty"
-        ];
-
         monitor = [
           # Desktop
           "DP-1,highres,0x2560,1"
@@ -40,15 +35,13 @@
         input.touchpad.natural_scroll = true;
 
         master = {
-          mfact = 0.66;
+          # mfact = 0.66;
           orientation = "right";
         };
 
         # bindings
         "$mod" = "SUPER";
         bind = [
-          "$mod, Return, exec, ${pkgs.kitty}/bin/kitty"
-          "$mod, slash, exec, ${pkgs.wofi}/bin/wofi --show drun"
           "$mod SHIFT, Q, exec, ${pkgs.wlogout}/bin/wlogout"
 
           "$mod SHIFT, C, killactive,"
@@ -181,10 +174,6 @@
         enable = true;
         config.common.default = "hyprland";
         xdgOpenUsePortal = true;
-        # configPackages = [
-        #   pkgs.xdg-desktop-portal-hyprland
-        #   pkgs.xdg-desktop-portal-gtk
-        # ];
         extraPortals = [
           pkgs.xdg-desktop-portal-hyprland
           pkgs.xdg-desktop-portal-gtk
