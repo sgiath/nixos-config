@@ -27,8 +27,10 @@
     hyprland = {
       type = "git";
       url = "ssh://github.com/hyprwm/Hyprland";
-      ref = "v0.45.2";
-      rev = "12f9a0d0b93f691d4d9923716557154d74777b0a";
+      # ref = "v0.45.2";
+      # rev = "12f9a0d0b93f691d4d9923716557154d74777b0a";
+      ref = "v0.45.1";
+      rev = "500d2a3580388afc8b620b0a3624147faa34f98b";
       submodules = true;
       inputs.nixpkgs.follows = "nixpkgs";
     };
@@ -53,15 +55,8 @@
       inputs.nixpkgs.follows = "nixpkgs";
     };
 
-    # stylix
-    base16 = {
-      url = "github:SenchoPens/base16.nix";
-      # url = "github:Noodlez1232/base16.nix/slugify-fix";
-    };
-
     stylix = {
       url = "github:danth/stylix";
-      inputs.base16.follows = "base16";
       inputs.nixpkgs.follows = "nixpkgs";
     };
   };
