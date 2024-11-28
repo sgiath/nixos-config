@@ -104,15 +104,15 @@
         ];
 
         workspace = [
-          "1,monitor:DP-1,default:true,persistent:true"
-          "2,monitor:DP-3,default:true,persistent:true"
-          "3,monitor:DP-3,persistent:true"
-          "4,monitor:DP-1,persistent:true"
-          "5,monitor:DP-3,persistent:true"
-          "6,monitor:DP-3,persistent:true"
-          "7,monitor:DP-3,persistent:true"
-          "8,monitor:DP-3,persistent:true"
-          "9,monitor:DP-3,persistent:true"
+          "1,monitor:DP-1,gapsin:0,gapsout:0,efault:true,persistent:true"
+          "2,monitor:DP-3,gapsin:0,gapsout:0,efault:true,persistent:true"
+          "3,monitor:DP-3,gapsin:0,gapsout:0,ersistent:true"
+          "4,monitor:DP-1,gapsin:0,gapsout:0,ersistent:true"
+          "5,monitor:DP-3,gapsin:0,gapsout:0,ersistent:true"
+          "6,monitor:DP-3,gapsin:0,gapsout:0,ersistent:true"
+          "7,monitor:DP-3,gapsin:0,gapsout:0,ersistent:true"
+          "8,monitor:DP-3,gapsin:0,gapsout:0,ersistent:true"
+          "9,monitor:DP-3,gapsin:0,gapsout:0,ersistent:true"
           "10,monitor:DP-2,default:true,gapsin:0,gapsout:0,border:false,persistent:true"
         ];
 
