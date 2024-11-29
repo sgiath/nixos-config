@@ -1530,16 +1530,16 @@
     },
     "nixpkgs-proton": {
       "locked": {
-        "lastModified": 1730911088,
-        "narHash": "sha256-0JVGPaQXyVq4ToCE/b2AhHvNvSviLMxK0nz8fs7p8ZA=",
-        "owner": "daniel-fahey",
+        "lastModified": 1732813645,
+        "narHash": "sha256-4KQXM7MLR3fUYksZyjk9+SjDsUZ74d+7rnB+UsKPmp8=",
+        "owner": "r-ryantm",
         "repo": "nixpkgs",
-        "rev": "f78bd97f4c57ebb4371a6633e23e6a22744e125e",
+        "rev": "31b8963cf8272135d715ea368dc804c2d87f2046",
         "type": "github"
       },
       "original": {
-        "owner": "daniel-fahey",
-        "ref": "protonmail-bridge-gui-qt68support",
+        "owner": "r-ryantm",
+        "ref": "auto-update/protonmail-bridge",
         "repo": "nixpkgs",
         "type": "github"
       }
