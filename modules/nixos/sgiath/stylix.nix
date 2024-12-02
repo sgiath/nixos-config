@@ -7,7 +7,7 @@
 let
   font = {
     package = pkgs.nerd-fonts.roboto-mono;
-    name = "RobotoMono Nerd Font Mono";
+    name = "RobotoMono Nerd Font";
   };
 in
 {
