@@ -6,14 +6,14 @@
 }:
 let
   font = {
-    package = pkgs.nerdfonts.override { fonts = [ "RobotoMono" ]; };
+    package = pkgs.nerd-fonts.roboto-mono;
     name = "RobotoMono Nerd Font Mono";
   };
 in
 {
   config = lib.mkIf config.sgiath.enable {
     stylix = {
-      enable = false;
+      enable = true;
 
       polarity = "dark";
 
