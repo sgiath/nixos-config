@@ -151,7 +151,7 @@
     };
 
     home = {
-      pointerCursor.gtk.enable = true;
+      # pointerCursor.gtk.enable = true;
 
       packages = with pkgs; [
         (writeShellScriptBin "screenshot" ''
