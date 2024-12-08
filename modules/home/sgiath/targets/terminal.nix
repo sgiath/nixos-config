@@ -25,7 +25,10 @@
       zsh.enable = true;
 
       # docs
-      texlive.enable = true;
+      texlive = {
+        enable = true;
+        package = pkgs.texliveMedium;
+      };
       pandoc.enable = true;
     };
   };
