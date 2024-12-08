@@ -27,7 +27,7 @@
       # docs
       texlive = {
         enable = true;
-        packageSet = pkgs.texliveMedium;
+        extraPackages = tpkgs: { inherit (tpkgs) collection-basic pdflatex; };
       };
       pandoc.enable = true;
     };
