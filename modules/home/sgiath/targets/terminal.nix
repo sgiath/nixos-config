@@ -12,7 +12,6 @@
       yt-dlp
       parted
       google-cloud-sdk
-      texliveMedium
     ];
 
     programs = {
@@ -23,7 +22,6 @@
       starship.enable = true;
       tmux.enable = true;
       zsh.enable = true;
-      pandoc.enable = true;
     };
   };
 }

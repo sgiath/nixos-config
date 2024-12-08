@@ -17,6 +17,7 @@
       vlc
       okular
       plex-media-player
+      texliveMedium
 
       syncthing-tray
 
@@ -67,6 +68,7 @@
 
       # utils
       davinci.enable = false;
+      pandoc.enable = true;
     };
 
     sgiath = {
