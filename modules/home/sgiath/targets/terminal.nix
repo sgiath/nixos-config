@@ -27,7 +27,7 @@
       # docs
       texlive = {
         enable = true;
-        package = pkgs.texliveMedium;
+        packageSet = pkgs.texliveMedium;
       };
       pandoc.enable = true;
     };
