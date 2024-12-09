@@ -67,8 +67,9 @@
         };
 
         aws.disabled = true;
-        direnv.disabled = true;
+        direnv.disabled = false;
         gcloud.disabled = true;
+        nix_shell.disabled = true;
         package.disabled = true;
         lua.disabled = true;
       };
