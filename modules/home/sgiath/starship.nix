@@ -66,17 +66,11 @@
           style = "fg:#edeff0 bg:#232526";
         };
 
-        aws = {
-          disabled = true;
-        };
-
-        package = {
-          disabled = true;
-        };
-
-        lua = {
-          disabled = true;
-        };
+        aws.disabled = true;
+        direnv.disabled = true;
+        gcloud.disabled = true;
+        package.disabled = true;
+        lua.disabled = true;
       };
     };
   };
