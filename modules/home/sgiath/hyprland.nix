@@ -121,7 +121,11 @@
 
           # other apps
           "workspace 5 silent, class:(obsidian)"
+
+          # games
           "workspace 6 silent, class:(.factorio-wrapped)"
+          "workspace 6 silent, class:(battle.net.exe)"
+          "workspace 6 silent, class:(lutris)"
 
           # email
           "workspace 9 silent, class:(claws-mail)"
