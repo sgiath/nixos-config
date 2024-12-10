@@ -15,12 +15,6 @@ in
   config = lib.mkIf config.sgiath.games.enable {
     home = {
       packages = with pkgs; [
-        (wineWowPackages.full.override {
-          wineRelease = "staging";
-          mingwSupport = true;
-        })
-        winetricks
-
         (lutris.override {
           extraLibraries = pkgs: [
             # libraries for Principia
