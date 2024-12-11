@@ -134,7 +134,7 @@
           # messaging apps
           "workspace 10 silent, class:(Slack)"
           "workspace 10 silent, class:(WebCord)"
-          "workspace 10 silent, class:(signalbeta)"
+          "workspace 10 silent, class:(signal)"
           "workspace 10 silent, class:(org.telegram.desktop)"
           "workspace 10 silent, class:(Hexchat)"
           "workspace 10 silent, class:(cinny)"
