@@ -10,7 +10,7 @@
         "net.ipv4.tcp_fin_timeout" = 5;
         "kernel.sched_cfs_bandwidth_slice_us" = 3000;
       };
-      kernelParams = [ "threadirqs" ];
+      # kernelParams = [ "threadirqs" ];
     };
 
     # Power settings
