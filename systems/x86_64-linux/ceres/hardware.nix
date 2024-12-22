@@ -21,7 +21,7 @@
       "sd_mod"
     ];
     extraModulePackages = [ ];
-    kernelParams = [ "amd_pstate=active" ];
+    # kernelParams = [ "amd_pstate=active" ];
   };
 
   services = {
