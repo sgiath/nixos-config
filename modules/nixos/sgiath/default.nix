@@ -10,13 +10,11 @@
     # always enabled
     ./bitcoin.nix
     ./boot.nix
-    ./mailserver.nix
     ./mounting_usb.nix
     ./networking.nix
     ./optimizations.nix
     ./security.nix
     ./stylix.nix
-    # ./syncthing.nix
     ./time_lang.nix
     ./udev.nix
 
