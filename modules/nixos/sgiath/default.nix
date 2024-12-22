@@ -13,10 +13,10 @@
     ./mailserver.nix
     ./mounting_usb.nix
     ./networking.nix
-    ./optimizations.nix
+    # ./optimizations.nix
     ./security.nix
     ./stylix.nix
-    ./syncthing.nix
+    # ./syncthing.nix
     ./time_lang.nix
     ./udev.nix
 
