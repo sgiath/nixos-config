@@ -12,7 +12,7 @@ in
 
   config = lib.mkIf (config.sgiath.server.enable && config.services.matrix.enable) {
     services = {
-      matrix-conduit = {
+      conduwuit = {
         enable = true;
         package = pkgs.conduwuit;
         settings.global = {
