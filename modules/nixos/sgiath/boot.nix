@@ -40,11 +40,11 @@
           };
     };
 
-    console = {
-      font = "${pkgs.terminus_font}/share/consolefonts/ter-v32n.psf.gz";
-      earlySetup = true;
-      useXkbConfig = true;
-    };
+    # console = {
+    #   font = "${pkgs.terminus_font}/share/consolefonts/ter-v32n.psf.gz";
+    #   earlySetup = true;
+    #   useXkbConfig = true;
+    # };
 
     environment = {
       shells = with pkgs; [
