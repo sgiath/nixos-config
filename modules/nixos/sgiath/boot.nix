@@ -19,8 +19,8 @@
 
   config = lib.mkIf config.sgiath.enable {
     boot = {
-      # kernelPackages =
-      #   if config.sgiath.xamond.enable then pkgs.linuxPackages_xanmod_latest else pkgs.linuxPackages_zen;
+      kernelPackages =
+        if config.sgiath.xamond.enable then pkgs.linuxPackages_xanmod_latest else pkgs.linuxPackages_zen;
 
       loader =
         if config.sgiath.boot == "uefi" then
@@ -40,11 +40,11 @@
           };
     };
 
-    # console = {
-    #   font = "${pkgs.terminus_font}/share/consolefonts/ter-v32n.psf.gz";
-    #   earlySetup = true;
-    #   useXkbConfig = true;
-    # };
+    console = {
+      font = "${pkgs.terminus_font}/share/consolefonts/ter-v32n.psf.gz";
+      earlySetup = true;
+      useXkbConfig = true;
+    };
 
     environment = {
       shells = with pkgs; [
