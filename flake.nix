@@ -23,14 +23,19 @@
       inputs.nixpkgs.follows = "nixpkgs";
     };
 
-    hyprland = {
-      type = "git";
-      url = "ssh://github.com/hyprwm/Hyprland";
-      ref = "v0.46.2";
-      # rev = "12f9a0d0b93f691d4d9923716557154d74777b0a";
-      submodules = true;
-      inputs.nixpkgs.follows = "nixpkgs";
+    hyprland.url = "github:hyprwm/Hyprland";
+    hyprland-plugins = {
+      url = "github:hyprwm/hyprland-plugins";
+      inputs.hyprland.follows = "hyprland";
     };
+    # hyprland = {
+    #   type = "git";
+    #   url = "ssh://github.com/hyprwm/Hyprland";
+    #   ref = "v0.46.2";
+    #   # rev = "12f9a0d0b93f691d4d9923716557154d74777b0a";
+    #   submodules = true;
+    #   inputs.nixpkgs.follows = "nixpkgs";
+    # };
 
     nix-bitcoin = {
       url = "github:fort-nix/nix-bitcoin";
