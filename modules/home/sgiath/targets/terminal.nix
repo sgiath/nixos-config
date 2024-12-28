@@ -12,7 +12,6 @@
       yt-dlp
       parted
       google-cloud-sdk
-      gnuplot
     ];
 
     programs = {

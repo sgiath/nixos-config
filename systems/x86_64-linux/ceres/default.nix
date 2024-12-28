@@ -26,6 +26,7 @@ in
   services = {
     ollama = {
       enable = true;
+      package = pkgs.ollama-rocm;
       acceleration = "rocm";
       host = "0.0.0.0";
       environmentVariables = {
