@@ -32,9 +32,6 @@ in
       package = pkgs.livebook.override {
         inherit beamPackages erlang elixir;
       };
-      extraPackages = [
-        pkgs.gnuplot
-      ];
     };
   };
 
