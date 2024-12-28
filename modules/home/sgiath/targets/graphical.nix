@@ -57,6 +57,10 @@
       ];
     };
 
+    services = {
+      udiskie.enable = true;
+    };
+
     programs = {
       # hyprland
       hyprland.enable = true;

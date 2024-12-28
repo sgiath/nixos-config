@@ -164,6 +164,7 @@
         wl-clipboard
         wl-clipboard-x11
         wlogout
+        hyprpolkitagent
       ];
       sessionVariables = {
         NIXOS_OZONE_WL = "1";
