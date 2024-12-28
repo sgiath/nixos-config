@@ -20,7 +20,6 @@
 
   services = {
     ollama.enable = true;
-    syncthing.enable = true;
   };
 
   programs = {

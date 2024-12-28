@@ -17,9 +17,7 @@
     wayland.enable = true;
   };
 
-  services = {
-    syncthing.enable = true;
-  };
+  services = { };
 
   crazyegg.enable = true;
 }

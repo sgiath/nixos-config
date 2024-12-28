@@ -19,8 +19,6 @@
       plex-media-player
       texliveMedium
 
-      syncthing-tray
-
       # comm
       webcord
       telegram-desktop
