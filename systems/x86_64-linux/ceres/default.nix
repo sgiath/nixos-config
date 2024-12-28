@@ -27,7 +27,7 @@ in
     ollama = {
       enable = true;
       environmentVariables = {
-        OLLAMA_ORIGINS = "";
+        OLLAMA_ORIGINS = "*";
       };
     };
 
