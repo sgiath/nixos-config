@@ -9,6 +9,7 @@
 
   config = lib.mkIf (config.sgiath.targets.terminal) {
     home.packages = with pkgs; [
+      superfile
       yt-dlp
       parted
       google-cloud-sdk
@@ -21,6 +22,7 @@
       ssh.enable = true;
       starship.enable = true;
       tmux.enable = true;
+      yazi.enable = true;
       zsh.enable = true;
     };
   };
