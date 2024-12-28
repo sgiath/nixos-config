@@ -1,4 +1,9 @@
 { pkgs, ... }:
+let
+  beamPackages = pkgs.beam_minimal.erlang_27;
+  erlang = beamPackages.erlang;
+  elixir = beamPackages.elixir_1_18;
+in 
 {
   imports = [ ./hardware.nix ];
 
@@ -20,6 +25,14 @@
 
   services = {
     ollama.enable = true;
+
+    livebook = {
+      enableUserService = true;
+      environmentFile = "/var/lib/livebook.env";
+      package = pkgs.livebook.override {
+        inherit beamPackages erlang elixir;
+      };
+    };
   };
 
   programs = {
