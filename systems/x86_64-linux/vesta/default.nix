@@ -21,7 +21,7 @@
     home-assistant.enable = true;
     jitsi-meet.enable = false;
     matrix.enable = true;
-    monitoring.enable = true;
+    monitoring.enable = false;
     pi-hole.enable = true;
     searx.enable = true;
 
