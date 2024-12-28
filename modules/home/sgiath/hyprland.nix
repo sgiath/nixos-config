@@ -32,7 +32,7 @@
           "eDP-1,2560x1600@240,0x0,1"
         ];
 
-        input.touchpad.natural_scroll = false;
+        input.touchpad.natural_scroll = true;
 
         master = {
           # mfact = 0.66;
