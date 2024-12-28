@@ -24,13 +24,18 @@
     # services.desktopManager.cosmic.enable = true;
     # services.displayManager.cosmic-greeter.enable = true;
 
-    services.greetd = {
-      enable = true;
-      settings = {
-        default_session = {
-          command = "${pkgs.greetd.tuigreet}/bin/tuigreet --time --asterisks --remember --cmd Hyprland --issue";
-          user = "greeter";
+    services = {
+      greetd = {
+        enable = true;
+        settings = {
+          default_session = {
+            command = "${pkgs.greetd.tuigreet}/bin/tuigreet --time --asterisks --remember --cmd Hyprland --issue";
+            user = "greeter";
+          };
         };
+      };
+      libinput.touchpad = {
+        naturalScrolling = true;
       };
     };
 
