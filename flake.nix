@@ -63,8 +63,6 @@
       channels-config = {
         rocmSupport = true;
         allowUnfree = true;
-        allowBroken = false;
-        enableParallelBuildingByDefault = true;
         permittedInsecurePackages = [
           "jitsi-meet-1.0.8043"
           "cinny-4.2.3"
@@ -73,6 +71,7 @@
         ];
       };
 
+      # FIXME: currently broken (Chromium crashes when draging tabs)
       # overlays = with inputs; [
       #   nixpkgs-wayland.overlay
       # ];
@@ -84,9 +83,5 @@
         simple-nixos-mailserver.nixosModules.mailserver
         foundryvtt.nixosModules.foundryvtt
       ];
-
-      # homes.modules = with inputs; [
-      #   stylix.homeManagerModules.stylix
-      # ];
     };
 }

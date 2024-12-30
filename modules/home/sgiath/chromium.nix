@@ -23,14 +23,7 @@
       ];
       dictionaries = [ pkgs.hunspellDictsChromium.en_US ];
       commandLineArgs = [
-        "--enable-features=WebUIDarkMode,DisableQRGenerator"
-
-        "--force-dark-mode"
-
-        # Vulkan
-        "--vulkan"
-        "--use-vulkan"
-        "--webview-enable-vulkan"
+        "--enable-features=WebUIDarkMode"
 
         "--ignore-gpu-blocklist"
         "--enable-gpu-rasterization"
