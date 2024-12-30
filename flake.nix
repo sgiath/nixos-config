@@ -72,9 +72,9 @@
       };
 
       # FIXME: currently broken (Chromium crashes when draging tabs)
-      # overlays = with inputs; [
-      #   nixpkgs-wayland.overlay
-      # ];
+      overlays = with inputs; [
+        nixpkgs-wayland.overlay
+      ];
 
       systems.modules.nixos = with inputs; [
         stylix.nixosModules.stylix
