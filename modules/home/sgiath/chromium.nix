@@ -25,6 +25,8 @@
       commandLineArgs = [
         "--enable-features=WebUIDarkMode"
 
+        "--enable-vulkan"
+        "--enable-unsafe-webgpu"
         "--ignore-gpu-blocklist"
         "--enable-gpu-rasterization"
         "--enable-zero-copy"
