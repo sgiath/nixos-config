@@ -4,11 +4,19 @@ let
   pkgs-hyperland = inputs.hyprland.packages.${prev.system};
   pkgs-master = import inputs.nixpkgs-master {
     system = prev.system;
-    config.allowUnfree = true;
+    config = {
+      rocmSupport = true;
+      allowUnfree = true;
+      enableParallelBuildingByDefault = true;
+    };
   };
   pkgs-stable = import inputs.nixpkgs-stable {
     system = prev.system;
-    config.allowUnfree = true;
+    config = {
+      rocmSupport = true;
+      allowUnfree = true;
+      enableParallelBuildingByDefault = true;
+    };
   };
 in
 {

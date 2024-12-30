@@ -61,9 +61,10 @@
     in
     lib.mkFlake {
       channels-config = {
+        rocmSupport = true;
         allowUnfree = true;
         allowBroken = false;
-        rocmSupport = true;
+        enableParallelBuildingByDefault = true;
         permittedInsecurePackages = [
           "jitsi-meet-1.0.8043"
           "cinny-4.2.3"
