@@ -24,9 +24,9 @@
       dictionaries = [ pkgs.hunspellDictsChromium.en_US ];
       commandLineArgs = [
         "--enable-features=WebUIDarkMode"
-        "--enable-features=Vulkan"
-        "--enable-features=VaapiVideoEncoder"
-        "--enable-features=VaapiVideoDecoder"
+        # "--enable-features=Vulkan"
+        # "--enable-features=VaapiVideoEncoder"
+        # "--enable-features=VaapiVideoDecoder"
 
         # "--enable-unsafe-webgpu"
         # "--ignore-gpu-blocklist"
