@@ -18,7 +18,8 @@ in
       polarity = "dark";
 
       image = ./wallpapers/rocinante.jpg;
-      imageScalingMode = "fit";
+      # stretch fill fit center tile
+      imageScalingMode = "fill";
 
       base16Scheme = ./theme.yaml;
 
