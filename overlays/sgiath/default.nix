@@ -29,5 +29,5 @@ in
   conduwuit = inputs.conduwuit.packages.${prev.system}.all-features;
 
   # FIXME: currently broken on unstable
-  # rocmPackages = pkgs-stable.rocmPackages;
+  rocmPackages = pkgs-master.rocmPackages;
 }
