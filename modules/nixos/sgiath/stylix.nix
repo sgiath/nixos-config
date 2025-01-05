@@ -19,7 +19,7 @@ in
 
       image = ./wallpapers/rocinante.jpg;
       # stretch fill fit center tile
-      imageScalingMode = "center";
+      imageScalingMode = "fit";
 
       base16Scheme = ./theme.yaml;
 
