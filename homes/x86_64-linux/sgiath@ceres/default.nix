@@ -1,9 +1,9 @@
 { pkgs, ... }:
 {
   home.packages = [
-    pkgs.local-ai.override {
+    (pkgs.local-ai.override {
       with_tts = true;
-    }
+    })
   ];
 
   sgiath = {
