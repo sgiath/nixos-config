@@ -84,7 +84,6 @@
         hyprland.overlays.default
         hyprpaper.overlays.default
         ghostty.overlays.default
-        nix-ai-stuff.overlays.default
       ];
 
       systems.modules.nixos = with inputs; [

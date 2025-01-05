@@ -23,6 +23,8 @@ in
   # get Factorio updates as soon as possible
   factorio = pkgs-master.factorio-space-age-experimental;
 
+  comfyui = inputs.nix-ai-stuff.packages.${prev.system}.comfyui;
+
   # FIXME: currently broken on unstable
   rocmPackages = pkgs-stable.rocmPackages;
 }
