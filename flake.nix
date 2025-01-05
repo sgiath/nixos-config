@@ -78,7 +78,7 @@
 
       # FIXME: currently broken (Chromium crashes when draging tabs)
       overlays = with inputs; [
-        # nixpkgs-wayland.overlay
+        nixpkgs-wayland.overlay
         hyprland.overlays.default
         hyprpaper.overlays.default
         ghostty.overlays.default
