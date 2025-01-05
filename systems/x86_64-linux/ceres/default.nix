@@ -34,11 +34,6 @@ in
       };
     };
 
-    comfyui = {
-      enable = true;
-      acceleration = "rocm";
-    };
-
     livebook = {
       enableUserService = true;
       environmentFile = "/var/lib/livebook.env";

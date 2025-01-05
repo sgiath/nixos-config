@@ -56,6 +56,7 @@
     };
 
     nixified-ai.url = "github:nixified-ai/flake";
+    nix-ai-stuff.url = "github:BatteredBunny/nix-ai-stuff";
   };
 
   outputs =
@@ -83,7 +84,7 @@
         hyprland.overlays.default
         hyprpaper.overlays.default
         ghostty.overlays.default
-        nixified-ai.overlays.comfyui
+        nix-ai-stuff.overlay
       ];
 
       systems.modules.nixos = with inputs; [
@@ -92,7 +93,6 @@
         nix-bitcoin.nixosModules.default
         simple-nixos-mailserver.nixosModules.mailserver
         foundryvtt.nixosModules.foundryvtt
-        nixified-ai.nixosModules.comfyui
       ];
     };
 }
