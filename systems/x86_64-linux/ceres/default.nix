@@ -36,6 +36,7 @@ in
 
     tts.servers.chris = {
       enable = true;
+      port = 5000;
       model = null;
     };
 
