@@ -25,12 +25,12 @@ in
   ghostty = inputs.ghostty.packages.${prev.system}.default;
 
   # Hyprland Nix native versions
-  hyprland = pkgs-hyperland.hyprland;
-  xdg-desktop-portal-hyprland = pkgs-hyperland.xdg-desktop-portal-hyprland;
+  # hyprland = pkgs-hyperland.hyprland;
+  # xdg-desktop-portal-hyprland = pkgs-hyperland.xdg-desktop-portal-hyprland;
 
   # conduwuit Nix native version
   conduwuit = inputs.conduwuit.packages.${prev.system}.all-features;
 
   # FIXME: currently broken on unstable
-  rocmPackages = pkgs-master.rocmPackages;
+  rocmPackages = pkgs-stable.rocmPackages;
 }

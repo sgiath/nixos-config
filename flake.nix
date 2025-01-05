@@ -24,6 +24,7 @@
     };
 
     hyprland.url = "github:hyprwm/Hyprland";
+    hyprpaper.url = "github:hyprwm/hyprpaper";
 
     ghostty = {
       url = "github:ghostty-org/ghostty";
@@ -76,9 +77,11 @@
       };
 
       # FIXME: currently broken (Chromium crashes when draging tabs)
-      # overlays = with inputs; [
-      #   nixpkgs-wayland.overlay
-      # ];
+      overlays = with inputs; [
+        nixpkgs-wayland.overlay
+        hyprland.overlay
+        hyprpaper.overlay
+      ];
 
       systems.modules.nixos = with inputs; [
         stylix.nixosModules.stylix

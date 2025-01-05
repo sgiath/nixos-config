@@ -12,7 +12,7 @@
   config = lib.mkIf config.programs.hyprland.enable {
     wayland.windowManager.hyprland = {
       enable = true;
-      package = pkgs.hyprland;
+      package = pkgs.hyprland-packages.hyprland;
       # portalPackage = pkgs.xdg-desktop-portal-hyprland;
       xwayland.enable = true;
       systemd = {
@@ -165,6 +165,7 @@
         wl-clipboard-x11
         wlogout
         hyprpolkitagent
+        hyprpaper
       ];
       sessionVariables = {
         NIXOS_OZONE_WL = "1";
