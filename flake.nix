@@ -76,7 +76,6 @@
         ];
       };
 
-      # FIXME: currently broken (Chromium crashes when draging tabs)
       overlays = with inputs; [
         nixpkgs-wayland.overlay
         hyprland.overlays.default

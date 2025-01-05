@@ -176,6 +176,10 @@
     services.mako.enable = true;
 
     xdg = {
+      configFile."hypr/hyprpaper.conf".text = ''
+        preload ${./../../nixos/sgiath/wallpapers/rocinante.jpg}
+        wallpaper = , ${./../../nixos/sgiath/wallpapers/rocinante.jpg}
+      '';
       portal = {
         enable = true;
         config.common.default = "hyprland";
