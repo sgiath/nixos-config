@@ -12,7 +12,7 @@
   config = lib.mkIf config.programs.hyprland.enable {
     wayland.windowManager.hyprland = {
       enable = true;
-      package = pkgs.hyprland-packages.hyprland;
+      package = pkgs.hyprland;
       # portalPackage = pkgs.xdg-desktop-portal-hyprland;
       xwayland.enable = true;
       systemd = {
