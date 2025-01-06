@@ -58,6 +58,8 @@
       url = "github:danth/stylix";
       inputs.nixpkgs.follows = "nixpkgs";
     };
+
+    nvf.url = "github:notashelf/nvf";
   };
 
   outputs =
@@ -92,6 +94,10 @@
         nix-bitcoin.nixosModules.default
         simple-nixos-mailserver.nixosModules.mailserver
         foundryvtt.nixosModules.foundryvtt
+      ];
+
+      homes.modules = with inputs; [
+        nvf.homeManagerModules.default
       ];
     };
 }
