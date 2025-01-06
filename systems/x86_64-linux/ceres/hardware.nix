@@ -44,6 +44,11 @@
       device = "192.168.1.4:/volume1/homes";
       fsType = "nfs";
     };
+
+    "/nas/series" = {
+      device = "192.168.1.4:/volume1/Series";
+      fsType = "nfs";
+    };
   };
 
   swapDevices = [ { device = "/dev/disk/by-uuid/a09c60a8-7855-42ff-b9b0-73f7c8b8fb4c"; } ];

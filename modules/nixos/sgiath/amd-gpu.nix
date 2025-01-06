@@ -6,7 +6,7 @@
 {
   config = lib.mkIf (config.sgiath.enable && (config.sgiath.gpu == "amd")) {
     boot.kernelModules = [ "kvm-amd" ];
-    services.xserver.videoDrivers = [ "amdgpu-pro" ];
+    services.xserver.videoDrivers = [ "amdgpu" ];
 
     hardware = {
       amdgpu = {
@@ -14,6 +14,7 @@
         opencl.enable = true;
         amdvlk = {
           enable = true;
+          supportExperimental.enable = true;
           support32Bit.enable = true;
         };
       };

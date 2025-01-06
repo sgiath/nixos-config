@@ -37,5 +37,6 @@
         pinentryPackage = pkgs.pinentry-gnome3;
       };
     };
+    hardware.gpgSmartcards.enable = true;
   };
 }
