@@ -11,7 +11,7 @@
       kernelModules = [ "kvm-amd" ];
     };
 
-    services.xserver.videoDrivers = [ "amdgpu" ];
+    services.xserver.videoDrivers = [ "amdgpu-pro" ];
 
     systemd.tmpfiles.rules = [ "L+    /opt/rocm/hip   -    -    -     -    ${pkgs.rocmPackages.clr}" ];
 

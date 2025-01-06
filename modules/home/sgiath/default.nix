@@ -81,14 +81,10 @@
 
         # general programs I want to have always available
         imagemagick
-        ffmpeg-full
-        # (ffmpeg.override {
-        #   ffmpegVariant = "small";
-        #   withAmf = true;
-        #   withAss = true;
-        #   withUnfree = true;
-        #   withRuntimeCPUDetection = false;
-        # })
+        (ffmpeg.override {
+          withAmf = true;
+          withRuntimeCPUDetection = false;
+        })
         zip
         unzip
         wget
