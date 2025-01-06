@@ -34,10 +34,6 @@
       inputs.nixpkgs.follows = "nixpkgs";
     };
 
-    ghostty = {
-      url = "github:ghostty-org/ghostty";
-    };
-
     nix-bitcoin = {
       url = "github:fort-nix/nix-bitcoin";
       inputs.nixpkgs.follows = "nixpkgs";
@@ -88,7 +84,6 @@
         nixpkgs-wayland.overlay
         hyprland.overlays.default
         hyprpaper.overlays.default
-        ghostty.overlays.default
       ];
 
       systems.modules.nixos = with inputs; [
