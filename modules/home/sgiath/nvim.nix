@@ -17,7 +17,7 @@
     };
 
     programs.nvf = {
-      enable = true;
+      enable = false;
       settings.vim = {
         autocomplete = {
           nvim-cmp.enable = true;
@@ -141,46 +141,46 @@
     };
 
     # nixd LSP
-    # home.packages = with pkgs; [
-    #   # base deps
-    #   neovim
-    #
-    #   # Zig
-    #   zig
-    #   zls
-    #
-    #   # Nix
-    #   nixd
-    #   nixfmt-rfc-style
-    #
-    #   # Lua
-    #   lua-language-server
-    #   stylua
-    #
-    #   # Markdown formatter
-    #   # https://github.com/executablebooks/mdformat
-    #   python312Packages.mdformat
-    #   python312Packages.mdformat-gfm
-    #   python312Packages.mdformat-frontmatter
-    #   python312Packages.mdformat-footnote
-    #
-    #   # shell
-    #   shfmt
-    #
-    #   # general formatter
-    #   codespell
-    # ];
+    home.packages = with pkgs; [
+      # base deps
+      neovim
+    
+      # Zig
+      zig
+      zls
+    
+      # Nix
+      nixd
+      nixfmt-rfc-style
+    
+      # Lua
+      lua-language-server
+      stylua
+    
+      # Markdown formatter
+      # https://github.com/executablebooks/mdformat
+      python312Packages.mdformat
+      python312Packages.mdformat-gfm
+      python312Packages.mdformat-frontmatter
+      python312Packages.mdformat-footnote
+    
+      # shell
+      shfmt
+    
+      # general formatter
+      codespell
+    ];
 
     # ripgrep
     programs.ripgrep.enable = true;
 
     # config files
-    # xdg = {
-    #   enable = true;
-    #   configFile.nvim = {
-    #     source = config.lib.file.mkOutOfStoreSymlink "${config.home.homeDirectory}/.dotfiles/modules/home/sgiath/nvim";
-    #     recursive = true;
-    #   };
-    # };
+    xdg = {
+      enable = true;
+      configFile.nvim = {
+        source = config.lib.file.mkOutOfStoreSymlink "${config.home.homeDirectory}/.dotfiles/modules/home/sgiath/nvim";
+        recursive = true;
+      };
+    };
   };
 }
