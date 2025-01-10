@@ -25,15 +25,13 @@
     };
 
     hyprland = {
-      # v0.46.2
-      url = "github:hyprwm/Hyprland/v0.46.1";
+      url = "github:hyprwm/Hyprland";
       inputs.nixpkgs.follows = "nixpkgs";
     };
 
     hyprpaper = {
       url = "github:hyprwm/hyprpaper";
       inputs.nixpkgs.follows = "nixpkgs";
-      inputs.hyprland.follows = "hyprland";
     };
 
     nix-bitcoin = {
