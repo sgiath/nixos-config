@@ -25,7 +25,7 @@
     };
 
     hyprland = {
-      url = "github:hyprwm/Hyprland/0bd541f2fd902dbfa04c3ea2ccf679395e316887";
+      url = "github:hyprwm/Hyprland/v0.46.2";
       inputs.nixpkgs.follows = "nixpkgs";
     };
 
@@ -35,7 +35,7 @@
     };
 
     xdph = {
-      url = "github:hyprwm/xdg-desktop-portal-hyprland/fa50ab342b29f0981eab8c1ba57648d8c9d8c85c";
+      url = "github:hyprwm/xdg-desktop-portal-hyprland/v1.3.9";
       inputs.nixpkgs.follows = "nixpkgs";
     };
 
