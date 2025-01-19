@@ -37,7 +37,7 @@
           "tplink_tapo"
           "roborock"
           "starlink"
-          "bitcoin"
+          # "bitcoin"
         ];
         config = {
           http = {
