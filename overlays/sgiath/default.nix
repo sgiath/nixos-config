@@ -1,6 +1,13 @@
 { inputs, ... }:
 final: prev:
 let
+  pkgs-fix = import inputs.nixpkgs-fix {
+    system = prev.system;
+    config = {
+      rocmSupport = false;
+      allowUnfree = true;
+    };
+  };
   pkgs-master = import inputs.nixpkgs-master {
     system = prev.system;
     config = {
@@ -23,5 +30,5 @@ in
   # get Factorio updates as soon as possible
   factorio = pkgs-master.factorio-space-age-experimental;
 
-  ollama-rocm = pkgs-stable.ollama-rocm;
+  rocmPackages = pkgs-fix.rocmPackages;
 }
