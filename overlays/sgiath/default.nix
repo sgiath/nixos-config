@@ -1,4 +1,4 @@
-{ inputs, ... }:
+{ inputs, pkgs, ... }:
 final: prev:
 let
   pkgs-master = import inputs.nixpkgs-master {
@@ -22,4 +22,14 @@ in
 
   # get Factorio updates as soon as possible
   factorio = pkgs-master.factorio-space-age-experimental;
+
+  python3 = pkgs.python3.override {
+    packageOverrides = self: super: {
+      torch = super.torch.overrideAttrs (old: {
+        meta = old.meta // {
+          broken = false;
+        };
+      });
+    };
+  };
 }
