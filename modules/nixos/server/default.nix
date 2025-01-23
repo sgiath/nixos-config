@@ -11,6 +11,7 @@
     ./mailserver.nix
     ./matrix.nix
     ./monitoring.nix
+    ./n8n.nix
     ./nas.nix
     ./nginx.nix
     ./osm.nix

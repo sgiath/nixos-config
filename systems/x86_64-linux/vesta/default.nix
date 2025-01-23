@@ -22,6 +22,7 @@
     jitsi-meet.enable = false;
     matrix.enable = true;
     monitoring.enable = false;
+    n8n.enable = true;
     pi-hole.enable = true;
     searx.enable = true;
 
