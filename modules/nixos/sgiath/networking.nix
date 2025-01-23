@@ -25,6 +25,7 @@
           "meet.sgiath.dev"
           "matrix.sgiath.dev"
           "skylark.sgiath.dev"
+          "n8n.sgiath.dev"
           "home-assistant.sgiath.dev"
         ];
         "192.168.1.4" = [ "nas.sgiath" ];
