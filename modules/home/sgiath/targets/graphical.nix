@@ -21,7 +21,6 @@
       plex-media-player
       texliveMedium
       libwacom
-      lmstudio
 
       # comm
       webcord
