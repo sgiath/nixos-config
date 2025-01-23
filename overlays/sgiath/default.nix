@@ -23,13 +23,14 @@ in
   # get Factorio updates as soon as possible
   factorio = pkgs-master.factorio-space-age-experimental;
 
-  python3 = pkgs.python3.override {
-    packageOverrides = self: super: {
-      torch = super.torch.overrideAttrs (old: {
-        meta = old.meta // {
-          broken = false;
-        };
-      });
-    };
-  };
+  python3 = pkgs-master.python3;
+  # .override {
+  #   packageOverrides = self: super: {
+  #     torch = super.torch.overrideAttrs (old: {
+  #       meta = old.meta // {
+  #         broken = false;
+  #       };
+  #     });
+  #   };
+  # };
 }
