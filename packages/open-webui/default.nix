@@ -89,6 +89,7 @@ python3.pkgs.buildPythonApplication rec {
     flask-cors
     fpdf2
     ftfy
+    gcp_storage_emulator
     google-cloud-storage
     google-generativeai
     googleapis-common-protos
@@ -140,23 +141,23 @@ python3.pkgs.buildPythonApplication rec {
     xlrd
     youtube-transcript-api
 
-    (buildPythonPackage rec {
-      pname = "gcp-storage-emulator";
-      version = "2024.8.3";
-      format = "setuptools";
-
-      src = fetchPypi {
-        inherit pname version;
-        hash = lib.fakeHash;
-      };
-
-      propagatedBuildInputs = [
-        fs
-        google-crc32c
-      ];
-
-      doCheck = false;
-    })
+    # (buildPythonPackage rec {
+    #   pname = "gcp_storage-emulator";
+    #   version = "2024.8.3";
+    #   format = "setuptools";
+    #
+    #   src = fetchPypi {
+    #     inherit pname version;
+    #     hash = lib.fakeHash;
+    #   };
+    #
+    #   propagatedBuildInputs = [
+    #     fs
+    #     google-crc32c
+    #   ];
+    #
+    #   doCheck = false;
+    # })
   ];
 
   build-system = with python3.pkgs; [ hatchling ];
