@@ -4,14 +4,14 @@ let
   pkgs-master = import inputs.nixpkgs-master {
     system = prev.system;
     config = {
-      rocmSupport = true;
+      rocmSupport = false;
       allowUnfree = true;
     };
   };
   pkgs-stable = import inputs.nixpkgs-stable {
     system = prev.system;
     config = {
-      rocmSupport = true;
+      rocmSupport = false;
       allowUnfree = true;
     };
   };
