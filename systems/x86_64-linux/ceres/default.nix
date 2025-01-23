@@ -34,12 +34,6 @@ in
       };
     };
 
-    open-webui = {
-      enable = true;
-      port = 8082;
-      package = pkgs.${namespace}.open-webui;
-    };
-
     livebook = {
       enableUserService = true;
       environmentFile = "/var/lib/livebook.env";

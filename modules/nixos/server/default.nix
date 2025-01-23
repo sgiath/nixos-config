@@ -14,6 +14,7 @@
     ./n8n.nix
     ./nas.nix
     ./nginx.nix
+    ./open-webui.nix
     ./osm.nix
     ./pi-hole.nix
     ./search.nix

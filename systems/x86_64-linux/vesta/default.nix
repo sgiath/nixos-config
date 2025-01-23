@@ -22,9 +22,12 @@
     jitsi-meet.enable = false;
     matrix.enable = true;
     monitoring.enable = false;
-    n8n.enable = true;
     pi-hole.enable = true;
     searx.enable = true;
+
+    # AI
+    n8n.enable = true;
+    open-webui.enable = true;
 
     # proxies
     nas-proxy.enable = true;
