@@ -1689,6 +1689,22 @@
         "type": "indirect"
       }
     },
+    "nixpkgs-fix": {
+      "locked": {
+        "lastModified": 1737555253,
+        "narHash": "sha256-B/knSTpCs/wbO//+nbcWIZ4H6cfjrESQLhapGsWGSak=",
+        "owner": "mschwaig",
+        "repo": "nixpkgs",
+        "rev": "a2b5108952b2647890a85de7d5e9d8178c7f2247",
+        "type": "github"
+      },
+      "original": {
+        "owner": "mschwaig",
+        "ref": "fix-rocm-build-by-disabling-test",
+        "repo": "nixpkgs",
+        "type": "github"
+      }
+    },
     "nixpkgs-lib": {
       "locked": {
         "lastModified": 1737248590,
@@ -4826,6 +4842,7 @@
         "hyprpaper": "hyprpaper",
         "nix-bitcoin": "nix-bitcoin",
         "nixpkgs": "nixpkgs_5",
+        "nixpkgs-fix": "nixpkgs-fix",
         "nixpkgs-master": "nixpkgs-master",
         "nixpkgs-stable": "nixpkgs-stable_4",
         "nixpkgs-wayland": "nixpkgs-wayland",
