@@ -24,6 +24,7 @@
     monitoring.enable = false;
     pi-hole.enable = true;
     searx.enable = true;
+    mollysocket.enable = true;
 
     # AI
     n8n.enable = true;
