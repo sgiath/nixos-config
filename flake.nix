@@ -26,8 +26,8 @@
     };
 
     hyprland = {
-      url = "github:hyprwm/Hyprland";
-      # url = "github:hyprwm/Hyprland/v0.46.2";
+      # url = "github:hyprwm/Hyprland";
+      url = "github:hyprwm/Hyprland/v0.46.2";
       inputs.nixpkgs.follows = "nixpkgs";
     };
 
@@ -37,7 +37,8 @@
     };
 
     xdph = {
-      url = "github:hyprwm/xdg-desktop-portal-hyprland/v1.3.9";
+      url = "github:hyprwm/xdg-desktop-portal-hyprland";
+      # url = "github:hyprwm/xdg-desktop-portal-hyprland/v1.3.9";
       inputs.nixpkgs.follows = "nixpkgs";
     };
 
