@@ -9,7 +9,7 @@
     services.ollama = {
       package = pkgs.ollama-rocm;
       # package = pkgs.ollama;
-      # acceleration = "rocm";
+      acceleration = "rocm";
       host = "0.0.0.0";
       rocmOverrideGfx = "10.3.0";
       environmentVariables = {
