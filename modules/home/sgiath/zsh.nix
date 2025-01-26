@@ -18,7 +18,10 @@
         enable = true;
         enableZshIntegration = true;
       };
-      btop.enable = true;
+      btop = {
+        enable = true;
+        package = pkgs.btop-rocm;
+      };
       command-not-found.enable = true;
       fd.enable = true;
       fzf.enable = true;

@@ -9,7 +9,12 @@
     boot.kernelModules = [ "kvm-amd" ];
     services.xserver.videoDrivers = [ "amdgpu" ];
 
-    environment.systemPackages = with pkgs; [ rocmPackages.rocm-smi ];
+    environment.systemPackages = with pkgs.rocmPackages; [
+      pkgs.clinfo
+      rocminfo
+      rocm-smi
+      clr
+    ];
 
     hardware = {
       amdgpu = {
