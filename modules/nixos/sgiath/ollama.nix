@@ -11,6 +11,7 @@
       # package = pkgs.ollama;
       # acceleration = "rocm";
       host = "0.0.0.0";
+      rocmOverrideGfx = "10.3.0";
       environmentVariables = {
         # run on GPU
         HSA_OVERRIDE_GFX_VERSION = "10.3.0";
