@@ -25,7 +25,7 @@ let
 in
 {
   # conduwuit Nix native version
-  conduwuit = inputs.conduwuit.packages.${prev.system}.all-features;
+  # conduwuit = inputs.conduwuit.packages.${prev.system}.all-features;
 
   # get Factorio updates as soon as possible
   factorio = pkgs-master.factorio-space-age-experimental;

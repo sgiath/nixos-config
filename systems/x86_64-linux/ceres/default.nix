@@ -24,7 +24,7 @@ in
   crazyegg.enable = true;
 
   services = {
-    ollama.enable = true;
+    ollama.enable = false;
 
     livebook = {
       enableUserService = true;
