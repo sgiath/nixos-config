@@ -30,6 +30,6 @@ in
   # get Factorio updates as soon as possible
   factorio = pkgs-master.factorio-space-age-experimental;
 
-  ollama-rocm = pkgs-fix.ollama-rocm;
-  rocmPackages = pkgs-fix.rocmPackages;
+  # broken rocm on unstable
+  rocmPackages = pkgs-master.rocmPackages;
 }
