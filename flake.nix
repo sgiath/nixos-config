@@ -26,7 +26,8 @@
     };
 
     hyprland = {
-      url = "github:hyprwm/Hyprland/v0.46.2";
+      url = "github:hyprwm/Hyprland";
+      # url = "github:hyprwm/Hyprland/v0.46.2";
       inputs.nixpkgs.follows = "nixpkgs";
     };
 
@@ -74,6 +75,14 @@
       lib = inputs.snowfall-lib.mkLib {
         inherit inputs;
         src = ./.;
+
+        snowfall = {
+          namespace = "sgiath";
+          meta = {
+            name = "sgiath";
+            title = "Sgiath's flake";
+          };
+        };
       };
     in
     lib.mkFlake {
@@ -86,6 +95,12 @@
           "cinny-unwrapped-4.2.3"
           "olm-3.2.16"
         ];
+      };
+
+      outputs-builder = channels: {
+        packages = {
+          conduwuit = inputs.conduwuit.packages.${channels.nixpkgs.system}.all-features;
+        };
       };
 
       overlays = with inputs; [
