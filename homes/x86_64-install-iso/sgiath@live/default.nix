@@ -6,6 +6,9 @@
 
   home.file.nixos = {
     recursive = true;
-    source = ./../../../;
+    source = fetchGit {
+      url = "https://git.sr.ht/~sgiath/nixos-config";
+      name = "nixos-config";
+    };
   };
 }
