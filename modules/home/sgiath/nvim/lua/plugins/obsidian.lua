@@ -12,7 +12,7 @@ return {
       workspaces = {
         {
           name = "personal",
-          path = "~/notes/sgiath",
+          path = "~/notes",
         },
       },
       notes_subdir = "notes",
