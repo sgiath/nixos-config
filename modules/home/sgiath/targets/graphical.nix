@@ -21,6 +21,7 @@
       plex-media-player
       texliveMedium
       libwacom
+      varia
 
       # comm
       webcord
