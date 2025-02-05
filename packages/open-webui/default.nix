@@ -7,7 +7,7 @@
 }:
 let
   pname = "open-webui";
-  version = "0.5.6";
+  version = "0.5.8";
 
   src = fetchFromGitHub {
     owner = "open-webui";
