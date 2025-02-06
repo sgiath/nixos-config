@@ -19,7 +19,7 @@ let
   frontend = buildNpmPackage {
     inherit pname version src;
 
-    npmDepsHash = "";
+    npmDepsHash = "sha256-G08r+2eelxV3ottsNEZ6xysu13AbzPNTwkwZdY1qadg=";
 
     # Disabling `pyodide:fetch` as it downloads packages during `buildPhase`
     # Until this is solved, running python packages from the browser will not work.
