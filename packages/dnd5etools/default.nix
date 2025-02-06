@@ -83,7 +83,7 @@ stdenv.mkDerivation {
     version = "2.6.0";
     url = "https://github.com/5etools-mirror-3/5etools-src/releases/download/v${version}/${pname}-v${version}.zip";
     stripRoot = false;
-    hash = "";
+    hash = "sha256-73R5DeNDw5I2Xk800Vszmd3o9EpUgC0ZErBxaJ+S7zE=";
   };
 
   buildInputs = [
