@@ -13,7 +13,7 @@ let
     owner = "open-webui";
     repo = "open-webui";
     rev = "refs/tags/v${version}";
-    hash = "";
+    hash = "sha256-zwVrDdCMapuHKmtlEUnCwxXCBU93C5uT9eqDk5Of2BE=";
   };
 
   frontend = buildNpmPackage {

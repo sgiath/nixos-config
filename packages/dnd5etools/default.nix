@@ -75,14 +75,15 @@ let
   nodeDependencies = (callPackage ./deps { inherit nodejs; }).nodeDependencies;
 in
 stdenv.mkDerivation {
-  inherit version pname;
+  inherit  pname;
+  version = "2.6.0";
 
   src = fetchzip {
     pname = "5etools-src";
-    inherit version;
+    version = "2.6.0";
     url = "https://github.com/5etools-mirror-3/5etools-src/releases/download/v${version}/${pname}-v${version}.zip";
     stripRoot = false;
-    hash = "sha256-73R5DeNDw5I2Xk800Vszmd3o9EpUgC0ZErBxaJ+S7zE=";
+    hash = "";
   };
 
   buildInputs = [
