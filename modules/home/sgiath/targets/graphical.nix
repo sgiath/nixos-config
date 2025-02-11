@@ -75,21 +75,6 @@
       vscode = {
         enable = true;
         userSettings = {
-          "chat.editor.fontFamily" = "RobotoMono Nerd Font Mono";
-          "chat.editor.fontSize" = 13;
-          "debug.console.fontFamily" = "RobotoMono Nerd Font Mono";
-          "debug.console.fontSize" = 13;
-          "editor.fontFamily" = "RobotoMono Nerd Font Mono";
-          "editor.fontSize" = 13;
-          "editor.inlayHints.fontFamily" = "RobotoMono Nerd Font Mono";
-          "editor.inlineSuggest.fontFamily" = "RobotoMono Nerd Font Mono";
-          "editor.minimap.sectionHeaderFontSize" = 9;
-          "markdown.preview.fontFamily" = "RobotoMono Nerd Font Mono";
-          "markdown.preview.fontSize" = 13;
-          "scm.inputFontFamily" = "RobotoMono Nerd Font Mono";
-          "scm.inputFontSize" = 12;
-          "screencastMode.fontSize" = 53;
-          "terminal.integrated.fontSize" = 13;
           "editor.tabSize" = 2;
           "editor.minimap.enabled" = false;
         };
