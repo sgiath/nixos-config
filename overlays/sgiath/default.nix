@@ -19,4 +19,7 @@ in
 {
   # get Factorio updates as soon as possible
   factorio = pkgs-master.factorio-space-age-experimental;
+
+  # get open-webui updates sooner
+  open-webui = pkgs-master.open-webui;
 }

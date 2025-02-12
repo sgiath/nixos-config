@@ -1,4 +1,4 @@
-{ config, lib, pkgs, namespace, ... }:
+{ config, lib, pkgs, ... }:
 {
   config = lib.mkIf (config.sgiath.server.enable && config.services.open-webui.enable) {
     services = {
@@ -23,7 +23,8 @@
 
       open-webui = {
         port = 8082;
-        package = pkgs.${namespace}.open-webui;
+        package = pkgs.open-webui;
+        # package = pkgs.${namespace}.open-webui;
         environment = {
           # default
           ANONYMIZED_TELEMETRY = "False";

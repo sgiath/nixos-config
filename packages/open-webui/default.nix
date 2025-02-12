@@ -10,62 +10,62 @@
 let
   python = python3.override {
     packageOverrides = self: super: {
-      gcp-storage-emulator = super.buildPythonPackage rec {
-        pname = "gcp-storage-emulator";
-        version = "2024.8.3";
-        format = "setuptools";
-
-        src = super.fetchPypi {
-          inherit version;
-          pname = "gcp_storage_emulator";
-          hash = "sha256-5dReXCOgNEwcTES4+MNvfol1yh/MUTTKtgi5bdzNkiU=";
-        };
-
-        propagatedBuildInputs = [
-          super.fs
-          super.google-crc32c
-        ];
-
-        doCheck = false;
-      };
-
-      milvus-lite = super.buildPythonPackage {
-        pname = "milvus-lite";
-        version = "2.4.11";
-        format = "wheel";
-        platform = "manylinux2014_x86_64";
-
-        src = fetchurl {
-          url = "https://files.pythonhosted.org/packages/8d/c2/b294a7699ef097d7b0ab89f95f34fb0710726f12d7da912734e18c2558eb/milvus_lite-2.4.11-py3-none-manylinux2014_x86_64.whl";
-          hash = "sha256-VR9WtJ/PuzMLZYtKPFbtKbqbaS7CAe3R8tref145lX0=";
-        };
-        doCheck = false;
-      };
-
-      pymilvus = super.pymilvus.overridePythonAttrs (old: {
-        version = "2.5.4";
-        doCheck = false;
-        propagatedBuildInputs = old.propagatedBuildInputs ++ [
-          self.milvus-lite
-        ];
-      });
-
-      primp = super.primp.overridePythonAttrs (old: rec {
-        version = "0.12.0";
-
-        src = fetchFromGitHub {
-          owner = "deedy5";
-          repo = "primp";
-          tag = "v${version}";
-          hash = "sha256-yzcrUER+NiDfSjJ3my45IS+2GmeusvJgyX5nFSaqFUk=";
-        };
-
-        cargoDeps = rustPlatform.fetchCargoVendor {
-          inherit src;
-          name = "${old.pname}-${version}";
-          hash = "sha256-gCNnP0B0D6AJ1L/E6sQKASx8BbSJU5jTNia+tL2USvU=";
-        };
-      });
+      # gcp-storage-emulator = super.buildPythonPackage rec {
+      #   pname = "gcp-storage-emulator";
+      #   version = "2024.8.3";
+      #   format = "setuptools";
+      #
+      #   src = super.fetchPypi {
+      #     inherit version;
+      #     pname = "gcp_storage_emulator";
+      #     hash = "sha256-5dReXCOgNEwcTES4+MNvfol1yh/MUTTKtgi5bdzNkiU=";
+      #   };
+      #
+      #   propagatedBuildInputs = [
+      #     super.fs
+      #     super.google-crc32c
+      #   ];
+      #
+      #   doCheck = false;
+      # };
+      #
+      # milvus-lite = super.buildPythonPackage {
+      #   pname = "milvus-lite";
+      #   version = "2.4.11";
+      #   format = "wheel";
+      #   platform = "manylinux2014_x86_64";
+      #
+      #   src = fetchurl {
+      #     url = "https://files.pythonhosted.org/packages/8d/c2/b294a7699ef097d7b0ab89f95f34fb0710726f12d7da912734e18c2558eb/milvus_lite-2.4.11-py3-none-manylinux2014_x86_64.whl";
+      #     hash = "sha256-VR9WtJ/PuzMLZYtKPFbtKbqbaS7CAe3R8tref145lX0=";
+      #   };
+      #   doCheck = false;
+      # };
+      #
+      # pymilvus = super.pymilvus.overridePythonAttrs (old: {
+      #   version = "2.5.4";
+      #   doCheck = false;
+      #   propagatedBuildInputs = old.propagatedBuildInputs ++ [
+      #     self.milvus-lite
+      #   ];
+      # });
+      #
+      # primp = super.primp.overridePythonAttrs (old: rec {
+      #   version = "0.12.0";
+      #
+      #   src = fetchFromGitHub {
+      #     owner = "deedy5";
+      #     repo = "primp";
+      #     tag = "v${version}";
+      #     hash = "sha256-yzcrUER+NiDfSjJ3my45IS+2GmeusvJgyX5nFSaqFUk=";
+      #   };
+      #
+      #   cargoDeps = rustPlatform.fetchCargoVendor {
+      #     inherit src;
+      #     name = "${old.pname}-${version}";
+      #     hash = "sha256-gCNnP0B0D6AJ1L/E6sQKASx8BbSJU5jTNia+tL2USvU=";
+      #   };
+      # });
 
       duckduckgo-search = super.duckduckgo-search.overridePythonAttrs (old: rec {
         version = "7.3.2";
