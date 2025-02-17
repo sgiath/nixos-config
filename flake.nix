@@ -121,8 +121,8 @@
         foundryvtt.nixosModules.foundryvtt
       ];
 
-      # homes.modules = with inputs; [
-      #   nvf.homeManagerModules.default
-      # ];
+      homes.modules = with inputs; [
+        nvf.homeManagerModules.default
+      ];
     };
 }
