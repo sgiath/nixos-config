@@ -34,20 +34,20 @@
       inputs.nixpkgs.follows = "nixpkgs";
     };
 
-    hyprpaper = {
-      url = "github:hyprwm/hyprpaper";
-      inputs.nixpkgs.follows = "nixpkgs";
-    };
+    # hyprpaper = {
+    #   url = "github:hyprwm/hyprpaper";
+    #   inputs.nixpkgs.follows = "nixpkgs";
+    # };
 
-    xdph = {
-      url = "github:hyprwm/xdg-desktop-portal-hyprland";
-      inputs.nixpkgs.follows = "nixpkgs";
-    };
+    # xdph = {
+    #   url = "github:hyprwm/xdg-desktop-portal-hyprland";
+    #   inputs.nixpkgs.follows = "nixpkgs";
+    # };
 
-    nix-bitcoin = {
-      url = "github:fort-nix/nix-bitcoin";
-      inputs.nixpkgs.follows = "nixpkgs";
-    };
+    # nix-bitcoin = {
+    #   url = "github:fort-nix/nix-bitcoin";
+    #   inputs.nixpkgs.follows = "nixpkgs";
+    # };
 
     simple-nixos-mailserver = {
       url = "gitlab:simple-nixos-mailserver/nixos-mailserver";
@@ -68,8 +68,6 @@
       url = "github:danth/stylix";
       inputs.nixpkgs.follows = "nixpkgs";
     };
-
-    nvf.url = "github:notashelf/nvf";
 
     zen-browser = {
       url = "github:0xc000022070/zen-browser-flake";
@@ -108,20 +106,20 @@
       overlays = with inputs; [
         nixpkgs-wayland.overlay
         hyprland.overlays.default
-        hyprpaper.overlays.default
-        xdph.overlays.default
+        # hyprpaper.overlays.default
+        # xdph.overlays.default
       ];
 
       systems.modules.nixos = with inputs; [
         stylix.nixosModules.stylix
         disko.nixosModules.disko
-        nix-bitcoin.nixosModules.default
+        # nix-bitcoin.nixosModules.default
         simple-nixos-mailserver.nixosModules.mailserver
         foundryvtt.nixosModules.foundryvtt
       ];
 
-      homes.modules = with inputs; [
-        nvf.homeManagerModules.default
-      ];
+      # homes.modules = with inputs; [
+      #
+      # ];
     };
 }
