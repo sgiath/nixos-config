@@ -70,7 +70,11 @@
     };
 
     nvf.url = "github:notashelf/nvf";
-    zen-browser.url = "github:0xc000022070/zen-browser-flake";
+
+    zen-browser = {
+      url = "github:0xc000022070/zen-browser-flake";
+      inputs.nixpkgs.follows = "nixpkgs";
+    };
   };
 
   outputs =
@@ -99,13 +103,6 @@
           "cinny-unwrapped-4.2.3"
           "olm-3.2.16"
         ];
-      };
-
-      outputs-builder = channels: {
-        packages = {
-          conduwuit = inputs.conduwuit.packages.${channels.nixpkgs.system}.all-features;
-          zen-browser = inputs.zen-browser.packages.${channels.nixpkgs.system}.default;
-        };
       };
 
       overlays = with inputs; [
