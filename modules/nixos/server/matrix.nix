@@ -1,7 +1,6 @@
 {
   config,
   lib,
-  pkgs,
   ...
 }:
 let
@@ -14,7 +13,6 @@ in
     services = {
       conduwuit = {
         enable = true;
-        package = pkgs.conduwuit;
         settings.global = {
           # server
           server_name = "sgiath.dev";
