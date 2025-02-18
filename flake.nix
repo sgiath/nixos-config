@@ -60,7 +60,7 @@
     };
 
     conduwuit = {
-      url = "github:girlbossceo/conduwuit/v0.4.6";
+      url = "github:girlbossceo/conduwuit";
       inputs.nixpkgs.follows = "nixpkgs";
     };
 
