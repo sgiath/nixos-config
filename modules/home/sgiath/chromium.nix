@@ -1,4 +1,5 @@
 {
+  namespace,
   config,
   lib,
   pkgs,
@@ -9,7 +10,7 @@
   config = lib.mkIf config.programs.chromium.enable {
     home.packages = [
       pkgs.tor-browser
-      pkgs.zen-browser
+      pkgs.${namespace}.zen-browser
     ];
 
     programs.chromium = {

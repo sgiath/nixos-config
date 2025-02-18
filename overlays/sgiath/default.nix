@@ -17,6 +17,7 @@ let
   };
 in
 {
+  zen-browser =inputs.zen-browser.packages.${prev.system}.default;
   # get Factorio updates as soon as possible
   factorio = pkgs-master.factorio-space-age-experimental;
 
