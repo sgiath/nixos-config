@@ -3,10 +3,10 @@
 {
   imports = [ "${modulesPath}/installer/cd-dvd/installation-cd-minimal.nix" ];
 
-  # nixpkgs = {
-  #   hostPlatform = pkgs.system;
-  #   config.allowUnfree = true;
-  # };
+  nixpkgs = {
+    hostPlatform = pkgs.system;
+    config.allowUnfree = true;
+  };
 
   environment.systemPackages = with pkgs; [
     neovim
