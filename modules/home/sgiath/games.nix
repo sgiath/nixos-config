@@ -15,6 +15,10 @@ in
   config = lib.mkIf config.sgiath.games.enable {
     home = {
       packages = with pkgs; [
+        wine64
+        winetricks
+        wineWowPackages.waylandFull
+
         (lutris.override {
           extraLibraries = pkgs: [
             # libraries for Principia
