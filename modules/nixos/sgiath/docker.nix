@@ -13,6 +13,6 @@
     virtualisation.podman = {
       enable = true;
     };
-    users.users.sgiath.extraGroups = [ "docker" ];
+    # users.users.sgiath.extraGroups = [ "docker" ];
   };
 }
