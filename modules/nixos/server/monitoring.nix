@@ -93,6 +93,9 @@
         http3_hq = true;
         quic = true;
 
+        # static files
+        root = "/data/www/monitoring";
+
         locations."/goaccess" = {
           root = "/data/www/monitoring";
         };
