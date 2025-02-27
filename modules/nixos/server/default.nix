@@ -5,6 +5,7 @@
     ./audiobookshelf.nix
     ./cryptpad.nix
     ./factorio.nix
+    ./focalboard.nix
     ./foundry.nix
     ./home-assistant.nix
     ./jitsi.nix
