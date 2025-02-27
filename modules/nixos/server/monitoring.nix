@@ -93,6 +93,10 @@
         http3_hq = true;
         quic = true;
 
+        locations."/goaccess" = {
+          root = "/data/www/monitoring";
+        };
+
         locations."/" = {
           proxyWebsockets = true;
           proxyPass = "http://127.0.0.1:3000";
