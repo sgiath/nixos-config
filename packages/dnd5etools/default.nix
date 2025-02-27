@@ -15,47 +15,47 @@ let
   imgHashes = [
     {
       name = "zip";
-      hash = "sha256-l1ZNLP80GCREH3cjeBy8oDM+dbWu152AaiQLyUKYTWc=";
+      hash = "sha256-3pGwExeNYGNlxtlf7SZ2ZPDeN75tTAU7wDEzlbYk3Po=";
     }
     {
       name = "z01";
-      hash = "sha256-jwSoihKNck8Gn/wruOiuOpv5M8owBCTd/jesFE+XXHk=";
+      hash = "sha256-GvfMl3BTavXgMm+JpRxEYeDscQdh/X0Kynb0/H3gxeE=";
     }
     {
       name = "z02";
-      hash = "sha256-jvkCikDQEDT+EOO/U6l4qTLgvBFTkNONZprsByhsE+o=";
+      hash = "sha256-WPd5PSR16VmwUfemD7Kop3CUVsvwgxK+H+R7IMtd4js=";
     }
     {
       name = "z03";
-      hash = "sha256-B4opcwTEtLtBns0mbYXapXoWU8M0HLPUSKTCF/dCr8c=";
+      hash = "sha256-ujl7NSQ163q20hZT63hdNnArC4RgxtYYTi8UNb74qfc=";
     }
     {
       name = "z04";
-      hash = "sha256-ffdwUTV1W9UdVLBDayyJw4rXsjOvmMjwDAVKt2zE96Q=";
+      hash = "sha256-/5UyXeYx/SnEoqgiE87j4jmw2pUVvUHZBb+sqzhKBUM=";
     }
     {
       name = "z05";
-      hash = "sha256-YZLUNMgV5vJK/OYEK4y1NHckAbYX8cLeWImQPd970bY=";
+      hash = "sha256-RJ+petXlABOnj0EM5EG8GaOSD/Z64HAramUvFCz0OfA=";
     }
     {
       name = "z06";
-      hash = "sha256-mpCJFH7OcoewKuMiH6fzeqlzfIGrqCIJ3ktg6ZaNH90=";
+      hash = "sha256-R5gCM7qYmMcmLhXklo5nWnS9goDcWxAoYGDni8Lp918=";
     }
     {
       name = "z07";
-      hash = "sha256-V+RY+USBsUfu73T4YQpQ5+nbTZ+z+Jk7dotVkJYwMCo=";
+      hash = "sha256-ORJslbuj2u0U6v7/XwvLYKruvDpRHhC9xpWNr1tbmY8=";
     }
     {
       name = "z08";
-      hash = "sha256-JMv9MgZcpgN2Yf89ZW4chmPY2rT/ZTn7vOVTW9qhpaA=";
+      hash = "sha256-qu0ewudAbqkj6k0jX93eMXJRuu3zDSAPND0mBpmTDOo=";
     }
     {
       name = "z09";
-      hash = "sha256-toTq8qI2YoWjJKDCHjNwKasWd9N/ZW4emRnDEw7+r8g=";
+      hash = "sha256-/i6W2nEDd2n+0IimfFp/7IHvTCPI0aLU1aRGu95lL4E=";
     }
     {
       name = "z10";
-      hash = "sha256-h7HdMkmDnY7hDWBx6+oYO9MmKE4bJdwZbLdvw7mUal0=";
+      hash = "sha256-K4xZ9x5+/+OGSqLuQRHBx8AXqalxCXTsKBG3KXMp/tA=";
     }
   ];
 
@@ -64,9 +64,9 @@ let
     let
       img = fetchurl {
         pname = "5etools-img-${v.name}";
+        version = "2.7.2";
         # inherit version;
         inherit (v) hash;
-        version = "2.5.1";
         url = "https://github.com/5etools-mirror-2/5etools-img/releases/download/v${version}/img-v${version}.${v.name}";
       };
     in
