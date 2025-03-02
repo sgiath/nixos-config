@@ -10,7 +10,6 @@
     home.packages = [
       pkgs.tor-browser
       pkgs.zen-browser
-      pkgs.ladybird
     ];
 
     programs.chromium = {
