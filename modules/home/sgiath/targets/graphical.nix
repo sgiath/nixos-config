@@ -82,11 +82,11 @@
         "editor.minimap.enabled" = false;
       };
     };
-    stylix.targets.vscode.profileNames = [ "default" ];
+    stylix.targets.vscode.enable = false;
 
     # Firefox
     programs.firefox.enable = true;
-    stylix.targets.firefox.profileNames = [ "default" ];
+    stylix.targets.firefox.enable = false;
 
     sgiath = {
       enable = true;
