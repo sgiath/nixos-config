@@ -17,12 +17,10 @@
       gimp
       vlc
       kdePackages.okular
-      plex-media-player
       texliveMedium
       libwacom
-      # varia
+      varia
 
-      # comm
       webcord
       telegram-desktop
       signal-desktop
@@ -31,7 +29,7 @@
       simplex-chat-desktop
 
       # bitcoin
-      # bisq-desktop
+      bisq-desktop
       trezor-suite
       trezor-udev-rules
 
@@ -50,6 +48,7 @@
         "${pkgs.telegram-desktop}/bin/telegram-desktop"
         "${pkgs.signal-desktop}/bin/signal-desktop"
         "${pkgs.cinny-desktop}/bin/cinny"
+        "${pkgs.fractal}/bin/fractal"
       ];
       bind = [
         "$mod, Return, exec, ${pkgs.kitty}/bin/kitty"
@@ -70,19 +69,24 @@
 
       # browsers
       chromium.enable = true;
-      firefox.enable = true;
-
-      vscode = {
-        enable = true;
-        profiles.default.userSettings = {
-          "editor.tabSize" = 2;
-          "editor.minimap.enabled" = false;
-        };
-      };
 
       # utils
       pandoc.enable = true;
     };
+
+    # VSCode
+    programs.vscode = {
+      enable = true;
+      profiles.default.userSettings = {
+        "editor.tabSize" = 2;
+        "editor.minimap.enabled" = false;
+      };
+    };
+    stylix.targets.vscode.profileNames = [ "default" ];
+
+    # Firefox
+    programs.firefox.enable = true;
+    stylix.targets.firefox.profileNames = [ "default" ];
 
     sgiath = {
       enable = true;

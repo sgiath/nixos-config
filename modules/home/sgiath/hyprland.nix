@@ -137,6 +137,7 @@
           "workspace 10 silent, class:(org.telegram.desktop)"
           "workspace 10 silent, class:(Hexchat)"
           "workspace 10 silent, class:(cinny)"
+          "workspace 10 silent, class:(org.gnome.Fractal)"
         ];
       };
     };
