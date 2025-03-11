@@ -26,6 +26,11 @@ in
         size = 24;
       };
 
+      targets = {
+        vscode.profileNames = [ "default" ];
+        firefox.profileNames = [ "default" ];
+      };
+
       fonts = {
         monospace = font;
         serif = font;
