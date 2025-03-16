@@ -20,20 +20,6 @@
       texliveMedium
       libwacom
       varia
-
-      webcord
-      telegram-desktop
-      signal-desktop
-      cinny-desktop
-      fractal
-      simplex-chat-desktop
-
-      # bitcoin
-      # bisq-desktop
-      # trezor-suite
-      trezor-udev-rules
-
-      # misc
       betaflight-configurator
     ];
 
@@ -42,13 +28,6 @@
         # tools
         "${pkgs.kitty}/bin/kitty"
         "${pkgs.obsidian}/bin/obsidian"
-
-        # comms
-        "${pkgs.webcord}/bin/webcord"
-        "${pkgs.telegram-desktop}/bin/telegram-desktop"
-        "${pkgs.signal-desktop}/bin/signal-desktop"
-        "${pkgs.cinny-desktop}/bin/cinny"
-        "${pkgs.fractal}/bin/fractal"
       ];
       bind = [
         "$mod, Return, exec, ${pkgs.kitty}/bin/kitty"
@@ -91,6 +70,8 @@
     sgiath = {
       enable = true;
       audio.enable = true;
+      bitcoin.enable = false;
+      comm.enable = true;
       email_client.enable = false;
     };
   };

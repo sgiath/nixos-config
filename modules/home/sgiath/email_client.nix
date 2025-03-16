@@ -15,7 +15,7 @@
       packages = with pkgs; [
         claws-mail
 
-        # protonmail-bridge-gui
+        protonmail-bridge-gui
         protonmail-desktop
       ];
 

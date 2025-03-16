@@ -7,7 +7,9 @@
 {
   imports = [
     ./audio.nix
+    ./bitcoin.nix
     ./chromium.nix
+    ./comm.nix
     ./email_client.nix
     ./games.nix
     ./git.nix
