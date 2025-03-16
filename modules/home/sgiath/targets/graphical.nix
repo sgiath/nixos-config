@@ -91,7 +91,7 @@
     sgiath = {
       enable = true;
       audio.enable = true;
-      email_client.enable = true;
+      email_client.enable = false;
     };
   };
 }
