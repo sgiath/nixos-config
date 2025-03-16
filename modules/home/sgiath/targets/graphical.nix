@@ -30,7 +30,7 @@
 
       # bitcoin
       # bisq-desktop
-      trezor-suite
+      # trezor-suite
       trezor-udev-rules
 
       # misc
