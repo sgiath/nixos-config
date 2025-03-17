@@ -15,6 +15,7 @@
       google-cloud-sdk
       nix-du
       exfat
+      p7zip
     ];
 
     programs = {
