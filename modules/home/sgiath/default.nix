@@ -19,7 +19,9 @@
     ./ssh.nix
     ./starship.nix
     ./tmux.nix
+    ./vscode.nix
     ./waybar.nix
+    ./web_browsers.nix
     ./zsh.nix
 
     ./targets

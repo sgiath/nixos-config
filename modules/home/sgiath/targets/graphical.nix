@@ -46,26 +46,10 @@
       obs-studio.enable = false;
       waybar.enable = true;
 
-      # browsers
-      chromium.enable = true;
-
       # utils
       pandoc.enable = true;
+      vscode.enable = true;
     };
-
-    # VSCode
-    programs.vscode = {
-      enable = true;
-      profiles.default.userSettings = {
-        "editor.tabSize" = 2;
-        "editor.minimap.enabled" = false;
-      };
-    };
-    stylix.targets.vscode.enable = false;
-
-    # Firefox
-    programs.firefox.enable = true;
-    stylix.targets.firefox.enable = false;
 
     sgiath = {
       enable = true;
@@ -73,6 +57,7 @@
       bitcoin.enable = false;
       comm.enable = true;
       email_client.enable = false;
+      web_browsers.enable = true;
     };
   };
 }
