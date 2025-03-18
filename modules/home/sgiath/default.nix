@@ -88,11 +88,15 @@
         ffmpeg
         zip
         unzip
+        p7zip
         wget
         dig
         killall
         inotify-tools
         lshw
+        parted
+        nix-du
+        exfat
       ];
     };
 

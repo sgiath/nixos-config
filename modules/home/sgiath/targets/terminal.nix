@@ -11,11 +11,7 @@
     home.packages = with pkgs; [
       superfile
       yt-dlp
-      parted
       google-cloud-sdk
-      nix-du
-      exfat
-      p7zip
     ];
 
     programs = {
