@@ -21,6 +21,8 @@
       libwacom
       varia
       betaflight-configurator
+
+      code-cursor
     ];
 
     wayland.windowManager.hyprland.settings = {
