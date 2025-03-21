@@ -10,7 +10,8 @@
     services.tts.servers.default = {
       enable = true;
       port = 5000;
-      model = "";
+      useCuda = false;
+      # model = "";
     };
   };
 }
