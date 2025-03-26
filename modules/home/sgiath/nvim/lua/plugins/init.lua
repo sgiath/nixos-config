@@ -1,13 +1,13 @@
 return {
-  {
-    "stevearc/conform.nvim",
-    -- event = 'BufWritePre', -- uncomment for format on save
-    opts = require "configs.conform",
-  },
+	{
+		"stevearc/conform.nvim",
+		-- event = 'BufWritePre', -- uncomment for format on save
+		opts = require("configs.conform"),
+	},
 	{
 		"neovim/nvim-lspconfig",
 		config = function()
-			require "configs.lspconfig"
+			require("configs.lspconfig")
 		end,
 	},
 
@@ -88,6 +88,14 @@ return {
 		lazy = false,
 		opts = {},
 	},
+
+	{
+    "augmentcode/augment.vim",
+    lazy = false,
+    init = function ()
+      vim.g.augment_workspace_folders = ['/home/sgiath/develop/crazyegg/core_v2/']
+    end
+  },
 
 	"tpope/vim-sleuth",
 }
