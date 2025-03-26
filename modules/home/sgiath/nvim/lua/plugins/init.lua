@@ -93,7 +93,7 @@ return {
     "augmentcode/augment.vim",
     lazy = false,
     init = function ()
-      vim.g.augment_workspace_folders = ['/home/sgiath/develop/crazyegg/core_v2/']
+      vim.g.augment_workspace_folders = { "/home/sgiath/develop/crazyegg/core_v2/" }
     end
   },
 
