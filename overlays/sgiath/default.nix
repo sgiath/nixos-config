@@ -18,7 +18,7 @@ let
 in
 {
   # conduwuit build from official repo flake
-  conduwuit = inputs.conduwuit.packages.${prev.system}.all-features;
+  # conduwuit = inputs.conduwuit.packages.${prev.system}.all-features;
 
   # zen browser has custom repo until nixpkgs is updated
   zen-browser = inputs.zen-browser.packages.${prev.system}.default;
