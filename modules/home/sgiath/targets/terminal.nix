@@ -12,6 +12,8 @@
       superfile
       yt-dlp
       google-cloud-sdk
+
+      exiftool
     ];
 
     programs = {
