@@ -11,6 +11,7 @@
         "editor.tabSize" = 2;
         "editor.minimap.enabled" = false;
         "security.workspace.trust.untrustedFiles" = "open";
+        "explorer.confirmDelete" = false;
       };
     };
 
