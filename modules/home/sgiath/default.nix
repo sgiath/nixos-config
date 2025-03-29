@@ -85,7 +85,7 @@
           popd
         '')
 
-        (writeShellScriptBin "fix-images" ''
+        (writeShellScriptBin "generate-thumbnail" ''
           # === Configuration ===
           # Standard EXIF thumbnail size, but you can change it
           THUMB_SIZE="160x120"
