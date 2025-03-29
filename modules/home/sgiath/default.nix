@@ -157,7 +157,8 @@
             -iname "*.jpg" -o -iname "*.jpeg" -o -iname "*.png" -o -iname "*.gif" \
             -o -iname "*.tif" -o -iname "*.tiff" -o -iname "*.webp" -o -iname "*.heic" \
             -o -iname "*.heif" \) -print0 | \
-          ${parallel-full}/bin/parallel -0 --eta exiftool -quiet -JUMBF:all= -overwrite_original {}
+          ${parallel-full}/bin/parallel -0 --eta \
+            exiftool -quiet -api PNGEarlyXMP=1 -TagsFromFile @ -all:all -JUMBF:all= -overwrite_original {}
         '')
 
         # general programs I want to have always available
