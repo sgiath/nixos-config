@@ -199,15 +199,15 @@
     "complement": {
       "flake": false,
       "locked": {
-        "lastModified": 1742400260,
-        "narHash": "sha256-zdVyRCWm3jVL4zsRPs8HcLCcSrRD0vCcJ7l++uQGcC4=",
-        "owner": "matrix-org",
+        "lastModified": 1741891349,
+        "narHash": "sha256-YvrzOWcX7DH1drp5SGa+E/fc7wN3hqFtPbqPjZpOu1Q=",
+        "owner": "girlbossceo",
         "repo": "complement",
-        "rev": "55095cf70add740d33fd9d8137357bd14927ba64",
+        "rev": "e587b3df569cba411aeac7c20b6366d03c143745",
         "type": "github"
       },
       "original": {
-        "owner": "matrix-org",
+        "owner": "girlbossceo",
         "ref": "main",
         "repo": "complement",
         "type": "github"
@@ -230,16 +230,15 @@
         "rocksdb": "rocksdb"
       },
       "locked": {
-        "lastModified": 1725209064,
-        "narHash": "sha256-ut3IWEueNR/hT7NyGfuK5IYtppC6ArSoJdEfFuD/0vE=",
+        "lastModified": 1743186614,
+        "narHash": "sha256-uGI98B+binIclsCJd2wXb7l1k2wV7e+sNmX4R8L5RPc=",
         "owner": "girlbossceo",
         "repo": "conduwuit",
-        "rev": "8f7ade4c22533a3177bfd8f175e178573ba6c1d4",
+        "rev": "3e57b7d35d5bd6cfed5900b377f7c68970213518",
         "type": "github"
       },
       "original": {
         "owner": "girlbossceo",
-        "ref": "v0.4.6",
         "repo": "conduwuit",
         "type": "github"
       }
@@ -1551,16 +1550,16 @@
     "rocksdb": {
       "flake": false,
       "locked": {
-        "lastModified": 1724285323,
-        "narHash": "sha256-k60kreKQ0v+bQ16yBd2SfLYpuNjMw2qoRmZL/S3k6CU=",
+        "lastModified": 1741308171,
+        "narHash": "sha256-YdBvdQ75UJg5ffwNjxizpviCVwVDJnBkM8ZtGIduMgY=",
         "owner": "girlbossceo",
         "repo": "rocksdb",
-        "rev": "5a67ad7ce46328578ee5587fb0c23faa03d14e67",
+        "rev": "3ce04794bcfbbb0d2e6f81ae35fc4acf688b6986",
         "type": "github"
       },
       "original": {
         "owner": "girlbossceo",
-        "ref": "v9.5.2",
+        "ref": "v9.11.1",
         "repo": "rocksdb",
         "type": "github"
       }
