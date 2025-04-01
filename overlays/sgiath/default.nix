@@ -34,6 +34,7 @@ in
   factorio = pkgs-master.factorio-space-age-experimental;
 
   # get open-webui updates sooner
+  # open-webui = pkgs-master.open-webui;
   open-webui = pkgs-drupol.open-webui;
 
   # broken on unstable for me

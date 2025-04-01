@@ -1339,6 +1339,22 @@
         "type": "indirect"
       }
     },
+    "nixpkgs-drupol": {
+      "locked": {
+        "lastModified": 1743489824,
+        "narHash": "sha256-GQyz0J9rzEdeS7WUA31TyFsBesvC56acDbv/1Z5RRTs=",
+        "owner": "drupol",
+        "repo": "nixpkgs",
+        "rev": "887c3a0f8c30b0fba13edfc9c76df4590934d1a0",
+        "type": "github"
+      },
+      "original": {
+        "owner": "drupol",
+        "ref": "push-nznqsuyxtupp",
+        "repo": "nixpkgs",
+        "type": "github"
+      }
+    },
     "nixpkgs-lib": {
       "locked": {
         "lastModified": 1743296961,
@@ -1356,11 +1372,11 @@
     },
     "nixpkgs-master": {
       "locked": {
-        "lastModified": 1743488413,
-        "narHash": "sha256-ZpuznyJf2oBJOrQ14nYn+UHJNgNif4QIwQ83FFxHaOM=",
+        "lastModified": 1743492804,
+        "narHash": "sha256-0ZLXzg4Vcla06bXsOmRmZ8/RGe5AhsOzpB6i4pfZZVs=",
         "owner": "NixOS",
         "repo": "nixpkgs",
-        "rev": "d2e19a0277fbed91fac2f5c0539eff5d175fe104",
+        "rev": "0b0aa7b6d9851463271f4877918aa6ecf53e72d2",
         "type": "github"
       },
       "original": {
@@ -1573,6 +1589,7 @@
         "hyprland": "hyprland",
         "nixos-generators": "nixos-generators",
         "nixpkgs": "nixpkgs_5",
+        "nixpkgs-drupol": "nixpkgs-drupol",
         "nixpkgs-master": "nixpkgs-master",
         "nixpkgs-stable": "nixpkgs-stable_3",
         "nixpkgs-wayland": "nixpkgs-wayland",
