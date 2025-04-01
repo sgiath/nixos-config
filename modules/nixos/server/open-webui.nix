@@ -2,7 +2,7 @@
 {
   config = lib.mkIf (config.sgiath.server.enable && config.services.open-webui.enable) {
     services = {
-      nginx.virtualHosts."open-webui.sgiath.dev" = {
+      nginx.virtualHosts."ai.sgiath.dev" = {
         # SSL
         onlySSL = true;
         kTLS = true;
@@ -33,8 +33,8 @@
 
           # general
           ENV = "prod";
-          WEBUI_URL = "https://open-webui.sgiath.dev";
-          WEBHOOK_URL = "https://open-webui.sgiath.dev";
+          WEBUI_URL = "https://ai.sgiath.dev";
+          WEBHOOK_URL = "https://ai.sgiath.dev";
           WHISPER_MODEL_AUTO_UPDATE = "True";
 
           OLLAMA_BASE_URL = "http://192.168.1.6:11434";
