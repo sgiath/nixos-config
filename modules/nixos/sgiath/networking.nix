@@ -25,7 +25,7 @@
           "meet.sgiath.dev"
           "matrix.sgiath.dev"
           "n8n.sgiath.dev"
-          "open-webui.sgiath.dev"
+          "ai.sgiath.dev"
           "home-assistant.sgiath.dev"
           "mollysocket.sgiath.dev"
           "focalboard.sgiath.dev"
