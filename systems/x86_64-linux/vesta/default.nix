@@ -26,7 +26,7 @@
     searx.enable = true;
     mollysocket.enable = true;
     focalboard.enable = true;
-    zitadel.enable = true;
+    zitadel.enable = false;
 
     # AI
     n8n.enable = true;
