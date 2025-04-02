@@ -29,6 +29,7 @@
           "home-assistant.sgiath.dev"
           "mollysocket.sgiath.dev"
           "focalboard.sgiath.dev"
+          "auth.sgiath.dev"
         ];
         "192.168.1.4" = [ "nas.sgiath" ];
         "192.168.1.5" = [ "nas.sgiath" ];
