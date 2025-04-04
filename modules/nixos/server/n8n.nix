@@ -12,7 +12,9 @@ let
   };
 in
 {
-  config = lib.mkIf (config.sgiath.server.enable && config.services.n8n.enable) {
+  options.sgiath.n8n.enable = lib.mkEnableOption "n8n server";
+
+  config = lib.mkIf (config.sgiath.server.enable && config.sgiath.n8n.enable) {
     services = {
       nginx.virtualHosts."n8n.sgiath.dev" = {
         # SSL

@@ -10,6 +10,7 @@
     enable = true;
     docker.enable = true;
     server.enable = true;
+    n8n.enable = true;
   };
 
   services = {
@@ -29,7 +30,6 @@
     zitadel.enable = false;
 
     # AI
-    n8n.enable = true;
     open-webui.enable = true;
 
     # proxies
