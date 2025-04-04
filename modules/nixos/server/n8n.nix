@@ -1,4 +1,4 @@
-{ config, lib, pkgs, ... }:
+{ namespace, config, lib, pkgs, ... }:
 {
   config = lib.mkIf (config.sgiath.server.enable && config.services.n8n.enable) {
     services = {
@@ -22,6 +22,7 @@
       };
 
       n8n = {
+        package = pkgs.${namespace}.n8n;
         webhookUrl = "https://n8n.sgiath.dev/";
         settings = {
           # ai.enabled = true;
