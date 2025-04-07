@@ -23,7 +23,8 @@
         # static files
         locations."/" = {
           proxyWebsockets = true;
-          proxyPass = "http://127.0.0.1:8553";
+          proxyPass = "http://127.0.0.1:8090";
+          # proxyPass = "http://127.0.0.1:8553";
         };
       };
     };
