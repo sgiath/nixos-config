@@ -18,7 +18,7 @@ let
 in
 {
   # conduit build from official repo flake
-  matrix-conduit = inputs.conduit.packages.${prev.system}.default;
+  # matrix-conduit = inputs.conduit.packages.${prev.system}.default;
 
   # zen browser has custom repo until nixpkgs is updated
   zen-browser = inputs.zen-browser.packages.${prev.system}.default;
