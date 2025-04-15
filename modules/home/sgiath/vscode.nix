@@ -13,6 +13,7 @@
         "security.workspace.trust.untrustedFiles" = "open";
         "explorer.confirmDelete" = false;
         "editor.wordWrapColumn" = 98;
+        "github.copilot.enable"."*" = false;
       };
     };
 
