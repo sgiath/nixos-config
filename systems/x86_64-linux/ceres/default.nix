@@ -8,6 +8,7 @@ in
   imports = [ ./hardware.nix ];
 
   networking.hostName = "ceres";
+  networking.wireguard.enable = true;
 
   sgiath = {
     enable = true;

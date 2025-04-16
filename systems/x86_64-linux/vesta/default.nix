@@ -5,6 +5,7 @@
   ];
 
   networking.hostName = "vesta";
+  networking.wireguard.enable = false;
 
   sgiath = {
     enable = true;
