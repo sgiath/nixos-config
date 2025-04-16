@@ -27,7 +27,8 @@
       ports = [
         "53:53/tcp"
         "53:53/udp"
-        "8053:8053/tcp"
+        "8053:80/tcp"
+        "8054:443/tcp"
       ];
       volumes = [
         "pihole:/var/lib/pihole"
@@ -37,7 +38,7 @@
         "--network=host"
       ];
       environment = {
-        WEBPASSWORD = "Sgiath0913";
+        FTLCONF_webserver_api_password = "";
         WEB_PORT = "8053";
         TZ = "UTC";
       };
