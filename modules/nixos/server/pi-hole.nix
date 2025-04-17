@@ -31,7 +31,7 @@
         "443:8054/tcp"
       ];
       volumes = [
-        "pihole:/var/lib/pihole"
+        "/var/lib/pihole:/var/lib/pihole"
         "dnsmasq:/etc/dnsmasq.d"
       ];
       extraOptions = [
