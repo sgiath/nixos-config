@@ -31,7 +31,6 @@
       ];
       volumes = [
         "/var/lib/pihole:/etc/pihole"
-        "dnsmasq:/etc/dnsmasq.d"
       ];
       extraOptions = [
         "--network=host"
@@ -40,7 +39,6 @@
         TZ = "UTC";
         FTLCONF_webserver_port = "8053";
         FTLCONF_webserver_api_password = "";
-        FTLCONF_misc_etc_dnsmasq_d = "true";
       };
     };
   };
