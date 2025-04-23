@@ -33,6 +33,6 @@
       "${pkgs.protonmail-desktop}/bin/proton-mail"
     ];
 
-    services.pass-secret-service.enable = true;
+    # services.pass-secret-service.enable = true;
   };
 }
