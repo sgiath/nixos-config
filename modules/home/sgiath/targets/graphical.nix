@@ -60,7 +60,7 @@
       audio.enable = true;
       bitcoin.enable = false;
       comm.enable = true;
-      email_client.enable = false;
+      email_client.enable = true;
       web_browsers.enable = true;
     };
   };
