@@ -15,7 +15,10 @@
         "editor.wordWrapColumn" = 98;
         # Augment needs to have it disabled
         "github.copilot.enable"."*" = false;
+        # makefile plugin
         "makefile.configureOnOpen" = true;
+        # shellcheck plugin
+        "shellcheck.customArgs" = [ "-x" ];
       };
     };
 
