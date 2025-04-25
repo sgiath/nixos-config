@@ -9,13 +9,13 @@
       photoprism = {
         passwordFile = "/data/photos/password";
         originalsPath = "/data/photos";
+        importPath = "/data/photos/imports";
 
         settings = {
           # authentication
-          # PHOTOPRISM_AUTH_MODE = "public";
           PHOTOPRISM_ADMIN_USER = "sgiath";
           # feature flags
-          # PHOTOPRISM_EXPERIMENTAL = "true";
+          PHOTOPRISM_EXPERIMENTAL = "true";
           # customization
           PHOTOPRISM_APP_NAME = "Photo";
           # site info

@@ -22,6 +22,7 @@
     ./search.nix
     ./sgiath.nix
     ./sinai.nix
+    ./torrent.nix
     ./wordpress.nix
     ./xmpp.nix
     ./zitadel.nix

@@ -30,6 +30,7 @@
     focalboard.enable = true;
     zitadel.enable = false;
     photoprism.enable = true;
+    transmission.enable = true;
 
     # AI
     open-webui.enable = false;
