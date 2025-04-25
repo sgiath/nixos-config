@@ -1,6 +1,7 @@
 {
   config,
   lib,
+  pkgs,
   ...
 }:
 let
@@ -13,6 +14,8 @@ in
         home = "/data2/torrent";
         openPeerPorts = true;
         performanceNetParameters = true;
+
+        webHome = pkgs.flood-for-transmission;
 
         settings = {
           rpc-authentication-required = true;
