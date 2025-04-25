@@ -15,6 +15,7 @@ in
         performanceNetParameters = true;
 
         settings = {
+          rpc-authentication-required = true;
           rpc-username = "sgiath";
           rpc-password = secrets.transmission;
         };
