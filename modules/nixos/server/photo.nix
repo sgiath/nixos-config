@@ -9,6 +9,7 @@
       photoprism = {
         passwordFile = "/data/photos/password";
         originalsPath = "/data/photos";
+
         settings = {
           PHOTOPRISM_ADMIN_USER = "sgiath";
           PHOTOPRISM_EXPERIMENTAL = "true";
