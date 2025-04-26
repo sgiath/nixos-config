@@ -1,6 +1,6 @@
 { config, lib, ... }:
 let
-  secrets = builtins.fromJSON (builtins.readFile ./../../../secrets.json);
+  # secrets = builtins.fromJSON (builtins.readFile ./../../../secrets.json);
 in
 {
   config = lib.mkIf config.sgiath.enable {
@@ -8,7 +8,7 @@ in
       # https://account.proton.me/u/4/vpn/WireGuard
       wireguard.interfaces = {
         wg0 = {
-          privateKey = secrets.proton_vpn;
+          # privateKey = secrets.proton_vpn;
           ips = ["10.2.0.2/32"];
           peers = [
             {
