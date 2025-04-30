@@ -47,7 +47,7 @@
       # hyprland
       hyprland.enable = true;
       kitty.enable = true;
-      obs-studio.enable = false;
+      obs-studio.enable = true;
       waybar.enable = true;
 
       # utils
