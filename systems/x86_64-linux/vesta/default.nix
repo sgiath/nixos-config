@@ -34,7 +34,7 @@
     plex.enable = true;
 
     # AI
-    open-webui.enable = false;
+    open-webui.enable = true;
 
     # proxies
     nas-proxy.enable = true;
