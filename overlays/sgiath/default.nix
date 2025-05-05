@@ -23,6 +23,9 @@ in
   # zen browser has custom repo until nixpkgs is updated
   zen-browser = inputs.zen-browser.packages.${prev.system}.default;
 
+  # NIX Gaming
+  star-citizen = inputs.nix-gaming.packages.${prev.system}.star-citizen;
+
   # get Factorio updates as soon as possible
   factorio = pkgs-master.factorio-space-age-experimental;
 

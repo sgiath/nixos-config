@@ -45,7 +45,7 @@
 
     services.foundryvtt = {
       hostName = "foundry.sgiath.dev";
-      package = inputs.foundryvtt.packages.${system}.foundryvtt_12;
+      package = inputs.foundryvtt.packages.${system}.foundryvtt_13;
       minifyStaticFiles = true;
       proxySSL = true;
       proxyPort = 443;

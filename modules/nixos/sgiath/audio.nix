@@ -24,6 +24,7 @@
         support32Bit = true;
       };
       pulse.enable = true;
+      lowLatency.enable = true;
       wireplumber = {
         enable = true;
         extraConfig.bluetoothEnhancements = {

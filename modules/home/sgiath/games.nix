@@ -51,6 +51,8 @@ in
           username = "Sgiath";
           token = secrets.factorio_token;
         })
+
+        star-citizen
       ];
     };
   };
