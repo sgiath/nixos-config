@@ -33,12 +33,14 @@
         aliases = {
           d = "diff";
           aa = "add --all";
-          cm = "commit --signoff --no-verify";
-          ca = "commit --all --signoff --no-verify";
+          ap = "add --patch";
+          cm = "commit --signoff --no-verify --verbose";
+          ca = "commit --all --signoff --no-verify --verbose";
           ps = "push --progress";
           pl = "pull --autostash --rebase --signoff";
           pf = "push --progress --force-with-lease";
-          ss = "status";
+          ss = "status --short";
+          ll = "log --all --graph --pretty=format:'%C(magenta)%h %C(white) %an  %ar%C(auto)  %D%n%s%n'";
           tag = "tag --sign";
           amend = "commit --amend --no-edit --no-verify";
           main-to-master = "!git symbolic-ref refs/heads/master refs/heads/main && git symbolic-ref refs/remotes/origin/master refs/remotes/origin/main";
@@ -71,39 +73,92 @@
             signingKey = "0x70F9C7DE34CB3BC8";
           };
 
-          core.editor = "${pkgs.neovim}/bin/nvim";
+          core = {
+            compression = 9;
+            whitespace = "error";
+            preloadindex = true;
+            editor = "${pkgs.neovim}/bin/nvim";
+          };
+
+          advice = {
+            addEmptyPathspec = false;
+            pushNonFastForward = false;
+            statusHints = false;
+          };
 
           commit = {
             gpgSign = true;
             template = "~/.git/commit-template";
           };
 
+          diff = {
+            context = 5;
+            interHunkContext = 10;
+            renames = "copies";
+          };
+
+          diff-so-fancy = {
+            markEmptyLines = false;
+          };
+
           branch = {
             autoSetupRebase = "always";
+            sort = "-committerdate";
           };
 
           pull = {
-            gpgSign = true;
+            default = "current";
             rebase = true;
+            gpgSign = true;
           };
 
           push = {
+            autoSetupRemote = true;
+            followTags = true;
             default = "current";
             gpgSign = "if-asked";
           };
 
+          rebase = {
+            autoStash = true;
+            missingCommitsCheck = true;
+          };
+
           status = {
             branch = true;
+            showStash = true;
             showUntrackedFiles = "all";
           };
 
-          tag.gpgSign = true;
+          log = {
+            abbrevCommit = true;
+          };
+
+          tag = {
+            sort = "-taggerdate";
+            gpgSign = true;
+          };
           blame.date = "short";
           fetch.prune = true;
 
           color = {
             branch = "auto";
-            diff = "auto";
+
+            diff = {
+              meta = "black bold";
+              frag = "magenta";
+              context = "white";
+              whitespace = "yellow reverse";
+              old = "red";
+            };
+
+            decorate = {
+              HEAD = "red";
+              branch = "blue";
+              tag = "yellow";
+              remoteBranch = "magenta";
+            };
+
             interactive = "auto";
             status = "auto";
             ui = "always";
@@ -117,6 +172,17 @@
               schedule = "hourly";
               auto = -1;
             };
+          };
+
+          pager = {
+            diff = "${pkgs.diff-so-fancy}/bin/diff-so-fancy | $PAGER";
+            branch = false;
+            tag = false;
+          };
+
+          interactive = {
+            diffFilter = "${pkgs.diff-so-fancy}/bin/diff-so-fancy --patch";
+            singlekey = true;
           };
 
           rerere = {
