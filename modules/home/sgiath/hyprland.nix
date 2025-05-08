@@ -21,6 +21,30 @@
       };
 
       settings = {
+        decoration = {
+          rounding = 10;
+        };
+
+        input = {
+          follow_mouse = 2;
+          touchpad = {
+            natural_scroll = true;
+          };
+          tablet = {
+            output = "current";
+          };
+        };
+
+        group = {
+          groupbar = {
+            font_size = 14;
+          };
+        };
+
+        misc = {
+          focus_on_activate = true;
+        };
+
         monitor = [
           # Desktop
           "DP-1,highres,0x2560,1"
@@ -30,8 +54,6 @@
           # Notebook
           "eDP-1,2560x1600@240,0x0,1"
         ];
-
-        input.touchpad.natural_scroll = true;
 
         master = {
           # mfact = 0.66;
