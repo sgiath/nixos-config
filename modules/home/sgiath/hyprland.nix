@@ -206,7 +206,6 @@
           border: none;
           outline: none;
           box-shadow: none;
-          font: RobotoMono NerdFonts Mono;
           font-size: 14px;
         }
 
@@ -224,13 +223,6 @@
 
         #outer-box {
           margin: 24px;
-        }
-
-        #entry {
-          padding: 8px;
-        }
-
-        #entry:selected * {
         }
       '';
     };
