@@ -197,7 +197,7 @@
       password-store = {
         enable = true;
         settings = {
-          PASSWORD_STORE_DIR = "$XDG_DATA_HOME/.local/share/password-store";
+          PASSWORD_STORE_DIR = "/home/sgiath/.local/share/password-store";
         };
         package = pkgs.pass-wayland.withExtensions (exts: [ exts.pass-otp ]);
       };
