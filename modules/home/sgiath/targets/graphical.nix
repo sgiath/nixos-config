@@ -47,15 +47,18 @@
     programs = {
       # hyprland
       hyprland.enable = true;
+      waybar.enable = true;
+
+      # terminals
+      alacritty.enable = true;
       kitty.enable = false;
       wezterm.enable = true;
       ghostty.enable = true;
-      obs-studio.enable = true;
-      waybar.enable = true;
 
       # utils
       pandoc.enable = true;
       vscode.enable = true;
+      obs-studio.enable = true;
     };
 
     sgiath = {
