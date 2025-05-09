@@ -180,8 +180,8 @@
     };
 
     services = {
-      gnome-keyring.enable = true;
-      pass-secret-service.enable = false;
+      gnome-keyring.enable = false;
+      pass-secret-service.enable = true;
     };
 
     programs = {
