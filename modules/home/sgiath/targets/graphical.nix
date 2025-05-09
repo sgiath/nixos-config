@@ -20,17 +20,14 @@
       kdePackages.okular
       texliveMedium
       libwacom
-      varia
-      betaflight-configurator
-      appimage-run
+      # varia
+      # betaflight-configurator
+      # appimage-run
       davinci-resolve-studio
-
-      code-cursor
     ];
 
     wayland.windowManager.hyprland.settings = {
       exec-once = [
-        # tools
         # "${pkgs.kitty}/bin/kitty"
         "${pkgs.obsidian}/bin/obsidian"
       ];
