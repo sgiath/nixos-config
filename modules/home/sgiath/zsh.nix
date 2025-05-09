@@ -7,6 +7,8 @@
 
 {
   config = lib.mkIf config.programs.zsh.enable {
+    # home.packages = with pkgs; [ ];
+
     programs = {
       eza = {
         enable = true;
@@ -42,8 +44,8 @@
           ps = "${pkgs.procs}/bin/procs";
           curl = "${pkgs.curlie}/bin/curlie";
           man = "${pkgs.tldr}/bin/tldr";
-          top = "${pkgs.btop}/bin/btop";
-          htop = "${pkgs.btop}/bin/btop";
+          top = "${pkgs.btop-rocm}/bin/btop";
+          htop = "${pkgs.btop-rocm}/bin/btop";
         };
 
         prezto = {

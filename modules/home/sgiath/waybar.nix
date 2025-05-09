@@ -27,29 +27,21 @@
           ];
 
           network = {
-            interface = "enp56s0";
+            interface = "enp57s0";
             format = "{ipaddr}: {bandwidthUpBytes} / {bandwidthDownBytes}";
           };
           "network#2" = {
-            interface = "enp58s0";
+            interface = "enp59s0";
             format = "{ipaddr}: {bandwidthUpBytes} / {bandwidthDownBytes}";
           };
-          memory = {
-            format = "RAM: {used} GiB / {total} GiB";
-          };
-          cpu = {
-            format = "CPU: {usage}% ({max_frequency}GHz)";
-          };
-          clock = {
-            format = "{:%Y-%m-%d %H%M}";
-          };
+          memory.format = "RAM: {used} GiB / {total} GiB";
+          cpu.format = "CPU: {usage}% ({max_frequency}GHz)";
+          clock.format = "{:%Y-%m-%d %H%M}";
         };
         notebookBar = {
           height = 28;
           spacing = 12;
-          output = [
-            "eDP-1"
-          ];
+          output = [ "eDP-1" ];
           modules-left = [ "hyprland/workspaces" ];
           modules-right = [
             "network"
@@ -63,15 +55,9 @@
             interface = "wlp3s0";
             format = "{ipaddr}: {bandwidthUpBytes} / {bandwidthDownBytes}";
           };
-          memory = {
-            format = "RAM: {used} GiB / {total} GiB";
-          };
-          cpu = {
-            format = "CPU: {usage}% ({max_frequency}GHz)";
-          };
-          clock = {
-            format = "{:%Y-%m-%d %H%M}";
-          };
+          memory.format = "RAM: {used} GiB / {total} GiB";
+          cpu.format = "CPU: {usage}% ({max_frequency}GHz)";
+          clock.format = "{:%Y-%m-%d %H%M}";
         };
       };
     };
