@@ -214,7 +214,7 @@
         }
 
         #input {
-          padding: 24px;
+          padding: 14px;
         }
 
         #input * {
