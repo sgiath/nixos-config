@@ -47,7 +47,9 @@
     programs = {
       # hyprland
       hyprland.enable = true;
-      kitty.enable = true;
+      kitty.enable = false;
+      wezterm.enable = true;
+      ghostty.enable = true;
       obs-studio.enable = true;
       waybar.enable = true;
 
