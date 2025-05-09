@@ -13,6 +13,8 @@
       nemo-fileroller
       webp-pixbuf-loader
 
+      superfile
+
       # utils
       obsidian
       gimp
