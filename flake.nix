@@ -1,7 +1,7 @@
 {
   inputs = {
     nixpkgs-master.url = "nixpkgs/master";
-    nixpkgs.url = "github:NixOS/nixpkgs/6eb89aae973dc9d336bb7506828ef9d08a39d574";
+    nixpkgs.url = "nixpkgs/nixos-unstable";
     nixpkgs-stable.url = "nixpkgs/nixos-24.11";
 
     nixos-generators = {
@@ -90,7 +90,7 @@
       };
 
       overlays = with inputs; [
-        # nixpkgs-wayland.overlay
+        nixpkgs-wayland.overlay
         hyprland.overlays.default
       ];
 
