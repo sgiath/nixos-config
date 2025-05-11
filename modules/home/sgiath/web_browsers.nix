@@ -17,7 +17,7 @@
     programs.chromium.enable = true;
 
     # Firefox
-    programs.firefox.enable = true;
+    programs.firefox.enable = false;
     stylix.targets.firefox.enable = false;
   };
 }

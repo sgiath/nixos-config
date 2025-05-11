@@ -1,7 +1,7 @@
 {
   inputs = {
     nixpkgs-master.url = "nixpkgs/master";
-    nixpkgs.url = "nixpkgs/nixos-unstable";
+    nixpkgs.url = "github:NixOS/nixpkgs/6eb89aae973dc9d336bb7506828ef9d08a39d574";
     nixpkgs-stable.url = "nixpkgs/nixos-24.11";
 
     nixos-generators = {

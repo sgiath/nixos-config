@@ -49,8 +49,8 @@
       waybar.enable = true;
 
       # terminals
-      alacritty.enable = false;
-      kitty.enable = true;
+      alacritty.enable = true;
+      kitty.enable = false;
       wezterm.enable = false;
       ghostty.enable = false;
 
