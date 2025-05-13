@@ -23,6 +23,9 @@ in
   # zen browser has custom repo until nixpkgs is updated
   zen-browser = inputs.zen-browser.packages.${prev.system}.default;
 
+  # superfile is Nix native
+  superfile = inputs.superfile.packages.${prev.system}.default;
+
   # NIX Gaming
   star-citizen = inputs.nix-gaming.packages.${prev.system}.star-citizen;
 
