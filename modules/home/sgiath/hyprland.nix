@@ -116,15 +116,6 @@
           "9,monitor:DP-3,persistent:true"
           "10,monitor:DP-2,default:true,gapsin:0,gapsout:0,border:false,persistent:true"
         ];
-
-        # hyprctl clients
-        windowrulev2 = [
-          # terminal in special workspace
-          "workspace 1, class:(kitty)"
-
-          # other apps
-          "workspace 5 silent, class:(obsidian)"
-        ];
       };
     };
 

@@ -13,7 +13,6 @@
       openssl
       pkgs.${namespace}.codex
 
-      superfile
       yt-dlp
       google-cloud-sdk
 
