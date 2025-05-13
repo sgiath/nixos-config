@@ -38,6 +38,8 @@
         "workspace 1, class:(ghostty)"
 
         "workspace 5 silent, class:(obsidian)"
+
+        "workspace 7 silent, class:(com.obsproject.Studio)"
       ];
     };
 
