@@ -217,11 +217,14 @@
         };
       };
       mako.enable = true;
+      clipse = {
+        enable = true;
+      };
     };
 
     xdg = {
       portal = {
-        enable = true;
+        enable = false;
         config.common.default = "hyprland";
         xdgOpenUsePortal = true;
         extraPortals = [
