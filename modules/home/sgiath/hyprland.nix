@@ -51,7 +51,6 @@
         "$mod" = "SUPER";
         bind = [
           "$mod SHIFT, Q, exec, ${pkgs.wlogout}/bin/wlogout"
-          "$mod, E, exec, ${pkgs.kitty}/bin/kitty --class files -e superfile"
 
           "$mod SHIFT, C, killactive,"
           "$mod, R, togglesplit,"
@@ -148,11 +147,7 @@
         (writeShellScriptBin "screenshot" ''
           ${grim}/bin/grim -g "$(${slurp}/bin/slurp)" - | ${swappy}/bin/swappy -f -
         '')
-        wlogout
       ];
-      sessionVariables = {
-        NIXOS_OZONE_WL = "1";
-      };
     };
 
     programs.wofi = {
@@ -179,17 +174,5 @@
       mako.enable = true;
       hyprpolkitagent.enable = true;
     };
-
-    # xdg = {
-    #   portal = {
-    #     enable = false;
-    #     config.common.default = "hyprland";
-    #     xdgOpenUsePortal = true;
-    #     extraPortals = [
-    #       pkgs.xdg-desktop-portal-hyprland
-    #       pkgs.xdg-desktop-portal-gtk
-    #     ];
-    #   };
-    # };
   };
 }

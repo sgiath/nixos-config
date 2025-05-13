@@ -12,6 +12,7 @@
     ./clipboard.nix
     ./comm.nix
     ./email_client.nix
+    ./file-explorer.nix
     ./games.nix
     ./git.nix
     ./gnupg.nix
