@@ -17,7 +17,7 @@
     programs.chromium.enable = true;
 
     # Firefox
-    programs.firefox.enable = false;
+    programs.firefox.enable = true;
     stylix.targets.firefox.enable = false;
 
     # librewolf
