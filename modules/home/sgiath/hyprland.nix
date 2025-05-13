@@ -183,10 +183,7 @@
         (writeShellScriptBin "screenshot" ''
           ${grim}/bin/grim -g "$(${slurp}/bin/slurp)" - | ${swappy}/bin/swappy -f -
         '')
-        wl-clipboard
-        wl-clipboard-x11
         wlogout
-        hyprpolkitagent
       ];
       sessionVariables = {
         NIXOS_OZONE_WL = "1";
@@ -215,9 +212,7 @@
         };
       };
       mako.enable = true;
-      clipse = {
-        enable = true;
-      };
+      hyprpolkitagent.enable = true;
     };
 
     xdg = {

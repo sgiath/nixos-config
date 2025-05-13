@@ -9,6 +9,7 @@
     ./audio.nix
     ./bitcoin.nix
     ./chromium.nix
+    ./clipboard.nix
     ./comm.nix
     ./email_client.nix
     ./games.nix
