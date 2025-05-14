@@ -98,7 +98,7 @@
       };
 
       overlays = with inputs; [
-        nixpkgs-wayland.overlay
+        # nixpkgs-wayland.overlay
         hyprland.overlays.default
       ];
 
