@@ -851,14 +851,14 @@
         "lastModified": 1743178567,
         "narHash": "sha256-MRgOvqs+bqS7I72N/1CJUShaXxej1m1XzheH60t1xLs=",
         "owner": "hyprwm",
-        "repo": "Hyprland",
+        "repo": "hyprland",
         "rev": "29e2e59fdbab8ed2cc23a20e3c6043d5decb5cdc",
         "type": "github"
       },
       "original": {
         "owner": "hyprwm",
         "ref": "v0.48.1",
-        "repo": "Hyprland",
+        "repo": "hyprland",
         "type": "github"
       }
     },
