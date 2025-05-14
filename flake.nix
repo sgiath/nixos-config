@@ -29,11 +29,11 @@
       inputs.nixpkgs.follows = "nixpkgs";
     };
 
-    hyprland = {
-      # url = "github:hyprwm/hyprland";
-      url = "github:hyprwm/hyprland/v0.48.1";
-      inputs.nixpkgs.follows = "nixpkgs";
-    };
+    # hyprland = {
+    #   url = "github:hyprwm/hyprland";
+    #   # url = "github:hyprwm/hyprland/v0.48.1";
+    #   inputs.nixpkgs.follows = "nixpkgs";
+    # };
 
     simple-nixos-mailserver = {
       url = "gitlab:simple-nixos-mailserver/nixos-mailserver";
