@@ -29,17 +29,6 @@
       inputs.nixpkgs.follows = "nixpkgs";
     };
 
-    # hyprland = {
-    #   url = "github:hyprwm/hyprland";
-    #   # url = "github:hyprwm/hyprland/v0.48.1";
-    #   inputs.nixpkgs.follows = "nixpkgs";
-    # };
-
-    simple-nixos-mailserver = {
-      url = "gitlab:simple-nixos-mailserver/nixos-mailserver";
-      inputs.nixpkgs.follows = "nixpkgs";
-    };
-
     nix-gaming = {
       url = "github:fufexan/nix-gaming";
       inputs.nixpkgs.follows = "nixpkgs";
@@ -104,13 +93,11 @@
 
       overlays = with inputs; [
         nixpkgs-wayland.overlay
-        # hyprland.overlays.default
       ];
 
       systems.modules.nixos = with inputs; [
         stylix.nixosModules.stylix
         disko.nixosModules.disko
-        simple-nixos-mailserver.nixosModules.mailserver
         foundryvtt.nixosModules.foundryvtt
       ];
 
