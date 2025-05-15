@@ -36,5 +36,5 @@ in
   open-webui = pkgs-master.open-webui;
 
   # broken on unstable for me
-  audiobookshelf = pkgs-stable.audiobookshelf;
+  # audiobookshelf = pkgs-stable.audiobookshelf;
 }

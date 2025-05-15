@@ -24,11 +24,6 @@
       inputs.nixpkgs.follows = "nixpkgs";
     };
 
-    nixpkgs-wayland = {
-      url = "github:nix-community/nixpkgs-wayland";
-      inputs.nixpkgs.follows = "nixpkgs";
-    };
-
     nix-gaming = {
       url = "github:fufexan/nix-gaming";
       inputs.nixpkgs.follows = "nixpkgs";
@@ -91,9 +86,8 @@
         ];
       };
 
-      overlays = with inputs; [
-        nixpkgs-wayland.overlay
-      ];
+      # overlays = with inputs; [
+      # ];
 
       systems.modules.nixos = with inputs; [
         stylix.nixosModules.stylix
