@@ -24,7 +24,7 @@ in
   zen-browser = inputs.zen-browser.packages.${prev.system}.default;
 
   # superfile is Nix native
-  superfile = inputs.superfile.packages.${prev.system}.default;
+  # superfile = inputs.superfile.packages.${prev.system}.default;
 
   # codex is Nix native
   codex-cli = inputs.codex.packages.${prev.system}.codex-cli;
