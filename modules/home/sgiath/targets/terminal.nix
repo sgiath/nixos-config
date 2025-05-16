@@ -10,7 +10,7 @@
   config = lib.mkIf (config.sgiath.targets.terminal) {
     home.packages = with pkgs; [
       openssl
-      # codex-cli
+      codex-cli
 
       yt-dlp
       google-cloud-sdk
