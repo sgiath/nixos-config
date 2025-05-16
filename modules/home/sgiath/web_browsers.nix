@@ -40,7 +40,6 @@
       settings = {
         auto_save.session = true;
         colors.webpage.darkmode.enabled = true;
-        url.auto_search = true;
       };
     };
 

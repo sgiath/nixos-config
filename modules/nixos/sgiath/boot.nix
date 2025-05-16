@@ -28,6 +28,10 @@
             systemd-boot = {
               enable = true;
               configurationLimit = 10;
+              edk2-uefi-shell.enable = true;
+              windows."11" = {
+                efiDeviceHandle = "";
+              };
             };
             efi.canTouchEfiVariables = true;
           }
