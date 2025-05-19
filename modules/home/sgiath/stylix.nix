@@ -12,6 +12,8 @@ let
 in
 {
   config = lib.mkIf config.sgiath.enable {
+    home.pointerCursor.name = "";
+
     stylix = {
       enable = true;
       enableReleaseChecks = false;
