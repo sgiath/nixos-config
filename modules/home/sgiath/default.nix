@@ -20,6 +20,7 @@
     ./nvim.nix
     ./ssh.nix
     ./starship.nix
+    ./stylix.nix
     ./tmux.nix
     ./vscode.nix
     ./waybar.nix

@@ -12,13 +12,6 @@ let
 in
 {
   config = lib.mkIf config.sgiath.enable {
-    home.pointerCursor = {
-
-        package = pkgs.bibata-cursors;
-        name = "Bibata-Modern-Classic";
-        size = 24;
-    };
-
     stylix = {
       enable = true;
       enableReleaseChecks = false;
