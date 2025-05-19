@@ -78,13 +78,13 @@
       # ];
 
       systems.modules.nixos = with inputs; [
-        stylix.nixosModules.stylix
+        # stylix.nixosModules.stylix
         disko.nixosModules.disko
         foundryvtt.nixosModules.foundryvtt
       ];
 
-      # homes.modules = with inputs; [
-      #   stylix.homeModules.stylix
-      # ];
+      homes.modules = with inputs; [
+        stylix.homeModules.stylix
+      ];
     };
 }

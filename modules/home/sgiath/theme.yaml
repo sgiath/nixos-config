@@ -1,0 +1,19 @@
+scheme: "Yoru"
+author: "rxyhn"
+
+base00: "0c0e0f" # #0c0e0f ----
+base01: "121415" # #121415 ---
+base02: "161819" # #161819 --
+base03: "1f2122" # #1f2122 -
+base04: "edeff0" # #27292a +
+base05: "edeff0" # #edeff0 ++
+base06: "e4e6e7" # #e4e6e7 +++
+base07: "f2f4f5" # #f2f4f5 ++++
+base08: "f26e74" # #f26e74 red
+base09: "ecd28b" # #ecd28b orange
+base0A: "e79881" # #e79881 yellow
+base0B: "82c29c" # #82c29c green
+base0C: "6791c9" # #6791c9 aqua/cyan
+base0D: "709ad2" # #709ad2 blue
+base0E: "c58cec" # #c58cec purple
+base0F: "e8646a" # #e8646a brown

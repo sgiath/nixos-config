@@ -137,10 +137,5 @@
     };
 
     systemd.user.startServices = "sd-switch";
-
-    stylix = {
-      enable = true;
-      # enableReleaseChecks = false;
-    };
   };
 }
