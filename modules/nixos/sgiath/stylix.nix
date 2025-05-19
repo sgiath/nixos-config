@@ -14,6 +14,7 @@ in
   config = lib.mkIf config.sgiath.enable {
     stylix = {
       enable = true;
+      enableReleaseChecks = false;
 
       polarity = "dark";
       # I set this manually with hyprpaper but stylix needs this anyway
