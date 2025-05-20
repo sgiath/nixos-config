@@ -22,7 +22,7 @@
     programs = {
       git.enable = true;
       gpg.enable = true;
-      # nvim.enable = true;
+      nixvim.enable = true;
       ssh.enable = true;
       starship.enable = true;
       tmux.enable = true;
