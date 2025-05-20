@@ -18,7 +18,7 @@ in
 
       polarity = "dark";
       # I set this manually with hyprpaper but stylix needs this anyway
-      image = ./wallpapers/transhumanism.png;
+      # image = ./wallpapers/transhumanism.png;
       base16Scheme = ./theme.yaml;
 
       cursor = {
