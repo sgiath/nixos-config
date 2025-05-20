@@ -1,9 +1,8 @@
 {config, lib, pkgs, ...}:
 {
-  config = lib.mkIf config.programs.nixvim.enable {
     programs.nixvim = {
+      enable = true;
       extraPlugins = [ pkgs.vimPlugins.yorumi ];
       colorscheme = "yorumi";
     };
-  };
 }

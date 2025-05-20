@@ -78,7 +78,7 @@
           namespace = "sgiath";
           meta = {
             name = "sgiath";
-            title = "Sgiath's flake";
+            title = "Sgiath's dotfiles";
           };
         };
       };
@@ -98,8 +98,9 @@
       # ];
 
       systems.modules.nixos = with inputs; [
-        stylix.nixosModules.stylix
         disko.nixosModules.disko
+        sops-nix.nixosModules.sops
+        stylix.nixosModules.stylix
         foundryvtt.nixosModules.foundryvtt
       ];
 
