@@ -16,26 +16,26 @@ in
       enable = true;
       enableReleaseChecks = false;
 
-      polarity = "dark";
+      # polarity = "dark";
       # I set this manually with hyprpaper but stylix needs this anyway
-      image = ./../../home/sgiath/wallpapers/transhumanism.png;
-      base16Scheme = ./../../home/sgiath/theme.yaml;
+      # image = ./../../home/sgiath/wallpapers/transhumanism.png;
+      # base16Scheme = ./../../home/sgiath/theme.yaml;
 
-      cursor = {
-        package = pkgs.bibata-cursors;
-        name = "Bibata-Modern-Classic";
-        size = 24;
-      };
-
-      fonts = {
-        monospace = font;
-        serif = font;
-        sansSerif = font;
-        emoji = {
-          name = "Noto Color Emoji";
-          package = pkgs.noto-fonts-emoji-blob-bin;
-        };
-      };
+      # cursor = {
+      #   package = pkgs.bibata-cursors;
+      #   name = "Bibata-Modern-Classic";
+      #   size = 24;
+      # };
+      #
+      # fonts = {
+      #   monospace = font;
+      #   serif = font;
+      #   sansSerif = font;
+      #   emoji = {
+      #     name = "Noto Color Emoji";
+      #     package = pkgs.noto-fonts-emoji-blob-bin;
+      #   };
+      # };
     };
   };
 }
