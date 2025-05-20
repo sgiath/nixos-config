@@ -78,6 +78,7 @@
       # ];
 
       systems.modules.nixos = with inputs; [
+        stylix.nixosModules.stylix
         disko.nixosModules.disko
         foundryvtt.nixosModules.foundryvtt
       ];
