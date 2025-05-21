@@ -15,7 +15,7 @@ in
         enable = true;
         settings.global = {
           # server
-          server_name = "matrix.sgiath.dev";
+          server_name = "sgiath.dev";
           address = "0.0.0.0";
           port = 6167;
 
