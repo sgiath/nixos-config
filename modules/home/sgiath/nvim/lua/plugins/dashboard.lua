@@ -1,5 +1,4 @@
 return {
-  {
     "nvimdev/dashboard-nvim",
     event = "VimEnter",
     lazy = false,
@@ -37,5 +36,4 @@ return {
       }
     end,
     dependencies = { "nvim-tree/nvim-web-devicons" },
-  },
 }

@@ -1,4 +1,4 @@
-local options = {
+return {
 	formatters_by_ft = {
 		lua = { "stylua" },
 
@@ -13,5 +13,3 @@ local options = {
 		["_"] = { "trim_whitespace" },
 	},
 }
-
-return options

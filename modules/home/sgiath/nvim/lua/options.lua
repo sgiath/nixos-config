@@ -1,4 +1,4 @@
-require "nvchad.options"
+require("nvchad.options")
 
 -- conceal level for Obsidian.md
 vim.opt.conceallevel = 1

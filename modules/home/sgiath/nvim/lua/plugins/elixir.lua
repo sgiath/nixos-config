@@ -1,9 +1,6 @@
 return {
-  {
     "elixir-tools/elixir-tools.nvim",
-    dependencies = {
-      "nvim-lua/plenary.nvim",
-    },
+    dependencies = { "nvim-lua/plenary.nvim" },
     version = "*",
     event = { "BufReadPre", "BufNewFile" },
     config = function()
@@ -27,5 +24,4 @@ return {
         },
       }
     end,
-  },
 }

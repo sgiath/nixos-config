@@ -27,8 +27,8 @@ return {
 		event = "VeryLazy",
 		opts = {
 			lsp = {
-				hover = { enabled = false },
-				signature = { enabled = false },
+				-- hover = { enabled = false },
+				-- signature = { enabled = false },
 				override = {
 					["vim.lsp.util.convert_input_to_markdown_lines"] = true,
 					["vim.lsp.util.stylize_markdown"] = true,
@@ -69,12 +69,6 @@ return {
 			-- Your DBUI configuration
 			vim.g.db_ui_use_nerd_fonts = 1
 		end,
-	},
-
-	{
-		"ThePrimeagen/harpoon",
-		branch = "harpoon2",
-		dependencies = { "nvim-lua/plenary.nvim" },
 	},
 
 	{

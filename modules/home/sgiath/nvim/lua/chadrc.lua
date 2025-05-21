@@ -5,8 +5,12 @@ M.base64 = {
   theme = "yoru",
 }
 
-M.nvdash = {
-  load_on_startup = true,
+M.ui = {
+  tabufline = {
+    lazyload = false
+  }
 }
+
+M.lsp = { signature = false }
 
 return M
