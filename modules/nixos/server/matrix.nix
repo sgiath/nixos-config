@@ -16,6 +16,7 @@ in
         settings.global = {
           # server
           server_name = "sgiath.dev";
+          address = "0.0.0.0";
           port = 6167;
 
           database_backend = "rocksdb";
