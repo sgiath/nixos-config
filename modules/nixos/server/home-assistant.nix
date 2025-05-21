@@ -75,6 +75,9 @@ in
             homeserver = "https://matrix.sgiath.dev";
             username = "@sgiath:sgiath.dev";
             password = secrets.matrix_password;
+            rooms = [
+              "#home-assistant:sgiath.dev"
+            ];
           };
         };
       };

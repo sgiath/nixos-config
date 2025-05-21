@@ -39,7 +39,7 @@ in
             extraConfig = ''
               default_type application/json;
             '';
-            return = "200 '{\"m.server\":\"matrix.sgiath.dev:6167\"}'";
+            return = "200 '{\"m.server\":\"matrix.sgiath.dev:443\"}'";
           };
 
           # client <-> server
