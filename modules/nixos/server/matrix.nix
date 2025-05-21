@@ -44,7 +44,7 @@ in
 
               default_type application/json;
             '';
-            return = "200 '{\"m.server\":\"matrix.sgiath.dev:443\"}'";
+            return = "200 '{\"m.server\":\"matrix.sgiath.dev:6167\"}'";
           };
 
           # client <-> server
