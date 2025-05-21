@@ -25,11 +25,6 @@ in
           allow_registration = true;
           registration_token = secrets.matrix_registration_token;
 
-          well_known = {
-            client = "https://matrix.sgiath.dev";
-            server = "matrix.sgiath.dev:443";
-          };
-
           trusted_servers = [
             "matrix.org"
             "nixos.org"
@@ -42,6 +37,11 @@ in
           # server <-> server
           "/.well-known/matrix/server" = {
             extraConfig = ''
+              add_header Access-Control-Allow-Origin '*';
+              add_header Access-Control-Allow-Methods: GET, POST, PUT, DELETE, OPTIONS
+              add_header Access-Control-Allow-Headers: X-Requested-With, Content-Type, Authorization
+              add_header Cross-Origin-Resource-Policy 'cross-origin';
+
               default_type application/json;
             '';
             return = "200 '{\"m.server\":\"matrix.sgiath.dev:443\"}'";
@@ -51,6 +51,8 @@ in
           "/.well-known/matrix/client" = {
             extraConfig = ''
               add_header Access-Control-Allow-Origin '*';
+              add_header Access-Control-Allow-Methods: GET, POST, PUT, DELETE, OPTIONS
+              add_header Access-Control-Allow-Headers: X-Requested-With, Content-Type, Authorization
               add_header Cross-Origin-Resource-Policy 'cross-origin';
 
               default_type application/json;
@@ -62,6 +64,8 @@ in
           "/.well-known/matrix/support" = {
             extraConfig = ''
               add_header Access-Control-Allow-Origin '*';
+              add_header Access-Control-Allow-Methods: GET, POST, PUT, DELETE, OPTIONS
+              add_header Access-Control-Allow-Headers: X-Requested-With, Content-Type, Authorization
               add_header Cross-Origin-Resource-Policy 'cross-origin';
 
               default_type application/json;
