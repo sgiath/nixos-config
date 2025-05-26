@@ -15,26 +15,27 @@
   };
 
   services = {
-    dnd5etools.enable = true;
     audiobookshelf.enable = true;
-    cryptpad.enable = false;
-    factorio.enable = false;
-    foundryvtt.enable = true;
-    home-assistant.enable = true;
-    jitsi-meet.enable = false;
     matrix.enable = true;
-    monitoring.enable = true;
     pi-hole.enable = true;
     searx.enable = true;
-    mollysocket.enable = true;
-    focalboard.enable = false;
-    zitadel.enable = false;
-    photoprism.enable = false;
     transmission.enable = true;
     plex.enable = true;
 
-    # AI
+    foundryvtt.enable = true;
+    dnd5etools.enable = true;
+
     open-webui.enable = true;
+    home-assistant.enable = true;
+    mollysocket.enable = true;
+
+    cryptpad.enable = false;
+    factorio.enable = false;
+    jitsi-meet.enable = false;
+    focalboard.enable = false;
+    zitadel.enable = false;
+    photoprism.enable = false;
+    monitoring.enable = false;
 
     # proxies
     nas-proxy.enable = true;
