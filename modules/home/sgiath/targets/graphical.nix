@@ -13,6 +13,7 @@
 
       # utils
       obsidian
+      libreoffice
       gimp
       vlc
       kdePackages.okular

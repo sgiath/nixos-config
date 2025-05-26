@@ -27,9 +27,9 @@
     pi-hole.enable = true;
     searx.enable = true;
     mollysocket.enable = true;
-    focalboard.enable = true;
+    focalboard.enable = false;
     zitadel.enable = false;
-    photoprism.enable = true;
+    photoprism.enable = false;
     transmission.enable = true;
     plex.enable = true;
 
