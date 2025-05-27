@@ -10,6 +10,7 @@
   config = lib.mkIf (config.sgiath.targets.terminal) {
     home.packages = with pkgs; [
       coreutils-prefixed
+      mprocs
 
       openssl
       # codex-cli

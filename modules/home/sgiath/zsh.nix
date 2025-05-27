@@ -29,6 +29,7 @@
       fzf.enable = true;
       lsd.enable = true;
       mcfly.enable = true;
+      zoxide.enable = true;
 
       zsh = {
         shellAliases = {
