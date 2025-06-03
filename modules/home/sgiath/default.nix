@@ -44,8 +44,7 @@
           git commit --signoff -m "changes"
           git push
 
-          nix-store --add-fixed sha256 ~/nix-root/FoundryVTT-12.331.zip
-          nix-store --add-fixed sha256 ~/nix-root/FoundryVTT-Linux-13.342.zip
+          nix-store --add-fixed sha256 ~/nix-root/FoundryVTT-Linux-13.344.zip
 
           case "$1" in
             --ceres)
