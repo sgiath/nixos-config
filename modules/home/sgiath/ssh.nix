@@ -49,10 +49,17 @@
         "nas.local".hostname = "192.168.1.4";
 
         # CrazyEgg
-        "*.bastion.crazyegg.yom" = {
+        "*.bastion.crazyegg.com" = {
           user = "filip";
           proxyCommand = "none";
           forwardAgent = true;
+        };
+        "i.staging2.crazyegg.com" = {
+          proxyCommand = "ssh us-west-2.general-purpose-staging.bastion.crazyegg.com -W %h:%p";
+        };
+        "i.*.crazyegg.com dev.crazyegg.com" = {
+          user = "crazyegg";
+          proxyCommand = "ssh us-east-1.general-purpose.bastion.crazyegg.com -W %h:%p";
         };
       };
     };
