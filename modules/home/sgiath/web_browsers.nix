@@ -13,11 +13,11 @@
       pkgs.tor-browser
       pkgs.zen-browser
       pkgs.lynx
+      pkgs.ladybird
     ];
 
     programs = {
       chromium.enable = true;
-      ladybird.enable = true;
       firefox.enable = true;
 
       # https://librewolf.net/docs/settings/
