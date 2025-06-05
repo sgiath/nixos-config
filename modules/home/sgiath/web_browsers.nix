@@ -12,7 +12,7 @@
     home.packages = [
       pkgs.tor-browser
       pkgs.zen-browser
-      pkgs.lynx
+      # pkgs.lynx
       # pkgs.ladybird
     ];
 
