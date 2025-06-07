@@ -12,12 +12,11 @@
   config = lib.mkIf config.sgiath.audio.enable {
     home.packages = with pkgs; [
       qpwgraph
-      helvum
       pavucontrol
     ];
     services.easyeffects = {
       enable = true;
-      package = pkgs.easyeffects;
+      # package = pkgs.easyeffects;
     };
   };
 }

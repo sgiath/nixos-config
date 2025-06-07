@@ -9,18 +9,16 @@
 
   config = lib.mkIf (config.sgiath.targets.graphical) {
     home.packages = with pkgs; [
-      code-cursor
-
       # utils
       obsidian
-      libreoffice
-      gimp
+      # libreoffice
+      # gimp
       vlc
       kdePackages.okular
-      texliveMedium
+      # texliveMedium
       libwacom
       appimage-run
-      davinci-resolve-studio
+      # davinci-resolve-studio
     ];
 
     wayland.windowManager.hyprland.settings = {
@@ -54,10 +52,10 @@
       waybar.enable = true;
 
       # terminals
-      alacritty.enable = true;
+      alacritty.enable = false;
       kitty.enable = true;
-      wezterm.enable = true;
-      ghostty.enable = true;
+      wezterm.enable = false;
+      ghostty.enable = false;
 
       # utils
       pandoc.enable = true;

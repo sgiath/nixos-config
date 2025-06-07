@@ -14,9 +14,9 @@
       webcord
       telegram-desktop
       signal-desktop-bin
-      cinny-desktop
-      fractal
-      simplex-chat-desktop
+      # cinny-desktop
+      # fractal
+      # simplex-chat-desktop
     ];
 
     wayland.windowManager.hyprland.settings = {
