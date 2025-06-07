@@ -5,27 +5,6 @@ in
 {
   config = lib.mkIf config.sgiath.enable {
     networking = {
-      # https://account.proton.me/u/4/vpn/WireGuard
-      wireguard.interfaces = {
-        wg0 = {
-          # privateKey = secrets.proton_vpn;
-          ips = ["10.2.0.2/32"];
-          peers = [
-            {
-              name = "CZ-36";
-              endpoint = "146.70.129.18:51820";
-              publicKey = "sDVKmYDevvGvpKNei9f2SDbx5FMFi6FqBmuRYG/EFg8=";
-              allowedIPs = ["0.0.0.0/0"];
-            }
-          ];
-        };
-      };
-      wireless = {
-        userControlled.enable = true;
-        networks = {
-          "Turris 5".pskRaw = "5979f534aeb44615c6efa716ad68f0bf36747981e4eb1a83381997c03301eb44";
-        };
-      };
       hosts = {
         "192.168.1.1" = [ "router.sgiath" ];
         "192.168.1.2" = [
