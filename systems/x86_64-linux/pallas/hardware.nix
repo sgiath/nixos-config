@@ -25,9 +25,13 @@
     ];
     extraModulePackages = [ ];
     kernelModules = [ "kvm-amd" ];
-
-    loader.systemd-boot.edk2-uefi-shell.enable = true;
-    # loader.systemd-boot.windows."11".efiDeviceHandle = "HD1b";
+    loader.systemd-boot = {
+      windows."11" = {
+        efiDeviceHandle = "HD0c";
+        # Windows before NixOS
+        sortKey = "0_windows";
+      };
+    };
   };
 
   services.nfs.server.enable = true;
