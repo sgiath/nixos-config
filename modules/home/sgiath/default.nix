@@ -44,14 +44,13 @@
           git commit --signoff -m "changes"
           git push
 
-          nix-store --add-fixed sha256 ~/nix-root/FoundryVTT-Linux-13.344.zip
-
           case "$1" in
             --ceres)
               nixos-rebuild switch --use-remote-sudo --flake '.#ceres'
               ;;
 
             --vesta)
+              nix-store --add-fixed sha256 ~/nix-root/FoundryVTT-Linux-13.344.zip
               nixos-rebuild switch --use-remote-sudo --flake '.#vesta' --target-host 'sgiath@vesta.local'
               ;;
 
