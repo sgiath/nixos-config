@@ -9,6 +9,8 @@
 
   config = lib.mkIf (config.sgiath.targets.graphical) {
     home.packages = with pkgs; [
+      xterm
+
       # utils
       obsidian
       # libreoffice

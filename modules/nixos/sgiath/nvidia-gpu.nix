@@ -5,7 +5,7 @@
 }:
 {
   config = lib.mkIf (config.sgiath.gpu == "nvidia") {
-    boot.initrd.kernelModules = [ "nvidia" ];
+    boot.initrd.kernelModules = [ "nvidia" "nvidia_modeset" "nvidia_uvm" "nvidia_drm" ];
     services.xserver.videoDrivers = [ "nvidia" ];
 
     hardware.nvidia = {

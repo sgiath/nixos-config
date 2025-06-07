@@ -23,7 +23,7 @@ in
       wireless = {
         userControlled.enable = true;
         networks = {
-          Starlink = {
+          "Turris 5" = {
             priority = 10;
             pskRaw = "694358f6d79f35d6feac9f1aefe7615b17bef5c09542858018f7a44f117e3502";
           };
