@@ -25,7 +25,7 @@ in
         networks = {
           "Turris 5" = {
             priority = 10;
-            pskRaw = "694358f6d79f35d6feac9f1aefe7615b17bef5c09542858018f7a44f117e3502";
+            pskRaw = "5979f534aeb44615c6efa716ad68f0bf36747981e4eb1a83381997c03301eb44";
           };
         };
       };
