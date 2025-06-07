@@ -10,10 +10,10 @@
         Port 22
         Protocol 2
 
-        # PasswordAuthentication yes
-        # ChallengeResponseAuthentication yes
-        # PubkeyAuthentication yes
-        # PreferredAuthentications publickey
+        PasswordAuthentication yes
+        ChallengeResponseAuthentication yes
+        PubkeyAuthentication yes
+        PreferredAuthentications publickey
 
         Ciphers chacha20-poly1305@openssh.com,aes256-gcm@openssh.com,aes256-ctr
         KexAlgorithms curve25519-sha256@libssh.org,diffie-hellman-group-exchange-sha256
