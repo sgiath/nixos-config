@@ -7,7 +7,7 @@
 {
   config = lib.mkIf config.programs.git.enable {
     home = {
-      packages = with pkgs; [ git-crypt ];
+      packages = with pkgs; [ git-crypt jujutsu ];
 
       file = {
         ".git/commit-template".text = ''
