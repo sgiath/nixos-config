@@ -49,6 +49,8 @@
           htop = "${pkgs.btop-rocm}/bin/btop";
         };
 
+        completionInit = "autoload -U compinit &amp;&amp; compinit &amp;&amp; source <(${pkgs.jujutsu}/bin/jj util completion zsh)";
+
         prezto = {
           enable = true;
           pmodules = [
