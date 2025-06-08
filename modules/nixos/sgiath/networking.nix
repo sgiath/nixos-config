@@ -5,6 +5,16 @@ in
 {
   config = lib.mkIf config.sgiath.enable {
     networking = {
+      wireless = {
+        enable = true;
+        allowAuxiliaryImperativeNetworks = true;
+        # wpa_passphrase ssid psk
+        networks = {
+          "Turris 5".pskRaw = "5979f534aeb44615c6efa716ad68f0bf36747981e4eb1a83381997c03301eb44";
+          "Turris 2".pskRaw = "70130aabbf56025a53266182e3a282588d7c324c90f4e75e45fff5a275ba019a";
+        };
+      };
+
       hosts = {
         "192.168.1.1" = [ "router.sgiath" ];
         "192.168.1.2" = [
@@ -33,7 +43,7 @@ in
         "192.168.1.150" = [ "mix.sgiath" ];
       };
 
-      networkmanager.enable = true;
+      networkmanager.enable = false;
       resolvconf.enable = lib.mkForce false;
       dhcpcd.extraConfig = "nohook resolv.conf";
       firewall.enable = false;
