@@ -1,7 +1,7 @@
 { pkgs, ... }:
 {
   home.packages = with pkgs; [
-    codex-cli
+    # codex-cli
   ];
 
   sgiath = {
