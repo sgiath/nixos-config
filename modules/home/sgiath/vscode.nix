@@ -26,5 +26,13 @@
     };
 
     stylix.targets.vscode.enable = false;
+
+    xdg.desktopEntries = {
+      "cursor" = {
+        name = "Cursor";
+        genericName = "Text Editor";
+        exec = "${pkgs.appimage-run}/bin/appimage-run /home/sgiath/nix-root/Cursor-1.0.0-x86_64.AppImage";
+      };
+    };
   };
 }
