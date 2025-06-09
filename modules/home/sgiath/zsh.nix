@@ -47,6 +47,8 @@
           man = "${pkgs.tldr}/bin/tldr";
           top = "${pkgs.btop-rocm}/bin/btop";
           htop = "${pkgs.btop-rocm}/bin/btop";
+
+          cursor = "${pkgs.appimage-run}/bin/appimage-run /home/sgiath/nix-root/Cursor-1.0.0-x86_64.AppImage";
         };
 
         completionInit = "autoload -U compinit && compinit && source <(${pkgs.jujutsu}/bin/jj util completion zsh)";
