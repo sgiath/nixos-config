@@ -21,6 +21,8 @@
 
       exiftool
       multitail
+
+      gnumake
     ];
 
     programs = {
