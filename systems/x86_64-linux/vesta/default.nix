@@ -28,6 +28,7 @@
     open-webui.enable = true;
     home-assistant.enable = true;
     mollysocket.enable = true;
+    ntfy.enable = true;
 
     cryptpad.enable = false;
     factorio.enable = false;

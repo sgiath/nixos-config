@@ -14,6 +14,7 @@
     ./n8n.nix
     ./nas.nix
     ./nginx.nix
+    ./ntfy.nix
     ./open-webui.nix
     ./osm.nix
     ./photo.nix
