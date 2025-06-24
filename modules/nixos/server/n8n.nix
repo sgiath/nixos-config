@@ -1,5 +1,4 @@
 {
-  namespace,
   config,
   lib,
   pkgs,
@@ -57,7 +56,7 @@ in
       };
       serviceConfig = {
         Type = "simple";
-        ExecStart = "${pkgs.${namespace}.n8n}/bin/n8n";
+        ExecStart = "${pkgs.n8n}/bin/n8n";
         Restart = "on-failure";
         StateDirectory = "n8n";
 

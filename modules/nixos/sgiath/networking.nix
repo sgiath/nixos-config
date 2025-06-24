@@ -36,7 +36,7 @@ in
           "auth.sgiath.dev"
           "osm.sgiath.dev"
           "photo.sgiath.dev"
-          "plex.sgiath.dev"
+          "watch.sgiath.dev"
         ];
         "192.168.1.4" = [ "nas.sgiath" ];
         "192.168.1.5" = [ "nas.sgiath" ];

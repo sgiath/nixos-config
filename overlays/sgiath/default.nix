@@ -29,6 +29,9 @@ in
   # NIX Gaming
   star-citizen = inputs.nix-gaming.packages.${prev.system}.star-citizen;
 
-  # get open-webui updates sooner
+  # get open-webui from a configuration with ROCm support off
   open-webui = pkgs-master.open-webui;
+
+  # get n8n updates sooner
+  n8n = pkgs-master.n8n;
 }

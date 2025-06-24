@@ -9,7 +9,7 @@
   ...
 }:
 let
-  version = "2.8.3";
+  version = "2.9.1";
   pname = "5etools";
 
   imgHashes = [
@@ -83,7 +83,7 @@ stdenv.mkDerivation {
     pname = "5etools-src";
     url = "https://github.com/5etools-mirror-3/5etools-src/releases/download/v${version}/${pname}-v${version}.zip";
     stripRoot = false;
-    hash = "sha256-v3kbYm7wX9vmGXI0TLauFgm0Hiu8i7yzVeJgjL5tgFs=";
+    hash = "sha256-0zTM/1ms4fXMc+MRRZdnB4Dh4q7Ma4h25LObtBT2yUw=";
   };
 
   buildInputs = [
@@ -96,7 +96,7 @@ stdenv.mkDerivation {
     ${lib.strings.concatStringsSep "\n" copyImgs}
 
     # unpack images
-    7z x -aoa img-v${version}.zip
+    ${p7zip}/bin/7z x -aoa img-v${version}.zip
 
     # remove ZIP files
     rm -f img-v*
@@ -106,7 +106,7 @@ stdenv.mkDerivation {
     export PATH="${nodeDependencies}/bin:$PATH"
 
     # generate service worker
-    npm run build:sw:prod
+    ${nodejs}/bin/npm run build:sw:prod
   '';
 
   installPhase = ''
