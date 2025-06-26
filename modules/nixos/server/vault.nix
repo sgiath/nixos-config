@@ -10,6 +10,7 @@ in
   config = lib.mkIf (config.sgiath.server.enable && config.services.vaultwarden.enable) {
     services.vaultwarden.config = {
       DOMAIN = "https://vault.sgiath.dev";
+      INVITATION_ORG_NAME = "sgiath.dev";
       SIGNUPS_ALLOWED = false;
       ADMIN_TOKEN = secrets.vaultwarden_admin_token;
     
@@ -47,6 +48,7 @@ in
 
       locations."/" = {
         proxyPass = "http://127.0.0.1:8222";
+        proxyWebsockets = true;
       };
     };
   };
