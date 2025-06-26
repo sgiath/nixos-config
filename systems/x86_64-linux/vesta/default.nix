@@ -21,6 +21,7 @@
     searx.enable = true;
     transmission.enable = true;
     jellyfin.enable = true;
+    vaultwarden.enable = true;
 
     foundryvtt.enable = true;
     dnd5etools.enable = true;

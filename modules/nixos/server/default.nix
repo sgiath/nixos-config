@@ -24,6 +24,7 @@
     ./sgiath.nix
     ./sinai.nix
     ./torrent.nix
+    ./vault.nix
     ./wordpress.nix
     ./xmpp.nix
     ./zitadel.nix

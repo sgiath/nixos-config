@@ -61,6 +61,7 @@
           ".elixir_ls"
           ".zig-cache"
           "result"
+          ".opencode"
         ];
 
         extraConfig = {
