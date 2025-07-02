@@ -13,6 +13,7 @@
     home.packages = with pkgs; [
       qpwgraph
       pavucontrol
+      alsa-scarlett-gui
     ];
     services.easyeffects = {
       enable = true;
