@@ -4,6 +4,11 @@
   pkgs,
   ...
 }:
+let 
+  screenshot = pkgs.writeShellScriptBin "screenshot" ''
+    ${pkgs.grim}/bin/grim -g "$(${pkgs.slurp}/bin/slurp)" - | ${pkgs.swappy}/bin/swappy -f -
+  '';
+in 
 {
   options.programs.hyprland = {
     enable = lib.mkEnableOption "hyprland";
@@ -51,6 +56,7 @@
         "$mod" = "SUPER";
         bind = [
           "$mod SHIFT, Q, exec, ${pkgs.wlogout}/bin/wlogout"
+          "$mod, S, exec, ${screenshot}/bin/screenshot"
 
           "$mod SHIFT, C, killactive,"
           "$mod, R, togglesplit,"
@@ -132,11 +138,7 @@
     };
 
     home = {
-      packages = with pkgs; [
-        (writeShellScriptBin "screenshot" ''
-          ${grim}/bin/grim -g "$(${slurp}/bin/slurp)" - | ${swappy}/bin/swappy -f -
-        '')
-      ];
+      packages = [ screenshot ];
     };
 
     programs.wofi = {
