@@ -41,7 +41,7 @@ in
       (prismlauncher.override {
         jdks = [
           jdk21
-          jdk8
+          # jdk8
         ];
       })
 
