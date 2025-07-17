@@ -47,9 +47,9 @@ in
         ];
         plugin.hyprwinwrap.class = "nasa";
         windowrulev2 = [
-          "fullscreenstate 0 0, class:nasa"
-          "workspace special:nasa silent, class:nasa"
-          "noinitialfocus, class:nasa"
+          "fullscreenstate 0 0, class:(nasa)"
+          "workspace special:nasa silent, class:(nasa)"
+          "noinitialfocus, class:(nasa)"
         ];
 
         monitor = [
