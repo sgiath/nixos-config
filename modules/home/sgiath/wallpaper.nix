@@ -31,7 +31,6 @@ in {
           "fullscreenstate 0 0, class:(nasa)"
           "workspace special:nasa silent, class:(nasa)"
           "noinitialfocus, class:(nasa)"
-          "layer:bellow, class:(nasa)"
         ];
       };
     };
