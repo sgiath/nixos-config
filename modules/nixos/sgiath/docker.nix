@@ -27,5 +27,10 @@
     };
 
     users.users.sgiath.extraGroups = [ "docker" ];
+    
+    environment.systemPackages = with pkgs; [
+      docker-credential-helpers
+      amazon-ecr-credential-helper
+    ];
   };
 }

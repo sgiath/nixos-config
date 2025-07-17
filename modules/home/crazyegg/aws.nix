@@ -32,21 +32,19 @@ in
     };
     home = {
       packages = with pkgs; [
-        docker-credential-helpers
-        amazon-ecr-credential-helper
         awsSecrets
         jq
       ];
 
       file = {
         ".docker/config.json".text = builtins.toJSON {
-          auths = {
-            "https://index.docker.io/v1/".auth = "c2dpYXRoOmRja3JfcGF0X3hyZzRuZzJmZEI2aHpud2ZqamF0cHJjT1ZOcw==";
-            "https://index.docker.io/v2/".auth = "c2dpYXRoOmRja3JfcGF0X3hyZzRuZzJmZEI2aHpud2ZqamF0cHJjT1ZOcw==";
-          };
+          # auths = {
+          #   "https://index.docker.io/v1/".auth = "c2dpYXRoOmRja3JfcGF0X3hyZzRuZzJmZEI2aHpud2ZqamF0cHJjT1ZOcw==";
+          #   "https://index.docker.io/v2/".auth = "c2dpYXRoOmRja3JfcGF0X3hyZzRuZzJmZEI2aHpud2ZqamF0cHJjT1ZOcw==";
+          # };
 
           credHelpers = {
-            "public.ecr.aws" = "ecr-login";
+            # "public.ecr.aws" = "ecr-login";
             "173509387151.dkr.ecr.us-east-1.amazonaws.com" = "ecr-login";
             "173509387151.dkr.ecr.us-west-2.amazonaws.com" = "ecr-login";
           };
