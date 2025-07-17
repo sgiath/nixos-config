@@ -43,7 +43,7 @@ in
         misc.focus_on_activate = true;
 
         exec-once = [
-          "${pkgs.firefox}/bin/firefox --new-window 'https://eyes.nasa.gov/apps/solar-system/#/home' --name='nasa' --kiosk"
+          "sleep 1 && ${pkgs.firefox}/bin/firefox --new-window 'https://eyes.nasa.gov/apps/solar-system/#/home' --name='nasa' --kiosk"
         ];
         plugin.hyprwinwrap.class = "nasa";
         windowrule = [
@@ -88,7 +88,7 @@ in
           "$mod, right, workspace, r+1"
 
           # go to workspace
-          "$mod, grave, togglespecialworkspace, special"
+          "$mod, grave, togglespecialworkspace, special:nasa"
           "$mod, 1, focusworkspaceoncurrentmonitor, 1"
           "$mod, 2, focusworkspaceoncurrentmonitor, 2"
           "$mod, 3, focusworkspaceoncurrentmonitor, 3"
@@ -101,7 +101,7 @@ in
           "$mod, 0, focusworkspaceoncurrentmonitor, 10"
 
           # move to workspace
-          "$mod SHIFT, grave, movetoworkspace, special"
+          "$mod SHIFT, grave, movetoworkspace, special:nasa"
           "$mod SHIFT, 1, movetoworkspace, 1"
           "$mod SHIFT, 2, movetoworkspace, 2"
           "$mod SHIFT, 3, movetoworkspace, 3"
@@ -165,7 +165,7 @@ in
 
     services = {
       hyprpaper = {
-        enable = true;
+        enable = false;
         settings = lib.mkForce {
           preload = [ "${./wallpapers/transhumanism.png}" ];
           wallpaper = [
