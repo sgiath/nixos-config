@@ -13,7 +13,7 @@
     virtualisation = {
       docker = {
         enable = true;
-        storageDriver = "btrfs";
+        # storageDriver = "btrfs";
         extraPackages = with pkgs; [
           docker-credential-helpers
           amazon-ecr-credential-helper
@@ -21,7 +21,7 @@
       };
 
       podman = {
-        enable = false;
+        enable = true;
         defaultNetwork.settings.dns_enabled = true;
       };
     };
