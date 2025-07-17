@@ -5,7 +5,7 @@
   ...
 }:
 let 
-  nasa_url = "https://eyes.nasa.gov/apps/solar-system/#/home\?featured=false&detailPanel=false&logo=false&search=false&shareButton=false&menu=false&collapseSettingsOptions=true&hideFullScreenToggle=true&locked=true&hideExternalLinks=true";
+  nasa_url = "https://eyes.nasa.gov/apps/solar-system/\#/home\?featured=false&detailPanel=false&logo=false&search=false&shareButton=false&menu=false&collapseSettingsOptions=true&hideFullScreenToggle=true&locked=true&hideExternalLinks=true";
 in {
   config = lib.mkIf config.programs.hyprland.enable {
     wayland.windowManager.hyprland = {
