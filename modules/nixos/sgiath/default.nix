@@ -62,16 +62,21 @@ in
         experimental-features = [
           "nix-command"
           "flakes"
+          "pipe-operators"
         ];
         trusted-public-keys = [
           "cache.nixos.org-1:6NCHdD59X431o0gWypbMrAURkbJ16ZPMQFGspcDShjY="
+          "nix-community.cachix.org-1:mB9FSh9qf2dCimDSUo8Zy7bkq5CX+/rkCWyvRCYg3Fs="
           "nixpkgs-wayland.cachix.org-1:3lwxaILxMRkVhehr5StQprHdEo4IrE8sRho9R9HOLYA="
           "hyprland.cachix.org-1:a7pgxzMz7+chwVL3/pzj6jIBMioiJM7ypFP8PwtkuGc="
+          "cache.thalheim.io-1:R7msbosLEZKrxk/lKxf9BTjOOH7Ax3H0Qj0/6wiHOgc="
         ];
         substituters = [
           "https://cache.nixos.org"
+          "https://nix-community.cachix.org"
           "https://nixpkgs-wayland.cachix.org"
           "https://hyprland.cachix.org"
+          "https://cache.thalheim.io" # sops-nix
         ];
       };
       channel.enable = false;
@@ -85,11 +90,13 @@ in
     users.defaultUserShell = pkgs.zsh;
     environment.sessionVariables = {
       OPENAI_API_KEY = secrets.openai;
+      XAI_API_KEY = secrets.xai;
+      GEMINI_API_KEY = secrets.gemini;
+      ANTHROPIC_API_KEY = secrets.anthropic;
+      OPENROUTER_API_KEY = secrets.openrouter;
     };
     programs = {
-      nix-ld = {
-        enable = true;
-      };
+      nix-ld.enable = true;
     };
   };
 }
