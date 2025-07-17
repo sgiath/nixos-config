@@ -45,7 +45,7 @@ in
         exec-once = [
           "${pkgs.firefox}/bin/firefox --new-window 'https://eyes.nasa.gov/apps/solar-system/#/home' --name='nasa' --kiosk"
         ];
-        "plugin:hyprwinwrap:class" = "nasa";
+        plugin.hyprwinwrap.class = "nasa";
         windowrulev2 = [
           "fullscreenstate 0 0, class:nasa"
           "workspace special:nasa silent, class:nasa"
