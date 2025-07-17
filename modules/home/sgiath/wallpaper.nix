@@ -19,7 +19,7 @@ in {
         # ];
 
         bind = [
-          "$mod, W, exec, ${pkgs.ungoogled-chromium}/bin/chromium --kiosk --user-data-dir=/tmp/chrome-temp --incognito --no-first-run --ozone-platform=x11 --class=nasa ${nasa_url}"
+          "\"$mod, W, exec, ${pkgs.ungoogled-chromium}/bin/chromium --kiosk --user-data-dir=/tmp/chrome-temp --incognito --no-first-run --ozone-platform=x11 --class=nasa ${nasa_url}\""
         ];
 
         plugin.hyprwinwrap.class = "nasa";
