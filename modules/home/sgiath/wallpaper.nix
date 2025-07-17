@@ -6,6 +6,9 @@
 }:
 let 
   nasa_url = "https://eyes.nasa.gov/apps/solar-system/#/home?featured=false&detailPanel=false&logo=false&search=false&shareButton=false&menu=false&collapseSettingsOptions=true&hideFullScreenToggle=true&locked=true&hideExternalLinks=true";
+  nasa_exec = pkgs.writeShellScriptBin "nasa" ''
+    ${pkgs.ungoogled-chromium}/bin/chromium --kiosk --user-data-dir=/tmp/chrome-temp --incognito --no-first-run --ozone-platform=x11 --class=nasa "${nasa_url}"
+  '';
 in {
   config = lib.mkIf config.programs.hyprland.enable {
     wayland.windowManager.hyprland = {
@@ -19,7 +22,7 @@ in {
         # ];
 
         bind = [
-          "$mod, W, exec, sh -c \"${pkgs.ungoogled-chromium}/bin/chromium --kiosk --user-data-dir=/tmp/chrome-temp --incognito --no-first-run --ozone-platform=x11 --class=nasa ${nasa_url}\""
+          "$mod, W, exec, ${nasa_exec}/bin/nasa"
         ];
 
         plugin.hyprwinwrap.class = "nasa";
