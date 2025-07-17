@@ -1,6 +1,7 @@
 {
   config,
   lib,
+  pkgs,
   ...
 }:
 {
@@ -13,6 +14,10 @@
       docker = {
         enable = true;
         storageDriver = "btrfs";
+        extraPackages = with pkgs; [
+          docker-credential-helpers
+          amazon-ecr-credential-helper
+        ];
       };
 
       podman = {
