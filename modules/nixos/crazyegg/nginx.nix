@@ -8,7 +8,7 @@
       recommendedProxySettings = true;
       recommendedGzipSettings = true;
       recommendedBrotliSettings = true;
-      recommendedZstdSettings = true;
+      
       virtualHosts.crazyeggdev = {
         addSSL = true;
         serverName = "crazyeggdev.com";
