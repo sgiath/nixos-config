@@ -42,7 +42,6 @@
       recommendedGzipSettings = true;
       recommendedOptimisation = true;
       recommendedTlsSettings = true;
-      recommendedZstdSettings = true;
       recommendedProxySettings = true;
       commonHttpConfig = ''
         charset utf-8;
