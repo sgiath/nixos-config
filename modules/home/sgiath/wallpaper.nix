@@ -29,8 +29,8 @@ in {
 
         plugin.hyprwinwrap = {
           class = "nasa";
-          pos_x = 0;
-          pos_y = 10;
+          pos_x = 20;
+          pos_y = 30;
         };
         
         windowrulev2 = [
