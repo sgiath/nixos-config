@@ -2,6 +2,7 @@
   config,
   lib,
   pkgs,
+  inputs,
   ...
 }:
 let 
@@ -13,7 +14,8 @@ in {
   config = lib.mkIf config.programs.hyprland.enable {
     wayland.windowManager.hyprland = {
       plugins = [
-        pkgs.hyprlandPlugins.hyprwinwrap
+        # pkgs.hyprlandPlugins.hyprwinwrap
+        inputs.hyprland-plugins.packages.${pkgs.system}.hyprwinwrap
       ];
 
       settings = {
