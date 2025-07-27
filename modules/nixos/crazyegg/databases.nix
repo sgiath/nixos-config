@@ -4,7 +4,7 @@
     core.enable = lib.mkEnableOption "Core DB";
     metadata.enable = lib.mkEnableOption "Metadata DB";
     metrex.enable = lib.mkEnableOption "Metrex DB";
-    redis.enable = lib.mkEnableOption "Redis";
+    valkey.enable = lib.mkEnableOption "Valkey DB";
   };
 
   config = lib.mkIf config.crazyegg.enable {
@@ -37,7 +37,7 @@
         ];
       };
 
-      redis.servers = lib.mkIf config.crazyegg.databases.redis.enable {
+      valkey.servers = lib.mkIf config.crazyegg.databases.valkey.enable {
         "0" = {
           enable = true;
           port = 6379;
