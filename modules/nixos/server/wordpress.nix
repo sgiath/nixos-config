@@ -15,7 +15,7 @@
 
         # ACME
         enableACME = true;
-        acmeRoot = "/data/www/romana-vaverova.cz";
+        acmeRoot = null;
 
         # QUIC
         http3_hq = true;
