@@ -37,6 +37,7 @@
     services = {
       mysql = {
         enable = true;
+        package = pkgs.mariadb;
         ensureDatabases = [ "romana-vaverova" ];
         ensureUsers = [
           {
