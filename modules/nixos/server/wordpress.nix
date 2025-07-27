@@ -15,14 +15,20 @@
 
         # ACME
         enableACME = true;
-        acmeRoot = null;
+        acmeRoot = "/data/www/romana-vaverova.cz";
 
         # QUIC
         http3_hq = true;
         quic = true;
 
-        locations."/" = {
-          proxyPass = "http://127.0.0.1:8081";
+        locations = {
+          "/.well-known" = {
+            root = "/data/www/romana-vaverova.cz";
+          };
+
+          "/" = {
+            proxyPass = "http://127.0.0.1:8081";
+          };
         };
       };
     };
