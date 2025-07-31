@@ -24,7 +24,7 @@
           proxyPass = "$target_destination";
           extraConfig = ''
             proxy_set_header CF-Connecting-IP $proxy_add_x_forwarded_for;
-            add_header Content-Security-Policy "default-src 'self'; script-src 'self' 'unsafe-inline' 'unsafe-eval'; frame-src 'self';";
+            add_header Content-Security-Policy "default-src * 'unsafe-inline' 'unsafe-eval'; script-src * 'unsafe-inline' 'unsafe-eval'; style-src * 'unsafe-inline'; frame-src *; connect-src *; font-src *; img-src *; media-src *;";
           '';
         };
       };
