@@ -16,7 +16,7 @@
       openssl
       # codex
       # opencode
-      gemini-cli
+      # gemini-cli
 
       yt-dlp
       google-cloud-sdk

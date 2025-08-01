@@ -11,18 +11,12 @@
     home.packages = with pkgs; [
       xterm
 
-      # utils
       obsidian
       # libreoffice
-      # gimp
       vlc
       kdePackages.okular
-      # texliveMedium
       libwacom
       appimage-run
-      # davinci-resolve-studio
-      gephi
-      lmstudio
     ];
 
     wayland.windowManager.hyprland.settings = {

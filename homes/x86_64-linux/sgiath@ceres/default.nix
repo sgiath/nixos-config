@@ -1,4 +1,15 @@
 {
+  pkgs,
+  ...
+}:
+{
+  home.packages = with pkgs; [
+    gimp
+    texliveMedium
+    lmstudio
+    # davinci-resolve-studio
+  ];
+
   sgiath = {
     enable = true;
     games.enable = true;
