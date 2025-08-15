@@ -6,8 +6,12 @@
 }:
 {
   config = lib.mkIf (config.sgiath.server.enable && config.services.minecraft-server.enable) {
+    environment.systemPackages = with pkgs; [
+      jre8_headless
+      jre_headless
+    ];
+
     services.minecraft-server = {
-      # package = pkgs.minecraft-server_1_21_8;
       eula = true;
       declarative = true;
 

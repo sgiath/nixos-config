@@ -71,6 +71,8 @@
       url = "github:0xc000022070/zen-browser-flake";
       inputs.nixpkgs.follows = "nixpkgs";
     };
+
+    nix-minecraft.url = "github:Infinidoge/nix-minecraft";
   };
 
   outputs =
@@ -99,11 +101,16 @@
         ];
       };
 
+      overlays = with inputs; [
+        nix-minecraft.overlay
+      ];
+
       systems.modules.nixos = with inputs; [
         disko.nixosModules.disko
         sops-nix.nixosModules.sops
         stylix.nixosModules.stylix
         foundryvtt.nixosModules.foundryvtt
+        nix-minecraft.nixosModules.minecraft-servers
       ];
 
       homes.modules = with inputs; [
