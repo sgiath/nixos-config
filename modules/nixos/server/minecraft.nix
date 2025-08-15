@@ -6,10 +6,17 @@
 }:
 {
   config = lib.mkIf (config.sgiath.server.enable && config.services.minecraft-server.enable) {
-    environment.systemPackages = with pkgs; [
-      jdk8
-      jdk21
-    ];
+    environment = {
+      systemPackages = with pkgs; [
+        jdk8
+        jdk21
+      ];
+      
+      sessionVariables = {
+        JAVA8_HOME = "${pkgs.jdk8}/lib/openjdk";
+        JAVA21_HOME = "${pkgs.jdk21}/lib/openjdk";
+      };
+    };
 
     services.minecraft-server = {
       eula = true;
