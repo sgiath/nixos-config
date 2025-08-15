@@ -7,8 +7,8 @@
 {
   config = lib.mkIf (config.sgiath.server.enable && config.services.minecraft-server.enable) {
     environment.systemPackages = with pkgs; [
-      jre8_headless
-      jre_headless
+      jdk8
+      jdk21
     ];
 
     services.minecraft-server = {
