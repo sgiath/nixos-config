@@ -34,23 +34,18 @@
         wantedBy = [ "multi-user.target" ];
         script = "${pkgs.jdk8}/lib/openjdk/bin/java -server -Xms4096M -Xmx4096M -jar forge-1.12.2-14.23.5.2860.jar nogui";
         serviceConfig = {
-          Type = "simple";
           WorkingDirectory = "/data/minecraft/nomi";
         };
       };
 
       # GT: New Horizons (port 25567)
       minecraft-gtnh = {
-        enable = false;
+        enable = true;
         description = "Minecraft GTNH server";
         after = [ "network.target" ];
         wantedBy = [ "multi-user.target" ];
-        environment = {
-          JAVA_PATH = "${pkgs.jdk21}/lib/openjdk/bin/java";
-        };
+        script = "${pkgs.jdk21}/lib/openjdk/bin/java -server -Xms6G -Xmx6G -Dfml.readTimeout=180 @java9args.txt -jar lwjgl3ify-forgePatches.jar nogui";
         serviceConfig = {
-          Type = "simple";
-          ExecStart = "sh /data/minecraft/gtnh/startserver-java9.sh";
           WorkingDirectory = "/data/minecraft/gtnh";
         };
       };
