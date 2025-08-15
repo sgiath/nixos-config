@@ -6,7 +6,7 @@
 }:
 {
   config = lib.mkIf (config.sgiath.server.enable && config.services.minecraft-server.enable) {
-    
+
     # vanila server
     services.minecraft-server = {
       eula = true;
@@ -37,7 +37,7 @@
         };
         serviceConfig = {
           Type = "simple";
-          ExecStart = "/data/minecraft/nomi/launch.sh";
+          ExecStart = "sh /data/minecraft/nomi/launch.sh";
           WorkingDirectory = "/data/minecraft/nomi";
         };
       };
@@ -53,7 +53,7 @@
         };
         serviceConfig = {
           Type = "simple";
-          ExecStart = "/data/minecraft/gtnh/startserver-java9.sh";
+          ExecStart = "sh /data/minecraft/gtnh/startserver-java9.sh";
           WorkingDirectory = "/data/minecraft/gtnh";
         };
       };
