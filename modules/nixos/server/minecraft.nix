@@ -32,19 +32,16 @@
         description = "Minecraft Nomifactory server";
         after = [ "network.target" ];
         wantedBy = [ "multi-user.target" ];
-        environment = {
-          JAVA_PATH = "${pkgs.jdk8}/lib/openjdk/bin/java";
-        };
+        script = "${pkgs.jdk8}/lib/openjdk/bin/java -server -Xms4096M -Xmx4096M -jar forge-1.12.2-14.23.5.2860.jar nogui";
         serviceConfig = {
           Type = "simple";
-          ExecStart = "sh /data/minecraft/nomi/launch.sh";
           WorkingDirectory = "/data/minecraft/nomi";
         };
       };
 
       # GT: New Horizons (port 25567)
       minecraft-gtnh = {
-        enable = true;
+        enable = false;
         description = "Minecraft GTNH server";
         after = [ "network.target" ];
         wantedBy = [ "multi-user.target" ];
