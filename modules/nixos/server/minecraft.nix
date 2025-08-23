@@ -29,7 +29,7 @@ in
       serverProperties = {
         difficulty = "easy";
         gamemode = "survival";
-        force-gamemode = true;
+        force-gamemode = false;
         server-port = 25565;
         max-players = 10;
         online-mode = false;
