@@ -27,7 +27,7 @@
     dnd5etools.enable = true;
     minecraft-servers.enable = true;
 
-    open-webui.enable = true;
+    open-webui.enable = false;
     home-assistant.enable = true;
     mollysocket.enable = true;
     ntfy-sh.enable = true;
