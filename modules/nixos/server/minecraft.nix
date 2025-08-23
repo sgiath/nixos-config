@@ -20,17 +20,16 @@ in
     # for starting new packs on the server and testing
     environment.systemPackages = with pkgs; [ jdk21 ];
 
-    # vanila server
+    # vanila server (default port 25565)
     services.minecraft-server = {
       eula = true;
       declarative = true;
 
       # https://minecraft.wiki/w/Server.properties#Java_Edition
       serverProperties = {
-        # easy
-        difficulty = 1;
-        # survival
-        gamemode = 0;
+        difficulty = "easy";
+        gamemode = "survival";
+        force-gamemode = true;
         server-port = 25565;
         max-players = 10;
         online-mode = false;
