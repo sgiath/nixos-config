@@ -25,11 +25,14 @@ in
       eula = true;
       declarative = true;
 
+      whitelist = operators;
+
       # https://minecraft.wiki/w/Server.properties#Java_Edition
       serverProperties = {
         difficulty = "easy";
         gamemode = "survival";
         force-gamemode = true;
+        enforce-whitelist = true;
         server-port = 25565;
         max-players = 10;
         online-mode = false;
