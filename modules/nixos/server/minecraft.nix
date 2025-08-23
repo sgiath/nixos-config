@@ -69,7 +69,7 @@ in
         description = "Minecraft ATM 10 server";
         after = [ "network.target" ];
         wantedBy = [ "multi-user.target" ];
-        script = "${pkgs.jdk21}/lib/openjdk/bin/java @user_jvm_args.txt @libraries/net/netforged/neoforge/21.1.201/unix_args.txt nogui";
+        script = "${pkgs.jdk21}/lib/openjdk/bin/java @user_jvm_args.txt @libraries/net/neoforged/neoforge/21.1.201/unix_args.txt nogui";
         serviceConfig = {
           WorkingDirectory = "/data/minecraft/atm10";
         };
