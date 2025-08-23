@@ -28,7 +28,7 @@
     minecraft-servers.enable = true;
 
     open-webui.enable = false;
-    home-assistant.enable = true;
+    home-assistant.enable = false;
     mollysocket.enable = true;
     ntfy-sh.enable = true;
 
@@ -45,6 +45,6 @@
     osm.proxy = true;
     sgiath-dev.proxy = true;
     sinai-camp.proxy = true;
-    wordpress.proxy = true;
+    wordpress.proxy = false;
   };
 }
