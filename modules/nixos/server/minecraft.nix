@@ -24,7 +24,7 @@ in
     services.minecraft-servers = {
       eula = true;
       managementSystem = {
-        tmux.enable = true;
+        tmux.enable = false;
         systemd-socket.enable = true;
       };
 
