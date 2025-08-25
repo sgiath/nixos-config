@@ -20,31 +20,19 @@ in
     # for starting new packs on the server and testing
     environment.systemPackages = with pkgs; [ jdk21 ];
 
-    # vanila server (default port 25565)
-    services = {
-      minecraft-server = {
-        enable = false;
-        eula = true;
-        declarative = true;
-        whitelist = operators;
-  
-        # https://minecraft.wiki/w/Server.properties#Java_Edition
-        serverProperties = {
-          difficulty = "easy";
-          gamemode = "survival";
-          level-name = "world3";
-          force-gamemode = true;
-          enforce-whitelist = true;
-          white-list = true;
-          server-port = 25565;
-          max-players = 10;
-          online-mode = false;
-          view-distance = 12;
+    systemd.services = {
+
+      # vanilla (port 25565)
+      minecraft-vanilla = {
+        enable = true;
+        description = "Minecraft Vanilla server";
+        after = [ "network.target" ];
+        wantedBy = [ "multi-user.target" ];
+        script = "${pkgs.jdk21}/lib/openjdk/bin/java -server -Xms4G -Xmx4G -jar paper-1.21.8-50.jar --nogui";
+        serviceConfig = {
+          WorkingDirectory = "/data/minecraft/vanilla";
         };
       };
-    };
-
-    systemd.services = {
 
       # nomifactory (port 25566)
       minecraft-nomi = {
@@ -52,7 +40,7 @@ in
         description = "Minecraft Nomifactory server";
         after = [ "network.target" ];
         wantedBy = [ "multi-user.target" ];
-        script = "${pkgs.jdk8}/lib/openjdk/bin/java -server -Xms4096M -Xmx4096M -jar forge-1.12.2-14.23.5.2860.jar nogui";
+        script = "${pkgs.jdk8}/lib/openjdk/bin/java -server -Xms4G -Xmx4G -jar forge-1.12.2-14.23.5.2860.jar nogui";
         serviceConfig = {
           WorkingDirectory = "/data/minecraft/nomi";
         };
