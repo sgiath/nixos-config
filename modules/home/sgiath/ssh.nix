@@ -3,8 +3,7 @@
   config = lib.mkIf config.programs.ssh.enable {
     programs.ssh = {
       compression = true;
-      serverAliveInterval = 60;
-      serverAliveCountMax = 30;
+      enableDefaultConfig = false;
       extraConfig = ''
         User sgiath
         Port 22
