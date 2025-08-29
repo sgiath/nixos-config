@@ -35,7 +35,10 @@
       };
     };
 
-    stylix.targets.vscode.enable = false;
+    stylix.targets = {
+      vscode.enable = false;
+      zed-editor.enable = false;
+    };
 
     # Cursor
     xdg.desktopEntries."cursor" = {
