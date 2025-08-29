@@ -16,7 +16,7 @@
         };
 
         # servers
-        "vesta.local".hostname = "192.168.1.2";
+        "vesta.local".hostname = "192.168.1.3";
         "vesta.sgiath.dev" = {
           hostname = "193.165.30.198";
           port = 2200;
