@@ -24,7 +24,7 @@ in
 
       # vanilla (port 25565)
       minecraft-vanilla = {
-        enable = true;
+        enable = false;
         description = "Minecraft Vanilla server";
         after = [ "network.target" ];
         wantedBy = [ "multi-user.target" ];
@@ -36,7 +36,7 @@ in
 
       # nomifactory (port 25566)
       minecraft-nomi = {
-        enable = true;
+        enable = false;
         description = "Minecraft Nomifactory server";
         after = [ "network.target" ];
         wantedBy = [ "multi-user.target" ];
@@ -60,7 +60,7 @@ in
 
       # All the Mods 10 (port 25568)
       minecraft-atm10 = {
-        enable = true;
+        enable = false;
         description = "Minecraft ATM 10 server";
         after = [ "network.target" ];
         wantedBy = [ "multi-user.target" ];
@@ -71,25 +71,25 @@ in
       };
     };
 
-    services = {
-      nginx.virtualHosts."minecraft.sgiath.dev" = {
-        # SSL
-        onlySSL = true;
-        kTLS = true;
+    # services = {
+    #   nginx.virtualHosts."minecraft.sgiath.dev" = {
+    #     # SSL
+    #     onlySSL = true;
+    #     kTLS = true;
 
-        # ACME
-        enableACME = true;
-        acmeRoot = null;
+    #     # ACME
+    #     enableACME = true;
+    #     acmeRoot = null;
 
-        # QUIC
-        http3_hq = true;
-        quic = true;
+    #     # QUIC
+    #     http3_hq = true;
+    #     quic = true;
 
-        locations."/" = {
-          proxyWebsockets = true;
-          proxyPass = "http://127.0.0.1:8804";
-        };
-      };
-    };
+    #     locations."/" = {
+    #       proxyWebsockets = true;
+    #       proxyPass = "http://127.0.0.1:8804";
+    #     };
+    #   };
+    # };
   };
 }
