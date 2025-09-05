@@ -24,7 +24,7 @@ in
 
       # vanilla (port 25565)
       minecraft-vanilla = {
-        enable = false;
+        enable = true;
         description = "Minecraft Vanilla server";
         after = [ "network.target" ];
         wantedBy = [ "multi-user.target" ];
