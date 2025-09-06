@@ -13,6 +13,7 @@ let
     Sgiath = "8441ebbf-4c37-3cc3-bc05-32a06694f504";
     Kuba = "821b0f4a-cdd3-371d-8ab7-98882924f39c";
     kihitomi = "cb24a33e-407c-3625-955b-7535ed160d3a";
+    HorkyJohny = "d30a8ff0-6759-3889-9852-a1c6dcf3501f";
   };
 in
 {
