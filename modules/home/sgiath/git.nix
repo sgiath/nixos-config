@@ -118,7 +118,6 @@
 
           rebase = {
             autoStash = true;
-            missingCommitsCheck = true;
           };
 
           status = {
