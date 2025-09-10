@@ -3,7 +3,7 @@
   config = lib.mkIf config.sgiath.enable {
     networking = {
       wireless = {
-        enable = true;
+        enable = false;
         allowAuxiliaryImperativeNetworks = true;
         # wpa_passphrase ssid psk
         networks = {
