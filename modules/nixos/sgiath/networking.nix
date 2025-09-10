@@ -60,15 +60,15 @@
       };
 
       networkmanager.enable = true;
-      # resolvconf.enable = lib.mkForce false;
-      # dhcpcd.extraConfig = "nohook resolv.conf";
+      resolvconf.enable = lib.mkForce false;
+      dhcpcd.extraConfig = "nohook resolv.conf";
       firewall.enable = false;
     };
     environment.etc."resolv.conf".text = ''
-      search sgiath.dev
+      # search sgiath.dev
 
-      nameserver 192.168.1.2
-      nameserver 192.168.1.1
+      # nameserver 192.168.1.2
+      # nameserver 192.168.1.1
       nameserver 1.1.1.1
       nameserver 8.8.8.8
     '';
