@@ -16,7 +16,6 @@
     printing.enable = true;
     razer.enable = true;
     wayland.enable = true;
-    games.enable = true;
   };
 
   services = { };

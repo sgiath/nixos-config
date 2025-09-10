@@ -1,6 +1,7 @@
 {
   sgiath = {
     enable = true;
+    games.enable = true;
 
     targets = {
       terminal = true;
