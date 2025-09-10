@@ -29,35 +29,35 @@
         };
       };
 
-      hosts = {
-        "192.168.1.1" = [ "router.sgiath" ];
-        "192.168.1.2" = [
-          "vesta.sgiath.dev"
-          "dns.sgiath"
-
-          "sgiath.dev"
-          "5e.sgiath.dev"
-          "foundry.sgiath.dev"
-          "search.sgiath.dev"
-          "audio.sgiath.dev"
-          "meet.sgiath.dev"
-          "matrix.sgiath.dev"
-          "n8n.sgiath.dev"
-          "ai.sgiath.dev"
-          "home-assistant.sgiath.dev"
-          "mollysocket.sgiath.dev"
-          "focalboard.sgiath.dev"
-          "auth.sgiath.dev"
-          "osm.sgiath.dev"
-          "photo.sgiath.dev"
-          "watch.sgiath.dev"
-          "torrent.sgiath.dev"
-          "minecraft.sgiath.dev"
-        ];
-        "192.168.1.4" = [ "nas.sgiath" ];
-        "192.168.1.5" = [ "nas.sgiath" ];
-        "192.168.1.150" = [ "mix.sgiath" ];
-      };
+      # hosts = {
+        # "192.168.1.1" = [ "router.sgiath" ];
+        # "192.168.1.2" = [
+        #   "vesta.sgiath.dev"
+        #   "dns.sgiath"
+        #
+        #   "sgiath.dev"
+        #   "5e.sgiath.dev"
+        #   "foundry.sgiath.dev"
+        #   "search.sgiath.dev"
+        #   "audio.sgiath.dev"
+        #   "meet.sgiath.dev"
+        #   "matrix.sgiath.dev"
+        #   "n8n.sgiath.dev"
+        #   "ai.sgiath.dev"
+        #   "home-assistant.sgiath.dev"
+        #   "mollysocket.sgiath.dev"
+        #   "focalboard.sgiath.dev"
+        #   "auth.sgiath.dev"
+        #   "osm.sgiath.dev"
+        #   "photo.sgiath.dev"
+        #   "watch.sgiath.dev"
+        #   "torrent.sgiath.dev"
+        #   "minecraft.sgiath.dev"
+        # ];
+        # "192.168.1.4" = [ "nas.sgiath" ];
+        # "192.168.1.5" = [ "nas.sgiath" ];
+        # "192.168.1.150" = [ "mix.sgiath" ];
+      # };
 
       networkmanager.enable = true;
       resolvconf.enable = lib.mkForce false;
