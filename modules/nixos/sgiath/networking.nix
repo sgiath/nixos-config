@@ -2,6 +2,15 @@
 {
   config = lib.mkIf config.sgiath.enable {
     networking = {
+      hosts = {
+        "192.168.1.1" = [ "router.sgiath" ];
+        "192.168.1.2" = [
+          "vesta.sgiath.dev"
+          "dns.sgiath"
+        ];
+        "192.168.1.4" = [ "nas.sgiath" ];
+        "192.168.1.5" = [ "nas.sgiath" ];
+      };
       networkmanager.enable = false;
       resolvconf.enable = lib.mkForce false;
       dhcpcd.extraConfig = "nohook resolv.conf";
