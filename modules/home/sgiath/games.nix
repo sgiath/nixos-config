@@ -16,7 +16,7 @@ in
     home.packages = with pkgs; [
       protonplus
 
-      wine64
+      # wine64
       winetricks
       wineWowPackages.waylandFull
 
