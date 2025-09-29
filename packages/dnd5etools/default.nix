@@ -15,51 +15,47 @@ let
   imgHashes = [
     {
       name = "z01";
-      hash = "sha256-oIwvb/9i/idALq9Xr8DLlV3mZZ5DwpKlCyDI+mpq6wE=";
+      hash = "sha256-1IDVNYnAfUh2A2dJ4+lcCzblGIcXCiVjwYpLzB5EW5I=";
     }
     {
       name = "z02";
-      hash = "sha256-N6fUDSak0WqahSMCcHlWuP5kfOkWNqhOyQIMLwjauA8=";
+      hash = "sha256-mHNOM4ZI34JBBZjsIm3Wrfe220qv8DmYKr3HdEN1Jxg=";
     }
     {
       name = "z03";
-      hash = "sha256-4lwizJr9dsQyqKhd0eVWCJNkaFA90m2LBEILBIhs3sI=";
+      hash = "sha256-0P71pBwZVAbJVuyRGg+EcgUE50p0rG3lR8EIr/i+XZU=";
     }
     {
       name = "z04";
-      hash = "sha256-ZhniEMroNVqld/SnVqEC4Egptw+cWj7kWsR29YAFaLs=";
+      hash = "sha256-YivE+gXRvd6Q6l4NUMTyf5ynpHzvnAeZDjJ7lDWQYI0=";
     }
     {
       name = "z05";
-      hash = "sha256-7mDCFDbLfZM6783QpwhLrNPvEoiaxhFAxqgphXYXuAI=";
+      hash = "sha256-0uLyv7kZc0O8TefrTnUD+d230QffWSMIK9Du9hweOWU=";
     }
     {
       name = "z06";
-      hash = "sha256-bxShnyKFw1jHqQ9L6ah6sKOlpo9uqdYGj4RN0iTD2Ao=";
+      hash = "sha256-OJZ4ez/XvKetX46YDYLVTcL3RjHNeGR0HR7EjvtF7+A=";
     }
     {
       name = "z07";
-      hash = "sha256-C2Xfd0Xu1AxFAY/F0ZLa3Sp3vUuc6BqOVgAqS7tU8zo=";
+      hash = "sha256-+CkRs81UH4QjFLV33tynd1YjWp22fCQtRwIR3hAAE94=";
     }
     {
       name = "z08";
-      hash = "sha256-dw5i8PNT9Ue3LGjmBLYwN07mdvAagpyi0xT7X6OfuwM=";
+      hash = "sha256-CYciOSvZh5hyNFL3ElFZbbQ9rfAvCJ00LkwwimVlZG0=";
     }
     {
       name = "z09";
-      hash = "sha256-LbJHjVjTjS0EMTYKh2nEMK773C5WONTmnJtd/dKVe2Q=";
+      hash = "sha256-5aCFt0uPuiNT+hnn7eppto7mttH5966vnTZz9W0yn1c=";
     }
     {
       name = "z10";
-      hash = "sha256-qcHWs9iOhWt7GQsZH82Z8cHH46oElwBf3OPEGK0mSjw=";
-    }
-    {
-      name = "z11";
-      hash = "sha256-HyAfjI6jGzfhW1C5ZQVcZRL5LtlIRBY+sUo2l0Nwg/4=";
+      hash = "sha256-19QQf7vFRW+8p0fxU2Y0IubkqpkcMslMEHkq/XHr6cM=";
     }
     {
       name = "zip";
-      hash = "sha256-6eoNnu4p3sbrnEe9ywwoUjzEb+88TZN1U/Q7Y7kfvoU=";
+      hash = "sha256-0dUeC7ObUd5rFIFfJjMbTeYihT/Y2+f5Tf0tDwPCSxY=";
     }
   ];
 
@@ -68,7 +64,7 @@ let
     let
       img = fetchurl {
         pname = "5etools-img-${v.name}";
-        version = "2.10.0";
+        version = "2.12.0";
         # inherit version;
         inherit (v) hash;
         url = "https://github.com/5etools-mirror-2/5etools-img/releases/download/v${version}/img-v${version}.${v.name}";
