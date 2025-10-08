@@ -19,7 +19,7 @@
   crazyegg.enable = true;
 
   services = {
-    ollama.enable = true;
+    ollama.enable = false;
   };
 
   programs = {
