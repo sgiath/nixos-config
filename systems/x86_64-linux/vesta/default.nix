@@ -35,7 +35,7 @@
     cryptpad.enable = false;
     factorio.enable = false;
     jitsi-meet.enable = false;
-    focalboard.enable = true;
+    focalboard.enable = false;
     zitadel.enable = false;
     photoprism.enable = false;
     monitoring.enable = false;
