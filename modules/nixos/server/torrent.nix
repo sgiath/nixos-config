@@ -14,7 +14,7 @@ in
         openPeerPorts = true;
         performanceNetParameters = true;
         package = pkgs.transmission_4;
-        # webHome = pkgs.flood-for-transmission;
+        webHome = pkgs.flood-for-transmission;
 
         settings = {
           download-dir = "/nas/downloads";
