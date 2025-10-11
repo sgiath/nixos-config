@@ -31,6 +31,7 @@ in
 
   # get n8n updates sooner
   n8n = pkgs-master.n8n;
+  awscli2 = pkgs-master.awscli2;
 
   # Bitcoin clients
   bisq = inputs.btc-clients.packages.${prev.system}.bisq;
