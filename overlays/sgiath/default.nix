@@ -31,6 +31,8 @@ in
 
   # get n8n updates sooner
   n8n = pkgs-master.n8n;
+
+  # broken on unstable for now
   awscli2 = pkgs-master.awscli2;
 
   # Bitcoin clients
