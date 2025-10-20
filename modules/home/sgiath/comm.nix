@@ -45,5 +45,12 @@
         "noinitialfocus, class:(org.gnome.Fractal)"
       ];
     };
+
+    programs = {
+      newsboat = {
+        enable = true;
+        autoReload = true;
+      };
+    };
   };
 }
