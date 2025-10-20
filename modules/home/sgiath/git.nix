@@ -7,7 +7,7 @@
 {
   config = lib.mkIf config.programs.git.enable {
     home = {
-      packages = with pkgs; [ git-crypt jujutsu ];
+      packages = with pkgs; [ git-crypt ];
 
       file = {
         ".git/commit-template".text = ''
@@ -26,24 +26,31 @@
           git_protocol = "ssh";
         };
       };
+
+      git-cliff = {
+        enable = true;
+        settings = { };
+      };
+
+      jujutsu = {
+        enable = true;
+        settings = {
+          user = {
+            name = "sgiath";
+            email = "sgiath@sgiath.dev";
+          };
+        };
+      };
+
       git = {
+        package = pkgs.gitFull;
         lfs.enable = true;
 
-        aliases = {
-          d = "diff";
-          aa = "add --all";
-          ap = "add --patch";
-          cm = "commit --verbose --signoff";
-          cn = "commit --verbose --signoff --no-verify";
-          ca = "commit --verbose --signoff --all";
-          amend = "commit --amend --no-edit";
-          ps = "push --progress";
-          pl = "pull --autostash --rebase --signoff";
-          pf = "push --progress --force-with-lease";
-          ss = "status --short";
-          ll = "log --all --graph --pretty=format:'%C(magenta)%h %C(white) %an  %ar%C(auto)  %D%n%s%n'";
-          tag = "tag --sign";
-          main-to-master = "!git symbolic-ref refs/heads/master refs/heads/main && git symbolic-ref refs/remotes/origin/master refs/remotes/origin/main";
+        maintenance = {
+          enable = true;
+          repositories = [
+
+          ];
         };
 
         attributes = [
@@ -64,7 +71,30 @@
           ".opencode"
         ];
 
-        extraConfig = {
+        signing = {
+          format = "openpgp";
+          key = "0x70F9C7DE34CB3BC8";
+          signByDefault = true;
+        };
+
+        settings = {
+          alias = {
+            d = "diff";
+            aa = "add --all";
+            ap = "add --patch";
+            cm = "commit --verbose --signoff";
+            cn = "commit --verbose --signoff --no-verify";
+            ca = "commit --verbose --signoff --all";
+            amend = "commit --amend --no-edit";
+            ps = "push --progress";
+            pl = "pull --autostash --rebase --signoff";
+            pf = "push --progress --force-with-lease";
+            ss = "status --short";
+            ll = "log --all --graph --pretty=format:'%C(magenta)%h %C(white) %an  %ar%C(auto)  %D%n%s%n'";
+            tag = "tag --sign";
+            main-to-master = "!git symbolic-ref refs/heads/master refs/heads/main && git symbolic-ref refs/remotes/origin/master refs/remotes/origin/main";
+          };
+
           init.defaultBranch = "master";
           safe.directory = "${config.home.homeDirectory}/nixos/";
 
@@ -145,16 +175,6 @@
             interactive = "auto";
             status = "auto";
             ui = "always";
-          };
-
-          maintenance = {
-            strategy = "incremental";
-
-            "*" = {
-              enable = true;
-              schedule = "hourly";
-              auto = -1;
-            };
           };
 
           pager = {

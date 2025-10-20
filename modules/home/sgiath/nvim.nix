@@ -38,7 +38,7 @@
       python312Packages.mdformat
       python312Packages.mdformat-gfm
       python312Packages.mdformat-frontmatter
-      python312Packages.mdformat-footnote
+      # python312Packages.mdformat-footnote
 
       # shell
       shfmt
