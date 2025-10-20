@@ -28,7 +28,6 @@
       };
       git = {
         lfs.enable = true;
-        diff-so-fancy.enable = false;
 
         aliases = {
           d = "diff";
