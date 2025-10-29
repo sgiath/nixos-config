@@ -4,7 +4,7 @@
     networking = {
       hosts = {
         "192.168.1.1" = [ "router.sgiath" ];
-        "192.168.1.2" = [
+        "192.168.1.3" = [
           "vesta.sgiath.dev"
           "dns.sgiath"
         ];
