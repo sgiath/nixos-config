@@ -2,6 +2,11 @@
 {
   config = lib.mkIf (config.sgiath.server.enable && config.services.audiobookshelf.enable) {
     services = {
+      audiobookshelf = {
+        port = 8000;
+        openFirewall = true;
+      };
+
       nginx.virtualHosts."audio.sgiath.dev" = {
         # SSL
         onlySSL = true;
