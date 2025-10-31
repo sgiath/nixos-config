@@ -1,7 +1,6 @@
 {
   config,
   lib,
-  pkgs,
   ...
 }:
 
@@ -11,10 +10,6 @@
   };
 
   config = lib.mkIf config.sgiath.audio.enable {
-    environment.systemPackages = [
-      pkgs.pavucontrol
-    ];
-
     security.rtkit.enable = true;
     services.pipewire = {
       enable = true;
@@ -23,6 +18,7 @@
         enable = true;
         support32Bit = true;
       };
+      
       pulse.enable = true;
       wireplumber = {
         enable = true;

@@ -16,8 +16,7 @@
       alsa-scarlett-gui
     ];
     services.easyeffects = {
-      enable = true;
-      # package = pkgs.easyeffects;
+      enable = false;
     };
   };
 }
