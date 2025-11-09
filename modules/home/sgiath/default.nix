@@ -135,6 +135,14 @@
             exiftool -quiet -api PNGEarlyXMP=1 -JUMBF:all= -overwrite_original {}
         '')
 
+        (writeShellScriptBin "clear-cache" ''
+          doas nix-collect-garbage -d
+          nix-collect-garbage -d
+
+          doas nix-store --gc
+          doas nix-store --optimise
+        '')
+
         # general programs I want to have always available
         imagemagick
         parallel-full
