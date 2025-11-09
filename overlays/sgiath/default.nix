@@ -19,8 +19,6 @@ let
   };
 in
 {
-  ungoogled-chromium = pkgs-master.ungoogled-chromium;
-
   # conduit build from official repo flake
   matrix-conduit = inputs.conduit.packages.${prev.stdenv.hostPlatform.system}.default;
 
