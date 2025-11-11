@@ -45,6 +45,13 @@
       exec = "${pkgs.appimage-run}/bin/appimage-run /home/sgiath/nix-root/Cursor-2.0.69-x86_64.AppImage";
     };
 
+    # Tidewave
+    xdg.desktopEntries."tidewave" = {
+      name = "Tidewave";
+      genericName = "AI-powered code editor";
+      exec = "${pkgs.appimage-run}/bin/appimage-run /home/sgiath/nix-root/tidewave-app-amd64.AppImage";
+    };
+
     # home.packages = with pkgs; [ ];
   };
 }
