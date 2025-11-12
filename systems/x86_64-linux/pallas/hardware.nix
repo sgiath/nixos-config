@@ -28,7 +28,9 @@
     kernelParams = [
       "nvme_core.default_ps_max_latency_us=0"
       "pcie_aspm=off"
-      "iommu=soft"
+      "nvme.noacpi=1"
+      "pci=nomsi"
+      "nvidia_drm.modeset=1"
     ];
     loader.systemd-boot = {
       windows."11".efiDeviceHandle = "HD0c";
