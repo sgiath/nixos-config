@@ -20,7 +20,7 @@
   config = lib.mkIf config.sgiath.enable {
     boot = {
       kernelPackages =
-        if config.sgiath.xamond.enable then pkgs.linuxPackages_xanmod_latest else pkgs.linuxPackages_zen;
+        if config.sgiath.xamond.enable then pkgs.linuxPackages_xanmod_latest else pkgs.linuxPackages_latest;
 
       loader =
         if config.sgiath.boot == "uefi" then
