@@ -42,7 +42,13 @@ in
       # Minecraft
       (prismlauncher.override {
         jdks = [
+          # GT: New Horizons
           zulu25
+
+          # Vanilla
+          zulu21
+          
+          # Nomifactory
           zulu8
         ];
       })
