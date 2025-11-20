@@ -24,6 +24,7 @@
           proxyPass = "$target_destination";
           extraConfig = ''
             proxy_set_header CF-Connecting-IP $proxy_add_x_forwarded_for;
+            add_header Content-Security-Policy "script-src 'self'; worker-src 'self' blob:";
           '';
         };
       };
@@ -55,7 +56,7 @@
           # Auth service
           auth.app.crazyeggdev.com 'http://127.0.0.1:4041';
 
-          # Chat service
+          # Chat services
           chat.crazyeggdev.com 'http://127.0.0.1:4051';
 
           # Core v2 shell, shell
