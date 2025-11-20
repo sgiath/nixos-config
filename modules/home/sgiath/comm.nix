@@ -29,7 +29,7 @@
         # "${pkgs.fractal}/bin/fractal"
       ];
       windowrule = [
-        "match:class Slack,workspace 10 silent, no_initial_focus on"
+        "match:class Slack, workspace 10 silent, no_initial_focus on"
         "match:class WebCord, workspace 10 silent, no_initial_focus on"
         "match:class signal, workspace 10 silent, no_initial_focus on"
         "match:class org.telegram.desktop, workspace 10 silent, no_initial_focus on"
