@@ -24,7 +24,7 @@
           proxyPass = "$target_destination";
           extraConfig = ''
             proxy_set_header CF-Connecting-IP $proxy_add_x_forwarded_for;
-            add_header Content-Security-Policy "script-src 'self'; worker-src 'self' blob:";
+            add_header Content-Security-Policy "*"
           '';
         };
       };
