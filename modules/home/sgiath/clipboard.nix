@@ -14,7 +14,7 @@
     wayland.windowManager.hyprland.settings = {
       bind = [ "$mod, V, exec, ${pkgs.kitty}/bin/kitty --class clipse -e ${pkgs.clipse}/bin/clipse" ];
       windowrule = [
-        "match:class clipse, float on, size 622 652, stayfocused"
+        "match:class clipse, float on, size 622 652, stay_focused on"
       ];
     };
   };

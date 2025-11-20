@@ -34,7 +34,7 @@ in {
         };
         
         # windowrule = [
-        #   "match:class nasa, fullscreenstate 0 0, workspace special:nasa silent"
+        #   "match:class nasa, fullscreen_state 0 0, workspace special:nasa silent"
         # ];
       };
     };
