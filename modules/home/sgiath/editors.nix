@@ -52,6 +52,29 @@
       exec = "${pkgs.appimage-run}/bin/appimage-run /home/sgiath/nix-root/tidewave-app-amd64.AppImage";
     };
 
+    # Codex
+    programs.codex = {
+      enable = true;
+      settings = {
+        # untrusted on-failure on-request never
+        approval_policy = "on-request";
+
+        tools = {
+          web_search = true;
+          view_image = true;
+        };
+
+        mcp_servers = {
+          context7 = {
+            url = "https://mcp.context7.com/mcp";
+            http_headers = { 
+              CONTEXT7_API_KEY = "ctx7sk-a64011f8-3e75-45cb-add9-46fe828f3b52";
+            };
+          };
+        };
+      };
+    };
+
     # home.packages = with pkgs; [ ];
   };
 }
