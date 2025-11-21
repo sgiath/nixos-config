@@ -57,28 +57,28 @@ in
     # Codex
     programs.codex = {
       enable = true;
-      settings = {
-        model = "gpt-5.1-codex";
+      # settings = {
+      #   model = "gpt-5.1-codex";
 
-        # untrusted on-failure on-request never
-        approval_policy = "on-request";
+      #   # untrusted on-failure on-request never
+      #   approval_policy = "on-request";
 
-        features = {
-          web_search_request = true;
-          view_image_tool = true;
-        };
+      #   features = {
+      #     web_search_request = true;
+      #     view_image_tool = true;
+      #   };
 
-        mcp_servers = {
-          context7 = {
-            url = "https://mcp.context7.com/mcp";
-            http_headers = "{ \"CONTEXT7_API_KEY\" = \"${secrets.context7_api_key}\ }";
-          };
-        };
+      #   mcp_servers = {
+      #     context7 = {
+      #       url = "https://mcp.context7.com/mcp";
+      #       http_headers = { "CONTEXT7_API_KEY" = secrets.context7_api_key; };
+      #     };
+      #   };
 
-        notice = {
-          hide_gpt5_1_migration_prompt = true;
-        };
-      };
+      #   notice = {
+      #     hide_gpt5_1_migration_prompt = true;
+      #   };
+      # };
     };
 
     # home.packages = with pkgs; [ ];
