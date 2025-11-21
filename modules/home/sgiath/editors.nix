@@ -61,9 +61,9 @@ in
         # untrusted on-failure on-request never
         approval_policy = "on-request";
 
-        tools = {
-          web_search = true;
-          view_image = true;
+        features = {
+          web_search_request = true;
+          view_image_tool = true;
         };
 
         mcp_servers = {
