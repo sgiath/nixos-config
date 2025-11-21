@@ -146,6 +146,26 @@
         "type": "github"
       }
     },
+    "codex": {
+      "inputs": {
+        "nixpkgs": [
+          "nixpkgs"
+        ]
+      },
+      "locked": {
+        "lastModified": 1763721602,
+        "narHash": "sha256-wtYnrP39JZg6tunNhj52m3jjcpzxXXnpUQxwv4TPI1k=",
+        "owner": "openai",
+        "repo": "codex",
+        "rev": "bce030ddb5d0c428aeb909d961a2d5641695c06c",
+        "type": "github"
+      },
+      "original": {
+        "owner": "openai",
+        "repo": "codex",
+        "type": "github"
+      }
+    },
     "conduit": {
       "inputs": {
         "attic": "attic",
@@ -1471,6 +1491,7 @@
     "root": {
       "inputs": {
         "btc-clients": "btc-clients",
+        "codex": "codex",
         "conduit": "conduit",
         "disko": "disko",
         "foundryvtt": "foundryvtt",

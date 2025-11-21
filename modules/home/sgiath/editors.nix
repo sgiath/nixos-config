@@ -2,6 +2,7 @@
   config,
   lib,
   pkgs,
+  inputs,
   ...
 }:
 let
@@ -57,6 +58,8 @@ in
     # Codex
     programs.codex = {
       enable = true;
+      package = inputs.codex.packages.${pkgs.stdenv.hostPlatform.system}.default;
+
       # settings = {
       #   model = "gpt-5.1-codex";
 
