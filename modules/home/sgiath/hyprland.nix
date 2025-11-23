@@ -29,27 +29,22 @@ in
 
       settings = {
         # colors
-        # general = {
-        #   "col.active_border" = "rgba(F7DCDE39)";
-        #   "col.inactive_border" = "rgba(A58A8D30)";
-        # };
+        general = {
+          "col.active_border" = "rgba(F7DCDE39)";
+          "col.inactive_border" = "rgba(A58A8D30)";
+        };
         misc.background_color = "rgba(1D1011FF)";
 
         # general
         general = {
-          # Gaps and border
           gaps_in = 4;
           gaps_out = 5;
           gaps_workspaces = 50;
       
           border_size = 1;
-          "col.active_border" = "rgba(0DB7D4FF)";
-          "col.inactive_border" = "rgba(31313600)";
           resize_on_border = true;
-      
           no_focus_fallback = true;
-      
-          allow_tearing = true; # This just allows the `immediate` window rule to work
+          allow_tearing = true;
       
           snap = {
           	enabled = true;
@@ -59,10 +54,51 @@ in
           };
         };
 
+dwindle = {
+    preserve_split = true;
+    smart_split = false;
+    smart_resizing = false;
+    # precise_mouse_move = true
+};
+
+decoration = {
+    rounding = 18;
+
+    blur = {
+        enabled = true;
+        xray = true;
+        special = false;
+        new_optimizations = true;
+        size = 10;
+        passes = 3;
+        brightness = 1;
+        noise = 0.15;
+        contrast = 0.2;
+        vibrancy = 0.8;
+        vibrancy_darkness = 0.8;
+        popups = false;
+        popups_ignorealpha = 0.6;
+        input_methods = true;
+        input_methods_ignorealpha = 0.8;
+    };
+
+    shadow = {
+        enabled = true;
+        ignore_window = true;
+        range = 30;
+        offset = "0 2";
+        render_power = 4;
+        color = "rgba(00000010)";
+    };
+
+    # Dim
+    dim_inactive = true;
+    dim_strength = 0.025;
+    dim_special = 0.07;
+};
 
 
 
-        decoration.rounding = 5;
 
         input = {
           touchpad.natural_scroll = true;
