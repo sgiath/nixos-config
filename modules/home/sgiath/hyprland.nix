@@ -149,9 +149,11 @@ in
     programs.fuzzel = {
       enable = true;
       settings = {
+        main = {
         terminal = "${pkgs.kitty}/bin/kitty -1";
         prompt = ">>  ";
-        # layer = "overlay";
+        layer = "overlay";
+        };
 
         border = {
           radius = 17;
