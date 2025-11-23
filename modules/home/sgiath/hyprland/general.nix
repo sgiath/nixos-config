@@ -1,5 +1,22 @@
 {
   wayland.windowManager.hyprland.settings = {
+    gesture = [
+      "3, swipe, move,"
+      "3, pinch, float"
+      "4, horizontal, workspace"
+      "4, up, dispatcher, global, quickshell:overviewToggle"
+      "4, down, dispatcher, global, quickshell:overviewClose"
+    ];
+
+    gestures = {
+      workspace_swipe_distance = 700;
+      workspace_swipe_cancel_ratio = 0.2;
+      workspace_swipe_min_speed_to_force = 5;
+      workspace_swipe_direction_lock = true;
+      workspace_swipe_direction_lock_threshold = 10;
+      workspace_swipe_create_new = true;
+    };
+
     general = {
       gaps_in = 4;
       gaps_out = 5;
@@ -97,6 +114,53 @@
         "specialWorkspaceIn, 1, 2.8, emphasizedDecel, slidevert"
         "specialWorkspaceOut, 1, 1.2, emphasizedAccel, slidevert"
       ];
+    };
+
+    input = {
+      kb_layout = "us";
+      numlock_by_default = true;
+      repeat_delay = 250;
+      repeat_rate = 35;
+
+      follow_mouse = 1;
+      off_window_axis_events = 2;
+
+      touchpad = {
+        natural_scroll = true;
+        tablet.output = "current";
+        disable_while_typing = true;
+        clickfinger_behavior = true;
+        scroll_factor = 0.5;
+      };
+    };
+
+    misc = {
+      disable_hyprland_logo = true;
+      disable_splash_rendering = true;
+      vfr = 1;
+      vrr = 1;
+      mouse_move_enables_dpms = true;
+      key_press_enables_dpms = true;
+      animate_manual_resizes = false;
+      animate_mouse_windowdragging = false;
+      enable_swallow = false;
+      swallow_regex = "(foot|kitty|allacritty|Alacritty)";
+      new_window_takes_over_fullscreen = 2;
+      allow_session_lock_restore = true;
+      session_lock_xray = true;
+      initial_workspace_tracking = false;
+      focus_on_activate = true;
+    };
+
+    binds = {
+      scroll_event_delay = 0;
+      hide_special_on_workspace_change = true;
+    };
+
+    cursor = {
+      zoom_factor = 1;
+      zoom_rigid = false;
+      hotspot_padding = 1;
     };
   };
 }
