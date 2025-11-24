@@ -160,7 +160,6 @@
         }
 
         #clock {
-          color: #2d353b;
           font-weight: bold;
           margin-right: 7px;
         }
