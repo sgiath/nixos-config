@@ -40,7 +40,7 @@ let
     pkgs.kdePackages.qtvirtualkeyboard
     pkgs.kdePackages.qtwebsockets
     pkgs.kdePackages.kirigami.unwrapped
-    # pkgs.kdePackages.kirigami-addons
+    pkgs.kdePackages.kirigami-addons
   ];
 
   quickshell-with-qtpositioning = pkgs.symlinkJoin {
@@ -96,8 +96,8 @@ in
     kdePackages.qtwayland
     kdePackages.qtwebsockets
     kdePackages.syntax-highlighting
-    kdePackages.kirigami
-    # kdePackages.kirigami-addons
+    kdePackages.kirigami.unwrapped
+    kdePackages.kirigami-addons
   ];
   qt.enable = true;
   programs.quickshell = {
