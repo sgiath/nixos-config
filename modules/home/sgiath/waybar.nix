@@ -15,10 +15,7 @@
           position = "top";
           height = 36;
           spacing = 16;
-          output = [
-            "DP-1"
-            "DP-3"
-          ];
+          output = [ "DP-1" ];
           modules-left = [
             "hyprland/workspaces"
           ];
@@ -47,18 +44,39 @@
           clock = {
             format = "{:%Y-%m-%d %H%M}";
             interval = 1;
-            tooltip-format = "<tt><small>{calendar}</small></tt>";
-            calendar = {
-              format = {
-                today = "<span color='#ff6699'><b><u>{}</u></b></span>";
-              };
-            };
           };
           "hyprland/workspaces" = {
             disable-scroll = true;
             all-outputs = true;
           };
           tray.spacing = 10;
+        };
+        secondBar = {
+          layer = "top";
+          position = "top";
+          height = 36;
+          spacing = 16;
+          output = [
+            "DP-3"
+          ];
+          modules-left = [
+            "hyprland/workspaces"
+          ];
+          modules-center = [
+            "hyprland/window"
+          ];
+          modules-right = [
+            "clock"
+          ];
+
+          clock = {
+            format = "{:%Y-%m-%d %H%M}";
+            interval = 1;
+          };
+          "hyprland/workspaces" = {
+            disable-scroll = true;
+            all-outputs = true;
+          };
         };
         notebookBar = {
           height = 28;
