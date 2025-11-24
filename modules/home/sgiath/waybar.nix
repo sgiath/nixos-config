@@ -89,7 +89,7 @@
         }
 
         window#waybar {
-          background-color: rgba(0, 0, 0, 0.0);
+          background-color: transparent;
           color: #eeeeee;
           border: none;
         }
@@ -109,21 +109,16 @@
         }
 
         #workspaces button {
-          padding: 6px;
           background-color: transparent;
         }
 
-        #workspaces button:hover {
-            background: rgba(0, 0, 0, 0.2);
-        }
-
         #workspaces button.active {
-            color: #a7c080;
-            background-color: #232a2e;
+          color: #a7c080;
+          background-color: #232323;
         }
 
         #workspaces button.urgent {
-            color: #e67e8c;
+          color: #e67e8c;
         }
 
         #clock,
@@ -142,26 +137,25 @@
         #idle_inhibitor,
         #scratchpad,
         #mpd {
-            padding: 0 10px;
-            margin-top: 3px;
-            margin-bottom: 3px;
-            color: #ffffff;
-            border-radius: 8px;
+          padding: 0 10px;
+          margin-top: 3px;
+          margin-bottom: 3px;
+          border-radius: 8px;
         }
 
         #window,
         #workspaces {
-            margin: 0 4px;
+          margin: 0 8px;
         }
 
         /* If workspaces is the leftmost module, omit left margin */
         .modules-left > widget:first-child > #workspaces {
-            margin-left: 0;
+          margin-left: 0;
         }
 
         /* If workspaces is the rightmost module, omit right margin */
         .modules-right > widget:last-child > #workspaces {
-            margin-right: 0;
+          margin-right: 0;
         }
 
         #clock {
