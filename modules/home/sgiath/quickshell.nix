@@ -125,7 +125,6 @@ in
     kdePackages.breeze-icons # KDE Breeze icons (required by Papirus inheritance)
 
     # Fonts
-
     pkgs.${namespace}.material-symbols
     rubik
     # nurPkgs.repos.skiletro.gabarito
