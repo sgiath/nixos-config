@@ -89,24 +89,14 @@
         }
 
         window#waybar {
-            background-color: rgba(0, 0, 0, 0.0);
-            color: #d3c6aa;
-            transition-property: background-color;
-            transition-duration: .5s;
+          background-color: rgba(0, 0, 0, 0.0);
+          color: #eeeeee;
+          border: none;
         }
 
         window#waybar.hidden {
-            opacity: 0.2;
+          opacity: 0.2;
         }
-
-        /*
-        window#waybar.empty {
-            background-color: transparent;
-        }
-        window#waybar.solo {
-            background-color: #FFFFFF;
-        }
-        */
 
         window#waybar.termite {
             background-color: #3F3F3F;
