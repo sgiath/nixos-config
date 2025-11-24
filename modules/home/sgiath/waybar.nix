@@ -85,11 +85,11 @@
       style = ''
         * {
           font-family: 'RobotoMono Nerd Font Mono', sans-serif;
-          font-size: 13px;
+          font-size: 16px;
         }
 
         window#waybar {
-            background-color: rgba(30, 35, 38, 0.9);
+            background-color: rgba(0, 0, 0, 0.0);
             color: #d3c6aa;
             transition-property: background-color;
             transition-duration: .5s;
