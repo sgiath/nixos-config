@@ -2,6 +2,7 @@
   inputs,
   pkgs,
   namespace,
+  lib,
   ...
 }:
 let
@@ -81,7 +82,7 @@ let
 in
 {
   home.sessionVariables = {
-    QT_QPA_PLATFORMTHEME = "qt6ct";  # Use qt6ct for Qt6 theming
+    QT_QPA_PLATFORMTHEME = lib.mkForce "qt6ct";  # Use qt6ct for Qt6 theming
     QT_STYLE_OVERRIDE = "";
   };
 
@@ -137,7 +138,7 @@ in
       hyprsunset
       wayland-protocols
       wl-clipboard
-      
+
     # QuickShell with QtPositioning support (wrap both qs and quickshell)
     quickshell-with-qtpositioning
 
