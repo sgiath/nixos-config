@@ -141,6 +141,7 @@
           margin-top: 3px;
           margin-bottom: 3px;
           border-radius: 8px;
+          background-color: #232323;
         }
 
         #window,
@@ -159,7 +160,6 @@
         }
 
         #clock {
-          background-color: #a7c080;
           color: #2d353b;
           font-weight: bold;
           margin-right: 7px;
@@ -192,43 +192,9 @@
           animation-direction: alternate;
         }
 
-        #cpu {
-          background-color: #2ecc71;
-          color: #000000;
-        }
-
-        #memory {
-          background-color: #9b59b6;
-        }
-
-        #disk {
-          background-color: #964B00;
-        }
-
-        #backlight {
-          background-color: #90b1b1;
-        }
-
-        #network {
-          background-color: #7fbbb3;
-          color: #232a2e;
-        }
-
         #network.disconnected {
           background-color: #e67e80;
           color: #232a2e;
-        }
-
-        #temperature {
-          background-color: #f0932b;
-        }
-
-        #temperature.critical {
-          background-color: #eb4d4b;
-        }
-
-        #tray {
-          background-color: #232323;
         }
 
         #tray > .passive {
