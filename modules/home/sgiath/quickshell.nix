@@ -1,4 +1,4 @@
-{ inputs, pkgs, ... }:
+{ inputs, pkgs, namespace, ... }:
 let
   pythonEnv = pkgs.python3.withPackages (ps: [
     ps.build
@@ -100,7 +100,7 @@ in
 
       # Themes and icons
       adw-gtk3
-      customPkgs.illogical-impulse-oneui4-icons
+      pkgs.${namespace}.illogical-impulse-oneui4-icons
       papirus-icon-theme  # Primary icon theme
       adwaita-icon-theme  # GNOME fallback icons
       hicolor-icon-theme  # Base icon theme (required by most themes)
