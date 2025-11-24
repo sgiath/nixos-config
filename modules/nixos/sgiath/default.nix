@@ -3,7 +3,6 @@
   lib,
   inputs,
   pkgs,
-  namespace,
   ...
 }:
 let
@@ -97,7 +96,5 @@ in
     programs = {
       nix-ld.enable = true;
     };
-
-    fonts.packages = [ pkgs.${namespace}.material-symbols ];
   };
 }
