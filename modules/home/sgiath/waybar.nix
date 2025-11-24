@@ -45,10 +45,6 @@
             format = "{:%Y-%m-%d %H%M}";
             interval = 1;
           };
-          "hyprland/workspaces" = {
-            disable-scroll = true;
-            all-outputs = true;
-          };
           tray.spacing = 10;
         };
         secondBar = {
@@ -72,10 +68,6 @@
           clock = {
             format = "{:%Y-%m-%d %H%M}";
             interval = 1;
-          };
-          "hyprland/workspaces" = {
-            disable-scroll = true;
-            all-outputs = true;
           };
         };
         notebookBar = {
