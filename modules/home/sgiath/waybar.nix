@@ -6,6 +6,11 @@
 
 {
   config = lib.mkIf (config.programs.hyprland.enable && config.programs.waybar.enable) {
+    stylix.targets.waybar = {
+      enableLeftBackColors = true;
+      enableRightBackColors = true;
+    };
+
     programs.waybar = {
       systemd.enable = true;
       settings = {
@@ -48,16 +53,6 @@
           "hyprland/workspaces" = {
             disable-scroll = true;
             all-outputs = true;
-            format = "{name} {icon}";
-            format-icons = {
-              default = "";
-              "1" = "";
-              "2" = "";
-              "3" = "";
-              "4" = "";
-              "5" = "󱇗";
-              "9" = "";
-            };
           };
           "custom/kernel" = {
             format = "{}";
