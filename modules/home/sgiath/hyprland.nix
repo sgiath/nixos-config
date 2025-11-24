@@ -36,6 +36,7 @@
         master = {
           # mfact = 0.66;
           orientation = "right";
+          new_status = "master";
         };
 
         workspace = [

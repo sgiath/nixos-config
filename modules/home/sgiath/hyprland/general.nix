@@ -47,11 +47,7 @@
     decoration = {
       rounding = 8;
       rounding_power = 2;
-
-    # Focused/unfocused window opacity
-    active_opacity   = 1.0;
-    inactive_opacity = 0.85;
-
+      
       # Dim
       dim_inactive = true;
       dim_strength = 0.025;
