@@ -86,11 +86,11 @@
         * {
           font-family: 'RobotoMono Nerd Font Mono', sans-serif;
           font-size: 16px;
+          color: #eeeeee;
         }
 
         window#waybar {
           background-color: transparent;
-          color: #eeeeee;
           border: none;
         }
 
