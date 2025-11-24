@@ -6,10 +6,10 @@
 
 {
   config = lib.mkIf (config.programs.hyprland.enable && config.programs.waybar.enable) {
-    stylix.targets.waybar = {
-      enableLeftBackColors = true;
-      enableRightBackColors = true;
-    };
+    # stylix.targets.waybar = {
+    #   enableLeftBackColors = true;
+    #   enableRightBackColors = true;
+    # };
 
     programs.waybar = {
       systemd.enable = true;
