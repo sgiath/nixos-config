@@ -1,4 +1,9 @@
-{ inputs, pkgs, namespace, ... }:
+{
+  inputs,
+  pkgs,
+  namespace,
+  ...
+}:
 let
   pythonEnv = pkgs.python3.withPackages (ps: [
     ps.build
@@ -76,19 +81,18 @@ in
 {
   # Qt/KDE packages required for QuickShell functionality
   home.packages = with pkgs; [
-
-      # Core utilities
-      cava
-      lxqt.pavucontrol-qt
-      wireplumber
-      libdbusmenu-gtk3
-      playerctl
-      brightnessctl
-      ddcutil
-      axel
-      bc
-      cliphist
-      libqalculate
+    # Core utilities
+    cava
+    lxqt.pavucontrol-qt
+    wireplumber
+    libdbusmenu-gtk3
+    playerctl
+    brightnessctl
+    ddcutil
+    axel
+    bc
+    cliphist
+    libqalculate
 
     # QuickShell with QtPositioning support (wrap both qs and quickshell)
     quickshell-with-qtpositioning
@@ -111,15 +115,27 @@ in
     kdePackages.syntax-highlighting
     kdePackages.kirigami.unwrapped
 
+    # Themes and icons
+    adw-gtk3
+    pkgs.${namespace}.illogical-impulse-oneui4-icons
+    papirus-icon-theme # Primary icon theme
+    adwaita-icon-theme # GNOME fallback icons
+    hicolor-icon-theme # Base icon theme (required by most themes)
+    gnome-icon-theme # Additional GNOME icon coverage
+    kdePackages.breeze-icons # KDE Breeze icons (required by Papirus inheritance)
 
-      # Themes and icons
-      adw-gtk3
-      pkgs.${namespace}.illogical-impulse-oneui4-icons
-      papirus-icon-theme  # Primary icon theme
-      adwaita-icon-theme  # GNOME fallback icons
-      hicolor-icon-theme  # Base icon theme (required by most themes)
-      gnome-icon-theme  # Additional GNOME icon coverage
-      kdePackages.breeze-icons  # KDE Breeze icons (required by Papirus inheritance)
+    # Fonts
+
+    pkgs.${namespace}.material-symbols
+    rubik
+    nurPkgs.repos.skiletro.gabarito
+    nerd-fonts.ubuntu
+    nerd-fonts.ubuntu-mono
+    nerd-fonts.jetbrains-mono
+    nerd-fonts.caskaydia-cove
+    nerd-fonts.fantasque-sans-mono
+    nerd-fonts.mononoki
+    nerd-fonts.space-mono
   ];
   qt.enable = true;
   programs.quickshell = {
