@@ -93,17 +93,6 @@ in
     kdePackages.qtwayland
     kdePackages.qtwebsockets
     kdePackages.syntax-highlighting
-
-      # Minimal Qt/KDE packages (only what's needed for functionality)
-      gnome-keyring  # Keyring support
-      kdePackages.bluedevil  # Bluetooth management (for kcm_bluetooth)
-      kdePackages.plasma-nm  # Network management (for kcm_networkmanagement)
-      kdePackages.polkit-kde-agent-1  # Polkit authentication agent
-      kdePackages.kdialog  # Dialog prompts
-
-      # Additional Qt support
-      libsForQt5.qtgraphicaleffects
-      libsForQt5.qtsvg
   ];
 qt.enable = true;
     programs.quickshell = {
