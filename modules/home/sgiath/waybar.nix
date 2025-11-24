@@ -10,19 +10,27 @@
       systemd.enable = true;
       settings = {
         mainBar = {
+          layer = "top";
+          position = "top";
           height = 36;
-          spacing = 16;
+          spacing = 0;
           output = [
             "DP-1"
             "DP-3"
           ];
-          modules-left = [ "hyprland/workspaces" ];
+          modules-left = [
+            "custom/logo"
+            "hyprland/workspaces"
+          ];
           modules-right = [
+            "custom/kernel"
+            "custom/free-disk"
             "network"
             "network#2"
-            "memory"
             "cpu"
+            "memory"
             "clock"
+            "wireplumber"
             "tray"
           ];
 
@@ -37,6 +45,33 @@
           memory.format = "RAM: {used} GiB / {total} GiB";
           cpu.format = "CPU: {usage}% ({max_frequency}GHz)";
           clock.format = "{:%Y-%m-%d %H%M}";
+          "hyprland/workspaces" = {
+            disable-scroll = true;
+            all-outputs = true;
+            format = "{name} {icon}";
+            format-icons = {
+              default = "";
+              "1" = "";
+              "2" = "";
+              "3" = "";
+              "4" = "";
+              "5" = "󱇗";
+              "9" = "";
+            };
+          };
+          "custom/kernel" = {
+            format = "{}";
+            interval = 3600;
+            exec = "uname -r";
+          };
+          "custom/logo" = {
+            format = "";
+          };
+          "custom/free-disk" = {
+            format = "󰆼 Disk: {}% used";
+            interval = 3600;
+            exec = "df -json | jq '.[] | select(.mount_point == \"/\")' | jq '(.free / .total * 1000 | round / 10.0)'";
+          };
         };
         notebookBar = {
           height = 28;
