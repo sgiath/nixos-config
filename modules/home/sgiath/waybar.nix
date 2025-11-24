@@ -113,7 +113,6 @@
         }
 
         #workspaces button.active {
-          color: #a7c080;
           background-color: #232323;
         }
 
@@ -125,26 +124,19 @@
         #battery,
         #cpu,
         #memory,
-        #disk,
-        #temperature,
-        #backlight,
         #network,
-        #pulseaudio,
-        #wireplumber,
-        #custom-media,
-        #tray,
-        #mode,
-        #idle_inhibitor,
-        #scratchpad,
-        #mpd {
-          padding: 0 10px;
+        #window,
+        #tray {
+          padding-left: 8px;
+          padding-right: 8px;
           margin-top: 3px;
           margin-bottom: 3px;
+          margin-left: 8px;
+          margin-right: 8px;
           border-radius: 8px;
           background-color: #232323;
         }
 
-        #window,
         #workspaces {
           margin: 0 8px;
         }
@@ -161,7 +153,6 @@
 
         #clock {
           font-weight: bold;
-          margin-right: 7px;
         }
 
         #battery {
