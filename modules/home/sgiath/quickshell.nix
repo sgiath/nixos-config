@@ -80,8 +80,15 @@ let
   };
 in
 {
+  home.sessionVariables = {
+    QT_QPA_PLATFORMTHEME = "qt6ct";  # Use qt6ct for Qt6 theming
+    QT_STYLE_OVERRIDE = "";
+  };
+
   # Qt/KDE packages required for QuickShell functionality
   home.packages = with pkgs; [
+    pkgs.qt6Packages.qt6ct
+
     # Core utilities
     cava
     lxqt.pavucontrol-qt
@@ -95,6 +102,42 @@ in
     cliphist
     libqalculate
 
+      # GUI applications
+      foot
+      fuzzel
+      matugen
+      mpv
+      mpvpaper
+      swappy
+      wf-recorder
+      hyprshot
+      wlogout
+
+      # System utilities
+      xdg-user-dirs
+      tesseract
+      slurp
+      upower
+      wtype
+      ydotool
+      glib
+      swww
+      translate-shell
+      hyprpicker
+      imagemagick
+      ffmpeg
+      gnome-settings-daemon  # Provides gsettings
+      libnotify  # Provides notify-send
+      easyeffects
+      grim
+
+      # Wayland/Hyprland specific
+      hyprlock
+      hypridle
+      hyprsunset
+      wayland-protocols
+      wl-clipboard
+      
     # QuickShell with QtPositioning support (wrap both qs and quickshell)
     quickshell-with-qtpositioning
 
