@@ -62,6 +62,7 @@ let
                 pkgs.kdePackages.qttranslations
                 pkgs.kdePackages.qtvirtualkeyboard
                 pkgs.kdePackages.qtwebsockets
+                pkgs.kdePackages.kirigami
               ]
             }" \
             --prefix PATH : "${pythonEnv}/bin" \
@@ -93,6 +94,7 @@ in
     kdePackages.qtwayland
     kdePackages.qtwebsockets
     kdePackages.syntax-highlighting
+    kdePackages.kirigami
   ];
 qt.enable = true;
     programs.quickshell = {
