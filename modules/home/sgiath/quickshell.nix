@@ -24,6 +24,24 @@ let
     ps.opencv4
   ]);
 
+  qmlPath = pkgs.lib.makeSearchPath "lib/qt-6/qml" [
+    pkgs.kdePackages.qtpositioning
+    pkgs.kdePackages.qtbase
+    pkgs.kdePackages.qtdeclarative
+    pkgs.kdePackages.qtmultimedia
+    pkgs.kdePackages.qtsensors
+    pkgs.kdePackages.qtsvg
+    pkgs.kdePackages.qtwayland
+    pkgs.kdePackages.qt5compat
+    pkgs.kdePackages.qtimageformats
+    pkgs.kdePackages.qtquicktimeline
+    pkgs.kdePackages.qttools
+    pkgs.kdePackages.qttranslations
+    pkgs.kdePackages.qtvirtualkeyboard
+    pkgs.kdePackages.qtwebsockets
+    pkgs.kdePackages.kirigami
+  ];
+
   quickshell-with-qtpositioning = pkgs.symlinkJoin {
     name = "quickshell-with-qtpositioning";
     paths = [ inputs.quickshell.packages.${pkgs.stdenv.hostPlatform.system}.default ];
@@ -46,25 +64,8 @@ let
       for binary in quickshell qs; do
         if [ -f "$out/bin/$binary" ]; then
           wrapProgram "$out/bin/$binary" \
-            --prefix QML2_IMPORT_PATH : "${
-              pkgs.lib.makeSearchPath "lib/qt-6/qml" [
-                pkgs.kdePackages.qtpositioning
-                pkgs.kdePackages.qtbase
-                pkgs.kdePackages.qtdeclarative
-                pkgs.kdePackages.qtmultimedia
-                pkgs.kdePackages.qtsensors
-                pkgs.kdePackages.qtsvg
-                pkgs.kdePackages.qtwayland
-                pkgs.kdePackages.qt5compat
-                pkgs.kdePackages.qtimageformats
-                pkgs.kdePackages.qtquicktimeline
-                pkgs.kdePackages.qttools
-                pkgs.kdePackages.qttranslations
-                pkgs.kdePackages.qtvirtualkeyboard
-                pkgs.kdePackages.qtwebsockets
-                pkgs.kdePackages.kirigami
-              ]
-            }" \
+            --prefix QML_IMPORT_PATH : "${qmlPath}" \
+            --prefix QML2_IMPORT_PATH : "${qmlPath}" \
             --prefix PATH : "${pythonEnv}/bin" \
             --set ILLOGICAL_IMPULSE_VIRTUAL_ENV "$out/venv"
         fi
