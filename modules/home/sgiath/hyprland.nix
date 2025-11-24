@@ -9,6 +9,8 @@
     ./hyprland/color.nix
     ./hyprland/general.nix
     ./hyprland/keybindings.nix
+    ./hyprland/layout.nix
+    ./hyprland/looks.nix
     ./hyprland/monitors.nix
     ./hyprland/rules.nix
   ];
@@ -32,12 +34,6 @@
 
       settings = {
         group.groupbar.font_size = 14;
-
-        master = {
-          # mfact = 0.66;
-          orientation = "right";
-          new_status = "master";
-        };
 
         workspace = [
           "special:special, gapsout:30"
@@ -81,13 +77,9 @@
         insensitive = true;
       };
     };
-    programs = {
-      hyprshot.enable = true;
-    };
 
     services = {
-      mako.enable = false;
-      swaync.enable = true;
+      mako.enable = true;
       hyprpolkitagent.enable = true;
     };
   };
