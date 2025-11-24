@@ -83,7 +83,7 @@ in
 {
   home.sessionVariables = {
     QT_QPA_PLATFORMTHEME = lib.mkForce "qt6ct";  # Use qt6ct for Qt6 theming
-    QT_STYLE_OVERRIDE = "";
+    QT_STYLE_OVERRIDE = lib.mkForce "";
   };
 
   # Qt/KDE packages required for QuickShell functionality
