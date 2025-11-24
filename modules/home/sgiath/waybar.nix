@@ -99,7 +99,7 @@
             box-shadow: inset 0 -1px transparent;
             /* Avoid rounded borders under each button name */
             border: none;
-            border-radius: 0;
+            border-radius: 8;
         }
 
         /* https://github.com/Alexays/Waybar/wiki/FAQ#the-workspace-buttons-have-a-strange-hover-effect */
@@ -110,7 +110,6 @@
 
         #workspaces button {
           padding: 0 6px;
-          border-radius: 4;
           background-color: transparent;
           color: #d3c6aa;
         }
