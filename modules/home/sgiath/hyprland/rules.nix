@@ -14,7 +14,7 @@
 
     layerrule = [
       "xray 1, match:namespace .*"
-      "no_anim on, .*"
+      "no_anim on, match:namespace .*"
     ];
   };
 }
