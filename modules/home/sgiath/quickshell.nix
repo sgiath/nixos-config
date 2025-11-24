@@ -23,10 +23,10 @@ let
     ps."pyproject-hooks"
     ps.opencv4
   ]);
-  
+
   quickshell-with-qtpositioning = pkgs.symlinkJoin {
       name = "quickshell-with-qtpositioning";
-      paths = [ inputs.quickshell.packages.${pkgs.system}.default ];
+      paths = [ inputs.quickshell.packages.${pkgs.stdenv.hostPlatform.system}.default ];
       buildInputs = [ pkgs.makeWrapper ];
       postBuild = ''
       # Create a fake venv structure for compatibility with scripts that source activate
@@ -94,7 +94,7 @@ in
     kdePackages.qtwebsockets
     kdePackages.syntax-highlighting
   ];
-
+programs.qt.enable = true;
     programs.quickshell = {
       enable = true;
       package = quickshell-with-qtpositioning;
