@@ -26,6 +26,9 @@
           modules-left = [
             "hyprland/workspaces"
           ];
+          modules-center = [
+            "hyprland/window"
+          ];
           modules-right = [
             "network"
             "network#2"
@@ -48,7 +51,7 @@
           clock = {
             format = "{:%Y-%m-%d %H%M}";
             interval = 1;
-            tooltip-format = "<big>{:%B %Y}</big>\n<tt><small>{calendar}</small></tt>";
+            tooltip-format = "<tt><small>{calendar}</small></tt>";
             calendar = {
               format = {
                 today = "<span color='#ff6699'><b><u>{}</u></b></span>";
