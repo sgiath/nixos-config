@@ -14,6 +14,7 @@ in
     ./hyprland/color.nix
     ./hyprland/general.nix
     ./hyprland/monitors.nix
+    ./hyprland/rules.nix
   ];
 
   options.programs.hyprland = {
@@ -102,6 +103,7 @@ in
         ];
 
         workspace = [
+          "special:special, gapsout:30"
           "1,monitor:DP-1,default:true,persistent:true"
           "2,monitor:DP-3,default:true,persistent:true"
           "3,monitor:DP-3,persistent:true"
