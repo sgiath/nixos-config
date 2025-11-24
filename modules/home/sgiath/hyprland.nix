@@ -38,8 +38,6 @@
           orientation = "right";
         };
 
-        # bindings
-
         workspace = [
           "special:special, gapsout:30"
           "1,monitor:DP-1,default:true,persistent:true"
