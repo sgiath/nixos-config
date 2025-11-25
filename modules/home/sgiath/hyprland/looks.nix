@@ -4,6 +4,10 @@
       rounding = 8;
       rounding_power = 2;
 
+      active_opacity = 0.95;
+      inactive_opacity = 0.90;
+      fullscreen_opacity = 1.0;
+
       # Dim
       dim_inactive = true;
       dim_strength = 0.025;
