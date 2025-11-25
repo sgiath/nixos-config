@@ -4,13 +4,13 @@
       rounding = 8;
       rounding_power = 2;
 
-      active_opacity = 0.99;
-      inactive_opacity = 0.90;
+      active_opacity = 1.0;
+      inactive_opacity = 0.80;
       fullscreen_opacity = 1.0;
 
       # Dim
       dim_inactive = true;
-      dim_strength = 0.025;
+      dim_strength = 0.05;
       dim_special = 0.07;
 
       blur = {
@@ -18,7 +18,7 @@
         xray = true;
         special = false;
         new_optimizations = true;
-        size = 20;
+        size = 200;
         passes = 4;
         brightness = 1;
         noise = 0.15;
