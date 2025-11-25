@@ -37,7 +37,6 @@
     };
     
     misc = {
-      background_color = "rgba(c6c487ff)";
       force_default_wallpaper = 0;
       disable_hyprland_logo = true;
       disable_splash_rendering = true;
