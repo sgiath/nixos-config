@@ -4,7 +4,7 @@
       rounding = 8;
       rounding_power = 2;
 
-      active_opacity = 0.95;
+      active_opacity = 0.99;
       inactive_opacity = 0.90;
       fullscreen_opacity = 1.0;
 
@@ -18,8 +18,8 @@
         xray = true;
         special = false;
         new_optimizations = true;
-        size = 10;
-        passes = 3;
+        size = 20;
+        passes = 4;
         brightness = 1;
         noise = 0.15;
         contrast = 0.2;
