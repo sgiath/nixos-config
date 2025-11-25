@@ -52,7 +52,7 @@ in
           wallpaper = [
             "DP-1,contain:${./wallpapers/waifu3.jpg}"
             "DP-3,contain:${./wallpapers/triss1.jpg}"
-            "DP-2,contain:${./wallpapers/waifu3.jpg}"
+            "DP-2,contain:${./wallpapers/triss2.jpg}"
           ];
         };
       };

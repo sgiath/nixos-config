@@ -5,6 +5,14 @@ let
   '';
 in
 {
+  home.packages = with pkgs; [
+    grim
+    slurp
+    swappy
+    satty
+    hyprpicker
+  ];
+  
   wayland.windowManager.hyprland.settings = {
     "$mod" = "SUPER";
     bind = [
