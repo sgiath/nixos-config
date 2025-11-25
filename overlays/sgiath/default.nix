@@ -19,6 +19,8 @@ let
   };
 in
 {
+  prompt-toolkit = pkgs-master.prompt-toolkit;
+  
   # conduit build from official repo flake
   matrix-conduit = inputs.conduit.packages.${prev.stdenv.hostPlatform.system}.default;
 
