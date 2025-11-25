@@ -12,7 +12,7 @@ in
     satty
     hyprpicker
   ];
-  
+
   wayland.windowManager.hyprland.settings = {
     "$mod" = "SUPER";
     bind = [
