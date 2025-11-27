@@ -42,7 +42,7 @@
       vrr = 1;
       mouse_move_enables_dpms = true;
       key_press_enables_dpms = true;
-      new_window_takes_over_fullscreen = 2;
+      new_window_takes_over_fs = 2;
       allow_session_lock_restore = true;
       session_lock_xray = true;
       initial_workspace_tracking = false;
