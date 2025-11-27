@@ -45,14 +45,14 @@ in
         enable = true;
         settings = lib.mkForce {
           preload = [
-            "${./wallpapers/triss1.jpg}"
-            "${./wallpapers/triss2.jpg}"
             "${./wallpapers/marry.jpg}"
+            "${./wallpapers/triss1.jpg}"
+            "${./wallpapers/solar-system.jpg}"
           ];
           wallpaper = [
             "DP-1,contain:${./wallpapers/marry.jpg}"
             "DP-3,contain:${./wallpapers/triss1.jpg}"
-            "DP-2,contain:${./wallpapers/triss2.jpg}"
+            "DP-2,contain:${./wallpapers/solar-system.jpg}"
           ];
         };
       };
