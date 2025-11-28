@@ -20,6 +20,8 @@
           rewrite ^/x/?$ https://x.com/SgiathDev redirect;
           rewrite ^/github/?$ https://github.com/Sgiath redirect;
           rewrite ^/source-hut/?$ https://sr.ht/~sgiath redirect;
+
+          error_page 404 /404.html;
         '';
 
         locations = {
