@@ -22,7 +22,7 @@
         opencl.enable = true;
       };
       graphics = {
-        extraPackages = with pkgs; [ amdvlk ];
+        # extraPackages = with pkgs; [ amdvlk ];
         extraPackages32 = with pkgs; [ driversi686Linux.amdvlk ];
       };
     };
