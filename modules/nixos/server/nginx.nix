@@ -23,7 +23,6 @@
 
     services.nginx = {
       enable = true;
-      package = pkgs.nginxQuic;
       eventsConfig = ''
         multi_accept on;
         worker_connections 2048;
