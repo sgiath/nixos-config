@@ -29,12 +29,22 @@
     steam = {
       enable = true;
       package = pkgs.steam.override {
-        extraPkgs = pkgs: [ pkgs.gamemode ];
+        extraPkgs =
+          pkgs: with pkgs; [
+            gamemode
+            libpulseaudio
+            libpng
+            libgpg-error
+            keyutils
+          ];
       };
       remotePlay.openFirewall = true;
       protontricks.enable = true;
       gamescopeSession.enable = true;
-      extraCompatPackages = [ pkgs.proton-ge-bin ];
+      extraCompatPackages = with pkgs; [
+        proton-ge-custom-bin
+        (proton-ge-custom.override { protonVersion = "GE-Proton10-11"; }) # Latest GE
+      ];
     };
   };
 }

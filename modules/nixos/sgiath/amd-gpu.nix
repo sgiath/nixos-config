@@ -16,7 +16,10 @@
         rocm-smi
         clr
       ];
-      sessionVariables.AMD_VULKAN_ICD = "RADV";
+      sessionVariables = {
+        AMD_VULKAN_ICD = "RADV";
+        RADV_PERFTEST = "nofibril";
+      };
     };
 
     hardware = {
