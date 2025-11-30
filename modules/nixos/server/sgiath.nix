@@ -42,8 +42,9 @@
               add_header Cross-Origin-Resource-Policy 'cross-origin';
 
               default_type application/json;
+
+              return 200 '{"names":{"_":"0000002855ad7906a7568bf4d971d82056994aa67af3cf0048a825415ac90672"}}';
             '';
-            return = "200 '{\"names\":{\"_\":\"0000002855ad7906a7568bf4d971d82056994aa67af3cf0048a825415ac90672\"}}'";
           };
 
           "/profile".extraConfig = ''
