@@ -45,7 +45,7 @@
     xdg.desktopEntries."cursor" = {
       name = "Cursor";
       genericName = "Text Editor";
-      exec = "${pkgs.appimage-run}/bin/appimage-run /home/sgiath/nix-root/Cursor-2.1.20-x86_64.AppImage";
+      exec = "${pkgs.appimage-run}/bin/appimage-run /home/sgiath/nix-root/Cursor-2.1.42-x86_64.AppImage";
     };
 
     # Codex
