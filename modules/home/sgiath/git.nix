@@ -42,6 +42,10 @@
         };
       };
 
+      lazygit = {
+        enable = true;
+      };
+
       git = {
         package = pkgs.gitFull;
         lfs.enable = true;
