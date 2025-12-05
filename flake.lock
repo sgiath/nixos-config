@@ -246,6 +246,26 @@
         "type": "github"
       }
     },
+    "cursor": {
+      "inputs": {
+        "nixpkgs": [
+          "nixpkgs"
+        ]
+      },
+      "locked": {
+        "lastModified": 1764852472,
+        "narHash": "sha256-XC0fm3mCik+AL5t/CDC2wHCCE36Z3V5m1YpRzU74LYY=",
+        "owner": "TudorAndrei",
+        "repo": "cursor-nixos-flake",
+        "rev": "dfbd4b4b0dc5f0f7638e03abcc0a19af40bcd9c5",
+        "type": "github"
+      },
+      "original": {
+        "owner": "TudorAndrei",
+        "repo": "cursor-nixos-flake",
+        "type": "github"
+      }
+    },
     "disko": {
       "inputs": {
         "nixpkgs": [
@@ -1524,6 +1544,7 @@
         "btc-clients": "btc-clients",
         "codex": "codex",
         "conduit": "conduit",
+        "cursor": "cursor",
         "disko": "disko",
         "foundryvtt": "foundryvtt",
         "home-manager": "home-manager",

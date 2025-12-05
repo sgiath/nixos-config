@@ -77,6 +77,11 @@
       inputs.nixpkgs.follows = "nixpkgs";
     };
 
+    cursor = {
+      url = "github:TudorAndrei/cursor-nixos-flake";
+      inputs.nixpkgs.follows = "nixpkgs";
+    };
+
     zed-editor = {
       url = "github:zed-industries/zed";
       inputs.nixpkgs.follows = "nixpkgs";
