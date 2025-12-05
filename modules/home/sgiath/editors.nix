@@ -47,6 +47,9 @@
       genericName = "Text Editor";
       exec = "${pkgs.appimage-run}/bin/appimage-run /home/sgiath/nix-root/Cursor-2.1.48-x86_64.AppImage";
     };
+    home.packages = [
+      pkgs.code-cursor-fhs
+    ];
 
     # Codex
     programs.codex = {
