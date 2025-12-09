@@ -41,45 +41,18 @@
     };
     stylix.targets.zed.enable = false;
 
-    # Cursor
-    # xdg.desktopEntries."cursor" = {
-    #   name = "Cursor";
-    #   genericName = "Text Editor";
-    #   exec = "${pkgs.appimage-run}/bin/appimage-run /home/sgiath/nix-root/Cursor-2.1.48-x86_64.AppImage";
-    # };
     home.packages = [
+      # Cursor
       inputs.cursor.packages.${pkgs.stdenv.hostPlatform.system}.cursor
+
+      # OpenCode
+      inputs.opencode.packages.${pkgs.stdenv.hostPlatform.system}.default
     ];
 
     # Codex
     programs.codex = {
       enable = true;
       package = inputs.codex.packages.${pkgs.stdenv.hostPlatform.system}.default;
-
-      # settings = {
-      #   model = "gpt-5.1-codex";
-
-      #   # untrusted on-failure on-request never
-      #   approval_policy = "on-request";
-
-      #   features = {
-      #     web_search_request = true;
-      #     view_image_tool = true;
-      #   };
-
-      #   mcp_servers = {
-      #     context7 = {
-      #       url = "https://mcp.context7.com/mcp";
-      #       http_headers = { "CONTEXT7_API_KEY" = secrets.context7_api_key; };
-      #     };
-      #   };
-
-      #   notice = {
-      #     hide_gpt5_1_migration_prompt = true;
-      #   };
-      # };
     };
-
-    # home.packages = with pkgs; [ ];
   };
 }

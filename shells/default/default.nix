@@ -11,5 +11,7 @@ mkShell {
 
     nodejs
     node2nix
+
+    shfmt
   ];
 }

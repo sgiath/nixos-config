@@ -1446,6 +1446,26 @@
         "type": "github"
       }
     },
+    "opencode": {
+      "inputs": {
+        "nixpkgs": [
+          "nixpkgs"
+        ]
+      },
+      "locked": {
+        "lastModified": 1765321004,
+        "narHash": "sha256-H42CBLMK67KUsD8zXomX1wbHdWTcvboI7HqpvawxQ0M=",
+        "owner": "sst",
+        "repo": "opencode",
+        "rev": "9fdbe193cd3d2bacdd53d5617a78c6d0580934c6",
+        "type": "github"
+      },
+      "original": {
+        "owner": "sst",
+        "repo": "opencode",
+        "type": "github"
+      }
+    },
     "pre-commit-hooks": {
       "inputs": {
         "flake-compat": "flake-compat_3",
@@ -1488,6 +1508,7 @@
         "nixpkgs-master": "nixpkgs-master",
         "nixpkgs-stable": "nixpkgs-stable_2",
         "nixvim": "nixvim",
+        "opencode": "opencode",
         "snowfall-flake": "snowfall-flake",
         "snowfall-lib": "snowfall-lib_2",
         "sops-nix": "sops-nix",
