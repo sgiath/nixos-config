@@ -46,7 +46,8 @@
       inputs.cursor.packages.${pkgs.stdenv.hostPlatform.system}.cursor
 
       # OpenCode
-      inputs.opencode.packages.${pkgs.stdenv.hostPlatform.system}.default
+      pkgs.opencode
+      # inputs.opencode.packages.${pkgs.stdenv.hostPlatform.system}.default
     ];
 
     # Codex
