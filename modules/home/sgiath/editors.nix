@@ -44,16 +44,17 @@
     home.packages = [
       # Cursor
       inputs.cursor.packages.${pkgs.stdenv.hostPlatform.system}.cursor
-
-      # OpenCode
-      pkgs.opencode
-      # inputs.opencode.packages.${pkgs.stdenv.hostPlatform.system}.default
     ];
 
     # Codex
     programs.codex = {
       enable = true;
       package = inputs.codex.packages.${pkgs.stdenv.hostPlatform.system}.default;
+    };
+
+    programs.opencode = {
+      enable = true;
+      package = inputs.opencode.packages.${pkgs.stdenv.hostPlatform.system}.default;
     };
   };
 }
