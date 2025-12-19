@@ -1,6 +1,7 @@
 {
   config,
   lib,
+  pkgs,
   ...
 }:
 
@@ -9,10 +10,10 @@
 
   config = lib.mkIf config.sgiath.web_browsers.enable {
     home.packages = [
-      # pkgs.tor-browser
-      # pkgs.zen-browser
-      # pkgs.lynx
-      # pkgs.ladybird
+      pkgs.tor-browser
+      pkgs.zen-browser
+      pkgs.lynx
+      pkgs.ladybird
     ];
 
     programs = {
