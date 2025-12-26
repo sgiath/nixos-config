@@ -5,6 +5,8 @@
   fetchFromGitHub,
   nodejs,
   pnpm_10,
+  fetchPnpmDeps,
+  pnpmConfigHook,
   python3,
   node-gyp,
   libkrb5,
@@ -15,23 +17,24 @@
 
 stdenv.mkDerivation (finalAttrs: {
   pname = "n8n";
-  version = "2.0.0";
+  version = "2.1.4";
 
   src = fetchFromGitHub {
     owner = "n8n-io";
     repo = "n8n";
     tag = "n8n@${finalAttrs.version}";
-    hash = "sha256-qVBBHwtAPMGRa/VWSr3UTar33k0nO/xCppjLluoXRtk=";
+    hash = "sha256-JPVyPvGNjyq+yB+TrutoPw7dNwKewBPQ4LvmyskRuRw=";
   };
 
-  pnpmDeps = pnpm_10.fetchDeps {
+  pnpmDeps = fetchPnpmDeps {
     inherit (finalAttrs) pname version src;
     fetcherVersion = 1;
-    hash = "sha256-a+LiOnfKSNbBn/3tmAYIlDHqEH4o2Uu1Puhnx1yxXRI=";
+    hash = "sha256-IJN7f6EaKprEetv9NGdcAIgFn9uwfOjL4WQopQ19D0A=";
   };
 
   nativeBuildInputs = [
-    pnpm_10.configHook
+    pnpm_10
+    pnpmConfigHook
     python3 # required to build sqlite3 bindings
     node-gyp # required to build sqlite3 bindings
     makeWrapper
