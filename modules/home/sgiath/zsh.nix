@@ -34,6 +34,7 @@
       zoxide.enable = true;
 
       zsh = {
+        dotDir = "${config.xdg.configHome}/zsh";
         shellAliases = {
           mkdir = "mkdir -p";
           tree = "ls --tree --ignore-glob='node_modules'";
