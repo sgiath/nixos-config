@@ -44,7 +44,7 @@
       flatpak.packages = [
         {
           flatpakref = "https://github.com/NyarchLinux/NyarchAssistant/releases/download/1.0.1/nyarchassistant.flatpak";
-          sha256 = "";
+          sha256 = "0lfbzvfiigr3js5rzaiax5iifs3iy2p8n9azgdvhl435lrhb8xkv";
         }
       ];
     };
