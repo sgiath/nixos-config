@@ -723,11 +723,11 @@
         "nixpkgs": "nixpkgs_2"
       },
       "locked": {
-        "lastModified": 1767515539,
-        "narHash": "sha256-4fHDswBZac5vE8WA9qczUgPo3TvJVF9uOvcXhPpnqJ0=",
+        "lastModified": 1767525999,
+        "narHash": "sha256-1E9xlYlyl3EnUrwxoaJMTK7dFrC2llL/TJ+T4xIcXDY=",
         "owner": "nix-community",
         "repo": "home-manager",
-        "rev": "12cc14271b250b2b46bf681352da91a8d2efec26",
+        "rev": "7d5927b63cea63deb655b3e8421ae17ebb9feac2",
         "type": "github"
       },
       "original": {
@@ -832,11 +832,11 @@
         "xdph": "xdph"
       },
       "locked": {
-        "lastModified": 1767474766,
-        "narHash": "sha256-Vkl6ta0Jaim6MvbNKfhb5GR/FtW3NyMRXyioBH1rcC0=",
+        "lastModified": 1767523459,
+        "narHash": "sha256-Z3EijMLd18cg8arhXv+A/tNiknQIYaeWQVoCNUm+c4A=",
         "owner": "hyprwm",
         "repo": "Hyprland",
-        "rev": "583c4074a5d4229f841d9e470ab427339773b592",
+        "rev": "0b3b012817ca381e40754cb4408e5c0cd3a2c732",
         "type": "github"
       },
       "original": {
@@ -1121,22 +1121,6 @@
         "type": "github"
       }
     },
-    "nix-flatpak": {
-      "locked": {
-        "lastModified": 1739444422,
-        "narHash": "sha256-iAVVHi7X3kWORftY+LVbRiStRnQEob2TULWyjMS6dWg=",
-        "owner": "gmodena",
-        "repo": "nix-flatpak",
-        "rev": "5e54c3ca05a7c7d968ae1ddeabe01d2a9bc1e177",
-        "type": "github"
-      },
-      "original": {
-        "owner": "gmodena",
-        "ref": "latest",
-        "repo": "nix-flatpak",
-        "type": "github"
-      }
-    },
     "nix-gaming": {
       "inputs": {
         "flake-parts": "flake-parts_2",
@@ -1289,11 +1273,11 @@
     },
     "nixpkgs-master": {
       "locked": {
-        "lastModified": 1767515345,
-        "narHash": "sha256-O85lM0EEnLRzgzsUCW6fmgNOnWKWLH4/Bfr1kCcyeVs=",
+        "lastModified": 1767539454,
+        "narHash": "sha256-HY+Ca3Hf1OP31eBplkisnMkq6r4YDGGOPT8qvBaX3IU=",
         "owner": "NixOS",
         "repo": "nixpkgs",
-        "rev": "e2ff47ed7ad802322da6f9441672fc68b6fda637",
+        "rev": "b9bb3e31d2cf22302d76e4012ad2fa9f4b833591",
         "type": "github"
       },
       "original": {
@@ -1469,11 +1453,11 @@
         ]
       },
       "locked": {
-        "lastModified": 1767513908,
-        "narHash": "sha256-57W3DCzTM/jZ0vsZku+ffj7N+Z8HIdsL8LsxE8YXrSo=",
+        "lastModified": 1767539632,
+        "narHash": "sha256-DDBPbB3C0rEaWsYgPptel34ZA9dSO9rJF0Nhuot6Gyw=",
         "owner": "sst",
         "repo": "opencode",
-        "rev": "4486174e4319b9523d134fda863677f35e740105",
+        "rev": "555a5ccb59089b272b4969912d37044122e4f63f",
         "type": "github"
       },
       "original": {
@@ -1516,7 +1500,6 @@
         "home-manager": "home-manager",
         "hyprland": "hyprland",
         "hyprland-plugins": "hyprland-plugins",
-        "nix-flatpak": "nix-flatpak",
         "nix-gaming": "nix-gaming",
         "nix-index-database": "nix-index-database",
         "nix-minecraft": "nix-minecraft",
@@ -1916,11 +1899,11 @@
         "rust-overlay": "rust-overlay"
       },
       "locked": {
-        "lastModified": 1767485315,
-        "narHash": "sha256-Hr85cewuQgVBykNvJPItWs33fz8bl1wI8c7zYgNEAIs=",
+        "lastModified": 1767537667,
+        "narHash": "sha256-e/e25xwPA3QObK0Fbue4cvPIy0GHfeAIAUq04i6zmw8=",
         "owner": "zed-industries",
         "repo": "zed",
-        "rev": "9a79cb8ba1919773e809e08266874e6f8793279a",
+        "rev": "c32a811b4ef9c1d1d5869a42c00c0a2bc249d342",
         "type": "github"
       },
       "original": {
