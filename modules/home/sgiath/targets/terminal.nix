@@ -14,10 +14,6 @@
       presenterm
 
       openssl
-      # codex
-      # opencode
-      # gemini-cli
-
       yt-dlp
       google-cloud-sdk
 
