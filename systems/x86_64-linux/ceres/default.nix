@@ -20,6 +20,7 @@
 
   services = {
     ollama.enable = false;
+    flatpak.enable = true;
   };
 
   programs = {
