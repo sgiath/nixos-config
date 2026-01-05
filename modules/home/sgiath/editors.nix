@@ -36,7 +36,12 @@
       package = pkgs.zed-editor;
       # package = inputs.zed-editor.packages.${pkgs.stdenv.hostPlatform.system}.default;
       installRemoteServer = true;
-      extensions = ["nix" "elixir" "dockerfile" "docker-compose"];
+      extensions = [
+        "nix"
+        "elixir"
+        "dockerfile"
+        "docker-compose"
+      ];
       extraPackages = [ pkgs.nixd ];
     };
     stylix.targets.zed.enable = false;
@@ -44,6 +49,9 @@
     home.packages = [
       # Cursor
       inputs.cursor.packages.${pkgs.stdenv.hostPlatform.system}.cursor
+
+      # Claude Code
+      pkgs.claude-code
     ];
 
     # Codex

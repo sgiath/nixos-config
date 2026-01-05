@@ -97,6 +97,11 @@
       inputs.nixpkgs.follows = "nixpkgs";
     };
 
+    claude-code = {
+      url = "github:sadjow/claude-code-nix";
+      inputs.nixpkgs.follows = "nixpkgs";
+    };
+
     nix-minecraft.url = "github:Infinidoge/nix-minecraft";
   };
 
@@ -129,6 +134,7 @@
       };
 
       overlays = with inputs; [
+        claude-code.overlays.default
         nix-minecraft.overlay
       ];
 
