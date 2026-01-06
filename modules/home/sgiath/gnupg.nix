@@ -8,7 +8,6 @@
 {
   config = lib.mkIf config.programs.gpg.enable {
     services = {
-      ssh-agent.enable = true;
       gpg-agent = {
         enable = true;
         enableSshSupport = true;
@@ -20,6 +19,7 @@
     programs.gpg = {
       settings = {
         default-key = "0x70F9C7DE34CB3BC8";
+        trusted-key = "0x70F9C7DE34CB3BC8";
         no-emit-version = true;
         no-comments = true;
         no-greeting = true;
