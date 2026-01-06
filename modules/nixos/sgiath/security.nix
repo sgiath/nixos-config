@@ -36,6 +36,7 @@
         enableSSHSupport = true;
         pinentryPackage = pkgs.pinentry-gnome3;
       };
+      ssh.startAgent = false;
     };
     hardware.gpgSmartcards.enable = true;
   };

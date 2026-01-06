@@ -2,6 +2,7 @@
 {
   config = lib.mkIf config.programs.ssh.enable {
     programs.ssh = {
+      startAgent = false;
       enableDefaultConfig = false;
 
       matchBlocks = {
@@ -53,7 +54,7 @@
 
           extraOptions = {
             Protocol = "2";
-    
+
             PasswordAuthentication = "yes";
             ChallengeResponseAuthentication = "yes";
             PubkeyAuthentication = "yes";
