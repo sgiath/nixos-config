@@ -8,7 +8,7 @@
 {
   config = lib.mkIf config.programs.gpg.enable {
     services = {
-      ssh-agent.enable = false;
+      ssh-agent.enable = true;
       gpg-agent = {
         enable = true;
         enableSshSupport = true;
