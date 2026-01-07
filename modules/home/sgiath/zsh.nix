@@ -50,6 +50,7 @@
           man = "${pkgs.tldr}/bin/tldr";
           top = "${pkgs.btop-rocm}/bin/btop";
           htop = "${pkgs.btop-rocm}/bin/btop";
+          c = "${pkgs.claude-code}/bin/claude --allow-dangerously-skip-permissions";
         };
 
         completionInit = "autoload -U compinit && compinit && source <(${pkgs.jujutsu}/bin/jj util completion zsh)";
