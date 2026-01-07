@@ -24,7 +24,6 @@
       enable = true;
       package = null;
       portalPackage = null;
-      xwayland.enable = true;
 
       systemd = {
         enable = true;
@@ -33,6 +32,7 @@
       };
 
       settings = {
+        xwayland.enable = true;
         group.groupbar.font_size = 14;
 
         workspace = [
