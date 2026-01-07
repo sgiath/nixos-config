@@ -31,8 +31,8 @@
         variables = [ "--all" ];
       };
 
+      xwayland.enable = true;
       settings = {
-        xwayland.enable = true;
         group.groupbar.font_size = 14;
 
         workspace = [
