@@ -43,6 +43,9 @@
         unbind s
         bind s display-popup -E "tms switch"
 
+        # New window
+        bind m new-window
+
         # Config reload
         bind r source-file ~/.config/tmux/tmux.conf \; display-message "Config reloaded..."
 
