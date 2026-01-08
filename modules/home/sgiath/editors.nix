@@ -52,6 +52,9 @@
 
       # Claude Code
       pkgs.claude-code
+
+      # Beads
+      inputs.beads.packages.${pkgs.stdenv.hostPlatform.system}.default
     ];
 
     # Codex

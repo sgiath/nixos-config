@@ -7,7 +7,7 @@
 mkShell {
   packages = with pkgs; [
     nixd
-    nixfmt-rfc-style
+    nixfmt
 
     nodejs
     node2nix

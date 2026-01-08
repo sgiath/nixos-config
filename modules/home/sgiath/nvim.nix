@@ -27,7 +27,7 @@
 
       # Nix
       nixd
-      nixfmt-rfc-style
+      nixfmt
 
       # Lua
       lua-language-server

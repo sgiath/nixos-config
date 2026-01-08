@@ -22,7 +22,7 @@ nixos-rebuild switch --sudo --flake '.#vesta' --target-host 'sgiath@vesta.local'
 nix flake update
 
 # Format Nix code
-nixfmt-rfc-style <file.nix>
+nixfmt <file.nix>
 
 # Enter development shell
 nix develop
