@@ -2,3 +2,6 @@ secrets.json filter=git-crypt diff=git-crypt
 *.mp4 filter=lfs diff=lfs merge=lfs -text
 *.jpg filter=lfs diff=lfs merge=lfs -text
 *.png filter=lfs diff=lfs merge=lfs -text
+
+# Use bd merge for beads JSONL files
+.beads/issues.jsonl merge=beads
