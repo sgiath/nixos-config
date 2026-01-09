@@ -47,7 +47,7 @@ let
         details=$(bd show "$id" 2>/dev/null || echo "")
         # Split window and start claude in plan mode
         ${pkgs.tmux}/bin/tmux split-window -h \
-          "claude --plan \"Implement bead $id: $title\n\n$details\""
+          "claude --plan \"Implement bead $id: $title\""
         ;;
       del|delete)
         bd delete "$id"
@@ -96,6 +96,7 @@ in
         bind s display-popup -E "tms switch"
 
         # Beads picker
+        unbind b
         bind b display-popup -E -w 80% -h 80% "${bd-picker}/bin/bd-picker"
 
         # New window
