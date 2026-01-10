@@ -82,10 +82,10 @@
       inputs.nixpkgs.follows = "nixpkgs";
     };
 
-    # zed-editor = {
-    #   url = "github:zed-industries/zed";
-    #   inputs.nixpkgs.follows = "nixpkgs";
-    # };
+    zed-editor = {
+      url = "github:zed-industries/zed";
+      inputs.nixpkgs.follows = "nixpkgs";
+    };
 
     codex = {
       url = "github:openai/codex/rust-v0.63.0";

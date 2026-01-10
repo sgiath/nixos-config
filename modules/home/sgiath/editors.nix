@@ -3,6 +3,7 @@
   lib,
   pkgs,
   inputs,
+  namespace,
   ...
 }:
 # let
@@ -34,12 +35,28 @@
     programs.zed-editor = {
       enable = true;
       # package = pkgs.zed-editor;
-      # package = inputs.zed-editor.packages.${pkgs.stdenv.hostPlatform.system}.default;
+      package = inputs.zed-editor.packages.${pkgs.stdenv.hostPlatform.system}.default;
       installRemoteServer = true;
       extensions = [
         "nix"
+        "elixir"
         "dockerfile"
         "docker-compose"
+        "toml"
+        "git-firefly"
+        "sql"
+        "scss"
+        "terraform"
+        "xml"
+        "latex"
+        "zig"
+        "graphql"
+        "mcp-server-context7"
+        "mcp-server-github"
+        "postgres-context-server"
+        "datadog-mcp"
+        "mcp-server-shortcut"
+        "mcp-server-notion"
       ];
       extraPackages = [ pkgs.nixd ];
     };
@@ -51,6 +68,7 @@
 
       # Claude Code
       pkgs.claude-code
+      pkgs.${namespace}.claude-code-acp
 
       # Beads
       inputs.beads.packages.${pkgs.stdenv.hostPlatform.system}.default
