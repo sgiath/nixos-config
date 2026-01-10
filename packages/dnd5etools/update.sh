@@ -2,23 +2,36 @@
 set -euo pipefail
 
 # Usage:
-#   ./update.sh 2.23.0
+#   ./update.sh           # Update to latest version
+#   ./update.sh 2.23.0    # Update to specific version
 #
 # Updates version, source hash, and npm dependencies hash in default.nix.
 # Does NOT update image hashes - use update-img-hashes.sh for that.
 
-VERSION="${1:-}"
-if [[ -z "${VERSION}" ]]; then
-  echo "Usage: $0 <version>    e.g. $0 2.23.0" >&2
-  exit 1
-fi
-
 SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
 DEFAULT_NIX="${SCRIPT_DIR}/default.nix"
+
+# Get version - either from argument or latest from GitHub
+if [[ -n "${1:-}" ]]; then
+  VERSION="$1"
+  echo "==> Updating 5etools to specified version ${VERSION}"
+else
+  echo "==> Fetching latest 5etools version from GitHub..."
+  LATEST_TAG=$(curl -s "https://api.github.com/repos/5etools-mirror-3/5etools-src/releases/latest" | jq -r '.tag_name')
+  VERSION="${LATEST_TAG#v}"
+  echo "    Latest version: ${VERSION}"
+fi
+
+CURRENT_VERSION=$(grep 'version = "' "${DEFAULT_NIX}" | head -1 | sed 's/.*version = "\([^"]*\)".*/\1/')
+if [[ "${VERSION}" == "${CURRENT_VERSION}" ]]; then
+  echo "==> Already at version ${VERSION}, nothing to do"
+  exit 0
+fi
+
+echo "==> Updating from ${CURRENT_VERSION} to ${VERSION}"
+
 TMPDIR="$(mktemp -d)"
 trap 'rm -rf "${TMPDIR}"' EXIT
-
-echo "==> Updating 5etools to version ${VERSION}"
 
 # Step 1: Compute source hash
 echo "==> Computing source hash..."

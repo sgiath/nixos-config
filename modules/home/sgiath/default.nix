@@ -143,6 +143,33 @@
           doas nix-store --optimise
         '')
 
+        (writeShellScriptBin "update-pkgs" ''
+          echo "==> Updating all custom packages..."
+
+          pushd ~/nixos/packages > /dev/null
+
+          echo ""; echo "=== claude-code-acp ==="
+          ./claude-code-acp/update.sh
+
+          echo ""; echo "=== n8n ==="
+          ./n8n/update.sh
+
+          echo ""; echo "=== ntm ==="
+          ./ntm/update.sh
+
+          echo ""; echo "=== openspec ==="
+          ./openspec/update.sh
+
+          echo ""; echo "=== dnd5etools ==="
+          ./dnd5etools/update.sh
+
+          popd > /dev/null
+
+          echo ""
+          echo "==> All packages updated!"
+          echo "Test builds with: nix build '.#<package>'"
+        '')
+
         # general programs I want to have always available
         imagemagick
         parallel-full
