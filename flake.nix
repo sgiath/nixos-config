@@ -82,13 +82,15 @@
       inputs.nixpkgs.follows = "nixpkgs";
     };
 
+    # https://github.com/zed-industries/zed/releases/latest
     zed-editor = {
-      url = "github:zed-industries/zed";
+      url = "github:zed-industries/zed/v0.218.6";
       inputs.nixpkgs.follows = "nixpkgs";
     };
 
+    # https://github.com/openai/codex/releases/latest
     codex = {
-      url = "github:openai/codex/rust-v0.63.0";
+      url = "github:openai/codex/rust-v0.80.0";
       inputs.nixpkgs.follows = "nixpkgs";
     };
 
