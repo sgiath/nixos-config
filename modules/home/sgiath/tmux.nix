@@ -234,9 +234,15 @@ in
         # Auto-rename windows to git branch name
         set-option -g automatic-rename off
         set-option -g allow-rename off
+
+        # Rename command - used by multiple hooks
+        set -g @branch-rename 'run-shell "sleep 0.1; tmux rename-window \"$(cd #{pane_current_path} && git branch --show-current 2>/dev/null || basename #{pane_current_path})\"" 2>/dev/null'
+
         set-hook -g after-select-pane 'run-shell "tmux rename-window \"$(cd #{pane_current_path} && git branch --show-current 2>/dev/null || basename #{pane_current_path})\"" 2>/dev/null'
         set-hook -g pane-focus-in 'run-shell "tmux rename-window \"$(cd #{pane_current_path} && git branch --show-current 2>/dev/null || basename #{pane_current_path})\"" 2>/dev/null'
-        set-hook -g window-linked 'run-shell "tmux rename-window \"$(cd #{pane_current_path} && git branch --show-current 2>/dev/null || basename #{pane_current_path})\"" 2>/dev/null'
+        set-hook -g after-new-window 'run-shell "sleep 0.2; tmux rename-window \"$(cd #{pane_current_path} && git branch --show-current 2>/dev/null || basename #{pane_current_path})\"" 2>/dev/null'
+        set-hook -g session-created 'run-shell "sleep 0.3; tmux rename-window \"$(cd #{pane_current_path} && git branch --show-current 2>/dev/null || basename #{pane_current_path})\"" 2>/dev/null'
+        set-hook -g client-attached 'run-shell "sleep 0.1; tmux rename-window \"$(cd #{pane_current_path} && git branch --show-current 2>/dev/null || basename #{pane_current_path})\"" 2>/dev/null'
 
         set-option -g status-justify centre
         set-option -g status-left-length 100
