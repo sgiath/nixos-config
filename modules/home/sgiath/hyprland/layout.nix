@@ -11,7 +11,7 @@
     };
 
     master = {
-      mfact = 0.75;
+      mfact = 0.25;
       new_status = "master";
       orientation = "center";
       slave_count_for_center_master = 1;
