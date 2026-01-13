@@ -89,7 +89,7 @@
 
     programs.opencode = {
       enable = true;
-      # package = inputs.opencode.packages.${pkgs.stdenv.hostPlatform.system}.default;
+      package = inputs.opencode.packages.${pkgs.stdenv.hostPlatform.system}.default;
     };
   };
 }

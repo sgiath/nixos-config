@@ -22,7 +22,7 @@
       gh = {
         enable = true;
         settings = {
-          editor = "zed";
+          editor = "${pkgs.zed-zed-editor}/bin/zeditor";
           git_protocol = "ssh";
         };
       };
