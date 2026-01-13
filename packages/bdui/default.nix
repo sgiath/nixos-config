@@ -42,7 +42,7 @@ let
     outputHash = "sha256-xtsWbeCM+4td6DJ0FWfHstR8Vlag1hUJEi3iRajI3/I=";
   };
 in
-stdenv.mkDerivation rec {
+stdenv.mkDerivation {
   pname = "bdui";
   version = "0.2.0";
 
