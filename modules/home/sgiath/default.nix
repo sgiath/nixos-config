@@ -6,6 +6,7 @@
 }:
 {
   imports = [
+    ./agents.nix
     ./audio.nix
     ./bitcoin.nix
     ./chromium.nix
@@ -14,12 +15,10 @@
     ./editors.nix
     ./email_client.nix
     ./file-explorer.nix
-    ./fish.nix
     ./games.nix
     ./git.nix
     ./gnupg.nix
     ./hyprland.nix
-    ./nushell.nix
     ./nvim.nix
     ./ssh.nix
     ./starship.nix
@@ -199,33 +198,6 @@
             echo "Worktree ready at: $worktree_dir"
             echo "cd $worktree_dir"
           fi
-        '')
-
-        (writeShellScriptBin "gw-rm" ''
-          set -euo pipefail
-
-          if [[ $# -lt 1 ]]; then
-            echo "Usage: gw-rm <branch-name>"
-            echo ""
-            echo "Removes a git worktree from .worktrees/<branch-name>"
-            exit 1
-          fi
-
-          branch="$1"
-          repo_root=$(git rev-parse --show-toplevel)
-          worktree_dir="$repo_root/.worktrees/$branch"
-
-          if [[ ! -d "$worktree_dir" ]]; then
-            echo "Worktree not found: $worktree_dir"
-            exit 1
-          fi
-
-          git worktree remove "$worktree_dir"
-          echo "Removed worktree: $worktree_dir"
-        '')
-
-        (writeShellScriptBin "gw-ls" ''
-          git worktree list
         '')
 
         (writeShellScriptBin "update-pkgs" ''

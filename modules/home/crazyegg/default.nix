@@ -21,5 +21,8 @@
     wayland.windowManager.hyprland.settings.exec-once = [
       "${pkgs.slack}/bin/slack"
     ];
+    wayland.windowManager.hyprland.settings.windowrule = [
+      "match:class google-chrome, workspace 3 silent"
+    ];
   };
 }

@@ -32,20 +32,6 @@
         settings = { };
       };
 
-      jujutsu = {
-        enable = true;
-        settings = {
-          user = {
-            name = "sgiath";
-            email = "sgiath@sgiath.dev";
-          };
-        };
-      };
-
-      lazygit = {
-        enable = true;
-      };
-
       git = {
         package = pkgs.gitFull;
         lfs.enable = true;

@@ -14,7 +14,6 @@
       bisq
       trezor-suite
       trezor-udev-rules
-      sparrow
     ];
   };
 }

@@ -3,33 +3,14 @@
   lib,
   pkgs,
   inputs,
-  namespace,
   ...
 }:
-# let
-#   secrets = builtins.fromJSON (builtins.readFile ./../../../secrets.json);
-# in
 {
   config = lib.mkIf config.programs.vscode.enable {
-    # VSCode
-    programs.vscode = {
-      # package = pkgs.vscodium;
-      profiles.default.userSettings = {
-        "security.workspace.trust.untrustedFiles" = "open";
-        "editor.tabSize" = 2;
-        "editor.minimap.enabled" = false;
-        "explorer.confirmDelete" = false;
-        "explorer.confirmDragAndDrop" = false;
-        "editor.wordWrapColumn" = 98;
-        # Github Copilot
-        "github.copilot.enable"."*" = true;
-        # makefile plugin
-        "makefile.configureOnOpen" = true;
-        # shellcheck plugin
-        "shellcheck.customArgs" = [ "-x" ];
-      };
+    home.sessionVariables = {
+      EDITOR = "${pkgs.zed-editor}/bin/zeditor --wait";
+      VISUAL = "${pkgs.zed-editor}/bin/zeditor --wait";
     };
-    stylix.targets.vscode.enable = false;
 
     # Zed editor
     programs.zed-editor = {
@@ -63,31 +44,6 @@
     home.packages = [
       # Cursor
       inputs.cursor.packages.${pkgs.stdenv.hostPlatform.system}.cursor
-
-      # Claude Code
-      pkgs.claude-code
-      pkgs.${namespace}.claude-code-acp
-      pkgs.${namespace}.openspec
-      pkgs.${namespace}.ntm
-      pkgs.python3
-
-      # gas town
-      pkgs.${namespace}.gastown
-
-      # Beads
-      inputs.beads.packages.${pkgs.stdenv.hostPlatform.system}.default
-      pkgs.${namespace}.bdui
     ];
-
-    # Codex
-    programs.codex = {
-      enable = true;
-      package = inputs.codex.packages.${pkgs.stdenv.hostPlatform.system}.default;
-    };
-
-    programs.opencode = {
-      enable = true;
-      package = inputs.opencode.packages.${pkgs.stdenv.hostPlatform.system}.default;
-    };
   };
 }

@@ -11,11 +11,6 @@
   };
 
   config = lib.mkIf config.programs.nvim.enable {
-    home.sessionVariables = {
-      EDITOR = "${pkgs.zed-editor}/bin/zeditor --wait";
-      VISUAL = "${pkgs.zed-editor}/bin/zeditor --wait";
-    };
-
     # nixd LSP
     home.packages = with pkgs; [
       # base deps

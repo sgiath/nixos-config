@@ -4,150 +4,10 @@
   pkgs,
   ...
 }:
-
-let
-  bd-picker = pkgs.writeShellScriptBin "bd-picker" ''
-    set -euo pipefail
-
-    # ANSI color codes
-    RESET='\033[0m'
-    BOLD='\033[1m'
-    DIM='\033[2m'
-    BLUE='\033[34m'
-    CYAN='\033[36m'
-    YELLOW='\033[33m'
-    GREEN='\033[32m'
-    RED='\033[31m'
-    MAGENTA='\033[35m'
-    GRAY='\033[90m'
-    WHITE='\033[97m'
-
-    # Format issues hierarchically: parents first, then their children indented
-    format_issues() {
-      bd list --json --all 2>/dev/null | ${pkgs.jq}/bin/jq -r '
-        # Color codes
-        def reset: "\u001b[0m";
-        def bold: "\u001b[1m";
-        def dim: "\u001b[2m";
-        def blue: "\u001b[34m";
-        def cyan: "\u001b[36m";
-        def yellow: "\u001b[33m";
-        def green: "\u001b[32m";
-        def red: "\u001b[31m";
-        def magenta: "\u001b[35m";
-        def gray: "\u001b[90m";
-        def white: "\u001b[97m";
-
-        # Color based on type
-        def type_color:
-          if . == "epic" then magenta + bold
-          elif . == "feature" then cyan
-          elif . == "bug" then red
-          elif . == "task" then blue
-          elif . == "chore" then gray
-          else white
-          end;
-
-        # Color based on priority
-        def priority_color:
-          if . <= 1 then red + bold
-          elif . == 2 then yellow
-          else green
-          end;
-
-        # Color based on status
-        def status_icon:
-          if . == "in_progress" then yellow + "●" + reset
-          elif . == "blocked" then red + "✗" + reset
-          elif . == "closed" then green + "✓" + reset
-          elif . == "deferred" then gray + "◌" + reset
-          else dim + "○" + reset
-          end;
-
-        # Sort by priority for stable ordering (reversed for display)
-        sort_by(.priority // 2, .id) | reverse |
-
-        # Separate into parents (no parent) and children (has parent)
-        . as $all |
-        ($all | map(select(.parent == null or .parent == ""))) as $parents |
-        ($all | map(select(.parent != null and .parent != "")) | group_by(.parent) | map({key: .[0].parent, value: .}) | from_entries) as $children |
-
-        # Output parents, each followed by their children (children first for reversed display)
-        $parents[] |
-        (($children[.id] // []) | sort_by(.priority // 2) | reverse | .[] |
-          gray + "  └─ " + reset +
-          (.status | status_icon) + " " +
-          blue + .id + reset + "\t" +
-          white + .title + reset + "\t" +
-          ((.type // "task") | . as $t | type_color + $t + reset) + "\t" +
-          ((.priority // 2) | . as $p | priority_color + "P" + ($p | tostring) + reset)
-        ),
-        (.status | status_icon) + " " +
-        bold + cyan + .id + reset + "\t" +
-        bold + white + .title + reset + "\t" +
-        ((.type // "task") | . as $t | type_color + $t + reset) + "\t" +
-        ((.priority // 2) | . as $p | priority_color + "P" + ($p | tostring) + reset)
-      ' || true
-    }
-
-    issues=$(format_issues)
-
-    if [[ -z "$issues" ]]; then
-      echo -e "''${YELLOW}No beads found''${RESET}"
-      read -n 1 -s -r -p "Press any key to close..."
-      exit 0
-    fi
-
-    selection=$(echo "$issues" | ${pkgs.fzf}/bin/fzf \
-      --ansi \
-      --delimiter '\t' \
-      --with-nth '1,2,3,4' \
-      --preview 'id=$(echo {} | sed "s/\x1b\[[0-9;]*m//g" | sed "s/^[[:space:]]*└─[[:space:]]*//" | sed "s/^[○●✗✓◌][[:space:]]*//" | cut -f1); bd show "$id"' \
-      --preview-window 'right:60%:wrap:border-left' \
-      --header $'ENTER: implement │ DEL: delete │ ESC: cancel' \
-      --header-first \
-      --border=rounded \
-      --border-label=' Beads ' \
-      --border-label-pos=3 \
-      --color='header:yellow,border:blue,label:cyan:bold' \
-      --color='pointer:cyan,marker:cyan,spinner:cyan' \
-      --color='hl:yellow:bold,hl+:yellow:bold:reverse' \
-      --pointer='▶' \
-      --marker='✓' \
-      --expect 'enter,del,delete' \
-      2>/dev/null) || exit 0
-
-    [[ -z "$selection" ]] && exit 0
-
-    key=$(head -1 <<< "$selection")
-    line=$(sed -n '2p' <<< "$selection")
-
-    [[ -z "$line" ]] && exit 0
-
-    # Strip ANSI codes, indent/tree chars, and status icons, then extract ID
-    clean_line=$(echo "$line" | sed 's/\x1b\[[0-9;]*m//g' | sed 's/^[[:space:]]*└─[[:space:]]*//' | sed 's/^[○●✗✓◌][[:space:]]*//')
-    id=$(echo "$clean_line" | cut -f1)
-    title=$(echo "$clean_line" | cut -f2)
-
-    case "$key" in
-      enter)
-        details=$(bd show "$id" 2>/dev/null || echo "")
-        # Split window and start claude in plan mode
-        ${pkgs.tmux}/bin/tmux split-window -h \
-          "claude --permission-mode plan \"Implement bead $id: $title\""
-        ;;
-      del|delete)
-        bd delete "$id"
-        exec "$0"  # Re-run to show updated list
-        ;;
-    esac
-  '';
-in
 {
   config = lib.mkIf config.programs.tmux.enable {
     home.packages = [
       pkgs.tmux-sessionizer
-      bd-picker
     ];
 
     xdg = {
@@ -181,10 +41,6 @@ in
         bind c display-popup -E "tms"
         unbind s
         bind s display-popup -E "tms switch"
-
-        # Beads picker
-        unbind b
-        bind b display-popup -E -w 80% -h 80% "${bd-picker}/bin/bd-picker"
 
         # New window/splits - open in current pane's directory
         bind m new-window -c "#{pane_current_path}"
@@ -255,18 +111,18 @@ in
             set -g @yank_selection_mouse 'clipboard' # or 'primary' or 'secondary'
           '';
         }
-        # {
-        #   plugin = tmuxPlugins.resurrect;
-        #   extraConfig = ''
-        #     set -g @resurrect-strategy-nvim 'session'
-        #   '';
-        # }
         {
           plugin = tmuxPlugins.continuum;
           extraConfig = ''
             set -g @continuum-boot 'on'
             set -g @continuum-restore 'on'
             set -g @continuum-save-interval '5'
+          '';
+        }
+        {
+          plugin = tmuxPlugins.tmux-sessionx;
+          extraConfig = ''
+            set -g @sessionx-bind 'o'
           '';
         }
       ];

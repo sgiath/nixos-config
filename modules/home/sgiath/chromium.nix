@@ -40,6 +40,9 @@
 
         "--ssl-key-log-file=/home/sgiath/.ssl_keylog"
       ];
+      wayland.windowManager.hyprland.settings.windowrule = [
+        "match:class chromium-browser, workspace 2 silent"
+      ];
     };
   };
 }
