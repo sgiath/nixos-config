@@ -148,23 +148,13 @@
           if [[ $# -lt 1 ]]; then
             echo "Usage: gw <branch-name>"
             echo ""
-            echo "Creates a git worktree in .worktrees/<branch-name>"
-            echo "Copies .env and runs direnv allow"
+            echo "Creates a git worktree"
             exit 1
           fi
 
           branch="$1"
-          repo_root=$(git rev-parse --show-toplevel)
-          worktree_dir="$repo_root/.worktrees/$branch"
-
-          # Create .worktrees directory if needed
-          mkdir -p "$repo_root/.worktrees"
-
-          # Add to .gitignore if not already there
-          if ! grep -qxF ".worktrees/" "$repo_root/.gitignore" 2>/dev/null; then
-            echo ".worktrees/" >> "$repo_root/.gitignore"
-            echo "Added .worktrees/ to .gitignore"
-          fi
+          repo_root=$(dirname "$(git rev-parse --git-common-dir)")
+          worktree_dir="$repo_root/$branch"
 
           # Check if branch exists locally or remotely
           if git show-ref --verify --quiet "refs/heads/$branch"; then
@@ -175,13 +165,13 @@
             git worktree add "$worktree_dir" "$branch"
           else
             echo "Creating worktree with new branch: $branch"
-            git worktree add -b "$branch" "$worktree_dir"
+            git worktree add "$worktree_dir" -b "$branch"
           fi
 
           # Copy .env if it exists
           if [[ -f "$repo_root/.env" ]]; then
-            cp "$repo_root/.env" "$worktree_dir/.env"
-            echo "Copied .env to worktree"
+            ln -sf "$repo_root/.env" "$worktree_dir/.env"
+            echo "Linked .env to worktree"
           fi
 
           # Run direnv allow in the new worktree
