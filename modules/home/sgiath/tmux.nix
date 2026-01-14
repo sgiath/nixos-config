@@ -6,29 +6,6 @@
 }:
 {
   config = lib.mkIf config.programs.tmux.enable {
-    home.packages = [
-      pkgs.tmux-sessionizer
-    ];
-
-    xdg = {
-      enable = true;
-      configFile."tms/config.toml".text = ''
-        default_session = "Main"
-
-        [picker_colors]
-        highlight_color = "#de8f78"
-        border_color = "#6791c9"
-
-        [[search_dirs]]
-        path = "/home/sgiath"
-        depth = 1
-
-        [[search_dirs]]
-        path = "/home/sgiath/develop"
-        depth = 2
-      '';
-    };
-
     programs.tmux = {
       shell = "${pkgs.zsh}/bin/zsh";
       terminal = "xterm-256color";
@@ -37,11 +14,6 @@
       mouse = true;
       historyLimit = 10000;
       extraConfig = ''
-        unbind c
-        bind c display-popup -E "tms"
-        unbind s
-        bind s display-popup -E "tms switch"
-
         # New window/splits - open in current pane's directory
         bind m new-window -c "#{pane_current_path}"
         bind '"' split-window -c "#{pane_current_path}"
@@ -122,7 +94,7 @@
         {
           plugin = tmuxPlugins.tmux-sessionx;
           extraConfig = ''
-            set -g @sessionx-bind 'o'
+            set -g @sessionx-bind 's'
           '';
         }
       ];

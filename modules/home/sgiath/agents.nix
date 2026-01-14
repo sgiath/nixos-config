@@ -34,6 +34,9 @@
       enable = true;
       package = inputs.codex.packages.${pkgs.stdenv.hostPlatform.system}.default;
     };
+    programs.zsh.shellAliases.cx = "${
+      inputs.codex.packages.${pkgs.stdenv.hostPlatform.system}.default
+    }/bin/codex";
 
     # opencode
     programs.opencode = {
