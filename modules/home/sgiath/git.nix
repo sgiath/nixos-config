@@ -59,9 +59,6 @@
           ".expert"
           ".elixir-tools"
           ".vscode"
-          ".zig-cache"
-          "result"
-          ".opencode"
         ];
 
         signing = {
