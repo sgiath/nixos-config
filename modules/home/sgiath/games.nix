@@ -47,7 +47,7 @@ in
 
           # Vanilla
           zulu21
-          
+
           # Nomifactory
           zulu8
         ];

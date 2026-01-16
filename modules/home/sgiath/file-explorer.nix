@@ -10,7 +10,7 @@
       nemo-with-extensions
       nemo-fileroller
       webp-pixbuf-loader
-      
+
       superfile
       exiftool
     ];

@@ -1,5 +1,4 @@
 {
-  inputs,
   config,
   lib,
   pkgs,
@@ -33,6 +32,7 @@
       tmux.enable = true;
       yazi.enable = true;
       zsh.enable = true;
+      agents.enable = true;
 
       # install zed-server even in terminal environment
       zed-editor = {

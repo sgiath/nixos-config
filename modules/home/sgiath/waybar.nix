@@ -107,7 +107,7 @@
         button {
           /* Use box-shadow instead of border so the text isn't offset */
           box-shadow: inset 0 -1px transparent;
-          
+
           border: none;
           border-radius: 8px;
         }

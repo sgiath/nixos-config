@@ -7,27 +7,29 @@
   ...
 }:
 {
-  config = lib.mkIf config.programs.vscode.enable {
+  options.sgiath.agents = {
+    enable = lib.mkEnableOption "LLM agents";
+  };
+
+  config = lib.mkIf config.programs.agents.enable {
     home.packages = [
+      pkgs.python3
+
       # Claude Code
       pkgs.${namespace}.claude-code-acp
       pkgs.${namespace}.openspec
-      pkgs.python3
-
-      # gas town
       pkgs.${namespace}.gastown
-
-      # Beads
       inputs.beads.packages.${pkgs.stdenv.hostPlatform.system}.default
       pkgs.${namespace}.bdui
     ];
+    programs.zsh.shellAliases.os = "${pkgs.${namespace}.openspec}/bin/openspec";
 
     # claude code
     programs.claude-code = {
       enable = true;
       package = pkgs.claude-code;
     };
-    programs.zsh.shellAliases.cc = "${pkgs.claude-code}/bin/claude --allow-dangerously-skip-permissions";
+    programs.zsh.shellAliases.cc = "${pkgs.claude-code}/bin/claude --dangerously-skip-permissions";
 
     # Codex
     programs.codex = {
