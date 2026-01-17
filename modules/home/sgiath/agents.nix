@@ -15,8 +15,6 @@
     home.packages = [
       pkgs.python3
 
-      pkgs.clawdbot
-
       # Claude Code
       pkgs.${namespace}.claude-code-acp
       pkgs.${namespace}.openspec
@@ -50,12 +48,5 @@
     programs.zsh.shellAliases.oc = "${
       inputs.opencode.packages.${pkgs.stdenv.hostPlatform.system}.default
     }/bin/opencode";
-
-    # clawdbot
-    programs.clawdbot = {
-      instances.default = {
-        enable = false;
-      };
-    };
   };
 }
