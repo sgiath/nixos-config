@@ -60,9 +60,9 @@ in
         After = [ "network.target" ];
       };
       Service = {
-        Environment = {
-          OPENCODE_SERVER_PASSWORD = "";
-        };
+        Environment = [
+          "OPENCODE_SERVER_PASSWORD=\"\""
+        ];
         ExecStart = "${opencode}/bin/opencode web --host 0.0.0.0 --port 12345";
         Restart = "on-failure";
         RestartSec = 5;
