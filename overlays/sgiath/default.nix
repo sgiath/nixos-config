@@ -1,7 +1,5 @@
 {
   inputs,
-  pkgs,
-  namespace,
   ...
 }:
 final: prev:
@@ -24,13 +22,4 @@ let
   };
 in
 {
-  # my custom derivations
-  bdui = pkgs.${namespace}.bdui;
-  claude-code-acp = pkgs.${namespace}.claude-code-acp;
-  dnd5etools = pkgs.${namespace}.dnd5etools;
-  gastown = pkgs.${namespace}.gastown;
-  lazybeads = pkgs.${namespace}.lazybeads;
-  n8n = pkgs.${namespace}.n8n;
-  ntm = pkgs.${namespace}.ntm;
-  openspec = pkgs.${namespace}.openspec;
 }
