@@ -54,22 +54,5 @@ in
       };
     };
     programs.zsh.shellAliases.oc = "${opencode}/bin/opencode";
-    systemd.user.services.opencode-web = {
-      Unit = {
-        Description = "OpenCode Web Interface";
-        After = [ "network.target" ];
-      };
-      Service = {
-        Environment = [
-          "OPENCODE_SERVER_PASSWORD=\"\""
-        ];
-        ExecStart = "${opencode}/bin/opencode web --host 0.0.0.0 --port 12345";
-        Restart = "on-failure";
-        RestartSec = 5;
-      };
-      Install = {
-        WantedBy = [ "default.target" ];
-      };
-    };
   };
 }

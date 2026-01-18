@@ -1,4 +1,7 @@
-{ pkgs, ... }:
+{ inputs, pkgs, ... }:
+let
+  opencode = inputs.opencode.packages.${pkgs.stdenv.hostPlatform.system}.default;
+in
 {
   imports = [ ./hardware.nix ];
 
@@ -45,6 +48,24 @@
       extraCompatPackages = with pkgs; [
         proton-ge-bin
       ];
+    };
+  };
+
+  systemd.user.services.opencode-web = {
+    Unit = {
+      Description = "OpenCode Web Interface";
+      After = [ "network.target" ];
+    };
+    Service = {
+      Environment = [
+        "OPENCODE_SERVER_PASSWORD=\"\""
+      ];
+      ExecStart = "${opencode}/bin/opencode web --host 0.0.0.0 --port 12345";
+      Restart = "on-failure";
+      RestartSec = 5;
+    };
+    Install = {
+      WantedBy = [ "default.target" ];
     };
   };
 }
