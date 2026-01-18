@@ -1,6 +1,8 @@
 {
+  inputs,
   config,
   lib,
+  pkgs,
   ...
 }:
 let
@@ -13,6 +15,7 @@ in
     services = {
       matrix-conduit = {
         enable = true;
+        package = inputs.conduit.packages.${pkgs.stdenv.hostPlatform.system}.default;
         settings.global = {
           # server
           server_name = "sgiath.dev";

@@ -2,6 +2,7 @@
   config,
   lib,
   pkgs,
+  inputs,
   ...
 }:
 
@@ -11,7 +12,7 @@
   config = lib.mkIf config.sgiath.web_browsers.enable {
     home.packages = [
       pkgs.tor-browser
-      pkgs.zen-browser
+      inputs.zen-browser.packages.${pkgs.stdenv.hostPlatform.system}.default
       pkgs.lynx
       pkgs.ladybird
     ];

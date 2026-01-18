@@ -1,4 +1,9 @@
-{ inputs, ... }:
+{
+  inputs,
+  pkgs,
+  namespace,
+  ...
+}:
 final: prev:
 let
   pkgs-master = import inputs.nixpkgs-master {
@@ -19,16 +24,13 @@ let
   };
 in
 {
-  # conduit build from official repo flake
-  matrix-conduit = inputs.conduit.packages.${prev.stdenv.hostPlatform.system}.default;
-
-  # zen browser has custom repo until nixpkgs is updated
-  zen-browser = inputs.zen-browser.packages.${prev.stdenv.hostPlatform.system}.default;
-
-  # NIX Gaming
-  star-citizen = inputs.nix-gaming.packages.${prev.stdenv.hostPlatform.system}.star-citizen;
-
-  # Bitcoin clients
-  bisq = inputs.btc-clients.packages.${prev.stdenv.hostPlatform.system}.bisq;
-  sparrow = inputs.btc-clients.packages.${prev.stdenv.hostPlatform.system}.sparrow;
+  # my custom derivations
+  bdui = pkgs.${namespace}.bdui;
+  claude-code-acp = pkgs.${namespace}.claude-code-acp;
+  dnd5etools = pkgs.${namespace}.dnd5etools;
+  gastown = pkgs.${namespace}.gastown;
+  lazybeads = pkgs.${namespace}.lazybeads;
+  n8n = pkgs.${namespace}.n8n;
+  ntm = pkgs.${namespace}.ntm;
+  openspec = pkgs.${namespace}.openspec;
 }

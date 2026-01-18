@@ -59,7 +59,7 @@ in
         token = secrets.factorio_token;
       })
 
-      # star-citizen
+      # inputs.nix-gaming.packages.${pkgs.stdenv.hostPlatform.system}.star-citizen
     ];
 
     wayland.windowManager.hyprland.settings.windowrule = [

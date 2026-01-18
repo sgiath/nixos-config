@@ -6,15 +6,13 @@
 
 buildGoModule rec {
   pname = "gastown";
-  # version = "0.2.6";
-  version = "master-6d29f34";
+  version = "0.4.0";
 
   src = fetchFromGitHub {
     owner = "steveyegge";
     repo = "gastown";
-    rev = "6d29f34cd01dc56ed776b850affa2db9bfa537a4";
-    # rev = "v${version}";
-    hash = "sha256-dDG0vTiCsAWwfCG9hUc5mIwW1i8UqARfrVJTTCUf/RM=";
+    rev = "v${version}";
+    hash = "sha256-PCP5PQasLqL5/OVNw6LsjiFfIU4RNniicTUcVq2ggHg=";
   };
 
   vendorHash = "sha256-ripY9vrYgVW8bngAyMLh0LkU/Xx1UUaLgmAA7/EmWQU=";
