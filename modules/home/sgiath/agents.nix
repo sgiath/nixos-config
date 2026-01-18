@@ -6,6 +6,10 @@
   namespace,
   ...
 }:
+let
+  opencode = inputs.opencode.packages.${pkgs.stdenv.hostPlatform.system}.default;
+  codex = inputs.codex.packages.${pkgs.stdenv.hostPlatform.system}.default;
+in
 {
   options.sgiath.agents = {
     enable = lib.mkEnableOption "LLM agents";
@@ -34,19 +38,38 @@
     # Codex
     programs.codex = {
       enable = true;
-      package = inputs.codex.packages.${pkgs.stdenv.hostPlatform.system}.default;
+      package = codex;
     };
-    programs.zsh.shellAliases.cx = "${
-      inputs.codex.packages.${pkgs.stdenv.hostPlatform.system}.default
-    }/bin/codex";
+    programs.zsh.shellAliases.cx = "${codex}/bin/codex";
 
     # opencode
     programs.opencode = {
       enable = true;
-      package = inputs.opencode.packages.${pkgs.stdenv.hostPlatform.system}.default;
+      package = opencode;
+      settings = {
+        server = {
+          port = 12345;
+          hostname = "0.0.0.0";
+        };
+      };
     };
-    programs.zsh.shellAliases.oc = "${
-      inputs.opencode.packages.${pkgs.stdenv.hostPlatform.system}.default
-    }/bin/opencode";
+    programs.zsh.shellAliases.oc = "${opencode}/bin/opencode";
+    systemd.user.services.opencode-web = {
+      Unit = {
+        Description = "OpenCode Web Interface";
+        After = [ "network.target" ];
+      };
+      Service = {
+        Environment = {
+          OPENCODE_SERVER_PASSWORD = "";
+        };
+        ExecStart = "${opencode}/bin/opencode web --host 0.0.0.0 --port 12345";
+        Restart = "on-failure";
+        RestartSec = 5;
+      };
+      Install = {
+        WantedBy = [ "default.target" ];
+      };
+    };
   };
 }

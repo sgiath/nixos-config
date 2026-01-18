@@ -46,5 +46,6 @@
     sgiath-dev.proxy = true;
     sinai-camp.proxy = true;
     wordpress.proxy = false;
+    opencode-proxy.enable = true;
   };
 }
