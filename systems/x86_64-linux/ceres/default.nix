@@ -52,20 +52,20 @@ in
   };
 
   systemd.user.services.opencode-web = {
-    Unit = {
-      Description = "OpenCode Web Interface";
-      After = [ "network.target" ];
+    enable = true;
+
+    after = [ "network.target" ];
+    wantedBy = [ "default.target" ];
+    description = "OpenCode Web Interface";
+    environment = {
+      OPENCODE_SERVER_PASSWORD = "";
     };
-    Service = {
-      Environment = [
-        "OPENCODE_SERVER_PASSWORD=\"\""
-      ];
-      ExecStart = "${opencode}/bin/opencode web --host 0.0.0.0 --port 12345";
+
+    script = "${opencode}/bin/opencode web --host 0.0.0.0 --port 12345";
+
+    serviceConfig = {
       Restart = "on-failure";
       RestartSec = 5;
-    };
-    Install = {
-      WantedBy = [ "default.target" ];
     };
   };
 }
