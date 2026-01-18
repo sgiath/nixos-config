@@ -1,7 +1,4 @@
-{
-  inputs,
-  ...
-}:
+{ inputs, ... }:
 final: prev:
 let
   pkgs-master = import inputs.nixpkgs-master {
@@ -21,5 +18,4 @@ let
     };
   };
 in
-{
-}
+{ }
