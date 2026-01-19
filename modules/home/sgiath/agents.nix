@@ -7,7 +7,8 @@
   ...
 }:
 let
-  opencode = inputs.opencode.packages.${pkgs.stdenv.hostPlatform.system}.default;
+  # opencode = inputs.opencode.packages.${pkgs.stdenv.hostPlatform.system}.default;
+  opencode = pkgs.opencode;
   codex = inputs.codex.packages.${pkgs.stdenv.hostPlatform.system}.default;
 in
 {

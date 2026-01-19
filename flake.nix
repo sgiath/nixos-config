@@ -89,8 +89,9 @@
       inputs.nixpkgs.follows = "nixpkgs";
     };
 
+    # https://github.com/anomalyco/opencode/releases/latest
     opencode = {
-      url = "github:anomalyco/opencode/v1.1.24";
+      url = "github:anomalyco/opencode";
       inputs.nixpkgs.follows = "nixpkgs";
     };
 
@@ -99,6 +100,7 @@
       inputs.nixpkgs.follows = "nixpkgs";
     };
 
+    # https://github.com/steveyegge/beads/releases/latest
     beads = {
       url = "github:steveyegge/beads/v0.47.1";
       inputs.nixpkgs.follows = "nixpkgs";
