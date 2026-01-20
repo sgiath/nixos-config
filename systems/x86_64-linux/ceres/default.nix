@@ -1,7 +1,7 @@
 { inputs, pkgs, ... }:
 let
-  opencode = inputs.opencode.packages.${pkgs.stdenv.hostPlatform.system}.default;
-  # opencode = pkgs.opencode;
+  # opencode = inputs.opencode.packages.${pkgs.stdenv.hostPlatform.system}.default;
+  opencode = pkgs.opencode;
 in
 {
   imports = [ ./hardware.nix ];
