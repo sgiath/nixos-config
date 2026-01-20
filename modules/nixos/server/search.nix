@@ -24,6 +24,28 @@ in
             "html"
             "json"
           ];
+          engines = [
+            {
+              name = "bing";
+              engine = "bing";
+              disabled = false;
+            }
+            {
+              name = "mojeek";
+              engine = "mojeek";
+              disabled = false;
+            }
+            {
+              name = "yahoo";
+              engine = "yahoo";
+              disabled = false;
+            }
+            {
+              name = "qwant";
+              engine = "qwant";
+              disabled = false;
+            }
+          ];
         };
         server = {
           bind_address = "127.0.0.1";
