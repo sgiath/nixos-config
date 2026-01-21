@@ -11,13 +11,13 @@
 
 stdenv.mkDerivation (finalAttrs: {
   pname = "openspec";
-  version = "0.21.0";
+  version = "0.23.0";
 
   src = fetchFromGitHub {
     owner = "Fission-AI";
     repo = "OpenSpec";
     rev = "v${finalAttrs.version}";
-    hash = "sha256-bjHu3kNsFPGOAIZrcgiExS3xOamC58adXb+qFGQevY8=";
+    hash = "sha256-3NPGYQOKFn28tnvyfP6cb+BtCh0UcnO15A2VIaGK+eY=";
   };
 
   pnpmDeps = fetchPnpmDeps {
