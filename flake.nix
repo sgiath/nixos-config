@@ -79,13 +79,13 @@
 
     # https://github.com/zed-industries/zed/releases/latest
     zed-editor = {
-      url = "github:zed-industries/zed/v0.219.4";
+      url = "github:zed-industries/zed/v0.220.3";
       inputs.nixpkgs.follows = "nixpkgs";
     };
 
     # https://github.com/openai/codex/releases/latest
     codex = {
-      url = "github:openai/codex/rust-v0.87.0";
+      url = "github:openai/codex/rust-v0.89.0";
       inputs.nixpkgs.follows = "nixpkgs";
     };
 
@@ -102,7 +102,7 @@
 
     # https://github.com/steveyegge/beads/releases/latest
     beads = {
-      url = "github:steveyegge/beads/v0.47.1";
+      url = "github:steveyegge/beads/v0.49.0";
       inputs.nixpkgs.follows = "nixpkgs";
     };
 
