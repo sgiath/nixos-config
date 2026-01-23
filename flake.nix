@@ -143,6 +143,7 @@
       };
 
       overlays = with inputs; [
+        hyprland.overlays.default
         # zed-editor.overlays.default
         claude-code.overlays.default
         clawdbot.overlays.default
@@ -150,6 +151,7 @@
       ];
 
       systems.modules.nixos = with inputs; [
+        hyprland.nixosModules.default
         disko.nixosModules.disko
         sops-nix.nixosModules.sops
         stylix.nixosModules.stylix
@@ -158,6 +160,7 @@
       ];
 
       homes.modules = with inputs; [
+        hyprland.homeManagerModules.default
         sops-nix.homeManagerModules.sops
         nix-index-database.homeModules.nix-index
         clawdbot.homeManagerModules.clawdbot
