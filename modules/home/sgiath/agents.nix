@@ -20,6 +20,9 @@ in
     home.packages = [
       pkgs.python3
 
+      # CodeRabbit
+      pkgs.${namespace}.coderabbit
+
       # Claude Code
       pkgs.${namespace}.claude-code-acp
       pkgs.${namespace}.openspec

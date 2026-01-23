@@ -198,6 +198,9 @@
           echo ""; echo "=== claude-code-acp ==="
           ./claude-code-acp/update.sh
 
+          echo ""; echo "=== coderabbit ==="
+          ./coderabbit/update.sh
+
           echo ""; echo "=== dnd5etools ==="
           ./dnd5etools/update.sh
 
