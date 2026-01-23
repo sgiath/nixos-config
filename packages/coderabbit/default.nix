@@ -4,6 +4,8 @@
   fetchurl,
   unzip,
   autoPatchelfHook,
+  libsecret,
+  makeWrapper,
 }:
 
 stdenv.mkDerivation rec {
@@ -18,6 +20,7 @@ stdenv.mkDerivation rec {
   nativeBuildInputs = [
     unzip
     autoPatchelfHook
+    makeWrapper
   ];
 
   unpackPhase = ''
@@ -25,7 +28,12 @@ stdenv.mkDerivation rec {
   '';
 
   installPhase = ''
-    install -Dm755 coderabbit $out/bin/coderabbit
+    install -Dm755 coderabbit $out/bin/coderabbit-unwrapped
+
+    # Wrap with LD_LIBRARY_PATH for libsecret (credential storage)
+    makeWrapper $out/bin/coderabbit-unwrapped $out/bin/coderabbit \
+      --prefix LD_LIBRARY_PATH : "${lib.makeLibraryPath [ libsecret ]}"
+
     ln -s $out/bin/coderabbit $out/bin/cr
   '';
 
