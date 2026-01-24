@@ -51,22 +51,4 @@ in
       ];
     };
   };
-
-  systemd.user.services.opencode-web = {
-    enable = true;
-
-    after = [ "network.target" ];
-    wantedBy = [ "default.target" ];
-    description = "OpenCode Web Interface";
-    environment = {
-      OPENCODE_SERVER_PASSWORD = "";
-    };
-
-    script = "${opencode}/bin/opencode web --host 0.0.0.0 --port 12345";
-
-    serviceConfig = {
-      Restart = "on-failure";
-      RestartSec = 5;
-    };
-  };
 }
