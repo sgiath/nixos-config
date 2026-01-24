@@ -50,12 +50,6 @@ in
     programs.opencode = {
       enable = true;
       package = opencode;
-      settings = {
-        server = {
-          port = 12345;
-          hostname = "0.0.0.0";
-        };
-      };
     };
     programs.zsh.shellAliases.oc = "${opencode}/bin/opencode";
   };
