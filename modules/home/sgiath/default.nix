@@ -207,8 +207,8 @@
           echo ""; echo "=== gastown ==="
           ./gastown/update.sh
 
-          echo ""; echo "=== n8n ==="
-          ./n8n/update.sh
+          # echo ""; echo "=== n8n ==="
+          # ./n8n/update.sh
 
           echo ""; echo "=== ntm ==="
           ./ntm/update.sh
