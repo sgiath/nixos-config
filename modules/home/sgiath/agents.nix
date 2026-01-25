@@ -75,6 +75,15 @@ in
             allowFrom = [ 5162798212 ];
             groups = { };
           };
+          # fix legacy key: byProvider → byChannel
+          messages.queue = {
+            byChannel = {
+              discord = "queue";
+              telegram = "interrupt";
+              webchat = "queue";
+            };
+            byProvider = null; # remove legacy key
+          };
         };
 
         launchd.enable = true;
