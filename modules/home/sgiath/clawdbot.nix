@@ -23,6 +23,15 @@
 
         providers.anthropic.apiKeyFile = "/home/sgiath/.anthropic-api-key";
 
+        # override plugins to disable memory-core requirement
+        configOverrides = {
+          plugins = {
+            slots = { };
+            entries = { };
+            load.paths = [ ];
+          };
+        };
+
         launchd.enable = true;
       };
     };
