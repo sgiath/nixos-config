@@ -146,7 +146,7 @@
         # hyprland.overlays.default
         # zed-editor.overlays.default
         claude-code.overlays.default
-        clawdbot.overlays.default
+        # clawdbot.overlays.default
         nix-minecraft.overlay
       ];
 

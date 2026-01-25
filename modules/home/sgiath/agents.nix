@@ -60,7 +60,7 @@ in
 
       instances.default = {
         enable = true;
-        package = pkgs.clawdbot;
+        package = inputs.clawdbot.packages.${pkgs.stdenv.hostPlatform.system}.clawdbot;
         stateDir = "~/.clawdbot";
         workspaceDir = "~/.clawdbot/workspace";
 
