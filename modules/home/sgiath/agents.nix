@@ -61,7 +61,7 @@ in
 
       instances.default = {
         enable = true;
-        package = inputs.clawdbot.packages.${pkgs.stdenv.hostPlatform.system}.clawdbot;
+        # uses pkgs.clawdbot from overlay, which respects excludeTools
         stateDir = "~/.clawdbot";
         workspaceDir = "~/.clawdbot/workspace";
 
