@@ -64,9 +64,11 @@ in
         stateDir = "/home/sgiath/.clawdbot";
         workspaceDir = "/home/sgiath/.clawdbot/workspace";
 
-        # telegram disabled via providers - upstream bug generates wrong key
-        # using configOverrides as workaround
         providers.anthropic.apiKeyFile = "/home/sgiath/.anthropic-api-key";
+
+        # upstream bug: generates legacy keys (telegram, byProvider)
+        # set byProvider empty to minimize output, override with correct keys
+        routing.queue.byProvider = { };
 
         configOverrides = {
           channels.telegram = {
@@ -75,14 +77,10 @@ in
             allowFrom = [ 5162798212 ];
             groups = { };
           };
-          # fix legacy key: byProvider → byChannel
-          messages.queue = {
-            byChannel = {
-              discord = "queue";
-              telegram = "interrupt";
-              webchat = "queue";
-            };
-            byProvider = null; # remove legacy key
+          messages.queue.byChannel = {
+            discord = "queue";
+            telegram = "interrupt";
+            webchat = "queue";
           };
         };
 
