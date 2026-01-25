@@ -37,8 +37,8 @@
           (if .telegram then .channels.telegram = .telegram | del(.telegram) else . end) |
           # move byProvider → byChannel
           (if .messages.queue.byProvider then .messages.queue.byChannel = .messages.queue.byProvider | del(.messages.queue.byProvider) else . end) |
-          # remove plugins entirely to avoid memory-core validation
-          del(.plugins)
+          # explicitly set empty slots to override internal default
+          .plugins = { slots: {}, entries: {}, load: { paths: [] } }
         ' "$CONFIG" > "$CONFIG.tmp" && mv "$CONFIG.tmp" "$CONFIG"
       fi
     '';
