@@ -108,7 +108,7 @@
 
     clawdbot = {
       url = "github:clawdbot/nix-clawdbot";
-      inputs.nixpkgs.follows = "nixpkgs";
+      # inputs.nixpkgs.follows = "nixpkgs";
     };
 
     nix-minecraft.url = "github:Infinidoge/nix-minecraft";
@@ -146,7 +146,7 @@
         # hyprland.overlays.default
         # zed-editor.overlays.default
         claude-code.overlays.default
-        # clawdbot.overlays.default
+        clawdbot.overlays.default
         nix-minecraft.overlay
       ];
 
