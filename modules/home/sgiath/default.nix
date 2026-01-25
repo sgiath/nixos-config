@@ -10,6 +10,7 @@
     ./audio.nix
     ./bitcoin.nix
     ./chromium.nix
+    ./clawdbot.nix
     ./clipboard.nix
     ./comm.nix
     ./editors.nix
