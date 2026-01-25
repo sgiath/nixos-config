@@ -59,11 +59,30 @@ in
       documents = ./clawdbot;
       excludeTools = [ "summarize" ]; # conflicts with clawdbot's own /bin/summarize
 
+      firstParty = {
+        summarize.enable = false; # Summarize web pages, PDFs, videos
+        peekaboo.enable = true; # Take screenshots
+        oracle.enable = true; # Web search
+        poltergeist.enable = false; # Control your macOS UI
+        sag.enable = true; # Text-to-speech
+        camsnap.enable = true; # Camera snapshots
+        gogcli.enable = false; # Google Calendar
+        bird.enable = true; # Twitter/X
+        sonoscli.enable = false; # Sonos control
+        imsg.enable = false; # iMessage
+      };
+
       instances.default = {
         enable = true;
         # uses pkgs.clawdbot from overlay, which respects excludeTools
         stateDir = "/home/sgiath/.clawdbot";
         workspaceDir = "/home/sgiath/.clawdbot/workspace";
+
+        providers.telegram = {
+          enable = true;
+          botTokenFile = "/home/sgiath/.telegram-clawdbot";
+          allowFrom = [ 5162798212 ];
+        };
 
         providers.anthropic.apiKeyFile = "/home/sgiath/.anthropic-api-key";
 
