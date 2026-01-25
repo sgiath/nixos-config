@@ -1,7 +1,6 @@
 {
   config,
   lib,
-  pkgs,
   ...
 }:
 {
@@ -23,31 +22,8 @@
 
         providers.anthropic.apiKeyFile = "/home/sgiath/.anthropic-api-key";
 
-        # override plugins to disable memory-core requirement
-        configOverrides = {
-          plugins = {
-            slots.memory = "none"; # disable memory plugin
-          };
-        };
-
         launchd.enable = true;
       };
     };
-
-    # patch clawdbot config: fix legacy keys (upstream bug)
-    # telegram → channels.telegram, byProvider → byChannel
-    home.activation.clawdbotConfigPatch = lib.hm.dag.entryAfter [ "clawdbotConfigFiles" ] ''
-      CONFIG="/home/sgiath/.clawdbot/clawdbot.json"
-      if [ -f "$CONFIG" ]; then
-        ${pkgs.jq}/bin/jq '
-          # move telegram → channels.telegram
-          (if .telegram then .channels.telegram = .telegram | del(.telegram) else . end) |
-          # move byProvider → byChannel
-          (if .messages.queue.byProvider then .messages.queue.byChannel = .messages.queue.byProvider | del(.messages.queue.byProvider) else . end) |
-          # disable memory plugin with "none"
-          .plugins = { slots: { memory: "none" }, entries: {}, load: { paths: [] } }
-        ' "$CONFIG" > "$CONFIG.tmp" && mv "$CONFIG.tmp" "$CONFIG"
-      fi
-    '';
   };
 }

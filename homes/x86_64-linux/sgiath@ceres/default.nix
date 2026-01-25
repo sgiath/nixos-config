@@ -19,7 +19,7 @@
 
   crazyegg.enable = true;
 
-  programs.clawdbot.enable = true;
+  programs.clawdbot.enable = false;
 
   stylix.fonts.sizes = {
     applications = 10;
