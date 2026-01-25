@@ -26,7 +26,7 @@
         # override plugins to disable memory-core requirement
         configOverrides = {
           plugins = {
-            slots = { };
+            slots.memory = "none"; # disable memory plugin
             entries = { };
             load.paths = [ ];
           };
@@ -46,8 +46,8 @@
           (if .telegram then .channels.telegram = .telegram | del(.telegram) else . end) |
           # move byProvider → byChannel
           (if .messages.queue.byProvider then .messages.queue.byChannel = .messages.queue.byProvider | del(.messages.queue.byProvider) else . end) |
-          # explicitly set empty slots to override internal default
-          .plugins = { slots: {}, entries: {}, load: { paths: [] } }
+          # disable memory plugin with "none"
+          .plugins = { slots: { memory: "none" }, entries: {}, load: { paths: [] } }
         ' "$CONFIG" > "$CONFIG.tmp" && mv "$CONFIG.tmp" "$CONFIG"
       fi
     '';
