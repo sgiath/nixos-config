@@ -37,8 +37,8 @@
           (if .telegram then .channels.telegram = .telegram | del(.telegram) else . end) |
           # move byProvider → byChannel
           (if .messages.queue.byProvider then .messages.queue.byChannel = .messages.queue.byProvider | del(.messages.queue.byProvider) else . end) |
-          # clear plugins.slots to avoid memory-core requirement
-          .plugins.slots = {}
+          # remove plugins entirely to avoid memory-core validation
+          del(.plugins)
         ' "$CONFIG" > "$CONFIG.tmp" && mv "$CONFIG.tmp" "$CONFIG"
       fi
     '';
