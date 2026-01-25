@@ -27,8 +27,6 @@
         configOverrides = {
           plugins = {
             slots.memory = "none"; # disable memory plugin
-            entries = { };
-            load.paths = [ ];
           };
         };
 
