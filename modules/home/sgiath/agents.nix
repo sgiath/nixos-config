@@ -57,6 +57,7 @@ in
     programs.clawdbot = {
       enable = true;
       documents = ./clawdbot;
+      excludeTools = [ "summarize" ]; # conflicts with clawdbot's own /bin/summarize
 
       instances.default = {
         enable = true;
