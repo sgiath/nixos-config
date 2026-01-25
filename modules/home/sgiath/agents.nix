@@ -52,5 +52,22 @@ in
       package = opencode;
     };
     programs.zsh.shellAliases.oc = "${opencode}/bin/opencode";
+
+    # clawdbot
+    programs.clawdbot = {
+      enable = true;
+      documents = ./clawdbot;
+
+      instances.default = {
+        enable = true;
+        package = pkgs.clawdbot;
+        stateDir = "~/.clawdbot";
+        workspaceDir = "~/.clawdbot/workspace";
+
+        providers.anthropic.apiKeyFile = "/home/sgiath/.anthropic-api-key";
+
+        launchd.enable = true;
+      };
+    };
   };
 }
