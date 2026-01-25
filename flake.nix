@@ -108,7 +108,7 @@
 
     clawdbot = {
       url = "github:clawdbot/nix-clawdbot";
-      # inputs.nixpkgs.follows = "nixpkgs";
+      inputs.nixpkgs.follows = "nixpkgs";
     };
 
     nix-minecraft.url = "github:Infinidoge/nix-minecraft";
