@@ -62,8 +62,8 @@ in
       instances.default = {
         enable = true;
         # uses pkgs.clawdbot from overlay, which respects excludeTools
-        stateDir = "~/.clawdbot";
-        workspaceDir = "~/.clawdbot/workspace";
+        stateDir = "/home/sgiath/.clawdbot";
+        workspaceDir = "/home/sgiath/.clawdbot/workspace";
 
         providers.anthropic.apiKeyFile = "/home/sgiath/.anthropic-api-key";
 
