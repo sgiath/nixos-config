@@ -25,7 +25,7 @@ in
 
       # Claude Code
       pkgs.${namespace}.claude-code-acp
-      pkgs.${namespace}.openspec
+      inputs.openspec.packages.${pkgs.stdenv.hostPlatform.system}.default
       pkgs.${namespace}.gastown
       inputs.beads.packages.${pkgs.stdenv.hostPlatform.system}.default
       pkgs.${namespace}.bdui
