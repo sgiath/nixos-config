@@ -44,7 +44,7 @@ in
       enable = true;
       package = codex;
     };
-    programs.zsh.shellAliases.cx = "${codex}/bin/codex";
+    programs.zsh.shellAliases.cx = "${codex}/bin/codex --full-auto";
 
     # opencode
     programs.opencode = {
