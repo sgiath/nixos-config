@@ -30,10 +30,10 @@
 
       # Markdown formatter
       # https://github.com/executablebooks/mdformat
-      # python314Packages.mdformat
-      # python314Packages.mdformat-gfm
-      # python314Packages.mdformat-frontmatter
-      # python314Packages.mdformat-footnote
+      python314Packages.mdformat
+      python314Packages.mdformat-gfm
+      python314Packages.mdformat-frontmatter
+      python314Packages.mdformat-footnote
 
       # shell
       shfmt
