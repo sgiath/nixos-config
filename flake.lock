@@ -1600,6 +1600,26 @@
         "type": "github"
       }
     },
+    "openspec": {
+      "inputs": {
+        "nixpkgs": [
+          "nixpkgs"
+        ]
+      },
+      "locked": {
+        "lastModified": 1769386156,
+        "narHash": "sha256-C6TYrEs+NraoPKqOnKyvZiVGnRPDbwrl7Lbnnb7gY8k=",
+        "owner": "Fission-AI",
+        "repo": "OpenSpec",
+        "rev": "0e6f42c81c84e751c82dcb867fc9bab5b55b1484",
+        "type": "github"
+      },
+      "original": {
+        "owner": "Fission-AI",
+        "repo": "OpenSpec",
+        "type": "github"
+      }
+    },
     "pre-commit-hooks": {
       "inputs": {
         "flake-compat": "flake-compat_3",
@@ -1645,6 +1665,7 @@
         "nixpkgs-master": "nixpkgs-master",
         "nixpkgs-stable": "nixpkgs-stable_2",
         "opencode": "opencode",
+        "openspec": "openspec",
         "snowfall-flake": "snowfall-flake",
         "snowfall-lib": "snowfall-lib_2",
         "sops-nix": "sops-nix",

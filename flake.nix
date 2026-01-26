@@ -106,6 +106,11 @@
       inputs.nixpkgs.follows = "nixpkgs";
     };
 
+    openspec = {
+      url = "github:Fission-AI/OpenSpec";
+      inputs.nixpkgs.follows = "nixpkgs";
+    };
+
     clawdbot = {
       url = "github:clawdbot/nix-clawdbot";
       inputs.nixpkgs.follows = "nixpkgs";
