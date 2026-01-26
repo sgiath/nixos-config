@@ -11,19 +11,19 @@
 
 stdenv.mkDerivation (finalAttrs: {
   pname = "openspec";
-  version = "0.23.0";
+  version = "1.0.0";
 
   src = fetchFromGitHub {
     owner = "Fission-AI";
     repo = "OpenSpec";
     rev = "v${finalAttrs.version}";
-    hash = "sha256-3NPGYQOKFn28tnvyfP6cb+BtCh0UcnO15A2VIaGK+eY=";
+    hash = "sha256-C6TYrEs+NraoPKqOnKyvZiVGnRPDbwrl7Lbnnb7gY8k=";
   };
 
   pnpmDeps = fetchPnpmDeps {
     inherit (finalAttrs) pname version src;
     fetcherVersion = 1;
-    hash = "sha256-s12YVE4shSr1/0DYh5n36OYZFAmsUCW9SK31IRT93Oc=";
+    hash = "sha256-RQw6nFgYBUcO4Jr9qqhTNTV+X6ZfzAOluSqRxJKeXGM=";
   };
 
   nativeBuildInputs = [
