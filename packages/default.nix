@@ -7,5 +7,4 @@ pkgs: {
   lazybeads = pkgs.callPackage ./lazybeads { };
   n8n = pkgs.callPackage ./n8n { };
   ntm = pkgs.callPackage ./ntm { };
-  openspec = pkgs.callPackage ./openspec { };
 }

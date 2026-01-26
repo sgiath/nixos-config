@@ -111,10 +111,10 @@
       inputs.nixpkgs.follows = "nixpkgs";
     };
 
-    clawdbot = {
-      url = "github:clawdbot/nix-clawdbot";
-      inputs.nixpkgs.follows = "nixpkgs";
-    };
+    # clawdbot = {
+    #   url = "github:clawdbot/nix-clawdbot";
+    #   inputs.nixpkgs.follows = "nixpkgs";
+    # };
 
     nix-minecraft.url = "github:Infinidoge/nix-minecraft";
   };
@@ -151,7 +151,7 @@
         # hyprland.overlays.default
         # zed-editor.overlays.default
         claude-code.overlays.default
-        clawdbot.overlays.default
+        # clawdbot.overlays.default
         nix-minecraft.overlay
       ];
 
@@ -168,7 +168,7 @@
         hyprland.homeManagerModules.default
         sops-nix.homeManagerModules.sops
         nix-index-database.homeModules.nix-index
-        clawdbot.homeManagerModules.clawdbot
+        # clawdbot.homeManagerModules.clawdbot
       ];
     };
 }
