@@ -8,7 +8,6 @@
 }:
 let
   opencode = inputs.opencode.packages.${pkgs.stdenv.hostPlatform.system}.default;
-  # opencode = pkgs.opencode;
   codex = inputs.codex.packages.${pkgs.stdenv.hostPlatform.system}.default;
   openspec = inputs.openspec.packages.${pkgs.stdenv.hostPlatform.system}.default;
 in
@@ -26,6 +25,8 @@ in
 
       # Claude Code
       pkgs.${namespace}.claude-code-acp
+
+      # LLM tools
       openspec
       pkgs.${namespace}.gastown
       inputs.beads.packages.${pkgs.stdenv.hostPlatform.system}.default
