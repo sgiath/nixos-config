@@ -36,7 +36,7 @@
       inputs.nixpkgs.follows = "nixpkgs";
     };
 
-    hyprland.url = "github:hyprwm/Hyprland/v0.53.1";
+    hyprland.url = "github:hyprwm/Hyprland/v0.53.3";
     hyprland-plugins = {
       url = "github:hyprwm/hyprland-plugins";
       inputs.hyprland.follows = "hyprland";
@@ -79,13 +79,13 @@
 
     # https://github.com/zed-industries/zed/releases/latest
     zed-editor = {
-      url = "github:zed-industries/zed/v0.220.3";
+      url = "github:zed-industries/zed/v0.220.6";
       inputs.nixpkgs.follows = "nixpkgs";
     };
 
     # https://github.com/openai/codex/releases/latest
     codex = {
-      url = "github:openai/codex/rust-v0.89.0";
+      url = "github:openai/codex/rust-v0.91.0";
       inputs.nixpkgs.follows = "nixpkgs";
     };
 
@@ -102,7 +102,7 @@
 
     # https://github.com/steveyegge/beads/releases/latest
     beads = {
-      url = "github:steveyegge/beads/v0.49.0";
+      url = "github:steveyegge/beads/v0.49.1";
       inputs.nixpkgs.follows = "nixpkgs";
     };
 

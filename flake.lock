@@ -133,16 +133,16 @@
         ]
       },
       "locked": {
-        "lastModified": 1769069582,
-        "narHash": "sha256-m0gVLeWfFeaWZpARuXgP00npmZcO7XCm7mXWA52bqTc=",
+        "lastModified": 1769403857,
+        "narHash": "sha256-roOyTMy9nKxH2Bk8MnP4h2CDjStwK6z0ThQhFcM64QI=",
         "owner": "steveyegge",
         "repo": "beads",
-        "rev": "b5178e1895e7db638725f9aeaad3cd5039eb7e73",
+        "rev": "0d99d15370030b953a8df0ea67cd3d1b845bb07b",
         "type": "github"
       },
       "original": {
         "owner": "steveyegge",
-        "ref": "v0.49.0",
+        "ref": "v0.49.1",
         "repo": "beads",
         "type": "github"
       }
@@ -196,16 +196,16 @@
         ]
       },
       "locked": {
-        "lastModified": 1769115457,
-        "narHash": "sha256-VFbtxGOqX80qWqVo+BG+BnUr8DiLCfcJCrN9fwy7utY=",
+        "lastModified": 1769359967,
+        "narHash": "sha256-2wyXfwZpl5o+Quvuz1ME2Ju61B2xBw/9lbW9XeW6fh0=",
         "owner": "openai",
         "repo": "codex",
-        "rev": "605d43719efa7f62160904d2dcecc46a64bcd32e",
+        "rev": "3684bc646e0f1123e76a90f03cfb1111358f1aa1",
         "type": "github"
       },
       "original": {
         "owner": "openai",
-        "ref": "rust-v0.89.0",
+        "ref": "rust-v0.91.0",
         "repo": "codex",
         "type": "github"
       }
@@ -1974,16 +1974,16 @@
         "rust-overlay": "rust-overlay"
       },
       "locked": {
-        "lastModified": 1769097491,
-        "narHash": "sha256-BxGNgJxwX7qY4chi5xaJ8RZnmo80v+9QeZOPTUpsHBc=",
+        "lastModified": 1769344874,
+        "narHash": "sha256-jwSh2QkQpShDvTurJPPvt4khGaNQmoVbJyiLcccp2PU=",
         "owner": "zed-industries",
         "repo": "zed",
-        "rev": "3d02817699175909ee72bf28305997094c5cef9d",
+        "rev": "6a75953cd3a6512d120cf6d3cc96eeaa14f827ff",
         "type": "github"
       },
       "original": {
         "owner": "zed-industries",
-        "ref": "v0.220.3",
+        "ref": "v0.220.6",
         "repo": "zed",
         "type": "github"
       }
