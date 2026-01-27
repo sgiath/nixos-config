@@ -196,16 +196,16 @@
         ]
       },
       "locked": {
-        "lastModified": 1769356584,
-        "narHash": "sha256-+9bTYRl1/XFf48k/tz7ypeDE4QZqRwSd6SveAMWjk94=",
+        "lastModified": 1769115457,
+        "narHash": "sha256-VFbtxGOqX80qWqVo+BG+BnUr8DiLCfcJCrN9fwy7utY=",
         "owner": "openai",
         "repo": "codex",
-        "rev": "b4e230f8de8f71d08f48c469443ed61a9f365af3",
+        "rev": "605d43719efa7f62160904d2dcecc46a64bcd32e",
         "type": "github"
       },
       "original": {
         "owner": "openai",
-        "ref": "rust-v0.90.0",
+        "ref": "rust-v0.89.0",
         "repo": "codex",
         "type": "github"
       }
