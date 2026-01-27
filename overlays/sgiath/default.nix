@@ -20,4 +20,5 @@ let
 in
 {
   mdformat = pkgs-master.mdformat;
+  searxng = pkgs-master.searxng;
 }
