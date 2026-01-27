@@ -18,4 +18,6 @@ let
     };
   };
 in
-{ }
+{
+  mdformat = pkgs-master.mdformat;
+}
