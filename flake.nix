@@ -79,7 +79,7 @@
 
     # https://github.com/zed-industries/zed/releases/latest
     zed-editor = {
-      url = "github:zed-industries/zed/v0.220.7";
+      url = "github:zed-industries/zed/v0.221.4";
       inputs.nixpkgs.follows = "nixpkgs";
     };
 
@@ -91,7 +91,7 @@
 
     # https://github.com/anomalyco/opencode/releases/latest
     opencode = {
-      url = "github:anomalyco/opencode";
+      url = "github:anomalyco/opencode/v1.1.42";
       inputs.nixpkgs.follows = "nixpkgs";
     };
 
