@@ -32,6 +32,7 @@ in
       inputs.beads.packages.${pkgs.stdenv.hostPlatform.system}.default
       pkgs.${namespace}.bdui
       pkgs.${namespace}.openwork
+      inputs.opencode.packages.${pkgs.stdenv.hostPlatform.system}.desktop
     ];
     programs.zsh.shellAliases.os = "${openspec}/bin/openspec";
 

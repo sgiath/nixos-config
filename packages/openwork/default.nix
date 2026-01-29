@@ -52,7 +52,7 @@ stdenv.mkDerivation rec {
     # Install binaries
     install -Dm755 usr/bin/openwork $out/bin/openwork
     install -Dm755 usr/bin/openwork-server $out/bin/openwork-server
-    install -Dm755 usr/bin/opencode $out/bin/opencode
+    # install -Dm755 usr/bin/opencode $out/bin/opencode
     install -Dm755 usr/bin/owpenbot $out/bin/owpenbot
 
     # Install desktop file
