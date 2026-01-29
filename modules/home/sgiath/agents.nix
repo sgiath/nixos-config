@@ -31,6 +31,7 @@ in
       pkgs.${namespace}.gastown
       inputs.beads.packages.${pkgs.stdenv.hostPlatform.system}.default
       pkgs.${namespace}.bdui
+      pkgs.${namespace}.openwork
     ];
     programs.zsh.shellAliases.os = "${openspec}/bin/openspec";
 
@@ -52,6 +53,10 @@ in
     programs.opencode = {
       enable = true;
       package = opencode;
+      settings = {
+        plugin = [
+        ];
+      };
     };
     programs.zsh.shellAliases.oc = "${opencode}/bin/opencode";
   };

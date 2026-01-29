@@ -214,6 +214,9 @@
           echo ""; echo "=== ntm ==="
           ./ntm/update.sh
 
+          echo ""; echo "=== openwork ==="
+          ./openwork/update.sh
+
           popd > /dev/null
 
           echo ""
