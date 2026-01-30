@@ -60,5 +60,8 @@ in
       };
     };
     programs.zsh.shellAliases.oc = "${opencode}/bin/opencode";
+
+    # bun
+    programs.bun.enable = true;
   };
 }
