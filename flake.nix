@@ -36,7 +36,8 @@
       inputs.nixpkgs.follows = "nixpkgs";
     };
 
-    hyprland.url = "github:hyprwm/Hyprland/v0.53.1";
+    # https://github.com/hyprwm/Hyprland/releases/latest
+    hyprland.url = "github:hyprwm/Hyprland/v0.53.3";
     hyprland-plugins = {
       url = "github:hyprwm/hyprland-plugins";
       inputs.hyprland.follows = "hyprland";
@@ -85,7 +86,7 @@
 
     # https://github.com/openai/codex/releases/latest
     codex = {
-      url = "github:openai/codex/rust-v0.89.0";
+      url = "github:openai/codex/rust-v0.93.0";
       inputs.nixpkgs.follows = "nixpkgs";
     };
 
