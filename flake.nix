@@ -112,7 +112,7 @@
       inputs.nixpkgs.follows = "nixpkgs";
     };
 
-    clawdbot = {
+    openclaw = {
       url = "github:openclaw/nix-openclaw";
       inputs.nixpkgs.follows = "nixpkgs";
     };
@@ -152,7 +152,7 @@
         # hyprland.overlays.default
         # zed-editor.overlays.default
         claude-code.overlays.default
-        # clawdbot.overlays.default
+        openclaw.overlays.default
         nix-minecraft.overlay
       ];
 
@@ -169,7 +169,7 @@
         hyprland.homeManagerModules.default
         sops-nix.homeManagerModules.sops
         nix-index-database.homeModules.nix-index
-        # clawdbot.homeManagerModules.clawdbot
+        openclaw.homeManagerModules.openclaw
       ];
     };
 }
