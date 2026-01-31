@@ -8,7 +8,10 @@
   config = lib.mkIf config.programs.openclaw.enable {
     programs.openclaw = {
       documents = ./openclaw;
-      # excludeTools = [ "summarize" ]; # conflicts with openclaw's own /bin/summarize
+      excludeTools = [
+        "git"
+        "jq"
+      ]; # conflicts with openclaw's own /bin/summarize
 
       # firstParty = {
       #   summarize.enable = true; # Summarize web pages, PDFs, videos
