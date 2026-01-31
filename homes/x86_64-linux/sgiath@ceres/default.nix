@@ -19,7 +19,7 @@
 
   crazyegg.enable = true;
 
-  programs.openclaw.enable = true;
+  programs.openclaw.enable = false;
 
   stylix.fonts.sizes = {
     applications = 10;
