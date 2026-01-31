@@ -319,11 +319,11 @@
         ]
       },
       "locked": {
-        "lastModified": 1769777977,
-        "narHash": "sha256-ppIrwGbxGnb0qAS0FRdRizjrS2rhSR8dU10BQwCsHi4=",
+        "lastModified": 1769863917,
+        "narHash": "sha256-dWGnGmjvZYGRguvL2RuU4/c2XxXqmHhkJm7m9kQMfmc=",
         "owner": "TudorAndrei",
         "repo": "cursor-nixos-flake",
-        "rev": "22d99d80b5f520fc6853e7906d576f2aa49b5d98",
+        "rev": "bb14bf506f441f1654e02f767498c30809cd6c5a",
         "type": "github"
       },
       "original": {
@@ -1413,11 +1413,11 @@
     },
     "nixpkgs-master": {
       "locked": {
-        "lastModified": 1769848429,
-        "narHash": "sha256-A874YjzfWeLFlp0QE5ogWVaU+rEcLJSYnDWyzGUEoko=",
+        "lastModified": 1769885407,
+        "narHash": "sha256-i3Aac9W45D+D8HjmfJN6pS83FQCepeTT117mUPsIT5I=",
         "owner": "NixOS",
         "repo": "nixpkgs",
-        "rev": "5591ce5f98998e7196e3cfb0a5767e5952f257e7",
+        "rev": "a05303e9a352dcc76c551b49b47fd300e797c6e8",
         "type": "github"
       },
       "original": {
@@ -1587,11 +1587,11 @@
         ]
       },
       "locked": {
-        "lastModified": 1769843242,
-        "narHash": "sha256-tRy24O58abPXDxi/p0GbUdcvHJWfIXQOMi9t/MdvnuA=",
+        "lastModified": 1769884523,
+        "narHash": "sha256-GiwZE0SIXX9piJDOvTY3rogEm/6Llf/7HMgc+GVoaFg=",
         "owner": "anomalyco",
         "repo": "opencode",
-        "rev": "f834915d3fbcf05137fc61fc51b9fa07b815e82c",
+        "rev": "a19ef17bcbedc42b802c4de1edf5df4991d942f1",
         "type": "github"
       },
       "original": {
