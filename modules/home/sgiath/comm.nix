@@ -19,6 +19,7 @@
       # cinny-desktop
       fractal
       simplex-chat-desktop
+      nak
     ];
 
     wayland.windowManager.hyprland.settings = {
