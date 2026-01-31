@@ -8,11 +8,11 @@
   config = lib.mkIf config.programs.openclaw.enable {
     programs.openclaw = {
       documents = ./openclaw;
-      excludeTools = [
-        "git"
-        "jq"
-        "ripgrep"
-      ];
+      # excludeTools = [
+      #   "git"
+      #   "jq"
+      #   "ripgrep"
+      # ];
       # toolNames = [ ];
 
       # firstParty = {
