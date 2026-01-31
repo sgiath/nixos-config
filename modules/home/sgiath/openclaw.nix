@@ -8,19 +8,6 @@
     programs.openclaw = {
       documents = ./openclaw;
 
-      firstParty = {
-        summarize.enable = true; # Summarize web pages, PDFs, videos
-        peekaboo.enable = true; # Take screenshots
-        oracle.enable = true; # Web search
-        poltergeist.enable = false; # Control your macOS UI
-        sag.enable = true; # Text-to-speech
-        camsnap.enable = true; # Camera snapshots
-        gogcli.enable = false; # Google Calendar
-        bird.enable = true; # Twitter/X
-        sonoscli.enable = false; # Sonos control
-        imsg.enable = false; # iMessage
-      };
-
       config = {
         channels.telegram = {
           tokenFile = "/home/sgiath/.telegram-clawdbot";
@@ -34,6 +21,15 @@
 
         stateDir = "/home/sgiath/.openclaw";
         workspaceDir = "/home/sgiath/.openclaw/workspace";
+        plugins = [
+          { source = "github:openclaw/nix-steipete-tools?dir=tools/summarize"; }
+          { source = "github:openclaw/nix-steipete-tools?dir=tools/peekaboo"; }
+          { source = "github:openclaw/nix-steipete-tools?dir=tools/oracle"; }
+          { source = "github:openclaw/nix-steipete-tools?dir=tools/sag"; }
+          { source = "github:openclaw/nix-steipete-tools?dir=tools/camsnap"; }
+          { source = "github:openclaw/nix-steipete-tools?dir=tools/bird"; }
+          { source = "github:joshp123/xuezh"; }
+        ];
       };
     };
   };
