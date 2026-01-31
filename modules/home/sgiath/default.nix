@@ -10,7 +10,6 @@
     ./audio.nix
     ./bitcoin.nix
     ./chromium.nix
-    # ./clawdbot.nix
     ./clipboard.nix
     ./comm.nix
     ./editors.nix
@@ -21,6 +20,7 @@
     ./gnupg.nix
     ./hyprland.nix
     ./nvim.nix
+    ./openclaw.nix
     ./ssh.nix
     ./starship.nix
     ./stylix.nix

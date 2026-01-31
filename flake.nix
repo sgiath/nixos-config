@@ -112,10 +112,10 @@
       inputs.nixpkgs.follows = "nixpkgs";
     };
 
-    # clawdbot = {
-    #   url = "github:clawdbot/nix-clawdbot";
-    #   inputs.nixpkgs.follows = "nixpkgs";
-    # };
+    clawdbot = {
+      url = "github:openclaw/nix-openclaw";
+      inputs.nixpkgs.follows = "nixpkgs";
+    };
 
     nix-minecraft.url = "github:Infinidoge/nix-minecraft";
   };
