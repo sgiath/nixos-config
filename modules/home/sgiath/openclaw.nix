@@ -33,7 +33,7 @@
       instances.default = {
         enable = true;
         launchd.enable = true;
-        package = pkgs.openclaw; # batteries-included
+        # package = pkgs.openclawPackages.withTools { ... }.openclaw;
 
         stateDir = "/home/sgiath/.openclaw";
         workspaceDir = "/home/sgiath/.openclaw/workspace";
