@@ -196,6 +196,9 @@
 
           pushd ~/nixos/packages > /dev/null
 
+          echo ""; echo "=== agent-of-empires ==="
+          ./agent-of-empires/update.sh
+
           echo ""; echo "=== claude-code-acp ==="
           ./claude-code-acp/update.sh
 

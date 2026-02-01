@@ -1,4 +1,5 @@
 pkgs: {
+  agent-of-empires = pkgs.callPackage ./agent-of-empires { };
   bdui = pkgs.callPackage ./bdui { };
   claude-code-acp = pkgs.callPackage ./claude-code-acp { };
   coderabbit = pkgs.callPackage ./coderabbit { };
