@@ -53,7 +53,7 @@ in
 
     # aliases
     programs.zsh.shellAliases = {
-      oc = "${opencode}/bin/opencode";
+      oc = "${opencode}/bin/opencode --port 4096";
       os = "${openspec}/bin/openspec";
       cc = "${pkgs.claude-code}/bin/claude --dangerously-skip-permissions";
       cx = "${codex}/bin/codex --full-auto";
