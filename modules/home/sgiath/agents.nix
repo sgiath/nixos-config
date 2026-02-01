@@ -53,7 +53,8 @@ in
 
     # aliases
     programs.zsh.shellAliases = {
-      oc = "${opencode}/bin/opencode";
+      oc = "${opencode}/bin/opencode attach http://localhost:4096";
+      oc-serve = "OPENCODE_SERVER_PASSWORD=\"\" ${opencode}/bin/opencode serve --cors http://localhost:4096 --cors https://opencode.sgiath.dev --port 4096 --hostname 0.0.0.0";
       os = "${openspec}/bin/openspec";
       cc = "${pkgs.claude-code}/bin/claude --dangerously-skip-permissions";
       cx = "${codex}/bin/codex --full-auto";
