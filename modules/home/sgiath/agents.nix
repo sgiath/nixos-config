@@ -20,6 +20,9 @@ in
     home.packages = [
       pkgs.python3
 
+      # opencode
+      opencode
+
       # CodeRabbit
       pkgs.${namespace}.coderabbit
 
@@ -34,32 +37,26 @@ in
       pkgs.${namespace}.openwork
       inputs.opencode.packages.${pkgs.stdenv.hostPlatform.system}.desktop
     ];
-    programs.zsh.shellAliases.os = "${openspec}/bin/openspec";
 
     # claude code
     programs.claude-code = {
       enable = true;
       package = pkgs.claude-code;
     };
-    programs.zsh.shellAliases.cc = "${pkgs.claude-code}/bin/claude --dangerously-skip-permissions";
 
     # Codex
     programs.codex = {
       enable = true;
       package = codex;
     };
-    programs.zsh.shellAliases.cx = "${codex}/bin/codex --full-auto";
 
-    # opencode
-    programs.opencode = {
-      enable = true;
-      package = opencode;
-      settings = {
-        plugin = [
-        ];
-      };
+    # aliases
+    programs.zsh.shellAliases = {
+      oc = "${opencode}/bin/opencode";
+      os = "${openspec}/bin/openspec";
+      cc = "${pkgs.claude-code}/bin/claude --dangerously-skip-permissions";
+      cx = "${codex}/bin/codex --full-auto";
     };
-    programs.zsh.shellAliases.oc = "${opencode}/bin/opencode";
 
     # bun
     programs.bun.enable = true;
