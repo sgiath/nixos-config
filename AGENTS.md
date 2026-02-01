@@ -86,3 +86,10 @@ Three nixpkgs channels available via overlays:
 - `modules/home/sgiath/default.nix` - Main user module, defines custom shell scripts
 - `modules/nixos/sgiath/default.nix` - Main system module aggregator
 - `overlays/sgiath/default.nix` - Package overrides from different sources
+
+## Package Guidelines
+
+When creating new packages in `packages/`:
+- Always include `update.sh` script for version updates (see `packages/openwork/update.sh` for reference)
+- Remember to `git add` new package files before Nix can see them
+- Follow the existing pattern: `packages/<name>/default.nix` + entry in `packages/default.nix`
