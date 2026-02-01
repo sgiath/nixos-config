@@ -23,7 +23,7 @@ in
         locations = {
           "/" = {
             proxyWebsockets = true;
-            proxyPass = "http://192.168.1.7:12345";
+            proxyPass = "http://192.168.1.7:4096";
           };
         };
       };
