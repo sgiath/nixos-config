@@ -9,13 +9,6 @@ let
     pkgs.writeShellScriptBin "gc" ''
       set -euo pipefail
 
-      if [[ $# -lt 1 ]]; then
-        echo "Usage: gc <git-url> [project-name]"
-        echo ""
-        echo "Clones a git repo as bare for worktree workflow"
-        exit 1
-      fi
-
       url="$1"
 
       # Extract project name from URL if not provided
@@ -25,11 +18,12 @@ let
         project=$(basename "$url" .git)
       fi
 
+      mkdir -p "$project"
+      cd "$project"
+
       # Clone as bare repo
       echo "Cloning $url as bare repo..."
-      git clone --bare "$url" "$project/.bare"
-
-      cd "$project"
+      git clone --bare "$url" .bare
 
       # Create .git file pointing to bare repo
       echo "gitdir: ./.bare" > .git
@@ -59,13 +53,6 @@ let
   gw = (
     pkgs.writeShellScriptBin "gw" ''
       set -euo pipefail
-
-      if [[ $# -lt 1 ]]; then
-        echo "Usage: gw <branch-name>"
-        echo ""
-        echo "Creates a git worktree"
-        exit 1
-      fi
 
       branch="$1"
       repo_root=$(dirname "$(git rev-parse --git-common-dir)")

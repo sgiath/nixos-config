@@ -44,7 +44,7 @@
 
         # New window/splits - open in current pane's directory
         bind m new-window -c "#{pane_current_path}"
-        bind '"' split-window -c "#{pane_current_path}"
+        bind '"' split-window -v -c "#{pane_current_path}"
         bind % split-window -h -c "#{pane_current_path}"
 
         # Config reload
