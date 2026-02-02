@@ -3,7 +3,7 @@
   lib,
   pkgs,
   inputs,
-  # namespace,
+  namespace,
   ...
 }:
 let
@@ -19,6 +19,7 @@ in
   config = lib.mkIf config.sgiath.agents.enable {
     home.packages = [
       pkgs.python3
+      pkgs.${namespace}.bird
 
       # opencode
       opencode
