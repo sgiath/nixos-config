@@ -22,21 +22,21 @@ in
 
       # opencode
       opencode
+      # inputs.opencode.packages.${pkgs.stdenv.hostPlatform.system}.desktop
+      # pkgs.${namespace}.openwork
 
       # CodeRabbit
-      pkgs.${namespace}.coderabbit
+      # pkgs.${namespace}.coderabbit
 
       # Claude Code
-      pkgs.${namespace}.claude-code-acp
+      # pkgs.${namespace}.claude-code-acp
 
       # LLM tools
       openspec
       pkgs.${namespace}.agent-of-empires
-      pkgs.${namespace}.gastown
-      inputs.beads.packages.${pkgs.stdenv.hostPlatform.system}.default
-      pkgs.${namespace}.bdui
-      pkgs.${namespace}.openwork
-      inputs.opencode.packages.${pkgs.stdenv.hostPlatform.system}.desktop
+      # pkgs.${namespace}.gastown
+      # inputs.beads.packages.${pkgs.stdenv.hostPlatform.system}.default
+      # pkgs.${namespace}.bdui
     ];
 
     # claude code
