@@ -61,5 +61,18 @@ in
 
     # bun
     programs.bun.enable = true;
+
+    systemd.user.services.opencode-server = {
+      Unit = {
+        Description = "OpenCode Server";
+      };
+      Service = {
+        Environment = [ "OPENCODE_SERVER_PASSWORD=\"\"" ];
+        ExecStart = "${opencode}/bin/opencode serve --cors http://localhost:4096 --cors https://opencode.sgiath.dev --port 4096 --hostname 0.0.0.0";
+      };
+      Install = {
+        WantedBy = [ "multi-user.target" ];
+      };
+    };
   };
 }
