@@ -4,10 +4,116 @@
   pkgs,
   ...
 }:
+let
+  gc = (
+    pkgs.writeShellScriptBin "gc" ''
+      set -euo pipefail
+
+      if [[ $# -lt 1 ]]; then
+        echo "Usage: gc <git-url> [project-name]"
+        echo ""
+        echo "Clones a git repo as bare for worktree workflow"
+        exit 1
+      fi
+
+      url="$1"
+
+      # Extract project name from URL if not provided
+      if [[ $# -ge 2 ]]; then
+        project="$2"
+      else
+        project=$(basename "$url" .git)
+      fi
+
+      # Clone as bare repo
+      echo "Cloning $url as bare repo..."
+      git clone --bare "$url" "$project/.bare"
+
+      cd "$project"
+
+      # Create .git file pointing to bare repo
+      echo "gitdir: ./.bare" > .git
+
+      # Configure fetch to get all branches
+      git config remote.origin.fetch "+refs/heads/*:refs/remotes/origin/*"
+
+      # Fetch all branches
+      echo "Fetching all branches..."
+      git fetch origin
+
+      # Determine default branch (prefer master, fallback to main)
+      if git show-ref --verify --quiet "refs/remotes/origin/master"; then
+        default_branch="master"
+      elif git show-ref --verify --quiet "refs/remotes/origin/main"; then
+        default_branch="main"
+      else
+        default_branch=$(git symbolic-ref refs/remotes/origin/HEAD 2>/dev/null | sed 's@^refs/remotes/origin/@@' || echo "master")
+      fi
+
+      # Create the main worktree
+      echo "Creating worktree for $default_branch..."
+      git worktree add "$default_branch" "$default_branch"
+    ''
+  );
+
+  gw = (
+    pkgs.writeShellScriptBin "gw" ''
+      set -euo pipefail
+
+      if [[ $# -lt 1 ]]; then
+        echo "Usage: gw <branch-name>"
+        echo ""
+        echo "Creates a git worktree"
+        exit 1
+      fi
+
+      branch="$1"
+      repo_root=$(dirname "$(git rev-parse --git-common-dir)")
+      worktree_dir="$repo_root/$branch"
+
+      # Check if branch exists locally or remotely
+      if git show-ref --verify --quiet "refs/heads/$branch"; then
+        echo "Creating worktree for existing local branch: $branch"
+        git worktree add "$worktree_dir" "$branch"
+      elif git show-ref --verify --quiet "refs/remotes/origin/$branch"; then
+        echo "Creating worktree for remote branch: $branch"
+        git worktree add "$worktree_dir" "$branch"
+      else
+        echo "Creating worktree with new branch: $branch"
+        git worktree add "$worktree_dir" -b "$branch"
+      fi
+
+      # Copy .env if it exists
+      if [[ -f "$repo_root/.env" ]]; then
+        ln -sf "$repo_root/.env" "$worktree_dir/.env"
+        echo "Linked .env to worktree"
+      fi
+
+      # Run direnv allow in the new worktree
+      pushd "$worktree_dir" > /dev/null
+      direnv allow
+      popd > /dev/null
+
+      # Create new tmux window if inside tmux
+      if [[ -n "''${TMUX:-}" ]]; then
+        tmux new-window -n "$branch" -c "$worktree_dir"
+        echo "Created tmux window: $branch"
+      else
+        echo ""
+        echo "Worktree ready at: $worktree_dir"
+        echo "cd $worktree_dir"
+      fi
+    ''
+  );
+in
 {
   config = lib.mkIf config.programs.git.enable {
     home = {
-      packages = with pkgs; [ git-crypt ];
+      packages = with pkgs; [
+        gc
+        gw
+        git-crypt
+      ];
 
       file = {
         ".git/commit-template".text = ''

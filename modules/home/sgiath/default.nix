@@ -143,54 +143,6 @@
           doas nix-store --optimise
         '')
 
-        (writeShellScriptBin "gw" ''
-          set -euo pipefail
-
-          if [[ $# -lt 1 ]]; then
-            echo "Usage: gw <branch-name>"
-            echo ""
-            echo "Creates a git worktree"
-            exit 1
-          fi
-
-          branch="$1"
-          repo_root=$(dirname "$(git rev-parse --git-common-dir)")
-          worktree_dir="$repo_root/$branch"
-
-          # Check if branch exists locally or remotely
-          if git show-ref --verify --quiet "refs/heads/$branch"; then
-            echo "Creating worktree for existing local branch: $branch"
-            git worktree add "$worktree_dir" "$branch"
-          elif git show-ref --verify --quiet "refs/remotes/origin/$branch"; then
-            echo "Creating worktree for remote branch: $branch"
-            git worktree add "$worktree_dir" "$branch"
-          else
-            echo "Creating worktree with new branch: $branch"
-            git worktree add "$worktree_dir" -b "$branch"
-          fi
-
-          # Copy .env if it exists
-          if [[ -f "$repo_root/.env" ]]; then
-            ln -sf "$repo_root/.env" "$worktree_dir/.env"
-            echo "Linked .env to worktree"
-          fi
-
-          # Run direnv allow in the new worktree
-          pushd "$worktree_dir" > /dev/null
-          direnv allow
-          popd > /dev/null
-
-          # Create new tmux window if inside tmux
-          if [[ -n "''${TMUX:-}" ]]; then
-            tmux new-window -n "$branch" -c "$worktree_dir"
-            echo "Created tmux window: $branch"
-          else
-            echo ""
-            echo "Worktree ready at: $worktree_dir"
-            echo "cd $worktree_dir"
-          fi
-        '')
-
         (writeShellScriptBin "update-pkgs" ''
           echo "==> Updating all custom packages..."
 

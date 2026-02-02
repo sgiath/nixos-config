@@ -7,23 +7,16 @@
 {
   config = lib.mkIf config.programs.chromium.enable {
     programs.chromium = {
-      # package = pkgs.ungoogled-chromium;
+      package = pkgs.ungoogled-chromium;
       dictionaries = [ pkgs.hunspellDictsChromium.en_US ];
       commandLineArgs = [
         "--password-store=gnome-libsecret"
         "--ozone-platform-hint=wayland"
         "--gtk-version=4"
-        "--enable-features=TouchpadOverscrollHistoryNavigation"
         "--enable-wayland-ime"
         "--disable-features=ExtensionManifestV2Unsupported"
 
         "--enable-features=WebUIDarkMode"
-        # "--enable-features=Vulkan"
-        # "--enable-features=VaapiVideoEncoder"
-        # "--enable-features=VaapiVideoDecoder"
-
-        # "--enable-unsafe-webgpu"
-        # "--ignore-gpu-blocklist"
         "--enable-gpu-rasterization"
         "--enable-zero-copy"
 

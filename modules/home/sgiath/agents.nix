@@ -3,7 +3,7 @@
   lib,
   pkgs,
   inputs,
-  namespace,
+  # namespace,
   ...
 }:
 let
@@ -33,7 +33,7 @@ in
 
       # LLM tools
       openspec
-      pkgs.${namespace}.agent-of-empires
+      # pkgs.${namespace}.agent-of-empires
       # pkgs.${namespace}.gastown
       # inputs.beads.packages.${pkgs.stdenv.hostPlatform.system}.default
       # pkgs.${namespace}.bdui
