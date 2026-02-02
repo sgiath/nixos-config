@@ -7,7 +7,7 @@
 {
   config = lib.mkIf config.programs.chromium.enable {
     programs.chromium = {
-      package = pkgs.ungoogled-chromium;
+      # package = pkgs.ungoogled-chromium;
       dictionaries = [ pkgs.hunspellDictsChromium.en_US ];
       commandLineArgs = [
         "--password-store=gnome-libsecret"
