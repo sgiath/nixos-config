@@ -172,6 +172,9 @@
           echo ""; echo "=== ntm ==="
           ./ntm/update.sh
 
+          echo ""; echo "=== ocx ==="
+          ./ocx/update.sh
+
           echo ""; echo "=== openwork ==="
           ./openwork/update.sh
 
