@@ -12,14 +12,12 @@
   config = lib.mkIf (config.sgiath.comm.enable) {
     home.packages = with pkgs; [
       webcord
-      discordo
       telegram-desktop
       signal-desktop-bin
-      mattermost-desktop
+      # mattermost-desktop
       # cinny-desktop
-      fractal
-      simplex-chat-desktop
-      nak
+      # fractal
+      # simplex-chat-desktop
     ];
 
     wayland.windowManager.hyprland.settings = {
@@ -39,13 +37,6 @@
         "match:class cinny, workspace 10 silent, no_initial_focus on"
         "match:class org.gnome.Fractal, workspace 10 silent, no_initial_focus on"
       ];
-    };
-
-    programs = {
-      newsboat = {
-        enable = true;
-        autoReload = true;
-      };
     };
   };
 }

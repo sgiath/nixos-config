@@ -28,8 +28,8 @@ in
         Service = {
           Environment = [
             "OPENCODE_SERVER_PASSWORD=\"\""
-            "OPENCODE_CONFIG=~/.config/opencode/vanilla/opencode.jsonc"
-            "OPENCODE_CONFIG_DIR=~/.config/opencode/vanilla"
+            "OPENCODE_CONFIG=${config.xdg.configHome}/opencode/vanilla/opencode.jsonc"
+            "OPENCODE_CONFIG_DIR=${config.xdg.configHome}/opencode/vanilla"
             ""
           ];
           ExecStart = "${opencode}/bin/opencode serve --port 4096";
@@ -46,8 +46,8 @@ in
         Service = {
           Environment = [
             "OPENCODE_SERVER_PASSWORD=\"\""
-            "OPENCODE_CONFIG=~/.config/opencode/omo/opencode.jsonc"
-            "OPENCODE_CONFIG_DIR=~/.config/opencode/omo"
+            "OPENCODE_CONFIG=${config.xdg.configHome}/opencode/omo/opencode.jsonc"
+            "OPENCODE_CONFIG_DIR=${config.xdg.configHome}/opencode/omo"
             ""
           ];
           ExecStart = "${opencode}/bin/opencode serve --port 4097";
