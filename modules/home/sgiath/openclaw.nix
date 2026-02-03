@@ -1,48 +1,42 @@
 {
   config,
   lib,
+  pkgs,
+  namespace,
   ...
 }:
 let
   secrets = builtins.fromJSON (builtins.readFile ./../../../secrets.json);
 in
 {
-  config = lib.mkIf config.programs.openclaw.enable {
-    programs.openclaw = {
-      documents = ./openclaw;
+  config = lib.mkIf config.programs.agents.enable {
+    home.packages = [
+      pkgs.${namespace}.openclaw
+      pkgs.nodejs
+    ];
 
-      config = {
-        gateway = {
-          mode = "local";
-          auth = {
-            mode = "token";
-            token = secrets.openclaw-token;
-          };
+    systemd.user.services = {
+      openclaw-gateway = {
+        Unit = {
+          Description = "OpenClaw Gateway";
+          After = [ "network-online.target" ];
+          Wants = [ "network-online.target" ];
         };
-
-        channels.telegram = {
-          tokenFile = "/home/sgiath/.telegram-clawdbot";
-          accounts.default = {
-            allowFrom = [ 5162798212 ];
-            groups = {
-              "*".requireMention = true;
-            };
-          };
+        Service = {
+          Environment = [
+            "HOME=/home/sgiath"
+            "OPENCLAW_GATEWAY_PORT=18789"
+            "OPENCLAW_GATEWAY_TOKEN=${secrets.openclaw-token}"
+            "OPENCLAW_SYSTEMD_UNIT=openclaw-gateway.service"
+            "OPENCLAW_SERVICE_MARKER=openclaw"
+            "OPENCLAW_SERVICE_KIND=gateway"
+            "OPENCLAW_SERVICE_VERSION=2026.2.1"
+          ];
+          ExecStart = "${pkgs.${namespace}.openclaw}/bin/openclaw gateway --port 18789";
         };
-      };
-
-      instances.default = {
-        enable = true;
-
-        # plugins = [
-        #   { source = "github:openclaw/nix-steipete-tools?dir=tools/summarize"; }
-        #   { source = "github:openclaw/nix-steipete-tools?dir=tools/peekaboo"; }
-        #   { source = "github:openclaw/nix-steipete-tools?dir=tools/oracle"; }
-        #   { source = "github:openclaw/nix-steipete-tools?dir=tools/sag"; }
-        #   { source = "github:openclaw/nix-steipete-tools?dir=tools/camsnap"; }
-        #   { source = "github:openclaw/nix-steipete-tools?dir=tools/bird"; }
-        #   { source = "github:joshp123/xuezh"; }
-        # ];
+        Install = {
+          WantedBy = [ "multi-user.target" ];
+        };
       };
     };
   };
