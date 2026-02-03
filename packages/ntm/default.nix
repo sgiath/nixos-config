@@ -6,16 +6,16 @@
 
 buildGoModule rec {
   pname = "ntm";
-  version = "1.5.0";
+  version = "1.7.0";
 
   src = fetchFromGitHub {
     owner = "Dicklesworthstone";
     repo = "ntm";
     rev = "v${version}";
-    hash = "sha256-fQWKxosRJSGyBHaR8n4oVsgp0YdUxd7AjuxEG8c2URs=";
+    hash = "sha256-bfFk2avBbZHnVyl1GmpM9+IRQX3+Q/LaFGliWAqC13M=";
   };
 
-  vendorHash = "sha256-feuNQJUzDsPxrRZ39no+QzPIiAN/uh7Qu2mwu+KC6iw=";
+  vendorHash = "sha256-k8n+gUW9wadpmoeyj4qiJP5cYzT5Fbcn6wTWqBM1J8w=";
 
   subPackages = [ "cmd/ntm" ];
 

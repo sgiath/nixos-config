@@ -176,6 +176,9 @@
           echo ""; echo "=== ocx ==="
           ./ocx/update.sh
 
+          echo ""; echo "=== openclaw ==="
+          ./openclaw/update.sh
+
           echo ""; echo "=== openwork ==="
           ./openwork/update.sh
 
