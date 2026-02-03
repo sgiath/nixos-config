@@ -22,14 +22,13 @@ in
 
     systemd.user.services = {
       opencode-vanilla = {
-        Unit = {
-          Description = "OpenCode vanilla Server";
-        };
+        Unit.Description = "OpenCode vanilla Server";
         Service = {
           Environment = [
             "OPENCODE_SERVER_PASSWORD=\"\""
-            "OPENCODE_CONFIG=${config.xdg.configHome}/opencode/vanilla/opencode.jsonc"
-            "OPENCODE_CONFIG_DIR=${config.xdg.configHome}/opencode/vanilla"
+            "OPENCODE_DISABLE_CLAUDE_CODE=true"
+            "OPENCODE_CONFIG=/home/sgiath/.config/opencode/vanilla/opencode.jsonc"
+            "OPENCODE_CONFIG_DIR=/home/sgiath/.config/opencode/vanilla"
             ""
           ];
           ExecStart = "${opencode}/bin/opencode serve --port 4096";
@@ -46,8 +45,9 @@ in
         Service = {
           Environment = [
             "OPENCODE_SERVER_PASSWORD=\"\""
-            "OPENCODE_CONFIG=${config.xdg.configHome}/opencode/omo/opencode.jsonc"
-            "OPENCODE_CONFIG_DIR=${config.xdg.configHome}/opencode/omo"
+            "OPENCODE_DISABLE_CLAUDE_CODE=true"
+            "OPENCODE_CONFIG=/home/sgiath/.config/opencode/omo/opencode.jsonc"
+            "OPENCODE_CONFIG_DIR=/home/sgiath/.config/opencode/omo"
             ""
           ];
           ExecStart = "${opencode}/bin/opencode serve --port 4097";
