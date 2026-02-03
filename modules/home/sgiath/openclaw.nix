@@ -7,9 +7,10 @@
 }:
 let
   secrets = builtins.fromJSON (builtins.readFile ./../../../secrets.json);
-  myPath = lib.concatStringsSep ":" (
-    config.home.sessionPath ++ [ "${config.home.profileDirectory}/bin" ]
-  );
+  myPath = lib.concatStringsSep ":" [
+    "${config.home.profileDirectory}/bin"
+    "${pkgs.coreutils}/bin"
+  ];
 in
 {
   config = lib.mkIf config.sgiath.agents.enable {
