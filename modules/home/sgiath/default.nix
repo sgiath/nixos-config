@@ -21,6 +21,7 @@
     ./hyprland.nix
     ./nvim.nix
     ./openclaw.nix
+    ./opencode.nix
     ./ssh.nix
     ./starship.nix
     ./stylix.nix

@@ -7,7 +7,6 @@
   ...
 }:
 let
-  opencode = inputs.opencode.packages.${pkgs.stdenv.hostPlatform.system}.default;
   codex = inputs.codex.packages.${pkgs.stdenv.hostPlatform.system}.default;
   openspec = inputs.openspec.packages.${pkgs.stdenv.hostPlatform.system}.default;
 in
@@ -20,11 +19,6 @@ in
     home.packages = [
       pkgs.python3
       pkgs.${namespace}.bird
-
-      # opencode
-      opencode
-      # inputs.opencode.packages.${pkgs.stdenv.hostPlatform.system}.desktop
-      # pkgs.${namespace}.openwork
 
       # CodeRabbit
       # pkgs.${namespace}.coderabbit
@@ -54,26 +48,11 @@ in
 
     # aliases
     programs.zsh.shellAliases = {
-      oc = "${opencode}/bin/opencode attach http://localhost:4096 --dir $(pwd)";
-      oc-serve = "OPENCODE_SERVER_PASSWORD=\"\" ${opencode}/bin/opencode serve --cors http://localhost:4096 --cors https://opencode.sgiath.dev --port 4096 --hostname 0.0.0.0";
       cc = "${pkgs.claude-code}/bin/claude --dangerously-skip-permissions";
       cx = "${codex}/bin/codex --full-auto";
     };
 
     # bun
     programs.bun.enable = true;
-
-    systemd.user.services.opencode-server = {
-      Unit = {
-        Description = "OpenCode Server";
-      };
-      Service = {
-        Environment = [ "OPENCODE_SERVER_PASSWORD=\"\"" ];
-        ExecStart = "${opencode}/bin/opencode serve --cors http://localhost:4096 --cors https://opencode.sgiath.dev --port 4096 --hostname 0.0.0.0";
-      };
-      Install = {
-        WantedBy = [ "multi-user.target" ];
-      };
-    };
   };
 }
