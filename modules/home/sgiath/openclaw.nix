@@ -29,7 +29,7 @@ in
           KillMode = "process";
           Environment = [
             "HOME=/home/sgiath"
-            "PATH=/home/sgiath/.local/bin:/home/sgiath/.npm-global/bin:/home/sgiath/bin:/home/sgiath/.nvm/current/bin:/home/sgiath/.fnm/current/bin:/home/sgiath/.volta/bin:/home/sgiath/.asdf/shims:/home/sgiath/.local/share/pnpm:/home/sgiath/.bun/bin:/usr/local/bin:/usr/bin:/bin"
+            "PATH=/home/sgiath/.nix-profile/bin:/home/sgiath/.local/bin:/home/sgiath/.npm-global/bin:/home/sgiath/bin:/home/sgiath/.nvm/current/bin:/home/sgiath/.fnm/current/bin:/home/sgiath/.volta/bin:/home/sgiath/.asdf/shims:/home/sgiath/.local/share/pnpm:/home/sgiath/.bun/bin:/usr/local/bin:/usr/bin:/bin"
             "OPENCLAW_GATEWAY_PORT=18789"
             "OPENCLAW_GATEWAY_TOKEN=${secrets.openclaw-token}"
             "OPENCLAW_SYSTEMD_UNIT=openclaw-gateway.service"
