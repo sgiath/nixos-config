@@ -169,8 +169,7 @@
         hyprland.homeManagerModules.default
         sops-nix.homeManagerModules.sops
         nix-index-database.homeModules.nix-index
-        openclaw.homeManagerModules.openclaw
-        # stylix.homeManagerModules.stylix
+        # openclaw.homeManagerModules.openclaw
       ];
     };
 }

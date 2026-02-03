@@ -14,6 +14,7 @@
       webcord
       telegram-desktop
       signal-desktop-bin
+      signal-cli
       # mattermost-desktop
       # cinny-desktop
       # fractal
