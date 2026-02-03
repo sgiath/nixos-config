@@ -20,7 +20,7 @@
     ./gnupg.nix
     ./hyprland.nix
     ./nvim.nix
-    # ./openclaw.nix
+    ./openclaw.nix
     ./opencode.nix
     ./ssh.nix
     ./starship.nix

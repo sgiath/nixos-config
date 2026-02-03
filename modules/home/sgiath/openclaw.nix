@@ -35,7 +35,7 @@ in
           ExecStart = "${pkgs.${namespace}.openclaw}/bin/openclaw gateway --port 18789";
         };
         Install = {
-          WantedBy = [ "multi-user.target" ];
+          WantedBy = [ "default.target" ];
         };
       };
     };
