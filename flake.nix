@@ -139,7 +139,7 @@
         permittedInsecurePackages = [
           "jitsi-meet-1.0.8043"
           "electron-36.9.5"
-          # "olm-3.2.16"
+          "olm-3.2.16"
         ];
       };
 
