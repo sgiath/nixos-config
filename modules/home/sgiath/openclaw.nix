@@ -7,6 +7,9 @@
 }:
 let
   secrets = builtins.fromJSON (builtins.readFile ./../../../secrets.json);
+  myPath = lib.concatStringsSep ":" (
+    config.home.sessionPath ++ [ "${config.home.profileDirectory}/bin" ]
+  );
 in
 {
   config = lib.mkIf config.sgiath.agents.enable {
@@ -29,7 +32,7 @@ in
           KillMode = "process";
           Environment = [
             "HOME=/home/sgiath"
-            "PATH=/home/sgiath/.nix-profile/bin:/home/sgiath/.local/bin:/home/sgiath/.npm-global/bin:/home/sgiath/bin:/home/sgiath/.nvm/current/bin:/home/sgiath/.fnm/current/bin:/home/sgiath/.volta/bin:/home/sgiath/.asdf/shims:/home/sgiath/.local/share/pnpm:/home/sgiath/.bun/bin:/usr/local/bin:/usr/bin:/bin"
+            "PATH=${myPath}"
             "OPENCLAW_GATEWAY_PORT=18789"
             "OPENCLAW_GATEWAY_TOKEN=${secrets.openclaw-token}"
             "OPENCLAW_SYSTEMD_UNIT=openclaw-gateway.service"
