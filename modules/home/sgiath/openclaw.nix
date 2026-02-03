@@ -13,6 +13,7 @@ in
     home.packages = [
       pkgs.${namespace}.openclaw
       pkgs.nodejs
+      pkgs.nheko
     ];
 
     systemd.user.services = {
