@@ -16,8 +16,8 @@ in
 
     # aliases
     programs.zsh.shellAliases = {
-      oc = "OPENCODE_EXPERIMENTAL_PLAN_MODE=1 OPENCODE_DISABLE_CLAUDE_CODE=true OPENCODE_CONFIG=${config.xdg.configHome}/opencode/vanilla/opencode.jsonc OPENCODE_CONFIG_DIR=${config.xdg.configHome}/opencode/vanilla ${opencode}/bin/opencode --port 4096";
-      omo = "OPENCODE_DISABLE_CLAUDE_CODE=true OPENCODE_CONFIG=${config.xdg.configHome}/opencode/omo/opencode.jsonc OPENCODE_CONFIG_DIR=${config.xdg.configHome}/opencode/omo ${opencode}/bin/opencode --port 4097";
+      oc = "OPENCODE_EXPERIMENTAL_PLAN_MODE=1 OPENCODE_DISABLE_CLAUDE_CODE=true OPENCODE_CONFIG=${config.xdg.configHome}/opencode/vanilla/opencode.jsonc OPENCODE_CONFIG_DIR=${config.xdg.configHome}/opencode/vanilla ${opencode}/bin/opencode";
+      omo = "OPENCODE_DISABLE_CLAUDE_CODE=true OPENCODE_CONFIG=${config.xdg.configHome}/opencode/omo/opencode.jsonc OPENCODE_CONFIG_DIR=${config.xdg.configHome}/opencode/omo ${opencode}/bin/opencode --port 4096";
     };
 
     # systemd.user.services = {
