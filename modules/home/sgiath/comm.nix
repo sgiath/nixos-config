@@ -16,7 +16,7 @@
       signal-desktop-bin
       signal-cli
       # mattermost-desktop
-      # cinny-desktop
+      cinny-desktop
       # fractal
       # simplex-chat-desktop
     ];
