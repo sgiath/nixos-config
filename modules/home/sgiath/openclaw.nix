@@ -17,7 +17,8 @@
 
       instances.default = {
         enable = true;
-        launchd.enable = true;
+        systemd.enable = true;
+        launchd.enable = false;
 
         stateDir = "/home/sgiath/.openclaw";
         workspaceDir = "/home/sgiath/.openclaw/workspace";
