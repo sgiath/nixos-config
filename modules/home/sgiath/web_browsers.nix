@@ -42,7 +42,6 @@
 
     stylix.targets = {
       firefox.enable = false;
-      librewolf.enable = false;
     };
 
     wayland.windowManager.hyprland.settings.windowrule = [
