@@ -40,10 +40,6 @@
       };
     };
 
-    stylix.targets = {
-      firefox.profileNames = [ "default" ];
-    };
-
     wayland.windowManager.hyprland.settings.windowrule = [
       "match:class firefox, workspace 4 silent"
     ];
