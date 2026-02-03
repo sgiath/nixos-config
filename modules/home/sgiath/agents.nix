@@ -16,6 +16,7 @@ in
 
   config = lib.mkIf config.sgiath.agents.enable {
     home.packages = [
+      pkgs.openclaw-batteries
       pkgs.python3
       pkgs.${namespace}.bird
 
