@@ -10,4 +10,5 @@ pkgs: {
   n8n = pkgs.callPackage ./n8n { };
   ntm = pkgs.callPackage ./ntm { };
   ocx = pkgs.callPackage ./ocx { };
+  openclaw = pkgs.callPackage ./openclaw { };
 }
