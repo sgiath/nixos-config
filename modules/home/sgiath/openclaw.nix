@@ -3,6 +3,9 @@
   lib,
   ...
 }:
+let
+  secrets = builtins.fromJSON (builtins.readFile ./../../../secrets.json);
+in
 {
   config = lib.mkIf config.programs.openclaw.enable {
     programs.openclaw = {
@@ -13,7 +16,7 @@
           mode = "local";
           auth = {
             mode = "token";
-            token = "1234";
+            token = secrets.openclaw-token;
           };
         };
 
