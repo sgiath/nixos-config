@@ -21,6 +21,7 @@
         systemd.enable = true;
         launchd.enable = false;
 
+        configPath = "/home/sgiath/.openclaw/openclaw.json";
         stateDir = "/home/sgiath/.openclaw";
         workspaceDir = "/home/sgiath/.openclaw/workspace";
         # plugins = [
