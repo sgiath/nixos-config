@@ -7,9 +7,12 @@
 }:
 let
   secrets = builtins.fromJSON (builtins.readFile ./../../../secrets.json);
-  myPath = lib.concatStringsSep ":" [
+
+  openclawPath = lib.concatStringsSep ":" [
     "${config.home.profileDirectory}/bin"
     "${pkgs.coreutils}/bin"
+    "${pkgs.curl}/bin"
+    "${pkgs.yt-dlp}/bin"
   ];
 in
 {
@@ -17,7 +20,6 @@ in
     home.packages = [
       pkgs.${namespace}.openclaw
       pkgs.nodejs
-      pkgs.nheko
     ];
 
     systemd.user.services = {
@@ -33,7 +35,7 @@ in
           KillMode = "process";
           Environment = [
             "HOME=/home/sgiath"
-            "PATH=${myPath}"
+            "PATH=${openclawPath}"
             "OPENCLAW_GATEWAY_PORT=18789"
             "OPENCLAW_GATEWAY_TOKEN=${secrets.openclaw-token}"
             "OPENCLAW_SYSTEMD_UNIT=openclaw-gateway.service"
