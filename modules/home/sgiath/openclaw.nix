@@ -9,7 +9,7 @@ let
   secrets = builtins.fromJSON (builtins.readFile ./../../../secrets.json);
 in
 {
-  config = lib.mkIf config.programs.agents.enable {
+  config = lib.mkIf config.sgiath.agents.enable {
     home.packages = [
       pkgs.${namespace}.openclaw
       pkgs.nodejs
