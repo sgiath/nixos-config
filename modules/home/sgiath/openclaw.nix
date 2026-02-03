@@ -9,21 +9,23 @@
       documents = ./openclaw;
 
       config = {
-        gateway.mode = "local";
+        gateway = {
+          mode = "local";
+          auth = "1234";
+        };
+
         channels.telegram = {
           tokenFile = "/home/sgiath/.telegram-clawdbot";
           allowFrom = [ 5162798212 ];
+          groups = {
+            "*".requireMention = true;
+          };
         };
       };
 
       instances.default = {
         enable = true;
-        systemd.enable = true;
-        launchd.enable = false;
 
-        configPath = "/home/sgiath/.openclaw/openclaw.json";
-        stateDir = "/home/sgiath/.openclaw";
-        workspaceDir = "/home/sgiath/.openclaw/workspace";
         # plugins = [
         #   { source = "github:openclaw/nix-steipete-tools?dir=tools/summarize"; }
         #   { source = "github:openclaw/nix-steipete-tools?dir=tools/peekaboo"; }
