@@ -9,6 +9,7 @@
       documents = ./openclaw;
 
       config = {
+        gateway.mode = "local";
         channels.telegram = {
           tokenFile = "/home/sgiath/.telegram-clawdbot";
           allowFrom = [ 5162798212 ];
