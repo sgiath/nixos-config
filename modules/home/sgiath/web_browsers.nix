@@ -41,7 +41,7 @@
     };
 
     stylix.targets = {
-      firefox.profileNames = [ ];
+      firefox.profileNames = [ "default" ];
     };
 
     wayland.windowManager.hyprland.settings.windowrule = [
