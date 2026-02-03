@@ -24,7 +24,6 @@
     ./opencode.nix
     ./ssh.nix
     ./starship.nix
-    ./stylix.nix
     ./tmux.nix
     ./wallpaper.nix
     ./waybar.nix

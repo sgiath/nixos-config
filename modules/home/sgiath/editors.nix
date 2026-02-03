@@ -45,7 +45,6 @@ in
         pkgs.nil
       ];
     };
-    stylix.targets.zed.enable = false;
     programs.zsh.shellAliases.zed = "${zed}/bin/zeditor";
 
     home.packages = [ cursor ];
