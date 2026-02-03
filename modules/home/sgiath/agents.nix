@@ -8,6 +8,7 @@
 }:
 let
   codex = inputs.codex.packages.${pkgs.stdenv.hostPlatform.system}.default;
+  pkgs-oc = pkgs.openclawPackages.withTools { excludeToolNames = [ "git" ]; }
 in
 {
   options.sgiath.agents = {
@@ -16,7 +17,7 @@ in
 
   config = lib.mkIf config.sgiath.agents.enable {
     home.packages = [
-      pkgs.openclaw
+      pkgs-oc.openclaw
       pkgs.python3
       pkgs.${namespace}.bird
 
