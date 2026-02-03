@@ -11,14 +11,19 @@
       config = {
         gateway = {
           mode = "local";
-          auth = "1234";
+          auth = {
+            mode = "token";
+            token = "1234";
+          };
         };
 
         channels.telegram = {
           tokenFile = "/home/sgiath/.telegram-clawdbot";
-          allowFrom = [ 5162798212 ];
-          groups = {
-            "*".requireMention = true;
+          accounts.default = {
+            allowFrom = [ 5162798212 ];
+            groups = {
+              "*".requireMention = true;
+            };
           };
         };
       };
