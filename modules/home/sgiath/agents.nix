@@ -8,7 +8,7 @@
 }:
 let
   codex = inputs.codex.packages.${pkgs.stdenv.hostPlatform.system}.default;
-  pkgs-oc = pkgs.openclawPackages.withTools { excludeToolNames = [ "git" ]; }
+  pkgs-oc = pkgs.openclawPackages.withTools { excludeToolNames = [ "git" ]; };
 in
 {
   options.sgiath.agents = {
