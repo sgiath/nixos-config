@@ -19,6 +19,7 @@ in
     home.packages = [
       # pkgs-oc.openclaw
       pkgs.${namespace}.openclaw
+      pkgs.nodejs
       pkgs.python3
       pkgs.${namespace}.bird
 

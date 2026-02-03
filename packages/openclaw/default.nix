@@ -2,6 +2,7 @@
   lib,
   buildNpmPackage,
   fetchurl,
+  jq,
 }:
 
 buildNpmPackage rec {
@@ -16,10 +17,13 @@ buildNpmPackage rec {
   sourceRoot = "package";
 
   postPatch = ''
+    # Add missing dependency for matrix extension (upstream issue)
+    ${lib.getExe jq} '.dependencies["@vector-im/matrix-bot-sdk"] = "^0.8.0-element.3"' package.json > package.json.new
+    mv package.json.new package.json
     cp ${./package-lock.json} package-lock.json
   '';
 
-  npmDepsHash = "sha256-sv2wTnCT7fjp494P2QzoPdeEJgyOOoVqcTwrsnvAvzQ=";
+  npmDepsHash = "sha256-qm8f52gD+Ad6ZsPIqPyxelJ6Svl2OODQIkv04aSxB/k=";
 
   dontNpmBuild = true;
 
