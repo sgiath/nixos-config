@@ -16,8 +16,8 @@ in
 
     # aliases
     programs.zsh.shellAliases = {
-      oc = "${opencode}/bin/opencode attach http://localhost:4096 --dir $(pwd)";
-      omo = "${opencode}/bin/opencode attach http://localhost:4097 --dir $(pwd)";
+      oc = "OPENCODE_DISABLE_CLAUDE_CODE=true OPENCODE_CONFIG=${config.xdg.configHome}/opencode/vanilla/opencode.jsonc OPENCODE_CONFIG_DIR=${config.xdg.configHome}/opencode/vanilla ${opencode}/bin/opencode attach http://localhost:4096 --dir $(pwd)";
+      omo = "OPENCODE_DISABLE_CLAUDE_CODE=true OPENCODE_CONFIG=${config.xdg.configHome}/opencode/omo/opencode.jsonc OPENCODE_CONFIG_DIR=${config.xdg.configHome}/opencode/omo ${opencode}/bin/opencode attach http://localhost:4097 --dir $(pwd)";
     };
 
     systemd.user.services = {
@@ -27,9 +27,8 @@ in
           Environment = [
             "OPENCODE_SERVER_PASSWORD=\"\""
             "OPENCODE_DISABLE_CLAUDE_CODE=true"
-            "OPENCODE_CONFIG=/home/sgiath/.config/opencode/vanilla/opencode.jsonc"
-            "OPENCODE_CONFIG_DIR=/home/sgiath/.config/opencode/vanilla"
-            ""
+            "OPENCODE_CONFIG=${config.xdg.configHome}/opencode/vanilla/opencode.jsonc"
+            "OPENCODE_CONFIG_DIR=${config.xdg.configHome}/opencode/vanilla"
           ];
           ExecStart = "${opencode}/bin/opencode serve --port 4096";
         };
@@ -46,9 +45,8 @@ in
           Environment = [
             "OPENCODE_SERVER_PASSWORD=\"\""
             "OPENCODE_DISABLE_CLAUDE_CODE=true"
-            "OPENCODE_CONFIG=/home/sgiath/.config/opencode/omo/opencode.jsonc"
-            "OPENCODE_CONFIG_DIR=/home/sgiath/.config/opencode/omo"
-            ""
+            "OPENCODE_CONFIG=${config.xdg.configHome}/opencode/omo/opencode.jsonc"
+            "OPENCODE_CONFIG_DIR=${config.xdg.configHome}/opencode/omo"
           ];
           ExecStart = "${opencode}/bin/opencode serve --port 4097";
         };
