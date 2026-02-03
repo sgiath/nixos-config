@@ -18,7 +18,6 @@ in
   config = lib.mkIf config.sgiath.agents.enable {
     home.packages = [
       pkgs-oc.openclaw
-      pkgs.nodejs
       pkgs.python3
       pkgs.${namespace}.bird
 
