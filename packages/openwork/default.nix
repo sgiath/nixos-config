@@ -17,11 +17,11 @@
 
 stdenv.mkDerivation rec {
   pname = "openwork";
-  version = "0.11.9";
+  version = "0.11.10";
 
   src = fetchurl {
     url = "https://github.com/different-ai/openwork/releases/download/v${version}/openwork-desktop-linux-amd64.deb";
-    hash = "sha256-q3+H91ECywQOCUjC4kidimYEHYRc6V9rGblAGEqltKU=";
+    hash = "sha256-RTJ04eP4zNQ3XIwYv+mgeULMzyPJ0zOdPSB14Yw23ow=";
   };
 
   nativeBuildInputs = [
