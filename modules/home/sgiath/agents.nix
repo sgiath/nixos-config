@@ -17,6 +17,7 @@ in
   config = lib.mkIf config.sgiath.agents.enable {
     home.packages = [
       pkgs.python3
+      pkgs.uv
       pkgs.${namespace}.bird
 
       # CodeRabbit
