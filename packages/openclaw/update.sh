@@ -40,6 +40,9 @@ trap 'rm -rf "${TEMP_DIR}"' EXIT
 cd "${TEMP_DIR}"
 tar -xzf "$(nix-store --realize "$(nix-prefetch-url --print-path "${TARBALL_URL}" 2>/dev/null | tail -1)")"
 cd package
+# Add missing dependency that postPatch adds (must match default.nix)
+jq '.dependencies["@vector-im/matrix-bot-sdk"] = "^0.8.0-element.3"' package.json >package.json.new
+mv package.json.new package.json
 npm install --package-lock-only --ignore-scripts 2>/dev/null || true
 cp package-lock.json "${SCRIPT_DIR}/package-lock.json"
 
@@ -54,8 +57,8 @@ echo "==> Updating default.nix..."
 # Update version
 sed -i "s/version = \"[^\"]*\";/version = \"${VERSION}\";/" "${DEFAULT_NIX}"
 
-# Update tarball hash
-sed -i "s|hash = \"sha256-[^\"]*\";|hash = \"${HASH_SRI}\";|" "${DEFAULT_NIX}"
+# Update tarball hash (only first occurrence - src, not matrixCryptoNative)
+sed -i "0,/hash = \"sha256-[^\"]*\";/s|hash = \"sha256-[^\"]*\";|hash = \"${HASH_SRI}\";|" "${DEFAULT_NIX}"
 
 # Update npmDepsHash
 sed -i "s|npmDepsHash = \"sha256-[^\"]*\";|npmDepsHash = \"${NPM_DEPS_HASH}\";|" "${DEFAULT_NIX}"
