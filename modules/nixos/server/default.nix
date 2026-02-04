@@ -18,6 +18,7 @@
     ./nginx.nix
     ./ntfy.nix
     ./open-webui.nix
+    ./openclaw.nix
     ./opencode.nix
     ./osm.nix
     ./photo.nix

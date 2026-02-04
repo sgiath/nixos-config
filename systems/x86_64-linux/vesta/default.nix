@@ -47,5 +47,6 @@
     sinai-camp.proxy = true;
     wordpress.proxy = false;
     opencode-proxy.enable = false;
+    openclaw-proxy.enable = true;
   };
 }
