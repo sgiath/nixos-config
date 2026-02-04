@@ -17,7 +17,7 @@ buildNpmPackage rec {
   # Prebuilt native binary for matrix-sdk-crypto (skipped by --ignore-scripts)
   matrixCryptoNative = fetchurl {
     url = "https://github.com/matrix-org/matrix-rust-sdk-crypto-nodejs/releases/download/v0.4.0/matrix-sdk-crypto.linux-x64-gnu.node";
-    hash = "sha256-oOSGLE5WqDhtfAMBIa4wDHv/Gkt21Piki1REmY0Wnzg=";
+    hash = "sha256-cHjU3ZhxKPea/RksT2IfZK3s435D8qh1bx0KnwNN5xg=";
   };
 
   sourceRoot = "package";
