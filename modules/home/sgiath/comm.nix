@@ -15,7 +15,7 @@
       telegram-desktop
       signal-desktop-bin
       # mattermost-desktop
-      cinny-desktop
+      # cinny-desktop
       # fractal
       # simplex-chat-desktop
     ];

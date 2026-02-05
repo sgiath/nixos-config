@@ -136,7 +136,6 @@
         cudaSupport = false;
         rocmSupport = false;
         allowUnfree = true;
-        allowBroken = true;
         permittedInsecurePackages = [
           "jitsi-meet-1.0.8043"
           "electron-36.9.5"
