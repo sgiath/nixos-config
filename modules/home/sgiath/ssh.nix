@@ -16,20 +16,19 @@
         };
 
         # servers
-        "vesta.local".hostname = "192.168.1.3";
         "vesta.sgiath.dev" = {
           hostname = "193.165.30.198";
           port = 2200;
         };
 
-        # Router
+        # local network
         "turris.local" = {
           hostname = "192.168.1.1";
           user = "root";
         };
-
-        # NAS
+        "vesta.local".hostname = "192.168.1.3";
         "nas.local".hostname = "192.168.1.4";
+        "ceres.local".hostname = "192.168.1.7";
 
         # CrazyEgg
         "bastion.crazyegg.com" = {

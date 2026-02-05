@@ -13,6 +13,7 @@
       mprocs
       presenterm
       rclone
+      jq
 
       openssl
       yt-dlp
