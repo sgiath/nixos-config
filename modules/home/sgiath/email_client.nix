@@ -14,7 +14,7 @@
       packages = with pkgs; [
         # claws-mail
 
-        # protonmail-bridge-gui
+        protonmail-bridge-gui
         protonmail-desktop
       ];
 
@@ -35,5 +35,7 @@
         "match:class Proton Mail, workspace 9 silent, no_initial_focus on"
       ];
     };
+
+    services.protonmail-bridge.enable = true;
   };
 }
