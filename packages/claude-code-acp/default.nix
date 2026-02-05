@@ -6,16 +6,16 @@
 
 buildNpmPackage rec {
   pname = "claude-code-acp";
-  version = "0.14.0";
+  version = "0.15.0";
 
   src = fetchFromGitHub {
     owner = "zed-industries";
     repo = "claude-code-acp";
     rev = "v${version}";
-    hash = "sha256-6z0929OquI1s6EtQFjxel1p5dF/ep2hnVGLgKjudj88=";
+    hash = "sha256-vmsPHfE5wAfGARLPlcbQxXuHKMEKUAVC66zlhE0Fdo0=";
   };
 
-  npmDepsHash = "sha256-6DS1e9KxM+E6dj49xucxwXJnXbw2ILLe3fNLQyDpt0w=";
+  npmDepsHash = "sha256-lVxvoTxaLdRQ61rtYKgE9ETaGP3fOovtzYKs5lxMAC8=";
 
   # Build TypeScript to dist/
   npmBuildScript = "build";
