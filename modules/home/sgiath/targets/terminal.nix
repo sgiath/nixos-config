@@ -18,6 +18,7 @@
       openssl
       yt-dlp
       google-cloud-sdk
+      railway
 
       exiftool
       multitail

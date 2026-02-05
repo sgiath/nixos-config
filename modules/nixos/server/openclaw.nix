@@ -15,7 +15,7 @@
 
         locations = {
           "/hooks" = {
-            proxyPass = "http://192.168.1.7:18789";
+            proxyPass = "http://127.0.0.1:18789";
           };
         };
       };
