@@ -10,7 +10,7 @@
   config = lib.mkIf (config.sgiath.targets.graphical) {
     home.packages = with pkgs; [
       xterm
-      instaloader
+      rclone-ui
 
       obsidian
       # libreoffice

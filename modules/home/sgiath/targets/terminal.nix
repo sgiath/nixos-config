@@ -12,6 +12,7 @@
       coreutils-prefixed
       mprocs
       presenterm
+      rclone
 
       openssl
       yt-dlp
