@@ -193,20 +193,19 @@
       "inputs": {
         "nixpkgs": [
           "nixpkgs"
-        ],
-        "rust-overlay": "rust-overlay"
+        ]
       },
       "locked": {
-        "lastModified": 1770307964,
-        "narHash": "sha256-rP5Qo70n5lNrdR6ycE63VObLwcMNRlk8sY/kuJ4Qw9Y=",
+        "lastModified": 1769115457,
+        "narHash": "sha256-VFbtxGOqX80qWqVo+BG+BnUr8DiLCfcJCrN9fwy7utY=",
         "owner": "openai",
         "repo": "codex",
-        "rev": "82464689ce0ba8a3b2065e73a8aa0cfdf2ad0625",
+        "rev": "605d43719efa7f62160904d2dcecc46a64bcd32e",
         "type": "github"
       },
       "original": {
         "owner": "openai",
-        "ref": "rust-v0.98.0",
+        "ref": "rust-v0.89.0",
         "repo": "codex",
         "type": "github"
       }
@@ -1580,27 +1579,6 @@
     "rust-overlay": {
       "inputs": {
         "nixpkgs": [
-          "codex",
-          "nixpkgs"
-        ]
-      },
-      "locked": {
-        "lastModified": 1769828398,
-        "narHash": "sha256-zmnvRUm15QrlKH0V1BZoiT3U+Q+tr+P5Osi8qgtL9fY=",
-        "owner": "oxalica",
-        "repo": "rust-overlay",
-        "rev": "a1d32c90c8a4ea43e9586b7e5894c179d5747425",
-        "type": "github"
-      },
-      "original": {
-        "owner": "oxalica",
-        "repo": "rust-overlay",
-        "type": "github"
-      }
-    },
-    "rust-overlay_2": {
-      "inputs": {
-        "nixpkgs": [
           "zed-editor",
           "nixpkgs"
         ]
@@ -1975,7 +1953,7 @@
         "nixpkgs": [
           "nixpkgs"
         ],
-        "rust-overlay": "rust-overlay_2"
+        "rust-overlay": "rust-overlay"
       },
       "locked": {
         "lastModified": 1770223036,
