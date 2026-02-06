@@ -44,7 +44,7 @@ in
           "OPENCLAW_SYSTEMD_UNIT=openclaw-gateway.service"
           "OPENCLAW_SERVICE_MARKER=openclaw"
           "OPENCLAW_SERVICE_KIND=gateway"
-          "OPENCLAW_SERVICE_VERSION=2026.2.2"
+          "OPENCLAW_SERVICE_VERSION=2026.2.3"
         ];
         ExecStart = "${pkgs.${namespace}.openclaw}/bin/openclaw gateway --port 18789";
       };

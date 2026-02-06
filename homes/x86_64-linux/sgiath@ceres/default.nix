@@ -63,7 +63,7 @@ in
           "OPENCLAW_LOG_PREFIX=ceres"
           "OPENCLAW_SERVICE_MARKER=openclaw"
           "OPENCLAW_SERVICE_KIND=node"
-          "OPENCLAW_SERVICE_VERSION=2026.2.2"
+          "OPENCLAW_SERVICE_VERSION=2026.2.3"
         ];
         ExecStart = "${pkgs.${namespace}.openclaw}/bin/openclaw node run --host 192.168.1.3 --port 18789 --display-name ceres";
       };
