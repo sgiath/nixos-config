@@ -60,10 +60,10 @@ in
           "OPENCLAW_GATEWAY_PORT=18789"
           "OPENCLAW_GATEWAY_TOKEN=${secrets.openclaw-token}"
           "OPENCLAW_SYSTEMD_UNIT=openclaw-node.service"
-          "OPENCLAW_LOG_PREFIX=node"
+          "OPENCLAW_LOG_PREFIX=ceres"
           "OPENCLAW_SERVICE_MARKER=openclaw"
           "OPENCLAW_SERVICE_KIND=node"
-          "OPENCLAW_SERVICE_VERSION=2026.2.3"
+          "OPENCLAW_SERVICE_VERSION=2026.2.2"
         ];
         ExecStart = "${pkgs.${namespace}.openclaw}/bin/openclaw node run --host 192.168.1.3 --port 18789 --display-name ceres";
       };
