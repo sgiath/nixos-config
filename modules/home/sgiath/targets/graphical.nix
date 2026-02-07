@@ -10,8 +10,8 @@
   config = lib.mkIf (config.sgiath.targets.graphical) {
     home.packages = with pkgs; [
       xterm
-      rclone-ui
 
+      gimp
       obsidian
       # libreoffice
       vlc
