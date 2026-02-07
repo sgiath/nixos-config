@@ -6,6 +6,7 @@
         "192.168.1.1" = [ "router.sgiath" ];
         "192.168.1.3" = [
           "vesta.sgiath.dev"
+          "niamh.sgiath.dev"
           "dns.sgiath"
         ];
         "192.168.1.4" = [ "nas.sgiath" ];
