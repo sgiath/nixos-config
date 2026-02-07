@@ -37,6 +37,7 @@ in
 
   config = lib.mkIf config.sgiath.enable {
     users.users.sgiath = {
+      linger = true;
       isNormalUser = true;
       extraGroups = [ "wheel" ];
       hashedPassword = "$y$j9T$EBb/Mjo7nNHfmtbiP1GST0$CctYXT62gX0cMDHzRzYxlix43xC3U6kzSDNvyqZOcj4";
