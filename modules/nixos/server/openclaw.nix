@@ -17,6 +17,17 @@
           "/hooks" = {
             proxyPass = "http://127.0.0.1:18789";
           };
+
+          "/" = {
+            proxyPass = "http://127.0.0.1:18789";
+            extraConfig = ''
+              allow 127.0.0.1;
+              allow ::1;
+              deny 192.168.1.1;
+              allow 192.168.1.0/24;
+              deny all;
+            '';
+          };
         };
       };
     };
