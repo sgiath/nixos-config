@@ -7,11 +7,11 @@
 
 buildNpmPackage rec {
   pname = "openclaw";
-  version = "2026.2.3-1";
+  version = "2026.2.6-3";
 
   src = fetchurl {
     url = "https://registry.npmjs.org/openclaw/-/openclaw-${version}.tgz";
-    hash = "sha256-wUnLY+G+45XG1SyN03fZ/TmKJUNOWEuVQJ60wJr878Y=";
+    hash = "sha256-zDMRFzjdetdw0Q47uqCIKHoqV7UwjxKnS6L9u2VoTJM=";
   };
 
   # Prebuilt native binary for matrix-sdk-crypto (skipped by --ignore-scripts)
@@ -29,7 +29,7 @@ buildNpmPackage rec {
     cp ${./package-lock.json} package-lock.json
   '';
 
-  npmDepsHash = "sha256-IDlQxmNKf7h1Oe9g6b6XPTCBx6ZVKH0e8W5MCawfoa0=";
+  npmDepsHash = "sha256-VIdV5EhtWA9TUfIu0wMj88oW1eFzy//U85adPxalTps=";
 
   dontNpmBuild = true;
 
@@ -44,8 +44,8 @@ buildNpmPackage rec {
   '';
 
   meta = {
-    description = "WhatsApp gateway CLI (Baileys web) with Pi RPC agent";
-    homepage = "https://www.npmjs.com/package/openclaw";
+    description = "Your own personal AI assistant. Any OS. Any Platform. The lobster way.";
+    homepage = "https://github.com/openclaw/openclaw";
     license = lib.licenses.mit;
     mainProgram = "openclaw";
   };
