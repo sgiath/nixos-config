@@ -37,7 +37,7 @@ in
         RestartSec = 5;
         KillMode = "process";
         Environment = [
-          "HOME=${config.home.profileDirectory}"
+          "HOME=${config.home.homeDirectory}"
           "PATH=${openclawPath}"
           "OPENCLAW_GATEWAY_PORT=18789"
           "OPENCLAW_GATEWAY_TOKEN=${secrets.openclaw-token}"
