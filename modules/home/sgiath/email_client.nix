@@ -36,6 +36,6 @@
       ];
     };
 
-    services.protonmail-bridge.enable = true;
+    services.protonmail-bridge.enable = false;
   };
 }
