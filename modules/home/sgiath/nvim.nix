@@ -18,7 +18,7 @@
 
       # Zig
       zig
-      zls
+      # zls
 
       # Nix
       nixd
