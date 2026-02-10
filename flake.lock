@@ -133,16 +133,16 @@
         ]
       },
       "locked": {
-        "lastModified": 1770315788,
-        "narHash": "sha256-ktVhZlTIF2DgRoxNGyQjgPeBQJoBAQU/gtmYygaD/w0=",
+        "lastModified": 1770530478,
+        "narHash": "sha256-zopOpBqaHC2t+tGYtrHyalOUsFDZai2NmZZOKJs2vfQ=",
         "owner": "steveyegge",
         "repo": "beads",
-        "rev": "3032c622d2dec03843da03f45ce41d4ca6afc31d",
+        "rev": "c064f2aa99814d65a439b7b700fa02c44c4e0bb2",
         "type": "github"
       },
       "original": {
         "owner": "steveyegge",
-        "ref": "v0.49.4",
+        "ref": "v0.49.6",
         "repo": "beads",
         "type": "github"
       }
@@ -1977,16 +1977,16 @@
         "rust-overlay": "rust-overlay_2"
       },
       "locked": {
-        "lastModified": 1770223036,
-        "narHash": "sha256-bxf/1vkKu5zu8iU3ayMidRyqVOtBQUkBEcYcb7s3sz0=",
+        "lastModified": 1770351065,
+        "narHash": "sha256-VzHY6q3nDgCXlG1d0qjY8AIxFVbquwgVd8Y7Dnd49fI=",
         "owner": "zed-industries",
         "repo": "zed",
-        "rev": "5baf53428483a23e8e253ebf65fff4717a4b5464",
+        "rev": "b385025df963c9e8c3f74cc4dadb1c4b29b3c6f0",
         "type": "github"
       },
       "original": {
         "owner": "zed-industries",
-        "ref": "v0.222.2",
+        "ref": "v0.222.4",
         "repo": "zed",
         "type": "github"
       }

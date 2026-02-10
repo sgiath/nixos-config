@@ -80,7 +80,7 @@
 
     # https://github.com/zed-industries/zed/releases/latest
     zed-editor = {
-      url = "github:zed-industries/zed/v0.222.2";
+      url = "github:zed-industries/zed/v0.222.4";
       inputs.nixpkgs.follows = "nixpkgs";
     };
 
@@ -103,7 +103,7 @@
 
     # https://github.com/steveyegge/beads/releases/latest
     beads = {
-      url = "github:steveyegge/beads/v0.49.4";
+      url = "github:steveyegge/beads/v0.49.6";
       inputs.nixpkgs.follows = "nixpkgs";
     };
 
