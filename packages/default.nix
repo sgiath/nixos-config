@@ -6,6 +6,7 @@ pkgs: {
   coderabbit = pkgs.callPackage ./coderabbit { };
   dnd5etools = pkgs.callPackage ./dnd5etools { };
   gastown = pkgs.callPackage ./gastown { };
+  gogcli = pkgs.callPackage ./gogcli { };
   lazybeads = pkgs.callPackage ./lazybeads { };
   n8n = pkgs.callPackage ./n8n { };
   ntm = pkgs.callPackage ./ntm { };

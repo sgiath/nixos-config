@@ -1,7 +1,7 @@
 {
   lib,
   stdenv,
-  fetchFromGitHub,
+  inputs,
   nodejs,
   pnpm_10,
   fetchPnpmDeps,
@@ -13,12 +13,7 @@ stdenv.mkDerivation (finalAttrs: {
   pname = "bird";
   version = "0.8.0";
 
-  src = fetchFromGitHub {
-    owner = "steipete";
-    repo = "bird";
-    tag = "v${finalAttrs.version}";
-    hash = "sha256-4bXxaHCislWgOITqoWWc+MffhmhUdzuk9CBjKA24J5s=";
-  };
+  src = inputs.bird-src;
 
   pnpmDeps = fetchPnpmDeps {
     inherit (finalAttrs) pname version src;
@@ -61,7 +56,6 @@ stdenv.mkDerivation (finalAttrs: {
   meta = {
     description = "Fast X/Twitter CLI for tweeting, replying, and reading via GraphQL API";
     homepage = "https://github.com/steipete/bird";
-    changelog = "https://github.com/steipete/bird/releases/tag/v${finalAttrs.version}";
     license = lib.licenses.mit;
     platforms = lib.platforms.unix;
     mainProgram = "bird";

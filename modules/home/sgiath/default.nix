@@ -152,9 +152,6 @@
           echo ""; echo "=== agent-of-empires ==="
           ./agent-of-empires/update.sh
 
-          echo ""; echo "=== bird ==="
-          ./bird/update.sh
-
           echo ""; echo "=== claude-code-acp ==="
           ./claude-code-acp/update.sh
 
@@ -166,6 +163,9 @@
 
           echo ""; echo "=== gastown ==="
           ./gastown/update.sh
+
+          echo ""; echo "=== gogcli ==="
+          ./gogcli/update.sh
 
           # echo ""; echo "=== n8n ==="
           # ./n8n/update.sh

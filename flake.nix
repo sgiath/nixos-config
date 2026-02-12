@@ -112,6 +112,11 @@
       inputs.nixpkgs.follows = "nixpkgs";
     };
 
+    bird-src = {
+      url = "path:/home/sgiath/develop/sgiath/bird";
+      flake = false;
+    };
+
     nix-minecraft.url = "github:Infinidoge/nix-minecraft";
   };
 

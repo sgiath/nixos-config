@@ -10,6 +10,7 @@
     home.packages = [
       pkgs.${namespace}.openclaw
       pkgs.nodejs
+      pkgs.${namespace}.gogcli
     ];
   };
 }
