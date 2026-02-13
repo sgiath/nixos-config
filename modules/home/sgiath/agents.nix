@@ -50,7 +50,7 @@ in
     # aliases
     programs.zsh.shellAliases = {
       cc = "${pkgs.claude-code}/bin/claude --dangerously-skip-permissions";
-      cx = "${codex}/bin/codex --full-auto";
+      cx = "${codex}/bin/codex --dangerously-bypass-approvals-and-sandbox";
     };
 
     # bun
