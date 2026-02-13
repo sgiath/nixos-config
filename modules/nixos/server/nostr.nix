@@ -3,7 +3,6 @@
   config = lib.mkIf (config.sgiath.server.enable && config.services.nostr-rs-relay.enable) {
     services = {
       nostr-rs-relay = {
-        enable = true;
         settings = {
           info = {
             relay_url = "wss://nostr.sgiath.dev/";
