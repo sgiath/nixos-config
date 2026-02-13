@@ -23,6 +23,7 @@
     jellyfin.enable = true;
     vaultwarden.enable = false;
     mattermost.enable = true;
+    nostr-rs-relay.enable = true;
 
     foundryvtt.enable = true;
     dnd5etools.enable = true;
