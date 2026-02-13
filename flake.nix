@@ -37,7 +37,8 @@
     };
 
     # https://github.com/hyprwm/Hyprland/releases/latest
-    hyprland.url = "github:hyprwm/Hyprland/v0.53.1";
+    # hyprland.url = "github:hyprwm/Hyprland/v0.53.1";
+    hyprland.url = "github:hyprwm/Hyprland";
     hyprland-plugins = {
       url = "github:hyprwm/hyprland-plugins";
       inputs.hyprland.follows = "hyprland";
@@ -69,7 +70,7 @@
     };
 
     zen-browser = {
-      url = "github:0xc000022070/zen-browser-flake/1.19t-1770868129";
+      url = "github:0xc000022070/zen-browser-flake";
       inputs.nixpkgs.follows = "nixpkgs";
     };
 
@@ -86,7 +87,7 @@
 
     # https://github.com/openai/codex/releases/latest
     codex = {
-      url = "github:openai/codex";
+      url = "github:openai/codex/rust-v0.101.0";
       inputs.nixpkgs.follows = "nixpkgs";
     };
 
