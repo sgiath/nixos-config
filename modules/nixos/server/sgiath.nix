@@ -18,7 +18,7 @@
         extraConfig = ''
           rewrite ^/twitter/?$ https://x.com/SgiathDev redirect;
           rewrite ^/x/?$ https://x.com/SgiathDev redirect;
-          rewrite ^/github/?$ https://github.com/Sgiath redirect;
+          rewrite ^/github/?$ https://github.com/sgiath redirect;
           rewrite ^/source-hut/?$ https://sr.ht/~sgiath redirect;
 
           error_page 404 /404.html;
@@ -33,19 +33,6 @@
           "= /sgiath.asc".extraConfig = ''
             add_header Content-Disposition 'attachment';
           '';
-
-          "/.well-known/nostr.json" = {
-            extraConfig = ''
-              add_header Access-Control-Allow-Origin '*';
-              add_header Access-Control-Allow-Methods 'GET, POST, PUT, DELETE, OPTIONS';
-              add_header Access-Control-Allow-Headers 'X-Requested-With, Content-Type, Authorization';
-              add_header Cross-Origin-Resource-Policy 'cross-origin';
-
-              default_type application/json;
-
-              return 200 '{"names":{"_":"0000002855ad7906a7568bf4d971d82056994aa67af3cf0048a825415ac90672"}}';
-            '';
-          };
 
           "/profile".extraConfig = ''
             add_header Access-Control-Allow-Origin '*';
