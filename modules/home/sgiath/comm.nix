@@ -2,6 +2,7 @@
   config,
   lib,
   pkgs,
+  namespace,
   ...
 }:
 {
@@ -18,6 +19,9 @@
       # cinny-desktop
       # fractal
       # simplex-chat-desktop
+
+      # nostr CLI
+      pkgs.${namespace}.nak
     ];
 
     wayland.windowManager.hyprland.settings = {

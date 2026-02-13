@@ -9,6 +9,7 @@ pkgs: {
   gogcli = pkgs.callPackage ./gogcli { };
   lazybeads = pkgs.callPackage ./lazybeads { };
   n8n = pkgs.callPackage ./n8n { };
+  nak = pkgs.callPackage ./nak { };
   ntm = pkgs.callPackage ./ntm { };
   ocx = pkgs.callPackage ./ocx { };
   openclaw = pkgs.callPackage ./openclaw { };
