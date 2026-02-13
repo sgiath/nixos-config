@@ -30,7 +30,7 @@
           };
 
           verified_users = {
-            mode = "enabled";
+            mode = "disabled";
             domain_whitelist = [ "sgiath.dev" ];
             verify_expiration = "1 week";
             verify_update_frequency = "24 hours";
