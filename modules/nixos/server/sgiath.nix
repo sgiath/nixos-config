@@ -57,9 +57,9 @@
             tryFiles = "$uri $uri/ $uri.zip $uri/index.html =404";
           };
 
-          # "/" = {
-          #   tryFiles = "$uri $uri.html $uri/index.html =404";
-          # };
+          "/" = {
+            tryFiles = "$uri $uri.html $uri/index.html =404";
+          };
         };
       };
     };

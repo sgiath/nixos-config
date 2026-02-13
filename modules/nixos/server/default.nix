@@ -16,6 +16,7 @@
     ./n8n.nix
     ./nas.nix
     ./nginx.nix
+    ./nostr.nix
     ./ntfy.nix
     ./open-webui.nix
     ./openclaw.nix
