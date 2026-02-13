@@ -7,11 +7,11 @@
 
 buildNpmPackage rec {
   pname = "openclaw";
-  version = "2026.2.9";
+  version = "2026.2.12";
 
   src = fetchurl {
     url = "https://registry.npmjs.org/openclaw/-/openclaw-${version}.tgz";
-    hash = "sha256-D3xnvUfdK4RnnvNadB+rzqHwbaq39dmNbbD5y/Rd6A0=";
+    hash = "sha256-Ctr7/8IKTbjm5OH1HGNj/fWlELgR3e16dSeIdAoxqLo=";
   };
 
   # Prebuilt native binary for matrix-sdk-crypto (skipped by --ignore-scripts)
@@ -29,7 +29,7 @@ buildNpmPackage rec {
     cp ${./package-lock.json} package-lock.json
   '';
 
-  npmDepsHash = "sha256-xa2gjyvM3K5miR+SMXsAJuh88DGPvMfGThlI80+PmfI=";
+  npmDepsHash = "sha256-E6qvfWTtjXum7JkybVZDgu/MnELTdcX56/N0yYopU7w=";
 
   dontNpmBuild = true;
 
