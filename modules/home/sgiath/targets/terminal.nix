@@ -2,6 +2,7 @@
   config,
   lib,
   pkgs,
+  namespace,
   ...
 }:
 {
@@ -14,6 +15,7 @@
       presenterm
       rclone
       jq
+      pkgs.${namespace}.nak
 
       openssl
       yt-dlp

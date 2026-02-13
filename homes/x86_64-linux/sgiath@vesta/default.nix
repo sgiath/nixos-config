@@ -7,11 +7,9 @@
 }:
 let
   secrets = builtins.fromJSON (builtins.readFile ./../../../secrets.json);
-
   openclawPath = lib.concatStringsSep ":" [
     "${config.home.profileDirectory}/bin"
     "/run/current-system/sw/bin"
-    "${pkgs.${namespace}.nak}/bin"
     "${pkgs.coreutils}/bin"
     "${pkgs.curl}/bin"
     "${pkgs.yt-dlp}/bin"
