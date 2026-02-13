@@ -17,8 +17,8 @@ in
       protonplus
 
       # wine64
-      winetricks
-      wineWowPackages.waylandFull
+      # winetricks
+      # wineWowPackages.waylandFull
 
       (lutris.override {
         extraLibraries = pkgs: [
