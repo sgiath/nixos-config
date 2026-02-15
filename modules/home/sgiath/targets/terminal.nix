@@ -16,6 +16,7 @@
       rclone
       jq
       pkgs.${namespace}.nak
+      pkgs.${namespace}.relay-tester
 
       openssl
       yt-dlp

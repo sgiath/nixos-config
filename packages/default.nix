@@ -13,4 +13,5 @@ pkgs: {
   ntm = pkgs.callPackage ./ntm { };
   ocx = pkgs.callPackage ./ocx { };
   openclaw = pkgs.callPackage ./openclaw { };
+  relay-tester = pkgs.callPackage ./relay-tester { };
 }
