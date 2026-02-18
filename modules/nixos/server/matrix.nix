@@ -20,7 +20,7 @@ in
         settings.global = {
           # server
           server_name = "sgiath.dev";
-          address = "0.0.0.0";
+          address = [ "0.0.0.0" ];
           port = 6167;
           admins_list = [
             "@sgiath:sgiath.dev"
