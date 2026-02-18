@@ -43,8 +43,7 @@ in
           lockdown_public_room_directory = true;
 
           # turn
-          turn_secret = true;
-          turn_secret_file = "/data/turn-secret";
+          turn_secret = secrets.turn-shared-secret;
           turn_uris = [
             "turn:turn.sgiath.dev:5349?transport=udp"
             "turn:turn.sgiath.dev:5350?transport=udp"
