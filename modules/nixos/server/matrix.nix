@@ -14,7 +14,7 @@ in
   config = lib.mkIf (config.sgiath.server.enable && config.services.matrix.enable) {
 
     environment.systemPackages = with pkgs; [
-      livekit-cli
+      livekit
     ];
 
     services = {
