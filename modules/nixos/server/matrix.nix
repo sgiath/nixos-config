@@ -61,28 +61,28 @@ in
             support_mxid = "@sgiath:sgiath.dev";
           };
         };
+      };
 
-        coturn = {
-          enable = true;
-          lt-cred-mech = true;
-          use-auth-secret = true;
-          static-auth-secret = secrets.turn-shared-secret;
-          realm = "turn.sgiath.dev";
-          relay-ips = [
-            "193.165.30.198"
-          ];
-          no-tcp-relay = true;
-          extraConfig = "
-            cipher-list=\"HIGH\"
-            no-loopback-peers
-            no-multicast-peers
-          ";
-          secure-stun = true;
-          cert = "/var/lib/acme/turn.sgiath.dev/fullchain.pem";
-          pkey = "/var/lib/acme/turn.sgiath.dev/key.pem";
-          min-port = 49152;
-          max-port = 49999;
-        };
+      coturn = {
+        enable = true;
+        lt-cred-mech = true;
+        use-auth-secret = true;
+        static-auth-secret = secrets.turn-shared-secret;
+        realm = "turn.sgiath.dev";
+        relay-ips = [
+          "193.165.30.198"
+        ];
+        no-tcp-relay = true;
+        extraConfig = "
+          cipher-list=\"HIGH\"
+          no-loopback-peers
+          no-multicast-peers
+        ";
+        secure-stun = true;
+        cert = "/var/lib/acme/turn.sgiath.dev/fullchain.pem";
+        pkey = "/var/lib/acme/turn.sgiath.dev/key.pem";
+        min-port = 49152;
+        max-port = 49999;
       };
 
       nginx.virtualHosts = {
