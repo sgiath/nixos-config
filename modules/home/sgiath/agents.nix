@@ -31,7 +31,7 @@ in
       inputs.openspec.packages.${pkgs.stdenv.hostPlatform.system}.default
       # pkgs.${namespace}.agent-of-empires
       # pkgs.${namespace}.gastown
-      # inputs.beads.packages.${pkgs.stdenv.hostPlatform.system}.default
+      inputs.beads.packages.${pkgs.stdenv.hostPlatform.system}.default
       # pkgs.${namespace}.bdui
     ];
 
