@@ -7,6 +7,10 @@
         "192.168.1.3" = [
           "vesta.sgiath.dev"
           "niamh.sgiath.dev"
+          "matrix.sgiath.dev"
+          "matrix-rtc.sgiath.dev"
+          "turn.sgiath.dev"
+
           "dns.sgiath"
         ];
         "192.168.1.4" = [ "nas.sgiath" ];
