@@ -12,6 +12,11 @@ in
   options.services.matrix.enable = lib.mkEnableOption "matrix server";
 
   config = lib.mkIf (config.sgiath.server.enable && config.services.matrix.enable) {
+
+    environment.systemPackages = with pkgs; [
+      livekit-cli
+    ];
+
     services = {
       matrix-continuwuity = {
         enable = true;
@@ -45,10 +50,10 @@ in
           # turn
           turn_secret = secrets.turn-shared-secret;
           turn_uris = [
-            "turn:turn.sgiath.dev:5349?transport=udp"
-            "turn:turn.sgiath.dev:5350?transport=udp"
-            "turn:turn.sgiath.dev:5349?transport=tcp"
-            "turn:turn.sgiath.dev:5350?transport=tcp"
+            "turn:turn.sgiath.dev:3478?transport=udp"
+            "turn:turn.sgiath.dev:3478?transport=tcp"
+            "turns:turn.sgiath.dev:5349?transport=udp"
+            "turns:turn.sgiath.dev:5349?transport=tcp"
           ];
 
           trusted_servers = [
@@ -61,6 +66,12 @@ in
             server = "matrix.sgiath.dev:443";
             support_email = "matrix@sgiath.dev";
             support_mxid = "@sgiath:sgiath.dev";
+            rtc_focus_server_urls = [
+              {
+                type = "livekit";
+                livekit_service_url = "https://matrix-rtc.sgiath.dev";
+              }
+            ];
           };
         };
       };
@@ -85,6 +96,45 @@ in
         pkey = "/var/lib/acme/turn.sgiath.dev/key.pem";
         min-port = 49152;
         max-port = 49999;
+      };
+
+      lk-jwt-service = {
+        enable = true;
+        port = 8081;
+        keyFile = "/data/matrix-rtc";
+        livekitUrl = "wss://matrix-rtc.sgiath.dev";
+      };
+
+      livekit = {
+        enable = true;
+        keyFile = "/data/matrix-rtc";
+        settings = {
+          port = 7880;
+          rtc = {
+            port_range_start = 50000;
+            port_range_end = 51000;
+            turn_servers = [
+              {
+                host = "turn.sgiath.dev";
+                port = 3478;
+                protocol = "tcp";
+                secret = secrets.turn-shared-secret;
+              }
+              {
+                host = "turn.sgiath.dev";
+                port = 3478;
+                protocol = "udp";
+                secret = secrets.turn-shared-secret;
+              }
+              {
+                host = "turn.sgiath.dev";
+                port = 5349;
+                protocol = "tls";
+                secret = secrets.turn-shared-secret;
+              }
+            ];
+          };
+        };
       };
 
       nginx.virtualHosts = {
@@ -112,7 +162,7 @@ in
 
               default_type application/json;
             '';
-            return = "200 '{\"m.homeserver\":{\"base_url\":\"https://matrix.sgiath.dev\"}}'";
+            return = "200 '{\"m.homeserver\":{\"base_url\":\"https://matrix.sgiath.dev\"},\"org.matrix.msc4143.rtc_foci\":[{\"type\":\"livekit\",\"livekit_service_url\":\"https://matrix-rtc.sgiath.dev\"}]}'";
           };
 
           # server support
@@ -159,6 +209,27 @@ in
           # ACME
           enableACME = true;
           acmeRoot = null;
+        };
+
+        "matrix-rtc.sgiath.dev" = {
+          # SSL
+          onlySSL = true;
+          kTLS = true;
+
+          # ACME
+          enableACME = true;
+          acmeRoot = null;
+
+          locations = {
+            "~ ^/(sfu/get|healthz|get_token)" = {
+              proxyPass = "http://127.0.0.1:8081";
+            };
+
+            "/" = {
+              proxyWebsockets = true;
+              proxyPass = "http://127.0.0.1:7880";
+            };
+          };
         };
       };
     };
