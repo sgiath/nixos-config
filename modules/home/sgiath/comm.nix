@@ -18,7 +18,7 @@
       # mattermost-desktop
       # simplex-chat-desktop
       fluffychat
-      cinny-desktop
+      # cinny-desktop
 
       # nostr CLI
       pkgs.${namespace}.nak
