@@ -100,7 +100,7 @@ in
 
       lk-jwt-service = {
         enable = true;
-        port = 8081;
+        port = 7882;
         keyFile = "/data/matrix-rtc";
         livekitUrl = "wss://matrix-rtc.sgiath.dev";
       };
@@ -222,7 +222,7 @@ in
 
           locations = {
             "~ ^/(sfu/get|healthz|get_token)" = {
-              proxyPass = "http://127.0.0.1:8081";
+              proxyPass = "http://127.0.0.1:7882";
             };
 
             "/" = {
