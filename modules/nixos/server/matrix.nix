@@ -111,6 +111,8 @@ in
         settings = {
           port = 7880;
           rtc = {
+            node_ip = "193.165.30.198";
+            tcp_port = 7881;
             port_range_start = 50000;
             port_range_end = 51000;
             turn_servers = [
