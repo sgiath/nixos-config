@@ -68,7 +68,7 @@
         "match:class signal, workspace 10 silent, no_initial_focus on"
         "match:class org.telegram.desktop, workspace 10 silent, no_initial_focus on"
         "match:class Hexchat, workspace 10 silent, no_initial_focus on"
-        "match:fluffychat FluffyChat, workspace 10 silent, no_initial_focus on"
+        "match:class fluffychat, workspace 10 silent, no_initial_focus on"
       ];
     };
   };
