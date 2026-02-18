@@ -18,6 +18,7 @@
       # mattermost-desktop
       # simplex-chat-desktop
       fluffychat
+      cinny-desktop
 
       # nostr CLI
       pkgs.${namespace}.nak
@@ -50,7 +51,7 @@
           force_verification = true;
 
           default_theme = "dark";
-          brand = "sgiath";
+          brand = "matrix";
         };
       };
     };
@@ -60,7 +61,7 @@
         "${pkgs.webcord}/bin/webcord"
         "${pkgs.telegram-desktop}/bin/telegram-desktop"
         "${pkgs.signal-desktop-bin}/bin/signal-desktop"
-        "${pkgs.fluffychat}/bin/fluffychat"
+        # "${pkgs.fluffychat}/bin/fluffychat"
       ];
       windowrule = [
         "match:class Slack, workspace 10 silent, no_initial_focus on"
@@ -69,6 +70,7 @@
         "match:class org.telegram.desktop, workspace 10 silent, no_initial_focus on"
         "match:class Hexchat, workspace 10 silent, no_initial_focus on"
         "match:class fluffychat, workspace 10 silent, no_initial_focus on"
+        "match:class Element, workspace 10 silent, no_initial_focus on"
       ];
     };
   };
