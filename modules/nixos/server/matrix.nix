@@ -236,6 +236,7 @@ in
 
     security.acme.certs = {
       "turn.sgiath.dev" = {
+        group = "turnserver";
         postRun = "systemctl reload nginx.service; systemctl restart coturn.service";
       };
     };
