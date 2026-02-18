@@ -166,8 +166,6 @@ in
 
     security.acme.certs = {
       "turn.sgiath.dev" = {
-        group = "turnserver";
-        allowKeysForGroup = true;
         postRun = "systemctl reload nginx.service; systemctl restart coturn.service";
       };
     };
