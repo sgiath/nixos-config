@@ -224,6 +224,7 @@ in
 
           locations = {
             "~ ^/(sfu/get|healthz|get_token)" = {
+              proxyWebsockets = true;
               proxyPass = "http://127.0.0.1:7882";
             };
 
