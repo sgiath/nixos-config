@@ -13,25 +13,75 @@ in
 
   config = lib.mkIf (config.sgiath.server.enable && config.services.matrix.enable) {
     services = {
-      matrix-conduit = {
+      matrix-continuwuity = {
         enable = true;
-        package = inputs.conduit.packages.${pkgs.stdenv.hostPlatform.system}.default;
+        # package = inputs.conduit.packages.${pkgs.stdenv.hostPlatform.system}.default;
+        # package = inputs.continuwuity.packages.${pkgs.stdenv.hostPlatform.system}.default;
         settings.global = {
           # server
           server_name = "sgiath.dev";
           address = "0.0.0.0";
           port = 6167;
-
-          database_backend = "rocksdb";
+          admins_list = [
+            "@sgiath:sgiath.dev"
+          ];
 
           # registration
           allow_registration = true;
           registration_token = secrets.matrix_registration_token;
 
+          # continuwuity
+          new_user_displayname_suffix = "";
+          allow_announcements_check = false;
+          allow_legacy_media = false;
+
+          # federation
+          allow_public_room_directory_over_federation = true;
+          lockdown_public_room_directory = true;
+
+          # turn
+          turn_secret = true;
+          turn_secret_file = "/data/turn-secret";
+          turn_uris = [
+            "turn:turn.sgiath.dev:5349?transport=udp"
+            "turn:turn.sgiath.dev:5350?transport=udp"
+            "turn:turn.sgiath.dev:5349?transport=tcp"
+            "turn:turn.sgiath.dev:5350?transport=tcp"
+          ];
+
           trusted_servers = [
             "matrix.org"
             "nixos.org"
           ];
+
+          well_known = {
+            client = "https://matrix.sgiath.dev";
+            server = "matrix.sgiath.dev:443";
+            support_email = "matrix@sgiath.dev";
+            support_mxid = "@sgiath:sgiath.dev";
+          };
+        };
+
+        coturn = {
+          enable = true;
+          lt-cred-mech = true;
+          use-auth-secret = true;
+          static-auth-secret = secrets.turn-shared-secret;
+          realm = "turn.sgiath.dev";
+          relay-ips = [
+            "193.165.30.198"
+          ];
+          no-tcp-relay = true;
+          extraConfig = "
+            cipher-list=\"HIGH\"
+            no-loopback-peers
+            no-multicast-peers
+          ";
+          secure-stun = true;
+          cert = "/var/lib/acme/turn.sgiath.dev/fullchain.pem";
+          pkey = "/var/lib/acme/turn.sgiath.dev/key.pem";
+          min-port = 49152;
+          max-port = 49999;
         };
       };
 
@@ -47,7 +97,7 @@ in
 
               default_type application/json;
             '';
-            return = "200 '{\"m.server\":\"matrix.sgiath.dev:6167\"}'";
+            return = "200 '{\"m.server\":\"matrix.sgiath.dev:443\"}'";
           };
 
           # client <-> server
@@ -77,7 +127,7 @@ in
           };
 
           "/_matrix/" = {
-            proxyPass = "http://127.0.0.1:6167";
+            proxyPass = "http://127.0.0.1:6167$request_uri";
           };
         };
 
@@ -91,11 +141,31 @@ in
           acmeRoot = null;
 
           # static files
-          locations."/" = {
-            proxyWebsockets = true;
-            proxyPass = "http://127.0.0.1:6167";
+          locations = {
+            "/" = {
+              proxyWebsockets = true;
+              proxyPass = "http://127.0.0.1:6167";
+            };
           };
         };
+
+        "turn.sgiath.dev" = {
+          # SSL
+          onlySSL = true;
+          kTLS = true;
+
+          # ACME
+          enableACME = true;
+          acmeRoot = null;
+        };
+      };
+    };
+
+    security.acme.certs = {
+      "turn.sgiath.dev" = {
+        group = "turnserver";
+        allowKeysForGroup = true;
+        postRun = "systemctl reload nginx.service; systemctl restart coturn.service";
       };
     };
   };
