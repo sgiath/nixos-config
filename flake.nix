@@ -124,11 +124,6 @@
     };
 
     nix-minecraft.url = "github:Infinidoge/nix-minecraft";
-
-    ksa = {
-      url = "github:Aetherall/ksa";
-      inputs.nixpkgs.follows = "nixpkgs";
-    };
   };
 
   outputs =

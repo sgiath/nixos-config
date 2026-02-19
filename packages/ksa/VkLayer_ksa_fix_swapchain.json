@@ -1,0 +1,21 @@
+{
+  "file_format_version": "1.0.0",
+  "layer": {
+    "name": "VK_LAYER_KSA_fix_swapchain",
+    "type": "GLOBAL",
+    "library_path": "@lib_path@",
+    "api_version": "1.4.0",
+    "implementation_version": "1",
+    "description": "Fixes maxImageCount=0 for broken applications",
+    "functions": {
+      "vkGetInstanceProcAddr": "vkGetInstanceProcAddr",
+      "vkGetDeviceProcAddr": "vkGetDeviceProcAddr"
+    },
+    "enable_environment": {
+      "VK_KSA_FIX_SWAPCHAIN": "1"
+    },
+    "disable_environment": {
+      "VK_KSA_FIX_SWAPCHAIN_DISABLE": "1"
+    }
+  }
+}

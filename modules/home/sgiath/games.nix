@@ -2,7 +2,7 @@
   config,
   lib,
   pkgs,
-  inputs,
+  namespace,
   ...
 }:
 let
@@ -64,7 +64,7 @@ in
 
       celestia
 
-      inputs.ksa.packages.${pkgs.stdenv.hostPlatform.system}.default
+      pkgs.${namespace}.ksa
     ];
 
     wayland.windowManager.hyprland.settings.windowrule = [
