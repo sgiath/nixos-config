@@ -71,6 +71,7 @@
         "match:class Hexchat, workspace 10 silent, no_initial_focus on"
         "match:class fluffychat, workspace 10 silent, no_initial_focus on"
         "match:class Element, workspace 10 silent, no_initial_focus on"
+        "match:class chrome-bcngdmpegpihnheapppgoniglphkpfhm-Default, workspace 10 silent, no_initial_focus on"
       ];
     };
   };
