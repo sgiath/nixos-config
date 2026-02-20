@@ -226,11 +226,11 @@
         "rust-overlay": "rust-overlay"
       },
       "locked": {
-        "lastModified": 1771567611,
-        "narHash": "sha256-z0vI3GRX7I0HfI5qd7GAaaysnMVIKh/9xS+CrHXLEYE=",
+        "lastModified": 1771601193,
+        "narHash": "sha256-G8Ma4GOF3qbogvzBGtgzS5hF5aPIGrEOCtylwtXpG0E=",
         "owner": "openai",
         "repo": "codex",
-        "rev": "18bd6d2d71f0055d08ee9856de469fcfd28899cf",
+        "rev": "4d60c803ba9c703b978e89a8f6f8a4ad1866582c",
         "type": "github"
       },
       "original": {
@@ -278,11 +278,11 @@
         "treefmt-nix": "treefmt-nix"
       },
       "locked": {
-        "lastModified": 1771512985,
-        "narHash": "sha256-IsBWdLp3YnxjjUPdCIqqilrjk0DnUtxGo9x0GetCn8s=",
+        "lastModified": 1771582434,
+        "narHash": "sha256-7hS6Mi8iOrJqRnQvfbg7MM4SWf1ntMCe3uVGb2Gq7l8=",
         "ref": "main",
-        "rev": "776b5865bad24b84db83579fefbb06dae2cadaa4",
-        "revCount": 6129,
+        "rev": "efd879fcd8013e359d398bb495ee5520d0e5156b",
+        "revCount": 6131,
         "type": "git",
         "url": "https://forgejo.ellis.link/continuwuation/continuwuity"
       },
@@ -367,11 +367,11 @@
         ]
       },
       "locked": {
-        "lastModified": 1771420077,
-        "narHash": "sha256-Q4kij4yjsY/c46c2KM0pTWekW8LzrPksnKbKd30hIZw=",
+        "lastModified": 1771592526,
+        "narHash": "sha256-y7ZZ4G1zqwt23VRIupR6WFxG9G+NFZzpHCtP8OLAimM=",
         "owner": "TudorAndrei",
         "repo": "cursor-nixos-flake",
-        "rev": "667a083cc4ea1ef0bf8030d6546b7f58927a8e06",
+        "rev": "43ad21fd66bcc3a7bfa9651cdb6deec64834e1c7",
         "type": "github"
       },
       "original": {
@@ -1476,11 +1476,11 @@
     },
     "nixpkgs-master": {
       "locked": {
-        "lastModified": 1771567102,
-        "narHash": "sha256-22ze9Zqnddb3F0cGkjqvy6SY47iFC0KCAm5eUzjMnsk=",
+        "lastModified": 1771601223,
+        "narHash": "sha256-25706qiXqZQEFh3w4OKD2/4v+LMsD7uhrWFsOQvV79U=",
         "owner": "NixOS",
         "repo": "nixpkgs",
-        "rev": "61258584a9111e01f5cd051713a2ebae0c9c70bd",
+        "rev": "d95e787199fc8d554163eef5484d3dc68d681c2b",
         "type": "github"
       },
       "original": {
@@ -1634,11 +1634,11 @@
         ]
       },
       "locked": {
-        "lastModified": 1771567838,
-        "narHash": "sha256-ZX5XbcDxTyAebVYT2Koa3HAJpAh4ta1ZnwLKL53mDWA=",
+        "lastModified": 1771601329,
+        "narHash": "sha256-FFmWIx8xKY5WH22Q/n/jnhqcTDNzXpzfJ6ea4PH2B4w=",
         "owner": "anomalyco",
         "repo": "opencode",
-        "rev": "443214871eda069f81cba19b5a3eecfce0fa314e",
+        "rev": "1ffed2fa6ce16392e4f113108c8c76f5440aecc5",
         "type": "github"
       },
       "original": {
@@ -1907,11 +1907,11 @@
         "tinted-zed": "tinted-zed"
       },
       "locked": {
-        "lastModified": 1771541829,
-        "narHash": "sha256-jtrIUcFoZuS6R4P18907H0pPyHaGoF5Tomez7j3KIHs=",
+        "lastModified": 1771590299,
+        "narHash": "sha256-D1UT9CphcSqnuw8EXSIUfVObjPza31neDSQvhj0DP/o=",
         "owner": "danth",
         "repo": "stylix",
-        "rev": "cb73f89d3ecef7e790c42f828e2228ff82975de5",
+        "rev": "9654508da1326fae4b4e82daf5c0f7edf948f7ef",
         "type": "github"
       },
       "original": {
