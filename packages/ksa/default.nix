@@ -47,7 +47,7 @@ let
 in
 stdenv.mkDerivation rec {
   pname = "ksa";
-  version = "2026.2.18.3622";
+  version = "2026.2.31.3640";
 
   src = fetchurl {
     url = "https://ksa-linux.ahwoo.com/download?file=setup_ksa_v${version}.tar";
