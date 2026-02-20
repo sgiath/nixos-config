@@ -7,7 +7,6 @@ pkgs: {
   dnd5etools = pkgs.callPackage ./dnd5etools { };
   gastown = pkgs.callPackage ./gastown { };
   gogcli = pkgs.callPackage ./gogcli { };
-  ksa = pkgs.callPackage ./ksa { };
   lazybeads = pkgs.callPackage ./lazybeads { };
   n8n = pkgs.callPackage ./n8n { };
   nak = pkgs.callPackage ./nak { };
