@@ -4,6 +4,8 @@
     nixpkgs.url = "github:NixOS/nixpkgs/nixos-unstable";
     nixpkgs-stable.url = "github:NixOS/nixpkgs/nixos-25.11";
 
+    nixpkgs-ksa.url = "github:Leha44581/nixpkgs/ksa";
+
     home-manager.url = "github:nix-community/home-manager/38e187fd2f9efac197e03be0c25f3ee215974144";
 
     stylix = {

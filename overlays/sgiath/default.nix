@@ -9,7 +9,17 @@ let
       allowUnfree = true;
     };
   };
+
   pkgs-stable = import inputs.nixpkgs-stable {
+    system = prev.stdenv.hostPlatform.system;
+    config = {
+      cudaSupport = false;
+      rocmSupport = false;
+      allowUnfree = true;
+    };
+  };
+
+  pkgs-ksa = import inputs.nixpkgs-ksa {
     system = prev.stdenv.hostPlatform.system;
     config = {
       cudaSupport = false;
@@ -19,6 +29,5 @@ let
   };
 in
 {
-  # mdformat = pkgs-master.mdformat;
-  # searxng = pkgs-master.searxng;
+  ksa = pkgs-ksa.ksa;
 }

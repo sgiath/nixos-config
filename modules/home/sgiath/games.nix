@@ -62,6 +62,7 @@ in
       # inputs.nix-gaming.packages.${pkgs.stdenv.hostPlatform.system}.star-citizen
 
       celestia
+      ksa
     ];
 
     wayland.windowManager.hyprland.settings.windowrule = [
