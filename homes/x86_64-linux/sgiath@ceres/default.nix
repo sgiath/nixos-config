@@ -63,7 +63,7 @@ in
           "OPENCLAW_SERVICE_KIND=node"
           "OPENCLAW_SERVICE_VERSION=${lib.getVersion pkgs.${namespace}.openclaw}"
         ];
-        ExecStart = "${pkgs.${namespace}.openclaw}/bin/openclaw node run --host niamh.sgiath.dev --port 443 --display-name ceres";
+        ExecStart = "${pkgs.${namespace}.openclaw}/bin/openclaw node run --host niamh.sgiath.dev --port 443 --tls --display-name ceres";
       };
       Install = {
         WantedBy = [ "default.target" ];
