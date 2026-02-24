@@ -24,6 +24,7 @@ in
     # davinci-resolve-studio
     inputs.whisper-dictation.packages.${pkgs.stdenv.hostPlatform.system}.default
     whisper-cpp-vulkan
+    devenv
   ];
 
   sgiath = {
