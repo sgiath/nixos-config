@@ -3,6 +3,7 @@
   lib,
   pkgs,
   namespace,
+  inputs,
   ...
 }:
 let
@@ -21,6 +22,8 @@ in
     texliveMedium
     # lmstudio
     # davinci-resolve-studio
+    inputs.whisper-dictation.packages.${pkgs.stdenv.hostPlatform.system}.defaulte
+    whisper-cpp-vulkan
   ];
 
   sgiath = {
