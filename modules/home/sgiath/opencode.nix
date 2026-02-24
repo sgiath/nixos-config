@@ -57,6 +57,7 @@ in
         };
       };
     };
+    stylix.targets.opencode.enable = false;
 
     # aliases
     programs.zsh.shellAliases = {
