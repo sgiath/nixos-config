@@ -40,7 +40,10 @@ in
     users.users.sgiath = {
       linger = true;
       isNormalUser = true;
-      extraGroups = [ "wheel" ];
+      extraGroups = [
+        "wheel"
+        "input"
+      ];
       hashedPassword = "$y$j9T$EBb/Mjo7nNHfmtbiP1GST0$CctYXT62gX0cMDHzRzYxlix43xC3U6kzSDNvyqZOcj4";
       openssh.authorizedKeys.keys = [
         "ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAIOGJYz3V8IxqdAJw9LLj0RMsdCu4QpgPmItoDoe73w/3"
@@ -61,6 +64,10 @@ in
         access-tokens = "github.com=${secrets.github_token}";
         auto-optimise-store = true;
         require-sigs = false;
+        trusted-users = [
+          "root"
+          "sgiath"
+        ];
         experimental-features = [
           "nix-command"
           "flakes"
@@ -74,6 +81,7 @@ in
           "claude-code.cachix.org-1:YeXf2aNu7UTX8Vwrze0za1WEDS+4DuI2kVeWEE4fsRk="
           "zed.cachix.org-1:/pHQ6dpMsAZk2DiP4WCL0p9YDNKWj2Q5FL20bNmw1cU="
           "cache.garnix.io:CTFPyKSLcx5RMJKfLo5EEPUObbA78b0YQ2DTCJXqr9g="
+          "devenv.cachix.org-1:w1cLUi8dv3hnoSPGAuibQv+f9TZLr6cv/Hm9XgU50cw="
         ];
         substituters = [
           "https://cache.nixos.org"
@@ -83,6 +91,7 @@ in
           "https://claude-code.cachix.org"
           "https://zed.cachix.org"
           "https://cache.garnix.io"
+          "https://devenv.cachix.org"
         ];
       };
       channel.enable = false;
