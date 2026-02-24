@@ -10,14 +10,57 @@ let
 in
 {
   config = lib.mkIf config.sgiath.agents.enable {
-    home.packages = [
-      opencode
-    ];
+    programs.opencode = {
+      enable = false;
+      package = opencode;
+      settings = {
+        theme = "orng";
+        autoupdate = false;
+        rules = ./opencode/AGENTS.md;
+        agents = {
+          explorer = ./opencode/agents/explorer.md;
+        };
+        commands = {
+          commit = ./opencode/commands/commit.md;
+          debug = ./opencode/commands/debug.md;
+          handoff = ./opencode/commands/handoff.md;
+          learn = ./opencode/commands/learn.md;
+          start-work = ./opencode/commands/start-work.md;
+          tech-debt = ./opencode/commands/tech-debt.md;
+        };
+        skills = {
+          frontend-design = ./opencode/skills/frontend-design.md;
+          tracer-bullet = ./opencode/skills/tracer-bullet.md;
+        };
+        permissions = {
+          edit = {
+            "/tmp/**" = "allow";
+            "~/**" = "allow";
+          };
+          external_directory = {
+            "/tmp/**" = "allow";
+            "~/**" = "allow";
+          };
+        };
+        server = {
+          hostname = "0.0.0.0";
+          mdns = true;
+          cors = [
+            "http://localhost:4096"
+            "http://192.168.1.7:4096"
+            "http://localhost:4097"
+            "http://192.168.1.7:4097"
+          ];
+        };
+        experimental = {
+          batch_tool = true;
+        };
+      };
+    };
 
     # aliases
     programs.zsh.shellAliases = {
-      oc = "OPENCODE_DISABLE_CLAUDE_CODE=true OPENCODE_CONFIG=${config.xdg.configHome}/opencode/vanilla/opencode.jsonc OPENCODE_CONFIG_DIR=${config.xdg.configHome}/opencode/vanilla ${opencode}/bin/opencode";
-      omo = "OPENCODE_DISABLE_CLAUDE_CODE=true OPENCODE_CONFIG=${config.xdg.configHome}/opencode/omo/opencode.jsonc OPENCODE_CONFIG_DIR=${config.xdg.configHome}/opencode/omo ${opencode}/bin/opencode --port 4096";
+      oc = "OPENCODE_DISABLE_CLAUDE_CODE=true ${opencode}/bin/opencode";
     };
 
     # systemd.user.services = {
