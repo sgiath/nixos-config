@@ -111,7 +111,7 @@
 
     # https://github.com/steveyegge/beads/releases/latest
     beads = {
-      url = "github:steveyegge/beads/v0.49.1";
+      url = "github:steveyegge/beads/v0.56.1";
       inputs.nixpkgs.follows = "nixpkgs";
     };
 
