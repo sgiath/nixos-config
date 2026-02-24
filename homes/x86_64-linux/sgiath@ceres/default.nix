@@ -22,7 +22,7 @@ in
     texliveMedium
     # lmstudio
     # davinci-resolve-studio
-    inputs.whisper-dictation.packages.${pkgs.stdenv.hostPlatform.system}.defaults
+    inputs.whisper-dictation.packages.${pkgs.stdenv.hostPlatform.system}.default
     whisper-cpp-vulkan
   ];
 
