@@ -109,12 +109,6 @@
       inputs.nixpkgs.follows = "nixpkgs";
     };
 
-    # https://github.com/steveyegge/beads/releases/latest
-    beads = {
-      url = "github:steveyegge/beads/v0.56.1";
-      inputs.nixpkgs.follows = "nixpkgs";
-    };
-
     openspec = {
       url = "github:Fission-AI/OpenSpec";
       inputs.nixpkgs.follows = "nixpkgs";

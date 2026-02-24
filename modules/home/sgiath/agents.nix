@@ -21,18 +21,11 @@ in
       pkgs.uv
       pkgs.${namespace}.bird
 
-      # CodeRabbit
-      # pkgs.${namespace}.coderabbit
-
       # Claude Code
       # pkgs.${namespace}.claude-code-acp
 
       # LLM tools
       inputs.openspec.packages.${pkgs.stdenv.hostPlatform.system}.default
-      # pkgs.${namespace}.agent-of-empires
-      # pkgs.${namespace}.gastown
-      inputs.beads.packages.${pkgs.stdenv.hostPlatform.system}.default
-      # pkgs.${namespace}.bdui
     ];
 
     # claude code
