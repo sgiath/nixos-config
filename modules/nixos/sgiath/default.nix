@@ -19,6 +19,7 @@ in
     ./stylix.nix
     ./time_lang.nix
     ./udev.nix
+    ./yggdrasil.nix
 
     # enable switch
     ./amd-gpu.nix

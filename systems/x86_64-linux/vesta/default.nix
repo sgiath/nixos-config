@@ -32,6 +32,7 @@
     home-assistant.enable = false;
     mollysocket.enable = true;
     ntfy-sh.enable = true;
+    yggdrasil.enable = true;
 
     cryptpad.enable = false;
     factorio.enable = false;

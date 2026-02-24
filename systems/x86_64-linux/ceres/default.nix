@@ -19,8 +19,7 @@
   crazyegg.enable = true;
 
   services = {
-    ollama.enable = false;
-    flatpak.enable = true;
+    yggdrasil.enable = true;
   };
 
   programs = {
