@@ -11,7 +11,7 @@ in
 {
   config = lib.mkIf config.sgiath.agents.enable {
     programs.opencode = {
-      enable = false;
+      enable = true;
       package = opencode;
       settings = {
         theme = "orng";
