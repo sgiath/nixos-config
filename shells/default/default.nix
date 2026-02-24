@@ -10,7 +10,6 @@ mkShell {
     nixfmt
 
     nodejs
-    node2nix
 
     shfmt
   ];
