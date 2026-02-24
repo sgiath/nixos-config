@@ -46,6 +46,13 @@ in
   };
 
   systemd.user.services = {
+    whisper-dictation = {
+      enable = true;
+      Install = {
+        WantedBy = [ "graphical-session.target" ];
+      };
+    };
+
     openclaw-node = {
       Unit = {
         Description = "OpenClaw Node Host";
