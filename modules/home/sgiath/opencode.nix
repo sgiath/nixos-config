@@ -32,7 +32,7 @@ in
       settings = {
         theme = "orng";
         autoupdate = false;
-        permissions = {
+        permission = {
           edit = {
             "/tmp/**" = "allow";
             "~/**" = "allow";
