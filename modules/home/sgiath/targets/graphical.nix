@@ -45,8 +45,8 @@
       whisper-dict = {
         enable = true;
         model = "large-v3-turbo";
-        triggerKey = "rightalt";
-        minConfidence = 0.4;
+        triggerKey = "rightctrl";
+        minConfidence = 0.6;
         minRecordingMs = 250;
       };
     };
