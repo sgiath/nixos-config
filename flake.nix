@@ -175,7 +175,7 @@
         hyprland.homeManagerModules.default
         sops-nix.homeManagerModules.sops
         nix-index-database.homeModules.nix-index
-        whisper-dict.homeModules.whisper-dict
+        whisper-dict.homeManagerModules.whisper-dict
       ];
     };
 }
