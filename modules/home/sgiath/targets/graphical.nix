@@ -45,6 +45,9 @@
       whisper-dict = {
         enable = true;
         model = "large-v3-turbo";
+        triggerKey = "rightalt";
+        minConfidence = 0.1;
+        minRecordingMs = 250;
       };
     };
 
@@ -52,7 +55,7 @@
       # hyprland
       hyprland.enable = true;
       waybar.enable = true;
-      voxtype.enable = true;
+      voxtype.enable = false;
 
       # terminals
       alacritty.enable = false;

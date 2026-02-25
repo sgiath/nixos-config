@@ -28,7 +28,6 @@
             "cpu"
             "memory"
             "clock"
-            "custom/voxtype"
             "tray"
           ];
 
