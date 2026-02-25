@@ -18,6 +18,11 @@
             key = "RIGHTALT";
           };
           whisper.language = "en";
+          output = {
+            mode = "type";
+            fallback_to_clipboard = true;
+            type_delay_ms = 0;
+          };
           audio = {
             device = "default";
             sample_rate = 16000;
