@@ -120,7 +120,12 @@
     };
 
     whisper-dict = {
-      url = "path:/home/sgiath/develop/sgiath/whisper-dict";
+      url = "github:sgiath/whisper-dict";
+      inputs.nixpkgs.follows = "nixpkgs";
+    };
+
+    voxtype = {
+      url = "github:peteonrails/voxtype";
       inputs.nixpkgs.follows = "nixpkgs";
     };
 
@@ -175,7 +180,8 @@
         hyprland.homeManagerModules.default
         sops-nix.homeManagerModules.sops
         nix-index-database.homeModules.nix-index
-        whisper-dict.homeManagerModules.whisper-dict
+        whisper-dict.homeManagerModules.default
+        voxtype.homeManagerModules.default
       ];
     };
 }

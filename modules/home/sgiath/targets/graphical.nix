@@ -2,6 +2,7 @@
   config,
   lib,
   pkgs,
+  inputs,
   ...
 }:
 {
@@ -52,6 +53,20 @@
       # hyprland
       hyprland.enable = true;
       waybar.enable = true;
+
+      voxtype = {
+        enable = true;
+        package = inputs.voxtype.packages.${pkgs.stdenv.hostPlatform.system}.vulkan;
+        model.name = "large-v3-turbo";
+        service.enable = true;
+        settings = {
+          hotkey = {
+            enabled = true;
+            key = "RIGHTALT";
+          };
+          whisper.language = "en";
+        };
+      };
 
       # terminals
       alacritty.enable = false;
