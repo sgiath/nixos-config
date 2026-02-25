@@ -46,7 +46,7 @@
         enable = true;
         model = "large-v3-turbo";
         triggerKey = "rightalt";
-        minConfidence = 0.1;
+        minConfidence = 0.4;
         minRecordingMs = 250;
       };
     };
