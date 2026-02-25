@@ -204,11 +204,11 @@
         "rust-overlay": "rust-overlay"
       },
       "locked": {
-        "lastModified": 1772003179,
-        "narHash": "sha256-9gLkpYK6+2zHQ8BmTOO8k4J1mHi5iAlXRTL91pc023s=",
+        "lastModified": 1772019611,
+        "narHash": "sha256-381kseS702QXOl71qZ4PUKttyDco8RNAxzyQoLMmDmY=",
         "owner": "openai",
         "repo": "codex",
-        "rev": "c086b36b58837ca0b8aa5721d84de8b215ab3de1",
+        "rev": "bcd6e68054ef5ac7507733fdb46cb15ec5156773",
         "type": "github"
       },
       "original": {
@@ -1452,11 +1452,11 @@
     },
     "nixpkgs-master": {
       "locked": {
-        "lastModified": 1772001742,
-        "narHash": "sha256-DWbELEHKB7BNC17GNNYA9jdxz9bQ7T/fqYsgmE5QHIo=",
+        "lastModified": 1772019642,
+        "narHash": "sha256-9UORV5XdY2X6DaQ4fs7O8wR37JpLF0yuas45ZVqsmBc=",
         "owner": "NixOS",
         "repo": "nixpkgs",
-        "rev": "5a22af774a9d7a16a4e7fd0e274457e86c2a9251",
+        "rev": "b85aa48d35ffb6d8d1ce99192c3fd013d5ea26d7",
         "type": "github"
       },
       "original": {
@@ -2096,7 +2096,7 @@
         ]
       },
       "locked": {
-        "lastModified": 1772020484,
+        "lastModified": 1772020616,
         "narHash": "sha256-+rPUDz863iTUgR2A5nhQRWLCUtMXkVLG9wVq6lOuUpw=",
         "path": "/home/sgiath/develop/sgiath/whisper-dict",
         "type": "path"
@@ -2179,11 +2179,11 @@
         ]
       },
       "locked": {
-        "lastModified": 1771982860,
-        "narHash": "sha256-DL7SZYGknFzHMDmvk/kSnV/Tk7R8+qRpsCykMowjfes=",
+        "lastModified": 1772005916,
+        "narHash": "sha256-aFYnT0gStcu1PVTh2Xzd0n8PIEKmqvTgrVkpv49qc6M=",
         "owner": "0xc000022070",
         "repo": "zen-browser-flake",
-        "rev": "932b57f0e990243e05008941a1933642370e4340",
+        "rev": "044299e83752f78f9fc5d6a648f7f3dd84bb3b18",
         "type": "github"
       },
       "original": {
