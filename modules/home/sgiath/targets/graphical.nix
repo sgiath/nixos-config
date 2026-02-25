@@ -65,6 +65,11 @@
             key = "RIGHTALT";
           };
           whisper.language = "en";
+          audio = {
+            device = "default";
+            sample_rate = 16000;
+            max_duration_secs = 60;
+          };
         };
       };
 

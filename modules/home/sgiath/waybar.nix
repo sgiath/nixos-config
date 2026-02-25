@@ -28,6 +28,7 @@
             "cpu"
             "memory"
             "clock"
+            "custom/voxtype"
             "tray"
           ];
 
@@ -46,6 +47,13 @@
             interval = 1;
           };
           tray.spacing = 10;
+
+          "custom/voxtype" = {
+            exec = "voxtype status --follow --format json";
+            return-type = "json";
+            format = "{}";
+            tooltip = true;
+          };
         };
         secondBar = {
           layer = "top";
