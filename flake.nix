@@ -119,8 +119,8 @@
       flake = false;
     };
 
-    whisper-dictation = {
-      url = "github:jacopone/whisper-dictation";
+    whisper-dict = {
+      url = "path:/home/sgiath/develop/sgiath/whisper-dict";
       inputs.nixpkgs.follows = "nixpkgs";
     };
 
@@ -175,6 +175,7 @@
         hyprland.homeManagerModules.default
         sops-nix.homeManagerModules.sops
         nix-index-database.homeModules.nix-index
+        whisper-dict.homeModules.default
       ];
     };
 }

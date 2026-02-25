@@ -42,6 +42,10 @@
 
     services = {
       udiskie.enable = true;
+      whisper-dict = {
+        enable = true;
+        model = "large-v3-turbo";
+      };
     };
 
     programs = {
