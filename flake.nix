@@ -99,10 +99,7 @@
     };
 
     # https://github.com/anomalyco/opencode/releases/latest
-    opencode = {
-      url = "github:anomalyco/opencode/v1.2.15";
-      inputs.nixpkgs.follows = "nixpkgs";
-    };
+    opencode.url = "github:anomalyco/opencode/v1.2.15";
 
     claude-code = {
       url = "github:sadjow/claude-code-nix";
