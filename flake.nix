@@ -88,18 +88,21 @@
 
     # https://github.com/zed-industries/zed/releases/latest
     zed-editor = {
-      url = "github:zed-industries/zed/v0.223.3";
+      url = "github:zed-industries/zed/v0.225.9";
       inputs.nixpkgs.follows = "nixpkgs";
     };
 
     # https://github.com/openai/codex/releases/latest
     codex = {
-      url = "github:openai/codex";
+      url = "github:openai/codex/rust-v0.105.0";
       inputs.nixpkgs.follows = "nixpkgs";
     };
 
     # https://github.com/anomalyco/opencode/releases/latest
-    opencode.url = "github:anomalyco/opencode/v1.2.15";
+    opencode = {
+      url = "github:anomalyco/opencode/v1.2.14";
+      inputs.nixpkgs.follows = "nixpkgs";
+    };
 
     claude-code = {
       url = "github:sadjow/claude-code-nix";

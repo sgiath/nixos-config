@@ -7,8 +7,8 @@
   ...
 }:
 let
-  # codex = inputs.codex.packages.${pkgs.stdenv.hostPlatform.system}.codex-rs;
-  codex = pkgs.codex;
+  codex = inputs.codex.packages.${pkgs.stdenv.hostPlatform.system}.codex-rs;
+  # codex = pkgs.codex;
 in
 {
   options.sgiath.agents = {
