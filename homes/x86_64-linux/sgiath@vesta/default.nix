@@ -15,8 +15,8 @@ let
     "${pkgs.yt-dlp}/bin"
   ];
 
-  # openclaw = pkgs.${namespace}.openclaw;
-  openclaw = pkgs.openclaw;
+  openclaw = pkgs.${namespace}.openclaw;
+  # openclaw = pkgs.openclaw;
 in
 {
   sgiath = {
@@ -41,7 +41,6 @@ in
         Environment = [
           "HOME=${config.home.homeDirectory}"
           "PATH=${openclawPath}"
-          "OPENCLAW_GATEWAY_PORT=18789"
           "OPENCLAW_GATEWAY_TOKEN=${secrets.openclaw-token}"
           "OPENCLAW_SYSTEMD_UNIT=openclaw-gateway.service"
           "OPENCLAW_SERVICE_MARKER=openclaw"
