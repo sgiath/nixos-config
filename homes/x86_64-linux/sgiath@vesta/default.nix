@@ -14,6 +14,9 @@ let
     "${pkgs.curl}/bin"
     "${pkgs.yt-dlp}/bin"
   ];
+
+  # openclaw = pkgs.${namespace}.openclaw;
+  openclaw = pkgs.openclaw;
 in
 {
   sgiath = {
@@ -43,9 +46,9 @@ in
           "OPENCLAW_SYSTEMD_UNIT=openclaw-gateway.service"
           "OPENCLAW_SERVICE_MARKER=openclaw"
           "OPENCLAW_SERVICE_KIND=gateway"
-          "OPENCLAW_SERVICE_VERSION=${lib.getVersion pkgs.${namespace}.openclaw}"
+          "OPENCLAW_SERVICE_VERSION=${lib.getVersion openclaw}"
         ];
-        ExecStart = "${pkgs.${namespace}.openclaw}/bin/openclaw gateway --port 18789";
+        ExecStart = "${openclaw}/bin/openclaw gateway --port 18789";
       };
       Install = {
         WantedBy = [ "default.target" ];
