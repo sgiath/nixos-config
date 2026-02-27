@@ -114,11 +114,6 @@
       inputs.nixpkgs.follows = "nixpkgs";
     };
 
-    openclaw = {
-      url = "github:openclaw/nix-openclaw";
-      inputs.nixpkgs.follows = "nixpkgs";
-    };
-
     bird-src = {
       url = "path:/home/sgiath/develop/sgiath/bird";
       flake = false;
@@ -170,7 +165,6 @@
         # zed-editor.overlays.default
         claude-code.overlays.default
         nix-minecraft.overlay
-        openclaw.overlays.default
       ];
 
       systems.modules.nixos = with inputs; [

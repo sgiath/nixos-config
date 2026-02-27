@@ -16,7 +16,6 @@ let
   ];
 
   openclaw = pkgs.${namespace}.openclaw;
-  # openclaw = pkgs.openclaw;
 in
 {
   sgiath = {
