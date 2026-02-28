@@ -3,36 +3,24 @@
   imports = [
     ./5e.nix
     ./audiobookshelf.nix
-    ./cryptpad.nix
     ./factorio.nix
-    ./focalboard.nix
     ./foundry.nix
-    ./home-assistant.nix
-    ./jitsi.nix
+    ./jellyfin.nix
     ./matrix.nix
-    ./mattermost.nix
     ./minecraft.nix
     ./monitoring.nix
-    ./n8n.nix
     ./nas.nix
     ./nginx.nix
     ./nostr.nix
     ./ntfy.nix
-    ./open-webui.nix
     ./openclaw.nix
     ./opencode.nix
-    ./osm.nix
-    ./photo.nix
     ./pi-hole.nix
-    ./plex.nix
     ./search.nix
     ./sgiath.nix
     ./sinai.nix
     ./torrent.nix
-    ./vault.nix
-    ./wordpress.nix
     ./xmpp.nix
-    ./zitadel.nix
   ];
 
   options.sgiath.server = {

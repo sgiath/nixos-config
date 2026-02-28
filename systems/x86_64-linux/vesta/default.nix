@@ -21,33 +21,22 @@
     searx.enable = true;
     transmission.enable = true;
     jellyfin.enable = true;
-    vaultwarden.enable = false;
-    mattermost.enable = true;
     nostr-rs-relay.enable = true;
 
     foundryvtt.enable = true;
     dnd5etools.enable = true;
+    factorio.enable = false;
 
     open-webui.enable = false;
-    home-assistant.enable = false;
     mollysocket.enable = true;
     ntfy-sh.enable = true;
     yggdrasil.enable = true;
-
-    cryptpad.enable = false;
-    factorio.enable = false;
-    jitsi-meet.enable = false;
-    focalboard.enable = false;
-    zitadel.enable = false;
-    photoprism.enable = false;
     monitoring.enable = false;
 
     # proxies
     nas-proxy.enable = true;
-    osm.proxy = false;
     sgiath-dev.proxy = true;
     sinai-camp.proxy = true;
-    wordpress.proxy = false;
     opencode-proxy.enable = false;
     openclaw-proxy.enable = true;
   };
