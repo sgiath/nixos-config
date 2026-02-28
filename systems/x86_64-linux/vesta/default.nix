@@ -11,7 +11,6 @@
     enable = true;
     docker.enable = true;
     server.enable = true;
-    n8n.enable = true;
   };
 
   services = {
