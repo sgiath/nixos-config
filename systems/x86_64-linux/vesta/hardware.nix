@@ -77,7 +77,6 @@
     # 10 Gbps
     enp1s0 = {
       useDHCP = false;
-      ipv6.acceptRA = true;
       ipv4.addresses = [
         {
           address = "192.168.1.2";
@@ -89,7 +88,6 @@
     # 2.5 Gbps
     enp7s0 = {
       useDHCP = false;
-      ipv6.acceptRA = true;
       ipv4.addresses = [
         {
           address = "192.168.1.3";
@@ -97,6 +95,10 @@
         }
       ];
     };
+  };
+  boot.kernel.sysctl = {
+    "net.ipv6.conf.enp1s0.accept_ra" = 2;
+    "net.ipv6.conf.enp7s0.accept_ra" = 2;
   };
 
   nixpkgs.hostPlatform = lib.mkDefault "x86_64-linux";
