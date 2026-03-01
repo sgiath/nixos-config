@@ -62,40 +62,42 @@
     };
   };
 
-  networking.interfaces = {
+  networking = {
     defaultGateway6.interface = "enp57s0";
-    # 10 Gbps
-    enp57s0 = {
-      useDHCP = false;
-      ipv4.addresses = [
-        {
-          address = "192.168.1.6";
-          prefixLength = 24;
-        }
-      ];
-      ipv6.addresses = [
-        {
-          address = "fd39:f21:ea9::6";
-          prefixLength = 64;
-        }
-      ];
-    };
+    interfaces = {
+      # 10 Gbps
+      enp57s0 = {
+        useDHCP = false;
+        ipv4.addresses = [
+          {
+            address = "192.168.1.6";
+            prefixLength = 24;
+          }
+        ];
+        ipv6.addresses = [
+          {
+            address = "fd39:f21:ea9::6";
+            prefixLength = 64;
+          }
+        ];
+      };
 
-    # 2.5 Gbps
-    enp59s0 = {
-      useDHCP = false;
-      ipv4.addresses = [
-        {
-          address = "192.168.1.7";
-          prefixLength = 24;
-        }
-      ];
-      ipv6.addresses = [
-        {
-          address = "fd39:f21:ea9::7";
-          prefixLength = 64;
-        }
-      ];
+      # 2.5 Gbps
+      enp59s0 = {
+        useDHCP = false;
+        ipv4.addresses = [
+          {
+            address = "192.168.1.7";
+            prefixLength = 24;
+          }
+        ];
+        ipv6.addresses = [
+          {
+            address = "fd39:f21:ea9::7";
+            prefixLength = 64;
+          }
+        ];
+      };
     };
   };
 
