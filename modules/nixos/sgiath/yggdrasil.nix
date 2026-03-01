@@ -1,7 +1,8 @@
 { lib, config, ... }:
 {
-  config = lib.mkIf config.services.yggdrasil.enable {
+  config = lib.mkIf config.sgiath.enable {
     services.yggdrasil = {
+      enable = true;
       openMulticastPort = true;
       persistentKeys = true;
       settings = {
