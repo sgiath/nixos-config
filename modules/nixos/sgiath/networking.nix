@@ -34,4 +34,6 @@
 
     users.users.sgiath.extraGroups = [ "networkmanager" ];
   };
+
+  services.yggdrasil.enable = true;
 }

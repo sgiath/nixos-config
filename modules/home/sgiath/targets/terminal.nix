@@ -52,22 +52,6 @@
 
     services = {
       podman.enable = true;
-
-      stunnel = {
-        enable = true;
-        clients = {
-          horizons = {
-            accept = "127.0.0.1:6775";
-            connect = "ssd.jpl.nasa.gov:6770";
-            socket = [
-              "l:TCP_NODELAY=1"
-              "l:TCP_NODELAY=1"
-            ];
-            sslVersion = "all";
-            TIMEOUTclose = "0";
-          };
-        };
-      };
     };
   };
 }

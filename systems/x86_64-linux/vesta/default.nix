@@ -29,7 +29,6 @@
     open-webui.enable = false;
     mollysocket.enable = true;
     ntfy-sh.enable = true;
-    yggdrasil.enable = true;
     monitoring.enable = false;
 
     # proxies
