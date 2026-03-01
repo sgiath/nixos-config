@@ -77,6 +77,7 @@
     # 10 Gbps
     enp1s0 = {
       useDHCP = false;
+      ipv6.acceptRA = true;
       ipv4.addresses = [
         {
           address = "192.168.1.2";
@@ -88,6 +89,7 @@
     # 2.5 Gbps
     enp7s0 = {
       useDHCP = false;
+      ipv6.acceptRA = true;
       ipv4.addresses = [
         {
           address = "192.168.1.3";
