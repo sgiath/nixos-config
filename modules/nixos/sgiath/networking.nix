@@ -33,7 +33,7 @@
     '';
 
     users.users.sgiath.extraGroups = [ "networkmanager" ];
-  };
 
-  services.yggdrasil.enable = true;
+    services.yggdrasil.enable = true;
+  };
 }
