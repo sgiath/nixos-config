@@ -3,6 +3,7 @@
   config = lib.mkIf config.sgiath.enable {
     networking = {
       defaultGateway = "192.168.1.1";
+      defaultGateway6.address = "fe80::1";
       hosts = {
         "192.168.1.1" = [ "router.sgiath" ];
         "192.168.1.2" = [

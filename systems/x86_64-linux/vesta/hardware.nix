@@ -73,32 +73,43 @@
     };
   };
 
-  networking.interfaces = {
-    # 10 Gbps
-    enp1s0 = {
-      useDHCP = false;
-      ipv4.addresses = [
-        {
-          address = "192.168.1.2";
-          prefixLength = 24;
-        }
-      ];
-    };
+  networking = {
+    defaultGateway6.interface = "enp1s0";
+    interfaces = {
+      # 10 Gbps
+      enp1s0 = {
+        useDHCP = false;
+        ipv4.addresses = [
+          {
+            address = "192.168.1.2";
+            prefixLength = 24;
+          }
+        ];
+        ipv6.addresses = [
+          {
+            address = "fd39:f21:ea9::2";
+            prefixLength = 64;
+          }
+        ];
+      };
 
-    # 2.5 Gbps
-    enp7s0 = {
-      useDHCP = false;
-      ipv4.addresses = [
-        {
-          address = "192.168.1.3";
-          prefixLength = 24;
-        }
-      ];
+      # 2.5 Gbps
+      enp7s0 = {
+        useDHCP = false;
+        ipv4.addresses = [
+          {
+            address = "192.168.1.3";
+            prefixLength = 24;
+          }
+        ];
+        ipv6.addresses = [
+          {
+            address = "fd39:f21:ea9::3";
+            prefixLength = 64;
+          }
+        ];
+      };
     };
-  };
-  boot.kernel.sysctl = {
-    "net.ipv6.conf.enp1s0.accept_ra" = 2;
-    "net.ipv6.conf.enp7s0.accept_ra" = 2;
   };
 
   nixpkgs.hostPlatform = lib.mkDefault "x86_64-linux";

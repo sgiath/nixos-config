@@ -63,6 +63,7 @@
   };
 
   networking.interfaces = {
+    defaultGateway6.interface = "enp57s0";
     # 10 Gbps
     enp57s0 = {
       useDHCP = false;
@@ -70,6 +71,12 @@
         {
           address = "192.168.1.6";
           prefixLength = 24;
+        }
+      ];
+      ipv6.addresses = [
+        {
+          address = "fd39:f21:ea9::6";
+          prefixLength = 64;
         }
       ];
     };
@@ -83,11 +90,13 @@
           prefixLength = 24;
         }
       ];
+      ipv6.addresses = [
+        {
+          address = "fd39:f21:ea9::7";
+          prefixLength = 64;
+        }
+      ];
     };
-  };
-  boot.kernel.sysctl = {
-    "net.ipv6.conf.enp57s0.accept_ra" = 2;
-    "net.ipv6.conf.enp59s0.accept_ra" = 2;
   };
 
   nixpkgs.hostPlatform = "x86_64-linux";
