@@ -42,24 +42,60 @@
     "/nas/downloads" = {
       device = "192.168.1.4:/volume1/Downloads";
       fsType = "nfs";
+      options = [
+        "x-systemd.automount"
+        "noauto"
+      ];
     };
     "/nas/homes" = {
       device = "192.168.1.4:/volume1/homes";
       fsType = "nfs";
+      options = [
+        "x-systemd.automount"
+        "noauto"
+      ];
     };
     "/nas/movies" = {
       device = "192.168.1.4:/volume1/Movies";
       fsType = "nfs";
+      options = [
+        "x-systemd.automount"
+        "noauto"
+      ];
     };
     "/nas/series" = {
       device = "192.168.1.4:/volume1/Series";
       fsType = "nfs";
+      options = [
+        "x-systemd.automount"
+        "noauto"
+      ];
     };
   };
 
-  networking.useDHCP = lib.mkDefault true;
-  # networking.interfaces.enp1s0.useDHCP = lib.mkDefault true;
-  # networking.interfaces.enp7s0.useDHCP = lib.mkDefault true;
+  networking.interfaces = {
+    # 10 Gbps
+    enp1s0 = {
+      useDHCP = false;
+      ipv4.addresses = [
+        {
+          address = "192.168.1.2";
+          prefixLength = 24;
+        }
+      ];
+    };
+
+    # 2.5 Gbps
+    enp7s0 = {
+      useDHCP = false;
+      ipv4.addresses = [
+        {
+          address = "192.168.1.3";
+          prefixLength = 24;
+        }
+      ];
+    };
+  };
 
   nixpkgs.hostPlatform = lib.mkDefault "x86_64-linux";
   hardware.cpu.amd.updateMicrocode = lib.mkDefault config.hardware.enableRedistributableFirmware;

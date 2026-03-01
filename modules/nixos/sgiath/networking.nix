@@ -2,9 +2,10 @@
 {
   config = lib.mkIf config.sgiath.enable {
     networking = {
+      defaultGateway = "192.168.1.1";
       hosts = {
         "192.168.1.1" = [ "router.sgiath" ];
-        "192.168.1.3" = [
+        "192.168.1.2" = [
           "vesta.sgiath.dev"
           "niamh.sgiath.dev"
           "matrix.sgiath.dev"
@@ -24,7 +25,7 @@
     environment.etc."resolv.conf".text = ''
       search sgiath.dev
 
-      nameserver 192.168.1.3
+      nameserver 192.168.1.2
       nameserver 192.168.1.1
       nameserver 1.1.1.1
       nameserver 8.8.8.8

@@ -37,27 +37,54 @@
     "/nas/homes" = {
       device = "192.168.1.4:/volume1/homes";
       fsType = "nfs";
+      options = [
+        "x-systemd.automount"
+        "noauto"
+      ];
     };
 
     "/nas/movies" = {
       device = "192.168.1.4:/volume1/Movies";
       fsType = "nfs";
+      options = [
+        "x-systemd.automount"
+        "noauto"
+      ];
     };
 
     "/nas/series" = {
       device = "192.168.1.4:/volume1/Series";
       fsType = "nfs";
+      options = [
+        "x-systemd.automount"
+        "noauto"
+      ];
     };
   };
 
-  # Enables DHCP on each ethernet and wireless interface. In case of scripted networking
-  # (the default) this is the recommended approach. When using systemd-networkd it's
-  # still possible to use this option, but it's recommended to use it in conjunction
-  # with explicit per-interface declarations with `networking.interfaces.<interface>.useDHCP`.
-  networking.useDHCP = lib.mkDefault true;
-  # networking.interfaces.enp56s0.useDHCP = lib.mkDefault true;
-  # networking.interfaces.enp58s0.useDHCP = lib.mkDefault true;
-  # networking.interfaces.wlp57s0.useDHCP = lib.mkDefault true;
+  networking.interfaces = {
+    # 10 Gbps
+    enp57s0 = {
+      useDHCP = false;
+      ipv4.addresses = [
+        {
+          address = "192.168.1.6";
+          prefixLength = 24;
+        }
+      ];
+    };
+
+    # 2.5 Gbps
+    enp59s0 = {
+      useDHCP = false;
+      ipv4.addresses = [
+        {
+          address = "192.168.1.7";
+          prefixLength = 24;
+        }
+      ];
+    };
+  };
 
   nixpkgs.hostPlatform = "x86_64-linux";
   hardware.cpu.amd.updateMicrocode = lib.mkDefault config.hardware.enableRedistributableFirmware;
