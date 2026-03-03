@@ -55,7 +55,6 @@
       # hyprland
       hyprland.enable = true;
       waybar.enable = true;
-      voxtype.enable = false;
 
       # terminals
       alacritty.enable = false;

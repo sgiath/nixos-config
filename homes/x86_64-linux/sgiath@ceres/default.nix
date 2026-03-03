@@ -43,6 +43,10 @@ in
     terminal = 10;
   };
 
+  services = {
+    niamh.enable = true;
+  };
+
   systemd.user.services = {
     openclaw-node = {
       Unit = {
