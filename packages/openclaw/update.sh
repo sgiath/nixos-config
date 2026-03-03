@@ -40,10 +40,52 @@ trap 'rm -rf "${TEMP_DIR}"' EXIT
 cd "${TEMP_DIR}"
 tar -xzf "$(nix-store --realize "$(nix-prefetch-url --print-path "${TARBALL_URL}" 2>/dev/null | tail -1)")"
 cd package
+
+MATRIX_PATCH_FILE="${SCRIPT_DIR}/patches/matrix-plugin-import-path.patch"
+MATRIX_SEND_QUEUE_TS="extensions/matrix/src/matrix/send-queue.ts"
+PLUGIN_SDK_INDEX_JS="dist/plugin-sdk/index.js"
+PLUGIN_SDK_KEYED_QUEUE_JS="dist/plugin-sdk/keyed-async-queue.js"
+
+if [[ ! -f "${MATRIX_PATCH_FILE}" ]]; then
+	echo "ERROR: missing patch file ${MATRIX_PATCH_FILE}" >&2
+	exit 1
+fi
+
 # Add missing dependency that postPatch adds (must match default.nix)
-jq '.dependencies["@vector-im/matrix-bot-sdk"] = "^0.8.0-element.3"' package.json >package.json.new
-mv package.json.new package.json
-npm install --package-lock-only --ignore-scripts 2>/dev/null || true
+if ! jq -e '.dependencies["@vector-im/matrix-bot-sdk"]' package.json >/dev/null; then
+	echo "==> Applying dependency workaround: @vector-im/matrix-bot-sdk"
+	jq '.dependencies["@vector-im/matrix-bot-sdk"] = "^0.8.0-element.3"' package.json >package.json.new
+	mv package.json.new package.json
+else
+	echo "==> Upstream already includes @vector-im/matrix-bot-sdk"
+fi
+
+if [[ ! -f "${MATRIX_SEND_QUEUE_TS}" ]]; then
+	echo "ERROR: expected ${MATRIX_SEND_QUEUE_TS} not found; review matrix import workaround" >&2
+	exit 1
+fi
+
+if grep -qF 'openclaw/plugin-sdk/keyed-async-queue' "${MATRIX_SEND_QUEUE_TS}"; then
+	echo "==> Matrix import workaround is still required"
+elif grep -qF 'openclaw/plugin-sdk' "${MATRIX_SEND_QUEUE_TS}"; then
+	echo "==> Upstream matrix import is already fixed"
+else
+	echo "ERROR: unexpected import format in ${MATRIX_SEND_QUEUE_TS}; review matrix workaround" >&2
+	exit 1
+fi
+
+if [[ ! -f "${PLUGIN_SDK_INDEX_JS}" ]]; then
+	echo "ERROR: expected ${PLUGIN_SDK_INDEX_JS} not found; review keyed queue shim workaround" >&2
+	exit 1
+fi
+
+if [[ -f "${PLUGIN_SDK_KEYED_QUEUE_JS}" ]]; then
+	echo "==> Upstream already ships ${PLUGIN_SDK_KEYED_QUEUE_JS}"
+else
+	echo "==> Upstream is missing ${PLUGIN_SDK_KEYED_QUEUE_JS}; compatibility shim remains required"
+fi
+
+npm install --package-lock-only --ignore-scripts
 cp package-lock.json "${SCRIPT_DIR}/package-lock.json"
 
 # Compute npmDepsHash

@@ -22,14 +22,19 @@ buildNpmPackage rec {
 
   sourceRoot = "package";
 
+  # Temporary compatibility patch for openclaw 2026.3.2 matrix plugin import.
+  # Remove once upstream no longer imports:
+  #   openclaw/plugin-sdk/keyed-async-queue
+  patches = [
+    ./patches/matrix-plugin-import-path.patch
+  ];
+
   postPatch = ''
     # Add missing dependency for matrix extension (upstream issue)
-    ${lib.getExe jq} '.dependencies["@vector-im/matrix-bot-sdk"] = "^0.8.0-element.3"' package.json > package.json.new
-    mv package.json.new package.json
-
-    # openclaw 2026.3.2 ships a broken matrix plugin import path
-    # that resolves to dist/plugin-sdk/index.js/keyed-async-queue.
-    sed -i 's|openclaw/plugin-sdk/keyed-async-queue|openclaw/plugin-sdk|' extensions/matrix/src/matrix/send-queue.ts
+    if ! ${lib.getExe jq} -e '.dependencies["@vector-im/matrix-bot-sdk"]' package.json >/dev/null; then
+      ${lib.getExe jq} '.dependencies["@vector-im/matrix-bot-sdk"] = "^0.8.0-element.3"' package.json > package.json.new
+      mv package.json.new package.json
+    fi
 
     cp ${./package-lock.json} package-lock.json
   '';
@@ -44,8 +49,22 @@ buildNpmPackage rec {
   makeCacheWritable = true;
 
   postInstall = ''
+    matrixCryptoDest="$out/lib/node_modules/openclaw/node_modules/@matrix-org/matrix-sdk-crypto-nodejs/matrix-sdk-crypto.linux-x64-gnu.node"
+    keyedQueueShim="$out/lib/node_modules/openclaw/dist/plugin-sdk/keyed-async-queue.js"
+
     # Install prebuilt matrix-sdk-crypto native binary
-    cp $matrixCryptoNative $out/lib/node_modules/openclaw/node_modules/@matrix-org/matrix-sdk-crypto-nodejs/matrix-sdk-crypto.linux-x64-gnu.node
+    mkdir -p "$(dirname "$matrixCryptoDest")"
+    cp $matrixCryptoNative "$matrixCryptoDest"
+
+    # Temporary compatibility shim for openclaw 2026.3.2 exports mismatch.
+    # Remove once upstream ships dist/plugin-sdk/keyed-async-queue.js.
+    if [ ! -e "$keyedQueueShim" ]; then
+      printf '%s\n' 'export { KeyedAsyncQueue, enqueueKeyedTask } from "./index.js";' > "$keyedQueueShim"
+    fi
+
+    # Sanity checks for runtime-critical files.
+    test -f "$matrixCryptoDest"
+    test -f "$keyedQueueShim"
   '';
 
   meta = {

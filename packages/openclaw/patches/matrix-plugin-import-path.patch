@@ -1,0 +1,6 @@
+diff --git a/extensions/matrix/src/matrix/send-queue.ts b/extensions/matrix/src/matrix/send-queue.ts
+--- a/extensions/matrix/src/matrix/send-queue.ts
++++ b/extensions/matrix/src/matrix/send-queue.ts
+@@ -1,1 +1,1 @@
+-import { KeyedAsyncQueue } from "openclaw/plugin-sdk/keyed-async-queue";
++import { KeyedAsyncQueue } from "openclaw/plugin-sdk";
