@@ -1342,8 +1342,8 @@
         "parts": "parts"
       },
       "locked": {
-        "lastModified": 1772578766,
-        "narHash": "sha256-ByKt2vu12xp1e0HJZdDoXy59KYro/62HuVellhNU564=",
+        "lastModified": 1772579238,
+        "narHash": "sha256-sLTAmMW7teT1cMj7VGBmwFYU5lm8Yu6Iem5d4UaYHOQ=",
         "path": "/home/sgiath/develop/sgiath/niamh",
         "type": "path"
       },
@@ -1581,11 +1581,11 @@
     },
     "nixpkgs-master": {
       "locked": {
-        "lastModified": 1772578023,
-        "narHash": "sha256-tyUEDO9Brx/Qb+LETNZo8BV0bGxuyHigFQf5if0zFYo=",
+        "lastModified": 1772578178,
+        "narHash": "sha256-GFSR4AhkdMWASrHRcNAnywawNyXWXU23Wl5KldRX7ww=",
         "owner": "NixOS",
         "repo": "nixpkgs",
-        "rev": "c1b60e3c483fa21469b2cbe7fc847da9f1bf83ec",
+        "rev": "6c7efdcf13764b25b6972991f926e50a37633222",
         "type": "github"
       },
       "original": {
