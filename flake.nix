@@ -39,7 +39,7 @@
     };
 
     # https://github.com/hyprwm/Hyprland/releases/latest
-    hyprland.url = "github:hyprwm/Hyprland/v0.54.0";
+    hyprland.url = "github:hyprwm/Hyprland/v0.53.1";
     # hyprland.url = "github:hyprwm/Hyprland";
     hyprland-plugins = {
       url = "github:hyprwm/hyprland-plugins";
@@ -114,6 +114,11 @@
       inputs.nixpkgs.follows = "nixpkgs";
     };
 
+    niamh = {
+      url = "path:/home/sgiath/develop/sgiath/niamh";
+      inputs.nixpkgs.follows = "nixpkgs";
+    };
+
     bird-src = {
       url = "path:/home/sgiath/develop/sgiath/bird";
       flake = false;
@@ -182,6 +187,7 @@
         nix-index-database.homeModules.nix-index
         whisper-dict.homeManagerModules.default
         voxtype.homeManagerModules.default
+        niamh.homeManagerModules.default
       ];
     };
 }
