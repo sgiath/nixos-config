@@ -12,6 +12,7 @@
     home.packages = with pkgs; [
       coreutils-prefixed
       inetutils
+      lsof
       mprocs
       presenterm
       rclone
