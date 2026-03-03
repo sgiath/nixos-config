@@ -26,6 +26,11 @@ buildNpmPackage rec {
     # Add missing dependency for matrix extension (upstream issue)
     ${lib.getExe jq} '.dependencies["@vector-im/matrix-bot-sdk"] = "^0.8.0-element.3"' package.json > package.json.new
     mv package.json.new package.json
+
+    # openclaw 2026.3.2 ships a broken matrix plugin import path
+    # that resolves to dist/plugin-sdk/index.js/keyed-async-queue.
+    sed -i 's|openclaw/plugin-sdk/keyed-async-queue|openclaw/plugin-sdk|' extensions/matrix/src/matrix/send-queue.ts
+
     cp ${./package-lock.json} package-lock.json
   '';
 

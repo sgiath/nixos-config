@@ -56,7 +56,7 @@
 
             --vesta)
               nix-store --add-fixed sha256 ~/nix-root/FoundryVTT-Linux-13.350.zip
-              nixos-rebuild switch --sudo --flake '.#vesta' --target-host 'sgiath@vesta.local'
+              NIX_SSHOPTS="-o IdentityAgent=$SSH_AUTH_SOCK" nixos-rebuild switch --sudo --flake '.#vesta' --target-host 'vesta.local'
               ;;
 
             --hygiea)
