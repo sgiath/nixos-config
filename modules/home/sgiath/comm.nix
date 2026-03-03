@@ -61,6 +61,7 @@
         "${pkgs.webcord}/bin/webcord"
         "${pkgs.telegram-desktop}/bin/telegram-desktop"
         "${pkgs.signal-desktop}/bin/signal-desktop"
+        "${pkgs.element-desktop}/bin/element-desktop"
         # "${pkgs.fluffychat}/bin/fluffychat"
       ];
       windowrule = [
