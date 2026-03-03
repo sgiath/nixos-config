@@ -14,7 +14,7 @@
     home.packages = with pkgs; [
       webcord
       telegram-desktop
-      signal-desktop-bin
+      signal-desktop
       # mattermost-desktop
       # simplex-chat-desktop
       fluffychat
