@@ -62,6 +62,7 @@ in
           "OPENCLAW_LOG_PREFIX=ceres"
           "OPENCLAW_SERVICE_MARKER=openclaw"
           "OPENCLAW_SERVICE_KIND=node"
+          "OPENCLAW_ALLOW_INSECURE_PRIVATE_WS=1"
           "OPENCLAW_SERVICE_VERSION=${lib.getVersion pkgs.${namespace}.openclaw}"
         ];
         ExecStart = "${pkgs.${namespace}.openclaw}/bin/openclaw node run --host 192.168.1.2 --port 18789 --display-name ceres";
