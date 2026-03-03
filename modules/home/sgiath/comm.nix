@@ -60,7 +60,7 @@
       exec-once = [
         "${pkgs.webcord}/bin/webcord"
         "${pkgs.telegram-desktop}/bin/telegram-desktop"
-        "${pkgs.signal-desktop-bin}/bin/signal-desktop"
+        "${pkgs.signal-desktop}/bin/signal-desktop"
         # "${pkgs.fluffychat}/bin/fluffychat"
       ];
       windowrule = [
