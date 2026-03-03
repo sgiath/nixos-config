@@ -2,6 +2,7 @@
   config,
   lib,
   pkgs,
+  inputs,
   ...
 }:
 let
@@ -100,6 +101,7 @@ in
         gc
         gw
         git-crypt
+        inputs.worktrunk.packages.${pkgs.stdenv.hostPlatform.system}.default
       ];
 
       file = {

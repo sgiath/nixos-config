@@ -129,8 +129,8 @@
       inputs.nixpkgs.follows = "nixpkgs";
     };
 
-    voxtype = {
-      url = "github:peteonrails/voxtype";
+    worktrunk = {
+      url = "github:max-sixty/worktrunk";
       inputs.nixpkgs.follows = "nixpkgs";
     };
 
@@ -186,7 +186,6 @@
         sops-nix.homeManagerModules.sops
         nix-index-database.homeModules.nix-index
         whisper-dict.homeManagerModules.default
-        voxtype.homeManagerModules.default
         niamh.homeManagerModules.default
       ];
     };

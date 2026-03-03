@@ -326,6 +326,21 @@
     },
     "crane_4": {
       "locked": {
+        "lastModified": 1767744144,
+        "narHash": "sha256-9/9ntI0D+HbN4G0TrK3KmHbTvwgswz7p8IEJsWyef8Q=",
+        "owner": "ipetkov",
+        "repo": "crane",
+        "rev": "2fb033290bf6b23f226d4c8b32f7f7a16b043d7e",
+        "type": "github"
+      },
+      "original": {
+        "owner": "ipetkov",
+        "repo": "crane",
+        "type": "github"
+      }
+    },
+    "crane_5": {
+      "locked": {
         "lastModified": 1769737823,
         "narHash": "sha256-DrBaNpZ+sJ4stXm+0nBX7zqZT9t9P22zbk6m5YhQxS4=",
         "owner": "ipetkov",
@@ -1827,8 +1842,8 @@
         "snowfall-lib": "snowfall-lib_2",
         "sops-nix": "sops-nix",
         "stylix": "stylix",
-        "voxtype": "voxtype",
         "whisper-dict": "whisper-dict",
+        "worktrunk": "worktrunk",
         "zed-editor": "zed-editor",
         "zen-browser": "zen-browser"
       }
@@ -1889,6 +1904,27 @@
       }
     },
     "rust-overlay_2": {
+      "inputs": {
+        "nixpkgs": [
+          "worktrunk",
+          "nixpkgs"
+        ]
+      },
+      "locked": {
+        "lastModified": 1767926800,
+        "narHash": "sha256-x0n73J6ufD/EhDlVdcoAmF0OQHZ+b0a2cKDc8RZyt+o=",
+        "owner": "oxalica",
+        "repo": "rust-overlay",
+        "rev": "499e9eed88ff9494b6604205b42847e847dfeb91",
+        "type": "github"
+      },
+      "original": {
+        "owner": "oxalica",
+        "repo": "rust-overlay",
+        "type": "github"
+      }
+    },
+    "rust-overlay_3": {
       "inputs": {
         "nixpkgs": [
           "zed-editor",
@@ -2238,27 +2274,6 @@
         "type": "github"
       }
     },
-    "voxtype": {
-      "inputs": {
-        "flake-utils": "flake-utils_5",
-        "nixpkgs": [
-          "nixpkgs"
-        ]
-      },
-      "locked": {
-        "lastModified": 1772443545,
-        "narHash": "sha256-oD3lameQXilKcgxQORR2l0+iDbnCO61+mjYD3MEVbuQ=",
-        "owner": "peteonrails",
-        "repo": "voxtype",
-        "rev": "d011f3ff074a6a14c14e75fefb375a408e9e8887",
-        "type": "github"
-      },
-      "original": {
-        "owner": "peteonrails",
-        "repo": "voxtype",
-        "type": "github"
-      }
-    },
     "whisper-dict": {
       "inputs": {
         "nixpkgs": [
@@ -2276,6 +2291,29 @@
       "original": {
         "owner": "sgiath",
         "repo": "whisper-dict",
+        "type": "github"
+      }
+    },
+    "worktrunk": {
+      "inputs": {
+        "crane": "crane_4",
+        "flake-utils": "flake-utils_5",
+        "nixpkgs": [
+          "nixpkgs"
+        ],
+        "rust-overlay": "rust-overlay_2"
+      },
+      "locked": {
+        "lastModified": 1772515391,
+        "narHash": "sha256-ftuZP5nmdUoSZLzbHVMwNkOeVr0ZSmtXfcL5w/xXBUg=",
+        "owner": "max-sixty",
+        "repo": "worktrunk",
+        "rev": "24e25aa36e9a20a42f9a9ca3eb7a2f5ff31ae83d",
+        "type": "github"
+      },
+      "original": {
+        "owner": "max-sixty",
+        "repo": "worktrunk",
         "type": "github"
       }
     },
@@ -2322,12 +2360,12 @@
     },
     "zed-editor": {
       "inputs": {
-        "crane": "crane_4",
+        "crane": "crane_5",
         "flake-parts": "flake-parts_5",
         "nixpkgs": [
           "nixpkgs"
         ],
-        "rust-overlay": "rust-overlay_2"
+        "rust-overlay": "rust-overlay_3"
       },
       "locked": {
         "lastModified": 1772502440,
