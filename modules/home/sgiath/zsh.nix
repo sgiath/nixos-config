@@ -9,6 +9,10 @@
   config = lib.mkIf config.programs.zsh.enable {
     # home.packages = with pkgs; [ ];
 
+    home.sessionVariables = {
+      LESS = "-g -i -M -R -S -w -X";
+    };
+
     programs = {
       eza = {
         enable = true;

@@ -33,6 +33,9 @@ in
         theme = "orng";
         autoupdate = false;
         permission = {
+          read = {
+            "/nix/store/**" = "allow";
+          };
           edit = {
             "/tmp/**" = "allow";
             "~/**" = "allow";
