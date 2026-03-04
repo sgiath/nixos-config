@@ -31,6 +31,11 @@
         "ceres.local".hostname = "192.168.1.7";
 
         # CrazyEgg
+        "scramble.crazyegg.com" = {
+          hostname = "ec2-52-201-232-43.compute-1.amazonaws.com";
+          user = "ubuntu";
+          identityFile = [ "~/.ssh/filip.pem" ];
+        };
         "bastion.crazyegg.com" = {
           hostname = "us-east-1.general-purpose.bastion.crazyegg.com";
           user = "filip";
