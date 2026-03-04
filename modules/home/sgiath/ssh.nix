@@ -32,7 +32,7 @@
 
         # CrazyEgg
         "scramble.crazyegg.com" = {
-          hostname = "ec2-52-201-232-43.compute-1.amazonaws.com";
+          hostname = "ec2-3-82-224-38.compute-1.amazonaws.com";
           user = "ubuntu";
           identityFile = [ "~/.ssh/filip.pem" ];
         };
