@@ -39,9 +39,6 @@
 
       zsh = {
         dotDir = "${config.xdg.configHome}/zsh";
-        initContent = lib.mkOrder 1200 ''
-          eval "$(wt config shell init zsh)"
-        '';
         shellAliases = {
           mkdir = "mkdir -p";
           tree = "ls --tree --ignore-glob='node_modules'";
