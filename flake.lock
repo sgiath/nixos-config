@@ -183,11 +183,11 @@
         ]
       },
       "locked": {
-        "lastModified": 1772618913,
-        "narHash": "sha256-9yy6og2i/zEJJxPHY5DRzA9LFsJy57AkFh8DffqvXTY=",
+        "lastModified": 1772674260,
+        "narHash": "sha256-6Ks0v3VtZ6KKzZiCJXFTjH2oTXPaVFBpijji3xCSN/E=",
         "owner": "sadjow",
         "repo": "claude-code-nix",
-        "rev": "d04ad90b303f74da041e2d60b102d702464c6b08",
+        "rev": "4f5e65a89966a7de18b8449e60895209310f075f",
         "type": "github"
       },
       "original": {
@@ -257,11 +257,11 @@
         "treefmt-nix": "treefmt-nix"
       },
       "locked": {
-        "lastModified": 1772639895,
-        "narHash": "sha256-rUALHo0QnkVJKDJrhwKibjiKANfHiHohawck4DOqRyM=",
+        "lastModified": 1772646719,
+        "narHash": "sha256-ob2jKbb3ClPTeoYkbVYilsbbq1SaTrRrNZwolFQyPCw=",
         "ref": "main",
-        "rev": "9a3f7f4af7a837dd2067f2fbc4be04c570d75177",
-        "revCount": 6220,
+        "rev": "38e93cde3e5bf834d4baa6c63fc55ace1f439e86",
+        "revCount": 6223,
         "type": "git",
         "url": "https://forgejo.ellis.link/continuwuation/continuwuity"
       },
@@ -381,11 +381,11 @@
         ]
       },
       "locked": {
-        "lastModified": 1772420042,
-        "narHash": "sha256-naZz40TUFMa0E0CutvwWsSPhgD5JldyTUDEgP9ADpfU=",
+        "lastModified": 1772699110,
+        "narHash": "sha256-jkyo/9fZVB3F/PHk3fVK1ImxJBZ71DCOYZvAz4R4v4E=",
         "owner": "nix-community",
         "repo": "disko",
-        "rev": "5af7af10f14706e4095bd6bc0d9373eb097283c6",
+        "rev": "42affa9d33750ac0a0a89761644af20d8d03e6ee",
         "type": "github"
       },
       "original": {
@@ -1376,11 +1376,11 @@
         ]
       },
       "locked": {
-        "lastModified": 1772505577,
-        "narHash": "sha256-HzpMlxPScGSLDAoOZHA09Pndd4d1s6uNomYK3GoJjAg=",
+        "lastModified": 1772678126,
+        "narHash": "sha256-MZVqAmjcTmicg4WP2SxtNksUXS6tigY+EwBatLxc1bM=",
         "owner": "fufexan",
         "repo": "nix-gaming",
-        "rev": "3ea17e15ca87c740e75f4ecf0ad3e3f4c16d7c7d",
+        "rev": "aa9ba54128d03151f11e96b3213b3791a5496fe5",
         "type": "github"
       },
       "original": {
@@ -1581,11 +1581,11 @@
     },
     "nixpkgs-master": {
       "locked": {
-        "lastModified": 1772640005,
-        "narHash": "sha256-zS9x8X229JnXsNtXLg+M8Fwk0+JpEO9O8PFbTFDOPXg=",
+        "lastModified": 1772698592,
+        "narHash": "sha256-/+KCja+By6dhv5Pear60oK7MnrGwY+5ORA1lCjnP2Kg=",
         "owner": "NixOS",
         "repo": "nixpkgs",
-        "rev": "fdd844ff1c6a76a5c4e3467fd06f21f3519eec8e",
+        "rev": "e0239fe70302d92d01626672ff0c0d889548e25d",
         "type": "github"
       },
       "original": {
@@ -1677,11 +1677,11 @@
     },
     "nixpkgs_5": {
       "locked": {
-        "lastModified": 1772542754,
-        "narHash": "sha256-WGV2hy+VIeQsYXpsLjdr4GvHv5eECMISX1zKLTedhdg=",
+        "lastModified": 1772624091,
+        "narHash": "sha256-QKyJ0QGWBn6r0invrMAK8dmJoBYWoOWy7lN+UHzW1jc=",
         "owner": "NixOS",
         "repo": "nixpkgs",
-        "rev": "8c809a146a140c5c8806f13399592dbcb1bb5dc4",
+        "rev": "80bdc1e5ce51f56b19791b52b2901187931f5353",
         "type": "github"
       },
       "original": {
@@ -1739,11 +1739,11 @@
         ]
       },
       "locked": {
-        "lastModified": 1772636284,
-        "narHash": "sha256-4I243hvqQjPU09GsIyQu/3Cv+THKFf5QTbC3x0aO83Q=",
+        "lastModified": 1772693623,
+        "narHash": "sha256-fHz94dXj/pluRnyuhqsYTA0wfOqAg/FLERLByH8gLKE=",
         "owner": "anomalyco",
         "repo": "opencode",
-        "rev": "715b844c2a88810b6178d7a2467c7d36ea8fb764",
+        "rev": "6ddd13c6ac9bb918bd8239e5cc2308d8938db747",
         "type": "github"
       },
       "original": {
@@ -2304,11 +2304,11 @@
         "rust-overlay": "rust-overlay_2"
       },
       "locked": {
-        "lastModified": 1772600845,
-        "narHash": "sha256-5slY5ALA1BOPboT6vFpEviToRuubFBGbu+HxRuxuLs8=",
+        "lastModified": 1772694698,
+        "narHash": "sha256-kZrVX7t9sGYFYlakDH/khFysiNOD2dSK+ZlxN5XlUrA=",
         "owner": "max-sixty",
         "repo": "worktrunk",
-        "rev": "070e23f6e39a372bb72bab9ea602f37231ad4de9",
+        "rev": "fc5d29bb2c2362a7edf530ae8b54f84bb937eb4b",
         "type": "github"
       },
       "original": {
