@@ -93,6 +93,8 @@ let
       fi
     ''
   );
+
+  worktrunk = inputs.worktrunk.packages.${pkgs.stdenv.hostPlatform.system}.default;
 in
 {
   config = lib.mkIf config.programs.git.enable {
@@ -101,7 +103,7 @@ in
         gc
         gw
         git-crypt
-        inputs.worktrunk.packages.${pkgs.stdenv.hostPlatform.system}.default
+        worktrunk
       ];
 
       file = {
@@ -114,6 +116,10 @@ in
     };
 
     programs = {
+      zsh.initContent = lib.mkOrder 1000 ''
+        eval "$(${worktrunk}/bin/wt config shell init zsh)"
+      '';
+
       gh = {
         enable = true;
         settings = {
