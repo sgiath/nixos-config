@@ -167,6 +167,9 @@
           echo ""; echo "=== openwork ==="
           ./openwork/update.sh
 
+          echo ""; echo "=== t3code ==="
+          ./t3code/update.sh
+
           popd > /dev/null
 
           echo ""

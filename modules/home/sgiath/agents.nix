@@ -21,6 +21,9 @@ in
       pkgs.uv
       pkgs.${namespace}.bird
 
+      # T3 code
+      pkgs.${namespace}.t3code
+
       # Claude Code
       # pkgs.${namespace}.claude-code-acp
 
