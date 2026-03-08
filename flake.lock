@@ -183,11 +183,11 @@
         ]
       },
       "locked": {
-        "lastModified": 1772841898,
-        "narHash": "sha256-+5WdD9bo2XZIajeO5JPXCUyPotE9DFY9DL38OHYEy1s=",
+        "lastModified": 1772983984,
+        "narHash": "sha256-IcpFi8DLx0NvVuiDT2vsPH4b78QH9mNDtGofBW1pUDo=",
         "owner": "sadjow",
         "repo": "claude-code-nix",
-        "rev": "635219a8ebb214a37e92220a0f292568cfb01da8",
+        "rev": "acc49fb45863d92670817d184b2e2aed8e8c9fd1",
         "type": "github"
       },
       "original": {
@@ -257,11 +257,11 @@
         "treefmt-nix": "treefmt-nix"
       },
       "locked": {
-        "lastModified": 1772908127,
-        "narHash": "sha256-3+xgXTnEwWIJrpxMPcx90GwJQo4+HdpSeJP9Z78U/fs=",
+        "lastModified": 1772975456,
+        "narHash": "sha256-nmS2eebdWWeLLmeOvy2Wcsq0TYdMPwoPewu1e+GXBrE=",
         "ref": "main",
-        "rev": "4f23d566ed6e0a2004aa2ace0520d7b62db0991e",
-        "revCount": 6230,
+        "rev": "afcbccd9dd36a4e30272e30bb85d26ddbe831c6d",
+        "revCount": 6235,
         "type": "git",
         "url": "https://forgejo.ellis.link/continuwuation/continuwuity"
       },
@@ -1581,11 +1581,11 @@
     },
     "nixpkgs-master": {
       "locked": {
-        "lastModified": 1772953544,
-        "narHash": "sha256-13kRtcHdIcndcxjYgraipIKEyBw2t2186g0C+XJCzf0=",
+        "lastModified": 1772991320,
+        "narHash": "sha256-7+rickAb+owZY83ZDObAIf6L7JnLnqCjxVqG0xYp7w0=",
         "owner": "NixOS",
         "repo": "nixpkgs",
-        "rev": "b11031962d37f9b731a2e721eb265887c27dbc74",
+        "rev": "15d7ec4d5b763e009b391fed4bbbf8a05b7d7f9f",
         "type": "github"
       },
       "original": {
@@ -1739,11 +1739,11 @@
         ]
       },
       "locked": {
-        "lastModified": 1772937657,
-        "narHash": "sha256-o8V0Hp8wAWEIqbHsw6k+BFZz7HdgDsDWquwad3B6jFc=",
+        "lastModified": 1772976896,
+        "narHash": "sha256-hGor10bwl7ftdL5IZQ/eO4iBqYvzeRvjVZGNvGI+JVU=",
         "owner": "anomalyco",
         "repo": "opencode",
-        "rev": "a2ce4eb6506a61ed9f48fecd31e9085109fe3b47",
+        "rev": "d15c2ce349f7c73aad25138de27df61ebe9bc634",
         "type": "github"
       },
       "original": {
@@ -2304,11 +2304,11 @@
         "rust-overlay": "rust-overlay_2"
       },
       "locked": {
-        "lastModified": 1772954100,
-        "narHash": "sha256-B15joaOO3TWgYOp9wb9cHLuFzdQVttu7Xh20XgDhsZ0=",
+        "lastModified": 1772967864,
+        "narHash": "sha256-JKXCEtFqiMfCBgyVVNeLoOqy+qhyDFwmuRZc8gnURpI=",
         "owner": "max-sixty",
         "repo": "worktrunk",
-        "rev": "9988530bf899abee1bf4b1f28427177e1776a6d9",
+        "rev": "e83a9a31912c0f7b5f6361ed42509bd8665f6f00",
         "type": "github"
       },
       "original": {
