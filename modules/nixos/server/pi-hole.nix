@@ -1,4 +1,7 @@
 { config, lib, ... }:
+let
+  secrets = builtins.fromJSON (builtins.readFile ./../../../secrets.json);
+in
 {
   options.services.pi-hole.enable = lib.mkEnableOption "pi-hole";
 
@@ -45,7 +48,7 @@
       environment = {
         TZ = "UTC";
         FTLCONF_webserver_port = "8053";
-        FTLCONF_webserver_api_password = "";
+        FTLCONF_webserver_api_password = secrets.pihole-password;
       };
     };
   };
