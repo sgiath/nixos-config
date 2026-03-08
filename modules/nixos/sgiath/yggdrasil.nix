@@ -2,7 +2,7 @@
 {
   config = lib.mkIf config.sgiath.enable {
     services.yggdrasil = {
-      enable = true;
+      enable = false;
       openMulticastPort = true;
       persistentKeys = true;
       settings = {
