@@ -29,7 +29,7 @@
   };
 
   services = {
-    nfs.server.enable = true;
+    nfs.server.enable = false;
     fstrim.enable = true;
   };
 

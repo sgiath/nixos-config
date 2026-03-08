@@ -7,7 +7,7 @@
   config = lib.mkIf (config.sgiath.server.enable && config.services.jellyfin.enable) {
     services = {
       jellyfin = {
-        openFirewall = true;
+        openFirewall = false;
       };
 
       nginx.virtualHosts."watch.sgiath.dev" = {
