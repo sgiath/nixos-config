@@ -26,9 +26,9 @@
           hostname = "192.168.1.1";
           user = "root";
         };
-        "vesta.local".hostname = "192.168.1.3";
+        "vesta.local".hostname = "192.168.1.2";
         "nas.local".hostname = "192.168.1.4";
-        "ceres.local".hostname = "192.168.1.7";
+        "ceres.local".hostname = "192.168.1.6";
 
         # CrazyEgg
         "scramble.crazyegg.com" = {
