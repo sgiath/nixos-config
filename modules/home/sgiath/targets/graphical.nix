@@ -18,6 +18,9 @@
       kdePackages.okular
       libwacom
       appimage-run
+
+      # T3 code
+      pkgs.${namespace}.t3code
     ];
 
     wayland.windowManager.hyprland.settings = {
