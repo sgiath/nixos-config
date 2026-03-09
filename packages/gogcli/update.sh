@@ -8,6 +8,71 @@ set -euo pipefail
 SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
 DEFAULT_NIX="${SCRIPT_DIR}/default.nix"
 
+version_ge() {
+	[[ "$1" == "$2" ]] || [[ "$(printf '%s\n%s\n' "$1" "$2" | sort -V | tail -n1)" == "$1" ]]
+}
+
+resolve_go_builder() {
+	local required_go_version="$1"
+	local current_build_attr="$2"
+	local required_major=""
+	local required_minor=""
+	local builder_names
+	local selected_builder=""
+
+	if [[ -z "${required_go_version}" ]]; then
+		echo "${current_build_attr}"
+		return 0
+	fi
+
+	IFS=. read -r required_major required_minor _ <<<"${required_go_version}"
+
+	mapfile -t builder_names < <(
+		nix eval --impure --json --expr '
+			let pkgs = import <nixpkgs> {};
+			in builtins.filter (n: builtins.match "buildGo[0-9]+Module" n != null) (builtins.attrNames pkgs)
+		' | jq -r '.[]' | sort
+	)
+
+	for builder_name in "${builder_names[@]}"; do
+		local digits=""
+		local builder_major=""
+		local builder_minor=""
+		local go_attr=""
+		local builder_version=""
+
+		if [[ ! "${builder_name}" =~ ^buildGo([0-9]+)Module$ ]]; then
+			continue
+		fi
+
+		digits="${BASH_REMATCH[1]}"
+		builder_major="${digits:0:1}"
+		builder_minor="${digits:1}"
+
+		if (( builder_major < required_major )) || (( builder_major == required_major && builder_minor < required_minor )); then
+			continue
+		fi
+
+		go_attr="go_${builder_major}_${builder_minor}"
+		builder_version=$(nix eval --impure --raw --expr "let pkgs = import <nixpkgs> {}; in pkgs.${go_attr}.version" 2>/dev/null || true)
+		if [[ -z "${builder_version}" ]]; then
+			continue
+		fi
+
+		if version_ge "${builder_version}" "${required_go_version}"; then
+			selected_builder="${builder_name}"
+			break
+		fi
+	done
+
+	if [[ -z "${selected_builder}" ]]; then
+		echo "ERROR: No buildGo module in nixpkgs satisfies Go ${required_go_version}" >&2
+		return 1
+	fi
+
+	echo "${selected_builder}"
+}
+
 # Get version - either from argument or latest from GitHub
 if [[ -n "${1:-}" ]]; then
 	VERSION="$1"
@@ -30,6 +95,15 @@ echo "==> Updating from ${CURRENT_VERSION} to ${VERSION}"
 TMPDIR="$(mktemp -d)"
 trap 'rm -rf "${TMPDIR}"' EXIT
 
+CURRENT_BUILD_ATTR=$(grep -oE 'buildGo[0-9A-Za-z]*Module' "${DEFAULT_NIX}" | head -1)
+REQUIRED_GO_VERSION=$(curl -LfsS "https://raw.githubusercontent.com/steipete/gogcli/v${VERSION}/go.mod" | awk '/^go / { print $2; exit }' || true)
+BUILD_GO_ATTR=$(resolve_go_builder "${REQUIRED_GO_VERSION}" "${CURRENT_BUILD_ATTR}")
+if [[ -n "${REQUIRED_GO_VERSION}" ]]; then
+	echo "==> Using ${BUILD_GO_ATTR} for Go ${REQUIRED_GO_VERSION}"
+else
+	echo "==> Could not determine upstream Go version, keeping ${BUILD_GO_ATTR}"
+fi
+
 # Step 1: Compute source hash
 echo "==> Computing source hash..."
 SRC_JSON=$(nix run nixpkgs#nix-prefetch-github -- steipete gogcli --rev "v${VERSION}" 2>/dev/null)
@@ -43,7 +117,7 @@ cat >"${TMPDIR}/go-vendor.nix" <<EOF
 let
   pkgs = import <nixpkgs> {};
 in
-pkgs.buildGoModule rec {
+pkgs.${BUILD_GO_ATTR} rec {
   pname = "gogcli";
   version = "${VERSION}";
   src = pkgs.fetchFromGitHub {
@@ -52,7 +126,8 @@ pkgs.buildGoModule rec {
     rev = "v\${version}";
     hash = "${SRC_HASH}";
   };
-  vendorHash = "sha256-AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA=";
+  vendorHash = pkgs.lib.fakeHash;
+  env.CGO_ENABLED = 0;
   subPackages = [ "cmd/gog" ];
 }
 EOF
@@ -70,6 +145,11 @@ echo "    Vendor hash: ${VENDOR_HASH}"
 
 # Step 3: Update default.nix
 echo "==> Updating default.nix..."
+
+# Update buildGo module if needed
+if [[ "${CURRENT_BUILD_ATTR}" != "${BUILD_GO_ATTR}" ]]; then
+	sed -i "s/${CURRENT_BUILD_ATTR}/${BUILD_GO_ATTR}/g" "${DEFAULT_NIX}"
+fi
 
 # Update version
 sed -i "s/version = \"[0-9.]*\";/version = \"${VERSION}\";/" "${DEFAULT_NIX}"
