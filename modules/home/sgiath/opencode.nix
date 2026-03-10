@@ -33,6 +33,11 @@ in
         theme = "orng";
         autoupdate = false;
         permission = {
+          bash = {
+            "*" = "allow";
+            "aws *" = "ask";
+            "kubectl exec *" = "ask";
+          };
           read = {
             "/nix/store/**" = "allow";
           };
@@ -64,7 +69,7 @@ in
 
     # aliases
     programs.zsh.shellAliases = {
-      oc = "OPENCODE_DISABLE_CLAUDE_CODE=true ${opencode}/bin/opencode";
+      oc = "OPENCODE_DISABLE_CLAUDE_CODE=true OPENCODE_ENABLE_EXA=1 ${opencode}/bin/opencode";
     };
 
     # systemd.user.services = {
