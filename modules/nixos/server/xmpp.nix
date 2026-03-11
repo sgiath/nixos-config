@@ -27,6 +27,19 @@
             };
           };
         };
+        muc = {
+          sgiath = {
+            name = "sgiath";
+            domain = "sgiath.dev";
+            restrictRoomCreation = "local";
+            roomDefaultMembersOnly = true;
+          };
+        };
+        httpFileShare = {
+          domain = "sgiath.dev";
+          http_external_url = "sgiath.dev";
+          http_host = "sgiath.dev";
+        };
         modules = {
           announce = true;
           bosh = true;
