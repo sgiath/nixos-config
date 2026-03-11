@@ -6,7 +6,7 @@
     services = {
       prosody = {
         enable = true;
-        allowRegistration = false;
+        allowRegistration = true;
         c2sRequireEncryption = true;
         s2sRequireEncryption = true;
         authentication = "internal_hashed";
