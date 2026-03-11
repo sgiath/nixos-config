@@ -31,7 +31,7 @@
 
     programs.tmux = {
       shell = "${pkgs.zsh}/bin/zsh";
-      terminal = "xterm-256color";
+      terminal = "tmux-256color";
       baseIndex = 1;
       clock24 = true;
       mouse = true;
