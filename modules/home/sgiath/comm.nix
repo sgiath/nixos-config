@@ -20,6 +20,7 @@
       fluffychat
       # cinny-desktop
       gajim
+      weechat
 
       # nostr CLI
       pkgs.${namespace}.nak
