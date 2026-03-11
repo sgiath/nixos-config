@@ -30,13 +30,13 @@
         muc = [
           {
             name = "sgiath";
-            domain = "sgiath.dev";
+            domain = "conferences.sgiath.dev";
             restrictRoomCreation = "local";
             roomDefaultMembersOnly = true;
           }
         ];
         httpFileShare = {
-          domain = "sgiath.dev";
+          domain = "upload.sgiath.dev";
           http_external_url = "sgiath.dev";
           http_host = "sgiath.dev";
         };
