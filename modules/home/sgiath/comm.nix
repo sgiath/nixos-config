@@ -19,6 +19,7 @@
       # simplex-chat-desktop
       fluffychat
       # cinny-desktop
+      gajim
 
       # nostr CLI
       pkgs.${namespace}.nak

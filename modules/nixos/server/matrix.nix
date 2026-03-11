@@ -1,5 +1,4 @@
 {
-  inputs,
   config,
   lib,
   pkgs,
@@ -12,7 +11,6 @@ in
   options.services.matrix.enable = lib.mkEnableOption "matrix server";
 
   config = lib.mkIf (config.sgiath.server.enable && config.services.matrix.enable) {
-
     environment.systemPackages = with pkgs; [
       livekit
     ];

@@ -21,6 +21,7 @@
     transmission.enable = true;
     jellyfin.enable = true;
     nostr-rs-relay.enable = true;
+    xmpp.enable = true;
 
     foundryvtt.enable = true;
     dnd5etools.enable = true;
