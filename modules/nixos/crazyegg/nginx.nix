@@ -1,6 +1,9 @@
 { config, lib, ... }:
 {
   config = lib.mkIf config.crazyegg.enable {
+    # Trust the mkcert root CA so browsers accept dev certificates
+    security.pki.certificateFiles = [ /home/sgiath/.local/share/mkcert/rootCA.pem ];
+
     services.nginx = {
       enable = true;
       recommendedTlsSettings = true;
