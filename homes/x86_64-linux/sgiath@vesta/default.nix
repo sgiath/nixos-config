@@ -6,7 +6,6 @@
   ...
 }:
 let
-  secrets = builtins.fromJSON (builtins.readFile ./../../../secrets.json);
   openclawPath = lib.concatStringsSep ":" [
     "${config.home.profileDirectory}/bin"
     "/run/current-system/sw/bin"
@@ -36,11 +35,15 @@ in
       Service = {
         Restart = "always";
         RestartSec = 5;
+        TimeoutStopSec = 30;
+        TimeoutStartSec = 30;
+        SuccessExitStatus = "0 143";
         KillMode = "process";
         Environment = [
           "HOME=${config.home.homeDirectory}"
+          "TMPDIR=/tmp"
           "PATH=${openclawPath}"
-          "OPENCLAW_GATEWAY_TOKEN=${secrets.openclaw-token}"
+          "OPENCLAW_GATEWAY_PORT=18789"
           "OPENCLAW_SYSTEMD_UNIT=openclaw-gateway.service"
           "OPENCLAW_SERVICE_MARKER=openclaw"
           "OPENCLAW_SERVICE_KIND=gateway"
