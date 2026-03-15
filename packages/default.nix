@@ -7,6 +7,5 @@ pkgs: {
   nak = pkgs.callPackage ./nak { };
   openclaw = pkgs.callPackage ./openclaw { };
   relay-tester = pkgs.callPackage ./relay-tester { };
-  slate = pkgs.callPackage ./slate { };
   t3code = pkgs.callPackage ./t3code { };
 }

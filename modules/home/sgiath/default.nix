@@ -167,9 +167,6 @@
           echo ""; echo "=== openwork ==="
           ./openwork/update.sh
 
-          echo ""; echo "=== slate ==="
-          ./slate/update.sh
-
           echo ""; echo "=== t3code ==="
           ./t3code/update.sh
 

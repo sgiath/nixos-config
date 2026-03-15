@@ -20,7 +20,6 @@ in
       pkgs.python3
       pkgs.uv
       pkgs.${namespace}.bird
-      pkgs.${namespace}.slate
 
       # Claude Code
       pkgs.${namespace}.claude-agent-acp
