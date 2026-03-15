@@ -23,7 +23,7 @@ buildNpmPackage rec {
   meta = with lib; {
     description = "Use Claude Code from any ACP client such as Zed";
     homepage = "https://github.com/zed-industries/claude-agent-acp";
-    license = licenses.apache2;
+    license = licenses.wtfpl;
     maintainers = [ ];
     mainProgram = "claude-agent-acp";
   };
