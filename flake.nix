@@ -88,13 +88,13 @@
 
     # https://github.com/zed-industries/zed/releases/latest
     zed-editor = {
-      url = "github:zed-industries/zed/v0.226.4";
+      url = "github:zed-industries/zed/v0.227.1";
       inputs.nixpkgs.follows = "nixpkgs";
     };
 
     # https://github.com/openai/codex/releases/latest
     codex = {
-      url = "github:openai/codex/rust-v0.111.0";
+      url = "github:openai/codex/rust-v0.114.0";
       inputs.nixpkgs.follows = "nixpkgs";
     };
 

@@ -14,6 +14,7 @@ let
     "${pkgs.coreutils}/bin"
     "${pkgs.curl}/bin"
     "${pkgs.yt-dlp}/bin"
+    "${pkgs.whisper-cpp-vulkan}/bin"
   ];
 in
 {
