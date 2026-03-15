@@ -20,9 +20,10 @@ in
       pkgs.python3
       pkgs.uv
       pkgs.${namespace}.bird
+      pkgs.${namespace}.slate
 
       # Claude Code
-      # pkgs.${namespace}.claude-code-acp
+      pkgs.${namespace}.claude-agent-acp
 
       # LLM tools
       inputs.openspec.packages.${pkgs.stdenv.hostPlatform.system}.default

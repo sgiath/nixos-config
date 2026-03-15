@@ -149,8 +149,8 @@
 
           pushd ~/nixos/packages > /dev/null
 
-          echo ""; echo "=== claude-code-acp ==="
-          ./claude-code-acp/update.sh
+          echo ""; echo "=== claude-agent-acp ==="
+          ./claude-agent-acp/update.sh
 
           echo ""; echo "=== dnd5etools ==="
           ./dnd5etools/update.sh
@@ -166,6 +166,9 @@
 
           echo ""; echo "=== openwork ==="
           ./openwork/update.sh
+
+          echo ""; echo "=== slate ==="
+          ./slate/update.sh
 
           echo ""; echo "=== t3code ==="
           ./t3code/update.sh

@@ -5,12 +5,12 @@
 }:
 
 buildNpmPackage rec {
-  pname = "claude-code-acp";
+  pname = "claude-agent-acp";
   version = "0.16.1";
 
   src = fetchFromGitHub {
     owner = "zed-industries";
-    repo = "claude-code-acp";
+    repo = "claude-agent-acp";
     rev = "v${version}";
     hash = "sha256-/HeAz0jdXhLhYGcwTgthrE7cGjKjro30GQUmAn4egXs=";
   };
@@ -22,9 +22,9 @@ buildNpmPackage rec {
 
   meta = with lib; {
     description = "Use Claude Code from any ACP client such as Zed";
-    homepage = "https://github.com/zed-industries/claude-code-acp";
-    license = licenses.asl20;
+    homepage = "https://github.com/zed-industries/claude-agent-acp";
+    license = licenses.apache2;
     maintainers = [ ];
-    mainProgram = "claude-code-acp";
+    mainProgram = "claude-agent-acp";
   };
 }

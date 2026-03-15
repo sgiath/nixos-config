@@ -11,10 +11,10 @@ DEFAULT_NIX="${SCRIPT_DIR}/default.nix"
 # Get version - either from argument or latest from GitHub
 if [[ -n "${1:-}" ]]; then
   VERSION="$1"
-  echo "==> Updating claude-code-acp to specified version ${VERSION}"
+  echo "==> Updating claude-agent-acp to specified version ${VERSION}"
 else
-  echo "==> Fetching latest claude-code-acp version from GitHub..."
-  LATEST_TAG=$(curl -s "https://api.github.com/repos/zed-industries/claude-code-acp/releases/latest" | jq -r '.tag_name')
+  echo "==> Fetching latest claude-agent-acp version from GitHub..."
+  LATEST_TAG=$(curl -s "https://api.github.com/repos/zed-industries/claude-agent-acp/releases/latest" | jq -r '.tag_name')
   VERSION="${LATEST_TAG#v}"
   echo "    Latest version: ${VERSION}"
 fi
@@ -32,13 +32,13 @@ trap 'rm -rf "${TMPDIR}"' EXIT
 
 # Step 1: Compute source hash
 echo "==> Computing source hash..."
-SRC_JSON=$(nix run nixpkgs#nix-prefetch-github -- zed-industries claude-code-acp --rev "v${VERSION}" 2>/dev/null)
+SRC_JSON=$(nix run nixpkgs#nix-prefetch-github -- zed-industries claude-agent-acp --rev "v${VERSION}" 2>/dev/null)
 SRC_HASH=$(echo "${SRC_JSON}" | jq -r '.hash')
 echo "    Source hash: ${SRC_HASH}"
 
 # Step 2: Clone repo and compute npm deps hash
 echo "==> Computing npm dependencies hash..."
-git clone --depth 1 --branch "v${VERSION}" "https://github.com/zed-industries/claude-code-acp.git" "${TMPDIR}/repo" 2>/dev/null
+git clone --depth 1 --branch "v${VERSION}" "https://github.com/zed-industries/claude-agent-acp.git" "${TMPDIR}/repo" 2>/dev/null
 
 if [[ ! -f "${TMPDIR}/repo/package-lock.json" ]]; then
   echo "ERROR: Could not find package-lock.json" >&2
@@ -60,8 +60,8 @@ sed -i "/fetchFromGitHub/,/};/ s|hash = \"sha256-[^\"]*\"|hash = \"${SRC_HASH}\"
 # Update npmDepsHash
 sed -i "s|npmDepsHash = \"sha256-[^\"]*\"|npmDepsHash = \"${NPM_DEPS_HASH}\"|" "${DEFAULT_NIX}"
 
-echo "==> Done! Updated claude-code-acp to version ${VERSION}"
+echo "==> Done! Updated claude-agent-acp to version ${VERSION}"
 echo ""
 echo "Next steps:"
-echo "  1. Test the build: nix build '.#claude-code-acp'"
+echo "  1. Test the build: nix build '.#claude-agent-acp'"
 echo "  2. Commit changes"
