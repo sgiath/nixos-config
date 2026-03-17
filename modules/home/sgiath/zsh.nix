@@ -82,8 +82,8 @@
           };
 
           tmux = lib.mkIf config.programs.tmux.enable {
-            autoStartLocal = true;
-            autoStartRemote = true;
+            autoStartLocal = lib.mkDefault true;
+            autoStartRemote = false;
             defaultSessionName = "Main";
           };
         };

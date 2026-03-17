@@ -22,5 +22,7 @@
         };
       };
     };
+
+    systemd.services.nginx.after = [ "audiobookshelf.service" ];
   };
 }

@@ -39,6 +39,8 @@
       '';
     };
 
+    systemd.services.nginx.after = [ "foundryvtt.service" ];
+
     services.foundryvtt = {
       hostName = "foundry.sgiath.dev";
       package = inputs.foundryvtt.packages.${system}.foundryvtt_13;

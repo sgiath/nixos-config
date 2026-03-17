@@ -25,5 +25,6 @@
         };
       };
     };
+    systemd.services.nginx.after = [ "jellyfin.service" ];
   };
 }

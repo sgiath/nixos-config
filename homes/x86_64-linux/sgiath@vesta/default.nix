@@ -25,12 +25,20 @@ in
     };
   };
 
+  programs.zsh.prezto.tmux = {
+    autoStartLocal = lib.mkForce false;
+    autoStartRemote = lib.mkForce false;
+  };
+
   systemd.user.services = {
     openclaw-gateway = {
       Unit = {
         Description = "OpenClaw Gateway";
-        After = [ "network-online.target" ];
-        Wants = [ "network-online.target" ];
+        After = [
+          "network-online.target"
+          "nginx.service"
+          "continuwuity.service"
+        ];
       };
       Service = {
         Restart = "always";

@@ -39,5 +39,6 @@ in
         };
       };
     };
+    systemd.services.nginx.after = [ "transmission.service" ];
   };
 }

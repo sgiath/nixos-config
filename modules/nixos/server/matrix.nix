@@ -235,6 +235,8 @@ in
       };
     };
 
+    systemd.services.nginx.after = [ "continuwuity.service" ];
+
     users.users.turnserver.extraGroups = [ "nginx" ];
     security.acme.certs = {
       "turn.sgiath.dev" = {
