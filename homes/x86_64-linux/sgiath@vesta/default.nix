@@ -25,10 +25,10 @@ in
     };
   };
 
-  programs.zsh.prezto.tmux = {
-    autoStartLocal = lib.mkForce false;
-    autoStartRemote = lib.mkForce false;
-  };
+  # programs.zsh.prezto.tmux = {
+  #   autoStartLocal = lib.mkForce false;
+  #   autoStartRemote = lib.mkForce false;
+  # };
 
   systemd.user.services = {
     openclaw-gateway = {
