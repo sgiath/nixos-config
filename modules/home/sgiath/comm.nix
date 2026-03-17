@@ -12,7 +12,7 @@
 
   config = lib.mkIf (config.sgiath.comm.enable) {
     home.packages = with pkgs; [
-      webcord
+      # webcord
       telegram-desktop
       signal-desktop
       # mattermost-desktop
@@ -60,7 +60,7 @@
 
     wayland.windowManager.hyprland.settings = {
       exec-once = [
-        "${pkgs.webcord}/bin/webcord"
+        # "${pkgs.webcord}/bin/webcord"
         "${pkgs.telegram-desktop}/bin/telegram-desktop"
         "${pkgs.signal-desktop}/bin/signal-desktop"
         "${pkgs.element-desktop}/bin/element-desktop"
