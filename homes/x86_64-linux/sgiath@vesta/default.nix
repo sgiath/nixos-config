@@ -19,16 +19,8 @@ in
 {
   sgiath = {
     enable = true;
-
-    targets = {
-      terminal = true;
-    };
+    targets.terminal = true;
   };
-
-  # programs.zsh.prezto.tmux = {
-  #   autoStartLocal = lib.mkForce false;
-  #   autoStartRemote = lib.mkForce false;
-  # };
 
   systemd.user.services = {
     openclaw-gateway = {
