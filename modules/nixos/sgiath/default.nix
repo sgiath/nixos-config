@@ -101,6 +101,10 @@ in
         dates = "08:00";
       };
     };
+    systemd.services.nix-daemon.serviceConfig = {
+      MemoryMax = "32G";
+      MemoryHigh = "28G";
+    };
 
     users.defaultUserShell = pkgs.zsh;
     environment.sessionVariables = {
