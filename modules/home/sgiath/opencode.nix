@@ -30,7 +30,7 @@ in
         tracer-bullet = ./opencode/skills/tracer-bullet.md;
       };
       settings = {
-        theme = "orng";
+        # theme = "orng";
         autoupdate = false;
         permission = {
           bash = {
