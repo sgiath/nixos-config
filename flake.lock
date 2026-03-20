@@ -183,11 +183,11 @@
         ]
       },
       "locked": {
-        "lastModified": 1773875165,
-        "narHash": "sha256-pPSaTA/vwZRmH/oXGkx1GLF4kFAdCXRzwFNJlLlCTQc=",
+        "lastModified": 1773961521,
+        "narHash": "sha256-enhjd1AcHHU+3RCRdSWVQj6TIqRXkJUbQSFVXzC6xLo=",
         "owner": "sadjow",
         "repo": "claude-code-nix",
-        "rev": "c2186a8096247357c77aaa067e14ee39ce45ac8d",
+        "rev": "1519be1f77ed017ae4a88916ac54529cef885573",
         "type": "github"
       },
       "original": {
@@ -257,11 +257,11 @@
         "treefmt-nix": "treefmt-nix"
       },
       "locked": {
-        "lastModified": 1773856788,
-        "narHash": "sha256-SReT/nuEFbE079aAJJFPkVjJcfyu/hx1AgdQQn+4pnc=",
+        "lastModified": 1773924312,
+        "narHash": "sha256-KnaVTMeSsQ8clFpCgvo7Ia9cLD19ghD2DthDPzPOALE=",
         "ref": "main",
-        "rev": "05a49ceb60b841ba63d6269450eb8787d1a64343",
-        "revCount": 6293,
+        "rev": "6b013bcf60e1f8672006bd25465d3927dead1cd3",
+        "revCount": 6294,
         "type": "git",
         "url": "https://forgejo.ellis.link/continuwuation/continuwuity"
       },
@@ -1376,11 +1376,11 @@
         ]
       },
       "locked": {
-        "lastModified": 1773888274,
-        "narHash": "sha256-PujDYvxi8Hbm/EB706mi+UWRRzoBaAVhpJREH13Gepg=",
+        "lastModified": 1773974133,
+        "narHash": "sha256-YNmOHKQM4pHAw0Kjn+0cCoV06VkUjG7JCWqjO8OA+lc=",
         "owner": "fufexan",
         "repo": "nix-gaming",
-        "rev": "6e734655941171e75e64511c7c643f854753f52e",
+        "rev": "2776c24f60b202f872703f820d322f1cd0747b4f",
         "type": "github"
       },
       "original": {
@@ -1438,11 +1438,11 @@
         "systems": "systems_4"
       },
       "locked": {
-        "lastModified": 1773802295,
-        "narHash": "sha256-luPLLgS8VR2fHo3xT04KbJm0RU2wep6SDh3smwF8e5E=",
+        "lastModified": 1773974647,
+        "narHash": "sha256-+45LBSG4u7GBpPAMzH1aijYPXfF1gh5dNslGOQIIzDQ=",
         "owner": "Infinidoge",
         "repo": "nix-minecraft",
-        "rev": "41870283e080c46a6d33b6c3b3923e90348254c3",
+        "rev": "9486e94feb2e6263fa2aa67cbfe39c5a95853bdf",
         "type": "github"
       },
       "original": {
@@ -1581,11 +1581,11 @@
     },
     "nixpkgs-master": {
       "locked": {
-        "lastModified": 1773906572,
-        "narHash": "sha256-AG2kVeDEKxDM5OGNA/wwAkjYeXK0JCkyj+dYhR3FRqU=",
+        "lastModified": 1773986369,
+        "narHash": "sha256-fqWXq1MN7I91ZTFU0IgNdH/xKmeIk4fxbOGTTVGgbJw=",
         "owner": "NixOS",
         "repo": "nixpkgs",
-        "rev": "93b6f07705ffb03e404b111e8642178d8f9c2529",
+        "rev": "f57e1a41ba8da5cbe2197d1de39f1213fa43b1ea",
         "type": "github"
       },
       "original": {
@@ -2305,11 +2305,11 @@
         "rust-overlay": "rust-overlay_2"
       },
       "locked": {
-        "lastModified": 1773903603,
-        "narHash": "sha256-P3BwakxbaPkWpE5juExkNs9/aYP3w6M1THJk3Nu4Nm8=",
+        "lastModified": 1773980015,
+        "narHash": "sha256-XuyLnyQfjKGMR02tkXw/ExQA5J5k18oP+DtKDry6K1Y=",
         "owner": "max-sixty",
         "repo": "worktrunk",
-        "rev": "5eb522cf429490b4f641c0eec2d3ff18026d061b",
+        "rev": "ccbdf0f70b32067aa9c5145a5093f49a279af7fd",
         "type": "github"
       },
       "original": {
