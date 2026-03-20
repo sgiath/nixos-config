@@ -34,7 +34,6 @@
         "scramble.crazyegg.com" = {
           hostname = "ec2-3-82-224-38.compute-1.amazonaws.com";
           user = "ubuntu";
-          identityFile = [ "~/.ssh/filip.pem" ];
         };
         "bastion.crazyegg.com" = {
           hostname = "us-east-1.general-purpose.bastion.crazyegg.com";
