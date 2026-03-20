@@ -58,6 +58,7 @@ in
         username = "Sgiath";
         token = secrets.factorio_token;
       })
+      mindustry-wayland
 
       # inputs.nix-gaming.packages.${pkgs.stdenv.hostPlatform.system}.star-citizen
 
