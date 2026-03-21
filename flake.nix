@@ -179,6 +179,7 @@
         stylix.nixosModules.stylix
         foundryvtt.nixosModules.foundryvtt
         nix-minecraft.nixosModules.minecraft-servers
+        nix-gaming.nixosModules.default
       ];
 
       homes.modules = with inputs; [
