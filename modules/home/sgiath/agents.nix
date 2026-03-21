@@ -6,10 +6,6 @@
   namespace,
   ...
 }:
-let
-  # codex = inputs.codex.packages.${pkgs.stdenv.hostPlatform.system}.codex-rs;
-  codex = pkgs.codex;
-in
 {
   options.sgiath.agents = {
     enable = lib.mkEnableOption "LLM agents";
@@ -34,16 +30,9 @@ in
       package = pkgs.claude-code;
     };
 
-    # Codex
-    programs.codex = {
-      enable = true;
-      package = codex;
-    };
-
     # aliases
     programs.zsh.shellAliases = {
       cc = "${pkgs.claude-code}/bin/claude --dangerously-skip-permissions";
-      cx = "${codex}/bin/codex --dangerously-bypass-approvals-and-sandbox";
     };
 
     # bun

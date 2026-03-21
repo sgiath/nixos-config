@@ -1,3 +1,7 @@
+## NixOS
+
+This is a NixOS system. Many projects use `flake.nix`; when project-specific tools are missing, prefer `nix develop -c <command>`. If `direnv` has already loaded the dev shell, run commands normally.
+
 ## Git
 
 - Safe by default: git status/diff/log. Push only when user asks.
