@@ -179,7 +179,7 @@
         stylix.nixosModules.stylix
         foundryvtt.nixosModules.foundryvtt
         nix-minecraft.nixosModules.minecraft-servers
-        nix-gaming.nixosModules.default
+        nix-gaming.nixosModules.pipewireLowLatency
       ];
 
       homes.modules = with inputs; [
