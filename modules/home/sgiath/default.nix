@@ -11,6 +11,7 @@
     ./bitcoin.nix
     ./chromium.nix
     ./clipboard.nix
+    ./codex.nix
     ./comm.nix
     ./editors.nix
     ./email_client.nix

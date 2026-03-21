@@ -9,8 +9,9 @@ let
   codex = pkgs.codex;
 in
 {
-  config = lib.mkIf config.programs.codex.enable {
+  config = lib.mkIf config.sgiath.agents.enable {
     programs.codex = {
+      enable = true;
       package = codex;
       custom-instructions = ./opencode/AGENTS.md;
       settings = {
