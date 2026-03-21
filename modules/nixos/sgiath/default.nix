@@ -102,8 +102,8 @@ in
       };
     };
     systemd.services.nix-daemon.serviceConfig = {
-      MemoryMax = "32G";
-      MemoryHigh = "28G";
+      MemoryMax = "24G";
+      MemoryHigh = "20G";
     };
 
     users.defaultUserShell = pkgs.zsh;

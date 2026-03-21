@@ -13,6 +13,12 @@
       kernelParams = [ "threadirqs" ];
     };
 
+    zramSwap = {
+      enable = true;
+      algorithm = "zstd";
+      memoryPercent = 25;
+    };
+
     # Power settings
     powerManagement.cpuFreqGovernor = "performance";
     services.power-profiles-daemon.enable = false;
