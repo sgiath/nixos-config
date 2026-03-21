@@ -12,7 +12,6 @@
     security.rtkit.enable = true;
     services.pipewire = {
       enable = true;
-      lowLatency.enable = true;
 
       alsa = {
         enable = true;
