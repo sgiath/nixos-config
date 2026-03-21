@@ -22,6 +22,10 @@ in
         personality = "pragmatic";
         sandbox_mode = "danger-full-access";
 
+        mcp_servers = {
+          datadog.url = "https://mcp.datadoghq.com/api/unstable/mcp-server/mcp";
+        };
+
         features = {
           undo = true;
           use_linux_sandbox_bwrap = true;
