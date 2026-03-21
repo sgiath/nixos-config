@@ -13,7 +13,11 @@ in
     programs.codex = {
       enable = true;
       package = codex;
-      custom-instructions = ./opencode/AGENTS.md;
+      custom-instructions = builtins.readFile ./opencode/AGENTS.md;
+      skills = {
+        frontend-design = builtins.readFile ./opencode/skills/frontend-design.md;
+        tracer-bullet = builtins.readFile ./opencode/skills/tracer-bullet.md;
+      };
       settings = {
         model = "gpt-5.4";
         model_reasoning_effort = "high";
