@@ -1,4 +1,4 @@
-{ pkgs, ... }:
+{ pkgs, lib, ... }:
 let
   screenshot = pkgs.writeShellScriptBin "screenshot" ''
     ${pkgs.grim}/bin/grim -g "$(${pkgs.slurp}/bin/slurp)" - | ${pkgs.swappy}/bin/swappy -f -
@@ -16,9 +16,9 @@ in
   wayland.windowManager.hyprland.settings = {
     "$mod" = "SUPER";
     bind = [
-      "$mod SHIFT, Q, exec, ${pkgs.wlogout}/bin/wlogout"
-      "$mod, S, exec, ${screenshot}/bin/screenshot"
-      "$mod, slash, exec, ${pkgs.wofi}/bin/wofi --show drun"
+      "$mod SHIFT, Q, exec, ${lib.getExe pkgs.wlogout}"
+      "$mod, S, exec, ${lib.getExe screenshot}"
+      "$mod, slash, exec, ${lib.getExe pkgs.wofi} --show drun"
 
       "$mod SHIFT, C, killactive,"
       "$mod, R, togglesplit,"
