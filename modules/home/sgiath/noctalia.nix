@@ -23,18 +23,15 @@
             ];
             center = [
               { id = "Workspace"; }
-              { id = "ModelUsage"; }
-              { id = "ScreenToolkit"; }
             ];
             right = [
               { id = "SystemMonitor"; }
-              { id = "Tray"; }
               { id = "NotificationHistory"; }
               { id = "Battery"; }
               { id = "Volume"; }
-              { id = "Brightness"; }
-              { id = "ControlCenter"; }
               { id = "Clock"; }
+              { id = "Tray"; }
+              { id = "ControlCenter"; }
             ];
           };
         };
@@ -93,7 +90,6 @@
 
     wayland.windowManager.hyprland.settings = {
       "$ipc" = "${lib.getExe pkgs.quickshell} -c ${lib.getExe pkgs.noctalia-shell} ipc call";
-      # exec-once = [ "${lib.getExe pkgs.quickshell} -c ${lib.getExe pkgs.noctalia-shell}" ];
       bind = [
         "$mod SHIFT, Q, exec, $ipc sessionMenu toggle"
         "$mod, slash, exec, $ipc launcher toggle"
