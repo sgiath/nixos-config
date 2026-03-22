@@ -1,7 +1,7 @@
 {
   wayland.windowManager.hyprland.settings = {
     general = {
-      gaps_in = 4;
+      gaps_in = 5;
       gaps_out = 10;
       gaps_workspaces = 50;
 
@@ -35,7 +35,7 @@
       };
       tablet.output = "current";
     };
-    
+
     misc = {
       force_default_wallpaper = 0;
       disable_hyprland_logo = true;

@@ -15,29 +15,18 @@
 
       blur = {
         enabled = true;
-        xray = true;
-        special = false;
         new_optimizations = true;
-        size = 10;
-        passes = 3;
-        brightness = 0.5;
-        noise = 0.15;
-        contrast = 0.2;
-        vibrancy = 0.8;
-        vibrancy_darkness = 0.8;
-        popups = false;
-        popups_ignorealpha = 0.6;
-        input_methods = true;
-        input_methods_ignorealpha = 0.8;
+        size = 3;
+        passes = 2;
+        vibrancy = 0.1696;
       };
 
       shadow = {
         enabled = true;
         ignore_window = true;
-        range = 30;
-        offset = "0 2";
-        render_power = 4;
-        color = "rgba(00000010)";
+        range = 4;
+        render_power = 3;
+        color = "rgba(1a1a1aee)";
       };
 
     };
