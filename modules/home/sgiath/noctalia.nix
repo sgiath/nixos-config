@@ -23,6 +23,8 @@
             ];
             center = [
               { id = "Workspace"; }
+              { id = "plugin:model-usage"; }
+              { id = "plugin:screen-toolkit"; }
             ];
             right = [
               { id = "SystemMonitor"; }
@@ -38,7 +40,7 @@
 
         general = {
           avatarImage = "/home/sgiath/Pictures/profile/cyborg_cowboy_head.jpg";
-          clockFormat = "hhmmss";
+          clockFormat = "HH:mm:ss yyyy-MM-dd";
         };
 
         location = {
@@ -58,6 +60,10 @@
         dock = {
           size = 2;
           onlySameOutput = false;
+          monitors = [ "DP-1" ];
+        };
+
+        notifications = {
           monitors = [ "DP-1" ];
         };
       };
@@ -84,6 +90,10 @@
             enabled = true;
             sourceUrl = "https://github.com/noctalia-dev/noctalia-plugins";
           };
+          screen-shot-and-record = {
+            enabled = true;
+            sourceUrl = "https://github.com/noctalia-dev/noctalia-plugins";
+          };
         };
       };
     };
@@ -94,6 +104,7 @@
         "$mod SHIFT, Q, exec, $ipc sessionMenu toggle"
         "$mod, slash, exec, $ipc launcher toggle"
         "$mod, B, exec, $ipc launcher windows"
+        "$mod, S, exec, $ipc target plugin:screen-shot-and-record screenshot"
       ];
 
       layerrule = [

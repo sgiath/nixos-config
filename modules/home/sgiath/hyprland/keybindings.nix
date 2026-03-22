@@ -16,8 +16,6 @@ in
   wayland.windowManager.hyprland.settings = {
     "$mod" = "SUPER";
     bind = [
-      "$mod, S, exec, ${lib.getExe screenshot}"
-
       "$mod SHIFT, C, killactive,"
       "$mod, R, togglesplit,"
       "$mod, F, togglefloating, active"
