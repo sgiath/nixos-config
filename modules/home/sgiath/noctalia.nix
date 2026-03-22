@@ -2,8 +2,13 @@
   config,
   pkgs,
   lib,
+  inputs,
   ...
 }:
+let
+  qs = inputs.noctalia-qs.packages.${pkgs.stdenv.hostPlatform.system}.default;
+  noctalia = inputs.noctalia.packages.${pkgs.stdenv.hostPlatform.system}.default;
+in
 {
   config = lib.mkIf config.programs.hyprland.enable {
     programs.noctalia-shell = {
@@ -90,8 +95,8 @@
     };
 
     wayland.windowManager.hyprland.settings = {
-      "$ipc" = "qs -c noctalia-shell ipc call";
-      exec-once = [ "qs -c noctalia-shell" ];
+      "$ipc" = "${lib.getExe qs} -c ${lib.getExe noctalia} ipc call";
+      exec-once = [ "${lib.getExe qs} -c ${lib.getExe noctalia}" ];
       bind = [
         "$mod SHIFT, Q, exec, $ipc sessionMenu toggle"
         "$mod, slash, exec, $ipc launcher toggle"
