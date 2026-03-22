@@ -7,7 +7,6 @@
 {
   config = lib.mkIf config.programs.noctalia-shell.enable {
     programs.noctalia-shell = {
-      enable = true;
       systemd.enable = true;
       settings = {
         bar = {
