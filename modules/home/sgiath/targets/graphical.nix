@@ -58,7 +58,7 @@
     programs = {
       # hyprland
       hyprland.enable = true;
-      waybar.enable = true;
+      waybar.enable = false;
 
       # terminals
       alacritty.enable = false;

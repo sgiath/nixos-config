@@ -11,10 +11,5 @@
       # No shadow for tiled windows (matches windows that are not floating).
       "no_shadow on, match:float 0"
     ];
-
-    layerrule = [
-      "xray 1, match:namespace .*"
-      "no_anim on, match:namespace .*"
-    ];
   };
 }

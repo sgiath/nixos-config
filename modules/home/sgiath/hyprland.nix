@@ -70,7 +70,7 @@
     home.packages = [ pkgs.grim ];
 
     programs.wofi = {
-      enable = true;
+      enable = false;
       settings = {
         mode = "drun";
         prompt = "";
