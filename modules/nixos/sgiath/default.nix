@@ -105,6 +105,7 @@ in
       MemoryMax = "24G";
       MemoryHigh = "20G";
     };
+    home-manager.backupFileExtension = "backup";
 
     users.defaultUserShell = pkgs.zsh;
     environment.sessionVariables = {
