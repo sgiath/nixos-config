@@ -18,21 +18,23 @@
           widgets = {
             left = [
               { id = "Launcher"; }
-              { id = "Workspace"; }
-            ];
-            center = [
               { id = "ActiveWindow"; }
               { id = "MediaMini"; }
             ];
+            center = [
+              { id = "Workspace"; }
+              { id = "ModelUsage"; }
+              { id = "ScreenToolkit"; }
+            ];
             right = [
               { id = "SystemMonitor"; }
-              { id = "Clock"; }
               { id = "Tray"; }
               { id = "NotificationHistory"; }
               { id = "Battery"; }
               { id = "Volume"; }
               { id = "Brightness"; }
               { id = "ControlCenter"; }
+              { id = "Clock"; }
             ];
           };
         };
