@@ -20,6 +20,7 @@
     ./git.nix
     ./gnupg.nix
     ./hyprland.nix
+    ./noctalia.nix
     ./nvim.nix
     ./openclaw.nix
     ./opencode.nix

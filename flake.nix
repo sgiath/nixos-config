@@ -46,6 +46,17 @@
       inputs.hyprland.follows = "hyprland";
     };
 
+    noctalia-qs = {
+      url = "github:noctalia-dev/noctalia-qs";
+      inputs.nixpkgs.follows = "nixpkgs";
+    };
+
+    noctalia = {
+      url = "github:noctalia-dev/noctalia-shell";
+      inputs.nixpkgs.follows = "nixpkgs";
+      inputs.noctalia-qs.follows = "noctalia-qs";
+    };
+
     btc-clients = {
       url = "github:emmanuelrosa/btc-clients-nix";
       inputs.nixpkgs.follows = "nixpkgs";
@@ -184,6 +195,7 @@
 
       homes.modules = with inputs; [
         hyprland.homeManagerModules.default
+        noctalia.homeModules.default
         sops-nix.homeManagerModules.sops
         nix-index-database.homeModules.nix-index
         whisper-dict.homeManagerModules.default
