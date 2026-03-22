@@ -15,11 +15,8 @@ in
 
   wayland.windowManager.hyprland.settings = {
     "$mod" = "SUPER";
-    "$ipc" = "qs -c noctalia-shell ipc call";
     bind = [
-      "$mod SHIFT, Q, exec, ${lib.getExe pkgs.wlogout}"
       "$mod, S, exec, ${lib.getExe screenshot}"
-      "$mod, slash, exec, $ipc launcher toggle"
 
       "$mod SHIFT, C, killactive,"
       "$mod, R, togglesplit,"

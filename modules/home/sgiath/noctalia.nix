@@ -2,7 +2,6 @@
   config,
   pkgs,
   lib,
-  inputs,
   ...
 }:
 {
@@ -63,11 +62,42 @@
           monitors = [ "DP-1" ];
         };
       };
+
+      plugins = {
+        version = 2;
+        sources = [
+          {
+            enabled = true;
+            name = "Official Noctalia Plugins";
+            url = "https://github.com/noctalia-dev/noctalia-plugins";
+          }
+        ];
+        states = {
+          screen-toolkit = {
+            enabled = true;
+            sourceUrl = "https://github.com/noctalia-dev/noctalia-plugins";
+          };
+          zed-provider = {
+            enabled = true;
+            sourceUrl = "https://github.com/noctalia-dev/noctalia-plugins";
+          };
+          model-usage = {
+            enabled = true;
+            sourceUrl = "https://github.com/noctalia-dev/noctalia-plugins";
+          };
+        };
+      };
     };
+
     wayland.windowManager.hyprland.settings = {
-      exec-once = [
-        "qs -c noctalia-shell"
+      "$ipc" = "qs -c noctalia-shell ipc call";
+      exec-once = [ "qs -c noctalia-shell" ];
+      bind = [
+        "$mod SHIFT, Q, exec, $ipc sessionMenu toggle"
+        "$mod, slash, exec, $ipc launcher toggle"
+        "$mod, B, exec, $ipc launcher windows"
       ];
+
       layerrule = [
         {
           name = "noctalia";
