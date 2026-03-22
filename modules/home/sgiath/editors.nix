@@ -17,8 +17,8 @@ in
 
   config = lib.mkIf config.sgiath.editors.enable {
     home.sessionVariables = {
-      EDITOR = "${zed}/bin/zeditor --wait";
-      VISUAL = "${zed}/bin/zeditor --wait";
+      EDITOR = "${lib.getExe zed} --wait";
+      VISUAL = "${lib.getExe zed} --wait";
     };
 
     # Zed editor
@@ -46,7 +46,7 @@ in
       ];
     };
     stylix.targets.zed.enable = false;
-    programs.zsh.shellAliases.zed = "${zed}/bin/zeditor";
+    programs.zsh.shellAliases.zed = "${lib.getExe zed}";
 
     home.packages = [ cursor ];
   };

@@ -10,8 +10,8 @@ let
   mfaCredFile = "/home/sgiath/.aws-cred";
   awsSecrets = pkgs.writeShellScriptBin "aws-secrets" ''
     mfa="arn:aws:iam::173509387151:mfa/filip"
-    token=$(${pass}/bin/pass otp 2fa/amazon/code)
-    cred=$(${awscli}/bin/aws sts get-session-token --profile crazyegg --serial-number $mfa --token-code $token | ${pkgs.jq}/bin/jq -r '.Credentials' | ${pkgs.jq}/bin/jq '. += {"Version": 1}')
+    token=$(${lib.getExe pass} otp 2fa/amazon/code)
+    cred=$($lib.getExe {awscli} sts get-session-token --profile crazyegg --serial-number $mfa --token-code $token | ${lib.getExe pkgs.jq} -r '.Credentials' | ${lib.getExe pkgs.jq} '. += {"Version": 1}')
     echo $cred > ${mfaCredFile}
     echo "AWS credentials updated"
   '';
@@ -26,7 +26,7 @@ in
       };
       credentials = {
         "default"."credential_process" = "cat ${mfaCredFile}";
-        "crazyegg"."credential_process" = "${pass}/bin/pass show aws/crazyegg";
+        "crazyegg"."credential_process" = "${lib.getExe pass} show aws/crazyegg";
       };
       package = awscli;
     };
@@ -89,7 +89,7 @@ in
                     - crazyegg-prod
                     - --output
                     - json
-                  command: ${awscli}/bin/aws
+                  command: ${lib.getExe awscli}
             - name: arn:aws:eks:us-west-2:173509387151:cluster/crazyegg-staging
               user:
                 exec:
@@ -103,7 +103,7 @@ in
                     - crazyegg-staging
                     - --output
                     - json
-                  command: ${awscli}/bin/aws
+                  command: ${lib.getExe awscli}
         '';
       };
     };

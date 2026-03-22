@@ -42,18 +42,18 @@
         shellAliases = {
           mkdir = "mkdir -p";
           tree = "ls --tree --ignore-glob='node_modules'";
-          ls = lib.mkForce "${pkgs.eza}/bin/eza --icons --all --time-style=long-iso";
+          ls = lib.mkForce "${lib.getExe pkgs.eza} --icons --all --time-style=long-iso";
           ll = lib.mkForce "ls --long --binary --git";
-          cat = "${pkgs.bat}/bin/bat";
-          du = "${pkgs.dust}/bin/dust -x";
-          df = "${pkgs.duf}/bin/duf";
-          find = "${pkgs.fd}/bin/fd";
-          ping = "${pkgs.gping}/bin/gping";
-          ps = "${pkgs.procs}/bin/procs";
-          curl = "${pkgs.curlie}/bin/curlie";
-          man = "${pkgs.tldr}/bin/tldr";
-          top = "${pkgs.btop-rocm}/bin/btop";
-          htop = "${pkgs.btop-rocm}/bin/btop";
+          cat = "${lib.getExe pkgs.bat}";
+          du = "${lib.getExe pkgs.dust} -x";
+          df = "${lib.getExe pkgs.duf}";
+          find = "${lib.getExe pkgs.fd}";
+          ping = "${lib.getExe pkgs.gping}";
+          ps = "${lib.getExe pkgs.procs}";
+          curl = "${lib.getExe pkgs.curlie}";
+          man = "${lib.getExe pkgs.tldr}";
+          top = "${lib.getExe pkgs.btop-rocm}";
+          htop = "${lib.getExe pkgs.btop-rocm}";
         };
 
         prezto = {

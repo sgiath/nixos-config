@@ -7,7 +7,7 @@
 let
   nasa_url = "https://eyes.nasa.gov/apps/solar-system/#/home?featured=false&detailPanel=false&logo=false&search=false&shareButton=false&menu=false&collapseSettingsOptions=true&hideFullScreenToggle=true&locked=true&hideExternalLinks=true";
   nasa_exec = pkgs.writeShellScriptBin "nasa" ''
-    ${pkgs.ungoogled-chromium}/bin/chromium --kiosk --user-data-dir=/tmp/chrome-temp --incognito --no-first-run --ozone-platform=x11 --class=nasa "${nasa_url}"
+    ${lib.getExe pkgs.ungoogled-chromium} --kiosk --user-data-dir=/tmp/chrome-temp --incognito --no-first-run --ozone-platform=x11 --class=nasa "${nasa_url}"
   '';
 in
 {
@@ -20,11 +20,11 @@ in
 
       settings = {
         # exec-once = [
-        #   "${nasa_exec}/bin/nasa"
+        #   "${lib.getExe nasa_exec}"
         # ];
 
         bind = [
-          "$mod, W, exec, ${nasa_exec}/bin/nasa"
+          "$mod, W, exec, ${lib.getExe nasa_exec}"
         ];
 
         plugin.hyprwinwrap = {

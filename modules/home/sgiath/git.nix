@@ -27,13 +27,13 @@ in
 
     programs = {
       zsh.initContent = lib.mkOrder 1000 ''
-        eval "$(${worktrunk}/bin/wt config shell init zsh)"
+        eval "$(${lib.getExe worktrunk} config shell init zsh)"
       '';
 
       gh = {
         enable = true;
         settings = {
-          editor = "${pkgs.zed-editor}/bin/zeditor";
+          editor = "${lib.getExe pkgs.zed-editor}";
           git_protocol = "ssh";
         };
       };
@@ -109,7 +109,7 @@ in
             compression = 9;
             whitespace = "error";
             preloadindex = true;
-            editor = "${pkgs.neovim}/bin/nvim";
+            editor = "${lib.getExe pkgs.neovim}";
           };
 
           advice = {

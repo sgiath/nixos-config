@@ -15,7 +15,7 @@
       exiftool
     ];
     wayland.windowManager.hyprland.settings.bind = [
-      "$mod, E, exec, ${pkgs.kitty}/bin/kitty --class files -e ${pkgs.superfile}/bin/superfile"
+      "$mod, E, exec, ${lib.getExe pkgs.kitty} --class files -e ${lib.getExe pkgs.superfile}"
     ];
   };
 }

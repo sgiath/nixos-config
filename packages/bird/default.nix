@@ -47,7 +47,7 @@ stdenv.mkDerivation (finalAttrs: {
     cp -r node_modules $out/lib/bird/
     cp package.json $out/lib/bird/
 
-    makeWrapper ${nodejs}/bin/node $out/bin/bird \
+    makeWrapper ${lib.getExe nodejs} $out/bin/bird \
       --add-flags "$out/lib/bird/dist/cli.js"
 
     runHook postInstall

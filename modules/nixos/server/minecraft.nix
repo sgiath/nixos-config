@@ -29,7 +29,7 @@
         description = "Minecraft Vanilla server";
         after = [ "network.target" ];
         wantedBy = [ "multi-user.target" ];
-        script = "${pkgs.zulu25}/bin/java -server -Xms4G -Xmx4G -XX:+UseG1GC -XX:+ParallelRefProcEnabled -XX:MaxGCPauseMillis=200 -XX:+UnlockExperimentalVMOptions -XX:+DisableExplicitGC -XX:+AlwaysPreTouch -XX:G1NewSizePercent=30 -XX:G1MaxNewSizePercent=40 -XX:G1HeapRegionSize=8M -XX:G1ReservePercent=20 -XX:G1HeapWastePercent=5 -XX:G1MixedGCCountTarget=4 -XX:InitiatingHeapOccupancyPercent=15 -XX:G1MixedGCLiveThresholdPercent=90 -XX:G1RSetUpdatingPauseTimePercent=5 -XX:SurvivorRatio=32 -XX:+PerfDisableSharedMem -XX:MaxTenuringThreshold=1 -Dusing.aikars.flags=https://mcflags.emc.gs -Daikars.new.flags=true -jar paper-1.21.8-50.jar --nogui";
+        script = "${lib.getExe pkgs.zulu25} -server -Xms4G -Xmx4G -XX:+UseG1GC -XX:+ParallelRefProcEnabled -XX:MaxGCPauseMillis=200 -XX:+UnlockExperimentalVMOptions -XX:+DisableExplicitGC -XX:+AlwaysPreTouch -XX:G1NewSizePercent=30 -XX:G1MaxNewSizePercent=40 -XX:G1HeapRegionSize=8M -XX:G1ReservePercent=20 -XX:G1HeapWastePercent=5 -XX:G1MixedGCCountTarget=4 -XX:InitiatingHeapOccupancyPercent=15 -XX:G1MixedGCLiveThresholdPercent=90 -XX:G1RSetUpdatingPauseTimePercent=5 -XX:SurvivorRatio=32 -XX:+PerfDisableSharedMem -XX:MaxTenuringThreshold=1 -Dusing.aikars.flags=https://mcflags.emc.gs -Daikars.new.flags=true -jar paper-1.21.8-50.jar --nogui";
         serviceConfig = {
           WorkingDirectory = "/data/minecraft/vanilla";
         };
@@ -41,7 +41,7 @@
         description = "Minecraft Nomifactory server";
         after = [ "network.target" ];
         wantedBy = [ "multi-user.target" ];
-        script = "${pkgs.zulu8}/bin/java -server -Xms4G -Xmx4G -jar forge-1.12.2-14.23.5.2860.jar nogui";
+        script = "${lib.getExe pkgs.zulu8} -server -Xms4G -Xmx4G -jar forge-1.12.2-14.23.5.2860.jar nogui";
         serviceConfig = {
           WorkingDirectory = "/data/minecraft/nomi";
         };
@@ -53,7 +53,7 @@
         description = "Minecraft GTNH server";
         after = [ "network.target" ];
         wantedBy = [ "multi-user.target" ];
-        script = "${pkgs.zulu25}/bin/java -server -Xms6G -Xmx6G -Dfml.queryResult=confirm -Dfml.readTimeout=180 @java9args.txt -jar lwjgl3ify-forgePatches.jar nogui";
+        script = "${lib.getExe pkgs.zulu25} -server -Xms6G -Xmx6G -Dfml.queryResult=confirm -Dfml.readTimeout=180 @java9args.txt -jar lwjgl3ify-forgePatches.jar nogui";
         serviceConfig = {
           WorkingDirectory = "/data/minecraft/gtnh";
         };
@@ -65,7 +65,7 @@
         description = "Minecraft ATM 10 server";
         after = [ "network.target" ];
         wantedBy = [ "multi-user.target" ];
-        script = "${pkgs.zulu25}/bin/java @user_jvm_args.txt @libraries/net/neoforged/neoforge/21.1.201/unix_args.txt nogui";
+        script = "${lib.getExe pkgs.zulu25} @user_jvm_args.txt @libraries/net/neoforged/neoforge/21.1.201/unix_args.txt nogui";
         serviceConfig = {
           WorkingDirectory = "/data/minecraft/atm10";
         };

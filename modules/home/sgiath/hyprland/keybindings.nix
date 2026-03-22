@@ -1,7 +1,7 @@
 { pkgs, lib, ... }:
 let
   screenshot = pkgs.writeShellScriptBin "screenshot" ''
-    ${pkgs.grim}/bin/grim -g "$(${pkgs.slurp}/bin/slurp)" - | ${pkgs.swappy}/bin/swappy -f -
+    ${lib.getExe pkgs.grim} -g "$(${lib.getExe pkgs.slurp})" - | ${lib.getExe pkgs.swappy} -f -
   '';
 in
 {

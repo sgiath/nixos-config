@@ -30,7 +30,7 @@
     };
 
     programs.tmux = {
-      shell = "${pkgs.zsh}/bin/zsh";
+      shell = "${lib.getExe pkgs.zsh}";
       terminal = "tmux-256color";
       baseIndex = 1;
       clock24 = true;

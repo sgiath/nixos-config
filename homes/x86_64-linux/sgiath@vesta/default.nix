@@ -49,7 +49,7 @@ in
           "OPENCLAW_SERVICE_KIND=gateway"
           "OPENCLAW_SERVICE_VERSION=${lib.getVersion openclaw}"
         ];
-        ExecStart = "${openclaw}/bin/openclaw gateway --port 18789";
+        ExecStart = "${lib.getExe openclaw} gateway --port 18789";
       };
       Install = {
         WantedBy = [ "default.target" ];

@@ -60,11 +60,11 @@
 
     wayland.windowManager.hyprland.settings = {
       exec-once = [
-        # "${pkgs.webcord}/bin/webcord"
-        "${pkgs.telegram-desktop}/bin/telegram-desktop"
-        "${pkgs.signal-desktop}/bin/signal-desktop"
-        "${pkgs.element-desktop}/bin/element-desktop"
-        # "${pkgs.fluffychat}/bin/fluffychat"
+        # "${lib.getExe pkgs.webcord}"
+        "${lib.getExe pkgs.telegram-desktop}"
+        "${lib.getExe pkgs.signal-desktop}"
+        "${lib.getExe pkgs.element-desktop}"
+        # "${lib.getExe pkgs.fluffychat}"
       ];
       windowrule = [
         "match:class Slack, workspace 10 silent, no_initial_focus on"

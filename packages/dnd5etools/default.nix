@@ -94,7 +94,7 @@ buildNpmPackage {
     ${lib.strings.concatStringsSep "\n" copyImgs}
 
     # Unpack images (split 7z archive)
-    ${p7zip}/bin/7z x -aoa img-v${version}.zip
+    ${lib.getExe p7zip} x -aoa img-v${version}.zip
 
     # Remove archive files
     rm -f img-v*

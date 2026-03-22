@@ -12,7 +12,7 @@
       wl-clipboard-x11
     ];
     wayland.windowManager.hyprland.settings = {
-      bind = [ "$mod, V, exec, ${pkgs.kitty}/bin/kitty --class clipse -e ${pkgs.clipse}/bin/clipse" ];
+      bind = [ "$mod, V, exec, ${lib.getExe pkgs.kitty} --class clipse -e ${lib.getExe pkgs.clipse}" ];
       windowrule = [
         "match:class clipse, float on, size 622 652, stay_focused on"
       ];

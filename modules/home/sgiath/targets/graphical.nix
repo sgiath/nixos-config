@@ -26,11 +26,11 @@
 
     wayland.windowManager.hyprland.settings = {
       exec-once = [
-        "${pkgs.kitty}/bin/kitty"
-        "${pkgs.obsidian}/bin/obsidian"
+        "${lib.getExe pkgs.kitty}"
+        "${lib.getExe pkgs.obsidian}"
       ];
       bind = [
-        "$mod, Return, exec, ${pkgs.kitty}/bin/kitty"
+        "$mod, Return, exec, ${lib.getExe pkgs.kitty}"
       ];
       windowrule = [
         "match:class alacritty, workspace 1"
@@ -85,7 +85,7 @@
     xdg.desktopEntries."vue" = {
       name = "Visual Unederstanding Environment";
       genericName = "VUE";
-      exec = "${pkgs.vue}/bin/vue";
+      exec = "${lib.getExe pkgs.vue}";
     };
   };
 }

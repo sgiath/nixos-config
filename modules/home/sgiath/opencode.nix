@@ -69,7 +69,7 @@ in
 
     # aliases
     programs.zsh.shellAliases = {
-      oc = "OPENCODE_DISABLE_CLAUDE_CODE=true OPENCODE_ENABLE_EXA=1 ${opencode}/bin/opencode";
+      oc = "OPENCODE_DISABLE_CLAUDE_CODE=true OPENCODE_ENABLE_EXA=1 ${lib.getExe opencode}";
     };
 
     # systemd.user.services = {
@@ -83,7 +83,7 @@ in
     #         "OPENCODE_CONFIG=${config.xdg.configHome}/opencode/vanilla/opencode.jsonc"
     #         "OPENCODE_CONFIG_DIR=${config.xdg.configHome}/opencode/vanilla"
     #       ];
-    #       ExecStart = "${opencode}/bin/opencode serve --port 4096";
+    #       ExecStart = "${lib.getExe opencode} serve --port 4096";
     #     };
     #     Install = {
     #       WantedBy = [ "multi-user.target" ];
@@ -101,7 +101,7 @@ in
     #           "OPENCODE_CONFIG=${config.xdg.configHome}/opencode/omo/opencode.jsonc"
     #           "OPENCODE_CONFIG_DIR=${config.xdg.configHome}/opencode/omo"
     #         ];
-    #         ExecStart = "${opencode}/bin/opencode serve --port 4097";
+    #         ExecStart = "${lib.getExe opencode} serve --port 4097";
     #       };
     #       Install = {
     #         WantedBy = [ "multi-user.target" ];

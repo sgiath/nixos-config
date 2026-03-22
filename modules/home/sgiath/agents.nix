@@ -32,7 +32,7 @@
 
     # aliases
     programs.zsh.shellAliases = {
-      cc = "${pkgs.claude-code}/bin/claude --dangerously-skip-permissions";
+      cc = "${lib.getExe pkgs.claude-code} --dangerously-skip-permissions";
     };
 
     # bun
