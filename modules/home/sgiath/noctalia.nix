@@ -1,12 +1,15 @@
 {
   config,
   pkgs,
+  lib,
   inputs,
   ...
 }:
 {
-  programs.noctalia-shell = {
-    enable = true;
-    # settings = { };
+  config = lib.mkIf config.programs.hyprland.enable {
+    programs.noctalia-shell = {
+      enable = true;
+      # settings = { };
+    };
   };
 }
