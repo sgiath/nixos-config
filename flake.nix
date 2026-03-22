@@ -181,6 +181,7 @@
         # zed-editor.overlays.default
         claude-code.overlays.default
         nix-minecraft.overlay
+        noctalia.overlays.default
       ];
 
       systems.modules.nixos = with inputs; [
