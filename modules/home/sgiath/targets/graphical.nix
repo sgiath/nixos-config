@@ -58,6 +58,7 @@
     programs = {
       # hyprland
       hyprland.enable = true;
+      noctalia-shell.enable = true;
       waybar.enable = false;
 
       # terminals

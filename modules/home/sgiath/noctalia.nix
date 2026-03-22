@@ -2,11 +2,10 @@
   config,
   pkgs,
   lib,
-  inputs,
   ...
 }:
 {
-  config = lib.mkIf config.programs.hyprland.enable {
+  config = lib.mkIf config.programs.noctalia-shell.enable {
     programs.noctalia-shell = {
       enable = true;
       systemd.enable = true;
