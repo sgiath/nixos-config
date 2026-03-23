@@ -99,7 +99,7 @@
     };
 
     wayland.windowManager.hyprland.settings = {
-      "$ipc" = "${lib.getExe pkgs.quickshell} -c ${lib.getExe pkgs.noctalia-shell} ipc call";
+      "$ipc" = "${lib.getExe pkgs.noctalia-shell} ipc call";
       bind = [
         "$mod SHIFT, Q, exec, $ipc sessionMenu toggle"
         "$mod, slash, exec, $ipc launcher toggle"
