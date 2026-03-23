@@ -6,6 +6,14 @@
 }:
 {
   config = lib.mkIf config.programs.noctalia-shell.enable {
+    home.packages = with pkgs; [
+      grim
+      imagemagick
+      wl-clipboard
+      satty
+      swappy
+    ];
+
     programs.noctalia-shell = {
       systemd.enable = true;
       settings = {
@@ -22,9 +30,14 @@
               { id = "MediaMini"; }
             ];
             center = [
-              { id = "Workspace"; }
+              {
+                id = "Workspace";
+                occupiedColor = "tertiary";
+                showLabelsOnlyWhenOccupied = false;
+                pillSize = 0.75;
+              }
               { id = "plugin:model-usage"; }
-              { id = "plugin:screen-toolkit"; }
+              { id = "plugin:screen-shot-and-record"; }
             ];
             right = [
               { id = "SystemMonitor"; }
@@ -78,10 +91,6 @@
           }
         ];
         states = {
-          screen-toolkit = {
-            enabled = true;
-            sourceUrl = "https://github.com/noctalia-dev/noctalia-plugins";
-          };
           zed-provider = {
             enabled = true;
             sourceUrl = "https://github.com/noctalia-dev/noctalia-plugins";
@@ -96,6 +105,11 @@
           };
         };
       };
+      pluginSettings = {
+        screen-shot-and-record = {
+          screenshotEditor = lib.getExe pkgs.swappy;
+        };
+      };
     };
 
     wayland.windowManager.hyprland.settings = {
@@ -104,7 +118,7 @@
         "$mod SHIFT, Q, exec, $ipc sessionMenu toggle"
         "$mod, slash, exec, $ipc launcher toggle"
         "$mod, B, exec, $ipc launcher windows"
-        "$mod, S, exec, $ipc target plugin:screen-shot-and-record screenshot"
+        "$mod, S, exec, $ipc plugin:screen-shot-and-record screenshot"
       ];
 
       layerrule = [
