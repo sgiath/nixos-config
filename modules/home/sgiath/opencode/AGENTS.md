@@ -1,6 +1,6 @@
 ## NixOS
 
-This is a NixOS system. Many projects use `flake.nix`; when project-specific tools are missing, prefer `nix develop -c <command>`. If `direnv` has already loaded the dev shell, run commands normally.
+This is a NixOS system. The project you are woring on uses `flake.nix` for dependency management so you need to run commands like this `nix develop -c <command>` to use the correct, project specific, version of the tool.
 
 ## Git
 
