@@ -11,7 +11,7 @@ let
   awsSecrets = pkgs.writeShellScriptBin "aws-secrets" ''
     mfa="arn:aws:iam::173509387151:mfa/filip"
     token=$(${lib.getExe pass} otp 2fa/amazon/code)
-    cred=$($lib.getExe {awscli} sts get-session-token --profile crazyegg --serial-number $mfa --token-code $token | ${lib.getExe pkgs.jq} -r '.Credentials' | ${lib.getExe pkgs.jq} '. += {"Version": 1}')
+    cred=$(${lib.getExe awscli} sts get-session-token --profile crazyegg --serial-number $mfa --token-code $token | ${lib.getExe pkgs.jq} -r '.Credentials' | ${lib.getExe pkgs.jq} '. += {"Version": 1}')
     echo $cred > ${mfaCredFile}
     echo "AWS credentials updated"
   '';
