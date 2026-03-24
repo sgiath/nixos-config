@@ -45,11 +45,17 @@ buildNpmPackage rec {
 
   postInstall = ''
     matrixCryptoDest="$out/lib/node_modules/openclaw/node_modules/@matrix-org/matrix-sdk-crypto-nodejs/matrix-sdk-crypto.linux-x64-gnu.node"
+    matrixWasmSrc="$out/lib/node_modules/openclaw/node_modules/@matrix-org/matrix-sdk-crypto-wasm/pkg/matrix_sdk_crypto_wasm_bg.wasm"
+    matrixWasmDest="$out/lib/node_modules/openclaw/dist/pkg/matrix_sdk_crypto_wasm_bg.wasm"
 
     mkdir -p "$(dirname "$matrixCryptoDest")"
     cp $matrixCryptoNative "$matrixCryptoDest"
 
+    mkdir -p "$(dirname "$matrixWasmDest")"
+    ln -s "$matrixWasmSrc" "$matrixWasmDest"
+
     test -f "$matrixCryptoDest"
+    test -L "$matrixWasmDest"
   '';
 
   meta = {
