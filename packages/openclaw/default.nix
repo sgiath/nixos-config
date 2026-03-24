@@ -2,6 +2,7 @@
   lib,
   buildNpmPackage,
   fetchurl,
+  jq,
 }:
 
 buildNpmPackage rec {
@@ -16,10 +17,20 @@ buildNpmPackage rec {
   sourceRoot = "package";
 
   postPatch = ''
+    if ! ${lib.getExe jq} -e '.dependencies["matrix-js-sdk"]' package.json >/dev/null; then
+      ${lib.getExe jq} '.dependencies["matrix-js-sdk"] = "^38.2.0"' package.json > package.json.new
+      mv package.json.new package.json
+    fi
+
+    if ! ${lib.getExe jq} -e '.dependencies["@matrix-org/matrix-sdk-crypto-nodejs"]' package.json >/dev/null; then
+      ${lib.getExe jq} '.dependencies["@matrix-org/matrix-sdk-crypto-nodejs"] = "^0.4.0"' package.json > package.json.new
+      mv package.json.new package.json
+    fi
+
     cp ${./package-lock.json} package-lock.json
   '';
 
-  npmDepsHash = "sha256-E2FMz7fugJw46iK7lHE3kjmwkMc3SBj01zTDo8w8Oc8=";
+  npmDepsHash = "sha256-3kcBYZIsQBo8cjqAfcnWd3TvL7johbbXa3+VaJQ3Coo=";
 
   dontNpmBuild = true;
 
