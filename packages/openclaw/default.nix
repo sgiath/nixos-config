@@ -19,6 +19,11 @@ buildNpmPackage rec {
     hash = "sha256-cHjU3ZhxKPea/RksT2IfZK3s435D8qh1bx0KnwNN5xg=";
   };
 
+  matrixCryptoWasmPackage = fetchurl {
+    url = "https://registry.npmjs.org/@matrix-org/matrix-sdk-crypto-wasm/-/matrix-sdk-crypto-wasm-18.0.0.tgz";
+    hash = "sha256-8PSxUdKsY3Z0Nrx2CnB9q0dbkYIm9G68erh5IggOVqU=";
+  };
+
   sourceRoot = "package";
 
   postPatch = ''
@@ -45,17 +50,18 @@ buildNpmPackage rec {
 
   postInstall = ''
     matrixCryptoDest="$out/lib/node_modules/openclaw/node_modules/@matrix-org/matrix-sdk-crypto-nodejs/matrix-sdk-crypto.linux-x64-gnu.node"
-    matrixWasmSrc="$out/lib/node_modules/openclaw/node_modules/@matrix-org/matrix-sdk-crypto-wasm/pkg/matrix_sdk_crypto_wasm_bg.wasm"
     matrixWasmDest="$out/lib/node_modules/openclaw/dist/pkg/matrix_sdk_crypto_wasm_bg.wasm"
+    matrixWasmTmp="$(mktemp -d)"
 
     mkdir -p "$(dirname "$matrixCryptoDest")"
     cp $matrixCryptoNative "$matrixCryptoDest"
 
     mkdir -p "$(dirname "$matrixWasmDest")"
-    ln -s "$matrixWasmSrc" "$matrixWasmDest"
+    tar -xzf $matrixCryptoWasmPackage -C "$matrixWasmTmp" package/pkg/matrix_sdk_crypto_wasm_bg.wasm
+    cp "$matrixWasmTmp/package/pkg/matrix_sdk_crypto_wasm_bg.wasm" "$matrixWasmDest"
 
     test -f "$matrixCryptoDest"
-    test -L "$matrixWasmDest"
+    test -f "$matrixWasmDest"
   '';
 
   meta = {
