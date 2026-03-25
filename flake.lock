@@ -141,6 +141,26 @@
         "type": "github"
       }
     },
+    "beads": {
+      "inputs": {
+        "nixpkgs": [
+          "nixpkgs"
+        ]
+      },
+      "locked": {
+        "lastModified": 1774397088,
+        "narHash": "sha256-iOjDMEI7lIrvg8PEltxRWCxHB1ZThh975w+Uo7brMDw=",
+        "owner": "steveyegge",
+        "repo": "beads",
+        "rev": "6215721fc7be3bf31592e2f9d1486d4a53429c22",
+        "type": "github"
+      },
+      "original": {
+        "owner": "steveyegge",
+        "repo": "beads",
+        "type": "github"
+      }
+    },
     "bird-src": {
       "flake": false,
       "locked": {
@@ -1861,6 +1881,7 @@
     },
     "root": {
       "inputs": {
+        "beads": "beads",
         "bird-src": "bird-src",
         "btc-clients": "btc-clients",
         "claude-code": "claude-code",
