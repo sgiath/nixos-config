@@ -18,10 +18,6 @@
 
   crazyegg.enable = true;
 
-  services = {
-    i2p.enable = true;
-  };
-
   programs = {
     gamescope.enable = true;
     gamemode.enable = true;

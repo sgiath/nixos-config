@@ -14,6 +14,8 @@
   };
 
   services = {
+    i2p.enable = true;
+
     audiobookshelf.enable = true;
     matrix.enable = true;
     pi-hole.enable = true;
