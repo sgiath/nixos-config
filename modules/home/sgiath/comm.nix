@@ -21,6 +21,7 @@
       # cinny-desktop
       gajim
       weechat
+      cinny-desktop
 
       # nostr CLI
       pkgs.${namespace}.nak
