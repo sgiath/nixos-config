@@ -141,27 +141,6 @@
         "type": "github"
       }
     },
-    "beads": {
-      "inputs": {
-        "nixpkgs": [
-          "nixpkgs"
-        ]
-      },
-      "locked": {
-        "lastModified": 1773626774,
-        "narHash": "sha256-3V0FrqJ/ajDlMyquAZo1jUmYXF4TneBoh3VTsjvwyq0=",
-        "owner": "steveyegge",
-        "repo": "beads",
-        "rev": "3ac028bff3088dc395b5fd5ebc6cf32353f84ba0",
-        "type": "github"
-      },
-      "original": {
-        "owner": "steveyegge",
-        "ref": "v0.61.0",
-        "repo": "beads",
-        "type": "github"
-      }
-    },
     "bird-src": {
       "flake": false,
       "locked": {
@@ -225,16 +204,16 @@
         "rust-overlay": "rust-overlay"
       },
       "locked": {
-        "lastModified": 1773686592,
-        "narHash": "sha256-8l5OZQS6L1uhVpqZZGx2O3Xt6qTaTAYDR5XWOydTVuQ=",
+        "lastModified": 1773938949,
+        "narHash": "sha256-PTsKphg3gPlBUs5oMM34RhJJ4jxvD6hand5aVjXcuZ4=",
         "owner": "openai",
         "repo": "codex",
-        "rev": "f028679abb30051cec2434e624cd99975986b41b",
+        "rev": "38771c9082535aa16b4c4d0395d3532f32f656ff",
         "type": "github"
       },
       "original": {
         "owner": "openai",
-        "ref": "rust-v0.115.0",
+        "ref": "rust-v0.116.0",
         "repo": "codex",
         "type": "github"
       }
@@ -1805,16 +1784,16 @@
         ]
       },
       "locked": {
-        "lastModified": 1773628428,
-        "narHash": "sha256-JUlFfILzcUCME3mOxdxDbcCXphNVEfVGIKhwAwtJPl8=",
+        "lastModified": 1774392635,
+        "narHash": "sha256-04eOIBHX9e8Brwn+uL/7q8szvRUilr4G0B8eB76dhKU=",
         "owner": "anomalyco",
         "repo": "opencode",
-        "rev": "4ee426ba549131c4903a71dfb6259200467aca81",
+        "rev": "0dcdf5f529dced23d8452c9aa5f166abb24d8f7c",
         "type": "github"
       },
       "original": {
         "owner": "anomalyco",
-        "ref": "v1.2.27",
+        "ref": "v1.3.2",
         "repo": "opencode",
         "type": "github"
       }
@@ -1882,7 +1861,6 @@
     },
     "root": {
       "inputs": {
-        "beads": "beads",
         "bird-src": "bird-src",
         "btc-clients": "btc-clients",
         "claude-code": "claude-code",

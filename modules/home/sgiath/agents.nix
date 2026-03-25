@@ -22,7 +22,6 @@
 
       # LLM tools
       inputs.openspec.packages.${pkgs.stdenv.hostPlatform.system}.default
-      inputs.beads.packages.${pkgs.stdenv.hostPlatform.system}.default
     ];
 
     # claude code

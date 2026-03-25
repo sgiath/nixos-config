@@ -105,13 +105,13 @@
 
     # https://github.com/openai/codex/releases/latest
     codex = {
-      url = "github:openai/codex/rust-v0.115.0";
+      url = "github:openai/codex/rust-v0.116.0";
       inputs.nixpkgs.follows = "nixpkgs";
     };
 
     # https://github.com/anomalyco/opencode/releases/latest
     opencode = {
-      url = "github:anomalyco/opencode/v1.2.27";
+      url = "github:anomalyco/opencode/v1.3.2";
       inputs.nixpkgs.follows = "nixpkgs";
     };
 
@@ -142,11 +142,6 @@
 
     worktrunk = {
       url = "github:max-sixty/worktrunk";
-      inputs.nixpkgs.follows = "nixpkgs";
-    };
-
-    beads = {
-      url = "github:steveyegge/beads";
       inputs.nixpkgs.follows = "nixpkgs";
     };
 
