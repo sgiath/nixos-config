@@ -19,18 +19,7 @@
   crazyegg.enable = true;
 
   services = {
-    stunnel = {
-      enable = true;
-      clients = {
-        horizons = {
-          accept = "127.0.0.1:6775";
-          connect = "ssd.jpl.nasa.gov:6770";
-          socket = "l:TCP_NODELAY=1";
-          sslVersion = "all";
-          TIMEOUTclose = "0";
-        };
-      };
-    };
+    i2p.enable = true;
   };
 
   programs = {
