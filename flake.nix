@@ -146,7 +146,7 @@
     };
 
     beads = {
-      url = "github:steveyegge/beads/v0.61.0";
+      url = "github:steveyegge/beads";
       inputs.nixpkgs.follows = "nixpkgs";
     };
 
