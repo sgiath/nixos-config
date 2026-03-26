@@ -129,6 +129,9 @@
 
           # crazyegg-channels app
           channels.crazyeggdev.com 'http://127.0.0.1:4043';
+
+          # Matrix server
+          matrix.crazyeggdev.com 'http://127.0.0.1:8008';
         }
       '';
     };
