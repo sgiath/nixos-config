@@ -16,6 +16,7 @@
       pkgs.python3
       pkgs.uv
       pkgs.${namespace}.bird
+      pkgs.bubblewrap
 
       # Claude Code
       pkgs.${namespace}.claude-agent-acp
