@@ -15,6 +15,7 @@ let
   ];
 
   openclaw = pkgs.${namespace}.openclaw;
+  openclaw-exe = "${openclaw}/lib/node_modules/openclaw/dist/index.js";
 in
 {
   sgiath = {
@@ -26,6 +27,7 @@ in
     openclaw-gateway = {
       Unit = {
         Description = "OpenClaw Gateway";
+        Wants = [ "network-online.target" ];
         After = [
           "network-online.target"
           "nginx.service"
@@ -49,7 +51,7 @@ in
           "OPENCLAW_SERVICE_KIND=gateway"
           "OPENCLAW_SERVICE_VERSION=${lib.getVersion openclaw}"
         ];
-        ExecStart = "${lib.getExe openclaw} gateway --port 18789";
+        ExecStart = "${openclaw-exe} gateway --port 18789";
       };
       Install = {
         WantedBy = [ "default.target" ];
