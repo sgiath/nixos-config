@@ -49,12 +49,10 @@ buildNpmPackage rec {
   makeCacheWritable = true;
 
   postInstall = ''
+    matrixCryptoDest="$out/lib/node_modules/openclaw/node_modules/@matrix-org/matrix-sdk-crypto-nodejs/matrix-sdk-crypto.linux-x64-gnu.node"
     matrixWasmDest="$out/lib/node_modules/openclaw/dist/pkg/matrix_sdk_crypto_wasm_bg.wasm"
     matrixWasmTmp="$(mktemp -d)"
 
-    # Disabled for now: upstream 2026.3.24 now ships a bundled Linux matrix-sdk-crypto
-    asset in dist/assets, so this manual native injection may no longer be needed.
-    matrixCryptoDest="$out/lib/node_modules/openclaw/node_modules/@matrix-org/matrix-sdk-crypto-nodejs/matrix-sdk-crypto.linux-x64-gnu.node"
     mkdir -p "$(dirname "$matrixCryptoDest")"
     cp $matrixCryptoNative "$matrixCryptoDest"
 
