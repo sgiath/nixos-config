@@ -7,11 +7,11 @@
 
 buildNpmPackage rec {
   pname = "openclaw";
-  version = "2026.3.23-2";
+  version = "2026.3.24";
 
   src = fetchurl {
     url = "https://registry.npmjs.org/openclaw/-/openclaw-${version}.tgz";
-    hash = "sha256-a8sfYP0SdypcVb7+kCiKKJxrl/vv3+10TOY+S8qFmO8=";
+    hash = "sha256-5AeWNOBA8PCY6xljNgl1ZFqJVMhxYcUx8MHVKi9fVCk=";
   };
 
   matrixCryptoNative = fetchurl {
@@ -20,7 +20,7 @@ buildNpmPackage rec {
   };
 
   matrixCryptoWasmPackage = fetchurl {
-    url = "https://registry.npmjs.org/@matrix-org/matrix-sdk-crypto-wasm/-/matrix-sdk-crypto-wasm-18.0.0.tgz";
+    url = "https://registry.npmjs.org/-org/matrix-sdk-crypto-wasm/-/matrix-sdk-crypto-wasm-18.0.0.tgz";
     hash = "sha256-8PSxUdKsY3Z0Nrx2CnB9q0dbkYIm9G68erh5IggOVqU=";
   };
 
@@ -40,7 +40,7 @@ buildNpmPackage rec {
     cp ${./package-lock.json} package-lock.json
   '';
 
-  npmDepsHash = "sha256-3kcBYZIsQBo8cjqAfcnWd3TvL7johbbXa3+VaJQ3Coo=";
+  npmDepsHash = "sha256-dmxiDG6uP+G/uZvdEP+S7/99vfzLbOvehhd28Nzpn7k=";
 
   dontNpmBuild = true;
 
@@ -49,18 +49,20 @@ buildNpmPackage rec {
   makeCacheWritable = true;
 
   postInstall = ''
-    matrixCryptoDest="$out/lib/node_modules/openclaw/node_modules/@matrix-org/matrix-sdk-crypto-nodejs/matrix-sdk-crypto.linux-x64-gnu.node"
     matrixWasmDest="$out/lib/node_modules/openclaw/dist/pkg/matrix_sdk_crypto_wasm_bg.wasm"
     matrixWasmTmp="$(mktemp -d)"
 
-    mkdir -p "$(dirname "$matrixCryptoDest")"
-    cp $matrixCryptoNative "$matrixCryptoDest"
+    # Disabled for now: upstream 2026.3.24 now ships a bundled Linux matrix-sdk-crypto
+    # asset in dist/assets, so this manual native injection may no longer be needed.
+    # matrixCryptoDest="$out/lib/node_modules/openclaw/node_modules/@matrix-org/matrix-sdk-crypto-nodejs/matrix-sdk-crypto.linux-x64-gnu.node"
+    # mkdir -p "$(dirname "$matrixCryptoDest")"
+    # cp $matrixCryptoNative "$matrixCryptoDest"
 
     mkdir -p "$(dirname "$matrixWasmDest")"
     tar -xzf $matrixCryptoWasmPackage -C "$matrixWasmTmp" package/pkg/matrix_sdk_crypto_wasm_bg.wasm
     cp "$matrixWasmTmp/package/pkg/matrix_sdk_crypto_wasm_bg.wasm" "$matrixWasmDest"
 
-    test -f "$matrixCryptoDest"
+    # test -f "$matrixCryptoDest"
     test -f "$matrixWasmDest"
   '';
 

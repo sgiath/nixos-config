@@ -56,7 +56,8 @@ if [[ ! -f "dist/plugin-sdk/keyed-async-queue.js" ]]; then
 	exit 1
 fi
 
-RUST_CRYPTO_BUNDLE=$(find dist -maxdepth 1 -name 'rust-crypto--*.js' | head -1)
+# Upstream renamed this bundle from rust-crypto--*.js to rust-crypto-*.js in 2026.3.24.
+RUST_CRYPTO_BUNDLE=$(find dist -maxdepth 1 -name 'rust-crypto-*.js' | head -1)
 if [[ -z "${RUST_CRYPTO_BUNDLE}" ]]; then
 	echo "ERROR: bundled rust crypto chunk not found" >&2
 	exit 1
