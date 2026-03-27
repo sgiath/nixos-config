@@ -14,7 +14,7 @@ if [[ -n "${1:-}" ]]; then
   echo "==> Updating claude-agent-acp to specified version ${VERSION}"
 else
   echo "==> Fetching latest claude-agent-acp version from GitHub..."
-  LATEST_TAG=$(curl -s "https://api.github.com/repos/zed-industries/claude-agent-acp/releases/latest" | jq -r '.tag_name')
+  LATEST_TAG=$(curl -s "https://api.github.com/repos/agentclientprotocol/claude-agent-acp/releases/latest" | jq -r '.tag_name')
   VERSION="${LATEST_TAG#v}"
   echo "    Latest version: ${VERSION}"
 fi
@@ -32,13 +32,13 @@ trap 'rm -rf "${TMPDIR}"' EXIT
 
 # Step 1: Compute source hash
 echo "==> Computing source hash..."
-SRC_JSON=$(nix run nixpkgs#nix-prefetch-github -- zed-industries claude-agent-acp --rev "v${VERSION}" 2>/dev/null)
+SRC_JSON=$(nix run nixpkgs#nix-prefetch-github -- agentclientprotocol claude-agent-acp --rev "v${VERSION}" 2>/dev/null)
 SRC_HASH=$(echo "${SRC_JSON}" | jq -r '.hash')
 echo "    Source hash: ${SRC_HASH}"
 
 # Step 2: Clone repo and compute npm deps hash
 echo "==> Computing npm dependencies hash..."
-git clone --depth 1 --branch "v${VERSION}" "https://github.com/zed-industries/claude-agent-acp.git" "${TMPDIR}/repo" 2>/dev/null
+git clone --depth 1 --branch "v${VERSION}" "https://github.com/agentclientprotocol/claude-agent-acp.git" "${TMPDIR}/repo" 2>/dev/null
 
 if [[ ! -f "${TMPDIR}/repo/package-lock.json" ]]; then
   echo "ERROR: Could not find package-lock.json" >&2

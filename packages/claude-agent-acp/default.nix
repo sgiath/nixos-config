@@ -6,23 +6,23 @@
 
 buildNpmPackage rec {
   pname = "claude-agent-acp";
-  version = "0.23.0";
+  version = "0.24.1";
 
   src = fetchFromGitHub {
-    owner = "zed-industries";
+    owner = "agentclientprotocol";
     repo = "claude-agent-acp";
     rev = "v${version}";
-    hash = "sha256-uWs5R+9GjHy4s6HW7aHpyQJdlULCurMawyao4tzq6qA=";
+    hash = "sha256-PUWE+XflwbiKi/l/PpP2BFU42Qn74aC+mLDgQdaKBjQ=";
   };
 
-  npmDepsHash = "sha256-26zBN017e0kYR8gtiXkKBeIZbsyOmPy7yaaMZeJZzRY=";
+  npmDepsHash = "sha256-mBDlUUSrJ0G2V4VY765nYxONYd6CG1VnfLgAbJB4sCk=";
 
   # Build TypeScript to dist/
   npmBuildScript = "build";
 
   meta = with lib; {
     description = "Use Claude Code from any ACP client such as Zed";
-    homepage = "https://github.com/zed-industries/claude-agent-acp";
+    homepage = "https://github.com/agentclientprotocol/claude-agent-acp";
     license = licenses.wtfpl;
     maintainers = [ ];
     mainProgram = "claude-agent-acp";

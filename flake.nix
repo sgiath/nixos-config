@@ -99,19 +99,19 @@
 
     # https://github.com/zed-industries/zed/releases/latest
     zed-editor = {
-      url = "github:zed-industries/zed/v0.228.0";
+      url = "github:zed-industries/zed/v0.229.0";
       inputs.nixpkgs.follows = "nixpkgs";
     };
 
     # https://github.com/openai/codex/releases/latest
     codex = {
-      url = "github:openai/codex/rust-v0.116.0";
+      url = "github:openai/codex/rust-v0.117.0";
       inputs.nixpkgs.follows = "nixpkgs";
     };
 
     # https://github.com/anomalyco/opencode/releases/latest
     opencode = {
-      url = "github:anomalyco/opencode/v1.3.0";
+      url = "github:anomalyco/opencode/v1.3.3";
       inputs.nixpkgs.follows = "nixpkgs";
     };
 
