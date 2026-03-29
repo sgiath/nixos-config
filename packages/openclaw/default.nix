@@ -7,21 +7,16 @@
 
 buildNpmPackage rec {
   pname = "openclaw";
-  version = "2026.3.24";
+  version = "2026.3.28";
 
   src = fetchurl {
     url = "https://registry.npmjs.org/openclaw/-/openclaw-${version}.tgz";
-    hash = "sha256-5AeWNOBA8PCY6xljNgl1ZFqJVMhxYcUx8MHVKi9fVCk=";
+    hash = "sha256-/XCaOfXRTAL3c/N+GKq8D1GAw3N7Jvce+pCwba/D7cI=";
   };
 
   matrixCryptoNative = fetchurl {
     url = "https://github.com/matrix-org/matrix-rust-sdk-crypto-nodejs/releases/download/v0.4.0/matrix-sdk-crypto.linux-x64-gnu.node";
     hash = "sha256-cHjU3ZhxKPea/RksT2IfZK3s435D8qh1bx0KnwNN5xg=";
-  };
-
-  matrixCryptoWasmPackage = fetchurl {
-    url = "https://registry.npmjs.org/-org/matrix-sdk-crypto-wasm/-/matrix-sdk-crypto-wasm-18.0.0.tgz";
-    hash = "sha256-8PSxUdKsY3Z0Nrx2CnB9q0dbkYIm9G68erh5IggOVqU=";
   };
 
   sourceRoot = "package";
@@ -32,7 +27,7 @@ buildNpmPackage rec {
       mv package.json.new package.json
     fi
 
-    if ! ${lib.getExe jq} -e '.dependencies["@matrix-org/matrix-sdk-crypto-nodejs"]' package.json >/dev/null; then
+    if ! ${lib.getExe jq} -e '.dependencies["@matrix-org/matrix-sdk-crypto-nodejs"] // .optionalDependencies["@matrix-org/matrix-sdk-crypto-nodejs"]' package.json >/dev/null; then
       ${lib.getExe jq} '.dependencies["@matrix-org/matrix-sdk-crypto-nodejs"] = "^0.4.0"' package.json > package.json.new
       mv package.json.new package.json
     fi
@@ -40,7 +35,7 @@ buildNpmPackage rec {
     cp ${./package-lock.json} package-lock.json
   '';
 
-  npmDepsHash = "sha256-dmxiDG6uP+G/uZvdEP+S7/99vfzLbOvehhd28Nzpn7k=";
+  npmDepsHash = "sha256-K8xIncedcEqtfW8nholXunfmlAKHl/LYtyfhEtBea3A=";
 
   dontNpmBuild = true;
 
@@ -50,18 +45,11 @@ buildNpmPackage rec {
 
   postInstall = ''
     matrixCryptoDest="$out/lib/node_modules/openclaw/node_modules/@matrix-org/matrix-sdk-crypto-nodejs/matrix-sdk-crypto.linux-x64-gnu.node"
-    matrixWasmDest="$out/lib/node_modules/openclaw/dist/pkg/matrix_sdk_crypto_wasm_bg.wasm"
-    matrixWasmTmp="$(mktemp -d)"
 
     mkdir -p "$(dirname "$matrixCryptoDest")"
     cp $matrixCryptoNative "$matrixCryptoDest"
 
-    mkdir -p "$(dirname "$matrixWasmDest")"
-    tar -xzf $matrixCryptoWasmPackage -C "$matrixWasmTmp" package/pkg/matrix_sdk_crypto_wasm_bg.wasm
-    cp "$matrixWasmTmp/package/pkg/matrix_sdk_crypto_wasm_bg.wasm" "$matrixWasmDest"
-
     test -f "$matrixCryptoDest"
-    test -f "$matrixWasmDest"
   '';
 
   meta = {
