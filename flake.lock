@@ -183,11 +183,11 @@
         ]
       },
       "locked": {
-        "lastModified": 1774915705,
-        "narHash": "sha256-2Kz/KdFU6NXtEALdmM1ypeFdKKK4Yk4O6qzLBksXLY4=",
+        "lastModified": 1774959130,
+        "narHash": "sha256-Pfe+s5LPH4yUK7oXCRJjVpm1Q5HnkoD9a9mQCm/jyH8=",
         "owner": "sadjow",
         "repo": "claude-code-nix",
-        "rev": "9158d3e1292887ec13ddb69514179fe4fc6a7d2e",
+        "rev": "f8d3e6449a66f3b48cd032c6c69bb18b3d08d1ad",
         "type": "github"
       },
       "original": {
@@ -257,11 +257,11 @@
         "treefmt-nix": "treefmt-nix"
       },
       "locked": {
-        "lastModified": 1774923982,
-        "narHash": "sha256-MHyUNHKFYDB2sZK/tPRax6xc/5nQ3JKEZ6Uh0CO7Vm4=",
+        "lastModified": 1774976864,
+        "narHash": "sha256-byq505eqsDiJEvu19dCMa1SywC4JLYid3qsrvlOIUK0=",
         "ref": "main",
-        "rev": "3d2915093cf5177b6c6e464562e3f580ad0f939e",
-        "revCount": 6393,
+        "rev": "0cc1e4685c98a5a296077fe511a389f8aac131de",
+        "revCount": 6394,
         "type": "git",
         "url": "https://forgejo.ellis.link/continuwuation/continuwuity"
       },
@@ -1581,11 +1581,11 @@
     },
     "nixpkgs-master": {
       "locked": {
-        "lastModified": 1774950613,
-        "narHash": "sha256-bU/Y+fHNc1EARlO+X3zw7U/1ddVBXfelSGZukbDg4Ls=",
+        "lastModified": 1774996126,
+        "narHash": "sha256-0uBctEsUFj7+Z3BUMp3krx56hQVEPO2KWsAe1Z6r3Mo=",
         "owner": "NixOS",
         "repo": "nixpkgs",
-        "rev": "31db9693c6319c19534aec4bc55c9e6900cd02a3",
+        "rev": "08d9313b49008ae5bccae7c4852af20ac5a08398",
         "type": "github"
       },
       "original": {
@@ -1701,11 +1701,11 @@
         ]
       },
       "locked": {
-        "lastModified": 1774920276,
-        "narHash": "sha256-nynVyNuy8SDh2nZWfeov6RAhvsaTAeAQHZog7lBK+A0=",
+        "lastModified": 1774988724,
+        "narHash": "sha256-zBaEE8IBRZjTafkfJHeYn9KwU9TuCS9cTzFCwlAqVlQ=",
         "owner": "noctalia-dev",
         "repo": "noctalia-shell",
-        "rev": "421ccc4c87228878b0eb29d3d1faead875c49c28",
+        "rev": "97553d7064799618d57a09812860d4cfa0482552",
         "type": "github"
       },
       "original": {
@@ -1723,11 +1723,11 @@
         "treefmt-nix": "treefmt-nix_2"
       },
       "locked": {
-        "lastModified": 1774902752,
-        "narHash": "sha256-WC3SgVJX+N78KnRf1v9Z2VowkJBc9SBKpaZsWxWm/Rs=",
+        "lastModified": 1774994931,
+        "narHash": "sha256-WmXA8kyqvDA226DRPrXyR6bLO9VsRr4SUAYCVH6H6Ns=",
         "owner": "noctalia-dev",
         "repo": "noctalia-qs",
-        "rev": "4f0ceff244748ec55cfccc4f674759a7a2941b18",
+        "rev": "b053facf8421df220d0bf2496a543b23dee3ca85",
         "type": "github"
       },
       "original": {
@@ -2388,11 +2388,11 @@
         "rust-overlay": "rust-overlay_2"
       },
       "locked": {
-        "lastModified": 1774944795,
-        "narHash": "sha256-WiDMMolsE9mSm1LUdUmdh8NWgflynOB6vW6tdSj/gMc=",
+        "lastModified": 1774974725,
+        "narHash": "sha256-mOVrCUmeAGd3prwBtyMewlmA+0CKNywV/9Nfl39f5OE=",
         "owner": "max-sixty",
         "repo": "worktrunk",
-        "rev": "79fa6a8b73cac57a5802b156f327e709cfcb8e1b",
+        "rev": "538df9609b4dea6b065dd70c5f2a4496728573da",
         "type": "github"
       },
       "original": {

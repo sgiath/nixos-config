@@ -105,13 +105,13 @@
 
     # https://github.com/openai/codex/releases/latest
     codex = {
-      url = "github:openai/codex/rust-v0.117.0";
+      url = "github:openai/codex/rust-v0.118.0";
       inputs.nixpkgs.follows = "nixpkgs";
     };
 
     # https://github.com/anomalyco/opencode/releases/latest
     opencode = {
-      url = "github:anomalyco/opencode/v1.3.9";
+      url = "github:anomalyco/opencode/v1.3.12";
       inputs.nixpkgs.follows = "nixpkgs";
     };
 
