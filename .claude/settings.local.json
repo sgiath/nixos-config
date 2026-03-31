@@ -1,8 +1,0 @@
-{
-  "permissions": {
-    "allow": [
-      "Bash(git -C /home/sgiath/nixos log --oneline -20)",
-      "Bash(journalctl:*)"
-    ]
-  }
-}
