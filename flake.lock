@@ -829,15 +829,16 @@
         ]
       },
       "locked": {
-        "lastModified": 1774947883,
-        "narHash": "sha256-9JRKyASw0Aa7M87LeiQoCA9M49YykIVyxQKMylCSovc=",
+        "lastModified": 1774938981,
+        "narHash": "sha256-ALhcx1fhJpOnrbeZ0V+xaWcOEgAwF1GiQvDiGpfuAhE=",
         "owner": "antinomyhq",
         "repo": "forgecode",
-        "rev": "00fe3518b28979fcee5e0ec192774e527d9d372e",
+        "rev": "18f89a8f49576b2e36714d4e4823250493107c8c",
         "type": "github"
       },
       "original": {
         "owner": "antinomyhq",
+        "ref": "v2.3.2",
         "repo": "forgecode",
         "type": "github"
       }

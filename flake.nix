@@ -120,8 +120,9 @@
       inputs.nixpkgs.follows = "nixpkgs";
     };
 
+    # https://github.com/antinomyhq/forgecode/releases/latest
     forgecode = {
-      url = "github:antinomyhq/forgecode";
+      url = "github:antinomyhq/forgecode/v2.3.2";
       inputs.nixpkgs.follows = "nixpkgs";
     };
 
