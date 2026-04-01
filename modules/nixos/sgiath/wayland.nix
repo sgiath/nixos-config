@@ -37,7 +37,6 @@
           naturalScrolling = true;
         };
       };
-      hypridle.enable = false;
     };
 
     security.pam.services.greetd = {
@@ -69,7 +68,6 @@
 
     programs = {
       hyprland.enable = true;
-      hyprlock.enable = true;
     };
   };
 }
