@@ -43,7 +43,7 @@ in
     };
 
     # ForgeCode shell integration
-    programs.zsh.initExtra = ''
+    programs.zsh.initContent = ''
       if [[ -z "$_FORGE_PLUGIN_LOADED" ]]; then
         eval "$(${lib.getExe forge} zsh plugin)"
       fi
