@@ -4,7 +4,6 @@
   pkgs,
   ...
 }:
-
 {
   config = lib.mkIf config.programs.zsh.enable {
     # home.packages = with pkgs; [ ];
