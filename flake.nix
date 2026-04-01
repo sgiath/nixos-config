@@ -120,6 +120,11 @@
       inputs.nixpkgs.follows = "nixpkgs";
     };
 
+    forgecode = {
+      url = "github:antinomyhq/forgecode";
+      inputs.nixpkgs.follows = "nixpkgs";
+    };
+
     openspec = {
       url = "github:Fission-AI/OpenSpec";
       inputs.nixpkgs.follows = "nixpkgs";

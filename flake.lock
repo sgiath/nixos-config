@@ -822,6 +822,26 @@
         "type": "github"
       }
     },
+    "forgecode": {
+      "inputs": {
+        "nixpkgs": [
+          "nixpkgs"
+        ]
+      },
+      "locked": {
+        "lastModified": 1774947883,
+        "narHash": "sha256-9JRKyASw0Aa7M87LeiQoCA9M49YykIVyxQKMylCSovc=",
+        "owner": "antinomyhq",
+        "repo": "forgecode",
+        "rev": "00fe3518b28979fcee5e0ec192774e527d9d372e",
+        "type": "github"
+      },
+      "original": {
+        "owner": "antinomyhq",
+        "repo": "forgecode",
+        "type": "github"
+      }
+    },
     "foundryvtt": {
       "inputs": {
         "nixpkgs": [
@@ -1868,6 +1888,7 @@
         "continuwuity": "continuwuity",
         "cursor": "cursor",
         "disko": "disko",
+        "forgecode": "forgecode",
         "foundryvtt": "foundryvtt",
         "home-manager": "home-manager",
         "hyprland": "hyprland",

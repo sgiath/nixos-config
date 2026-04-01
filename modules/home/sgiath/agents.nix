@@ -20,6 +20,7 @@
 
       # Claude Code
       pkgs.${namespace}.claude-agent-acp
+      inputs.forgecode.packages.${pkgs.stdenv.hostPlatform.system}.default
 
       # LLM tools
       inputs.openspec.packages.${pkgs.stdenv.hostPlatform.system}.default
