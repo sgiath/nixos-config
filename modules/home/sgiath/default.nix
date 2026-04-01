@@ -28,7 +28,7 @@
     ./starship.nix
     ./stylix.nix
     ./tmux.nix
-    ./wallpaper.nix
+    # ./wallpaper.nix
     ./waybar.nix
     ./web_browsers.nix
     ./zsh.nix

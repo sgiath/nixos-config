@@ -37,7 +37,7 @@
           naturalScrolling = true;
         };
       };
-      hypridle.enable = true;
+      hypridle.enable = false;
     };
 
     security.pam.services.greetd = {
