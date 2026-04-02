@@ -27,6 +27,9 @@ in
       # ForgeCode
       forge
 
+      # Hermes
+      inputs.hermes-agent.packages.${pkgs.stdenv.hostPlatform.system}.default
+
       # LLM tools
       inputs.openspec.packages.${pkgs.stdenv.hostPlatform.system}.default
     ];
