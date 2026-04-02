@@ -67,8 +67,6 @@
             "utility"
             "archive"
             "docker"
-            "gpg"
-            "ssh"
             "completion"
             "syntax-highlighting"
             "history-substring-search"
