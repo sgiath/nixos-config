@@ -19,7 +19,7 @@
   crazyegg.enable = true;
 
   services = {
-    hermes-agent.enable = true;
+    hermes-agent.enable = false;
   };
 
   programs = {
