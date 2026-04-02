@@ -30,6 +30,11 @@
           model = "minimax/minimax-m2.7";
         };
 
+        display = {
+          personality = "catgirl";
+          skin = "charizard";
+        };
+
         toolsets = [ "all" ];
 
         tts = {
