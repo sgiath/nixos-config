@@ -34,11 +34,13 @@
     ntfy-sh.enable = true;
     monitoring.enable = false;
 
+    hermes-agent.enable = true;
+
     # proxies
     nas-proxy.enable = true;
     sgiath-dev.proxy = true;
     sinai-camp.proxy = true;
     opencode-proxy.enable = false;
-    openclaw-proxy.enable = true;
+    openclaw-proxy.enable = false;
   };
 }

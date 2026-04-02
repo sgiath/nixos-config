@@ -27,7 +27,6 @@ in
     ./bluetooth.nix
     ./docker.nix
     ./graphics.nix
-    ./hermes.nix
     ./nvidia-gpu.nix
     ./ollama.nix
     ./printing.nix

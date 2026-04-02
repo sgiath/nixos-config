@@ -5,6 +5,7 @@
     ./audiobookshelf.nix
     ./factorio.nix
     ./foundry.nix
+    ./hermes.nix
     ./jellyfin.nix
     ./matrix.nix
     ./minecraft.nix

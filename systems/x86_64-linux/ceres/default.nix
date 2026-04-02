@@ -18,10 +18,6 @@
 
   crazyegg.enable = true;
 
-  services = {
-    hermes-agent.enable = false;
-  };
-
   programs = {
     gamescope.enable = true;
     gamemode.enable = true;
