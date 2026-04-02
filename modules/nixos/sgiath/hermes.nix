@@ -1,15 +1,53 @@
 {
   config,
   lib,
+  pkgs,
   ...
 }:
 
 {
   config = lib.mkIf config.services.hermes-agent.enable {
     services.hermes-agent = {
-      settings.model.default = "anthropic/claude-sonnet-4";
-      environmentFiles = [ "/home/sgiath/.hermes_env" ];
+      environmentFiles = [ "/home/sgiath/.hermes/.env" ];
       addToSystemPackages = true;
+
+      extraPackages = with pkgs; [
+        imagemagick
+        ffmpeg
+        whisper-cpp-vulkan
+        yt-dlp
+        jq
+      ];
+
+      settings = {
+        model = {
+          default = "claude-opus-4-6";
+          provider = "anthropic";
+        };
+
+        fallback_model = {
+          provider = "openrouter";
+          model = "minimax/minimax-m2.7";
+        };
+
+        toolsets = [ "all" ];
+
+        tts = {
+          provider = "openai";
+          openai = {
+            model = "gpt-4o-mini-tts";
+            voice = "maple";
+          };
+        };
+
+        stt = {
+          enabled = true;
+          provider = "local";
+          local = {
+            model = "ggml-large-v3-turbo";
+          };
+        };
+      };
     };
   };
 }
