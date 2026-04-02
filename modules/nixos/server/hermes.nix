@@ -25,9 +25,9 @@
           MATRIX_USER_ID = "@niamh:sgiath.dev";
           MATRIX_ALLOWED_USERS = "@sgiath:sgiath.dev";
           MATRIX_HOME_ROOM = "!UJC9AZ04bM93iIVfzf:sgiath.dev";
-          MATRIX_ENCRYPTION = false;
+          MATRIX_ENCRYPTION = "false";
 
-          WEBHOOK_ENABLED = true;
+          WEBHOOK_ENABLED = "true";
         };
 
         settings = {
