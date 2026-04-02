@@ -131,6 +131,11 @@
       inputs.nixpkgs.follows = "nixpkgs";
     };
 
+    hermes-agent = {
+      url = "github:NousResearch/hermes-agent";
+      inputs.nixpkgs.follows = "nixpkgs";
+    };
+
     niamh = {
       url = "path:/home/sgiath/develop/sgiath/niamh";
       inputs.nixpkgs.follows = "nixpkgs";
@@ -195,6 +200,7 @@
         disko.nixosModules.disko
         sops-nix.nixosModules.sops
         stylix.nixosModules.stylix
+        hermes-agent.nixosModules.default
         foundryvtt.nixosModules.foundryvtt
         nix-minecraft.nixosModules.minecraft-servers
         nix-gaming.nixosModules.pipewireLowLatency
