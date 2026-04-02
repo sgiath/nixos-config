@@ -8,8 +8,6 @@
 {
   config = lib.mkIf config.services.hermes-agent.enable {
     services.hermes-agent = {
-      user = "sgiath";
-      group = "sgiath";
       stateDir = "/home/sgiath/";
       workingDirectory = "/home/sgiath/.hermes/workspace";
       environmentFiles = [ "/home/sgiath/.hermes/env" ];
@@ -60,5 +58,7 @@
         };
       };
     };
+
+    users.users.sgiath.extraGroups = [ "hermes" ];
   };
 }
