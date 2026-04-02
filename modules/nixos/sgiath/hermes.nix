@@ -8,7 +8,11 @@
 {
   config = lib.mkIf config.services.hermes-agent.enable {
     services.hermes-agent = {
-      environmentFiles = [ "/home/sgiath/.hermes/.env" ];
+      user = "sgiath";
+      group = "sgiath";
+      stateDir = "/home/sgiath/";
+      workingDirectory = "/home/sgiath/.hermes/workspace";
+      environmentFiles = [ "/home/sgiath/.hermes/env" ];
       addToSystemPackages = true;
 
       extraPackages = with pkgs; [
@@ -36,6 +40,8 @@
         };
 
         toolsets = [ "all" ];
+
+        approvals.mode = "off";
 
         tts = {
           provider = "openai";
