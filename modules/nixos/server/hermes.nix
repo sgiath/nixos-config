@@ -1,66 +1,14 @@
 {
-  inputs,
-  system,
   config,
   lib,
   pkgs,
   ...
 }:
 
-let
-  hermesPackage = inputs.hermes-agent.packages.${system}.default;
-  # nixpkgs' python311Packages.matrix-nio currently fails to evaluate in this
-  # channel because one of its test-only dependency chains pulls sphinx 9.
-  hermesMatrixNio = pkgs.python311Packages.buildPythonPackage rec {
-    pname = "matrix-nio";
-    version = "0.25.2";
-    pyproject = true;
-
-    src = pkgs.fetchFromGitHub {
-      owner = "poljar";
-      repo = "matrix-nio";
-      tag = version;
-      hash = "sha256-ZNYK5D4aDKE+N62A/hPmTphir+UsWvj3BW2EPG1z+R4=";
-    };
-
-    postPatch = ''
-      substituteInPlace src/nio/client/async_client.py \
-        --replace-fail "from aiohttp_socks import ProxyConnector" $'try:\n    from aiohttp_socks import ProxyConnector\nexcept ImportError:\n    ProxyConnector = None'
-
-      substituteInPlace src/nio/client/async_client.py \
-        --replace-fail "connector = ProxyConnector.from_url(self.proxy) if self.proxy else None" \
-        "connector = ProxyConnector.from_url(self.proxy) if self.proxy and ProxyConnector is not None else None"
-    '';
-
-    build-system = [ pkgs.python311Packages.setuptools ];
-
-    # Hermes already ships aiofiles/aiohttp/h11/h2/jsonschema in its venv.
-    dependencies = with pkgs.python311Packages; [
-      pycryptodome
-      unpaddedbase64
-    ];
-
-    doCheck = false;
-    dontCheckRuntimeDeps = true;
-  };
-  hermesMatrixPackage = pkgs.symlinkJoin {
-    name = "hermes-agent-with-matrix";
-    paths = [ hermesPackage ];
-    nativeBuildInputs = [ pkgs.makeWrapper ];
-    postBuild = ''
-      matrixPythonPath="${pkgs.python311Packages.makePythonPath [ hermesMatrixNio ]}"
-
-      for bin in "$out/bin/hermes" "$out/bin/hermes-agent" "$out/bin/hermes-acp"; do
-        wrapProgram "$bin" --prefix PYTHONPATH : "$matrixPythonPath"
-      done
-    '';
-  };
-in
 {
   config = lib.mkIf (config.sgiath.server.enable && config.services.hermes-agent.enable) {
     services = {
       hermes-agent = {
-        package = hermesMatrixPackage;
         addToSystemPackages = true;
 
         extraPackages = with pkgs; [
