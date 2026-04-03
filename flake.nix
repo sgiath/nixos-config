@@ -99,7 +99,7 @@
 
     # https://github.com/zed-industries/zed/releases/latest
     zed-editor = {
-      url = "github:zed-industries/zed/v0.229.0";
+      url = "github:zed-industries/zed/v0.230.1";
       inputs.nixpkgs.follows = "nixpkgs";
     };
 
@@ -122,7 +122,7 @@
 
     # https://github.com/antinomyhq/forgecode/releases/latest
     forgecode = {
-      url = "github:antinomyhq/forgecode/v2.3.2";
+      url = "github:antinomyhq/forgecode/v2.5.1";
       inputs.nixpkgs.follows = "nixpkgs";
     };
 
