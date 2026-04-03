@@ -195,8 +195,7 @@
     };
 
     services = {
-      gnome-keyring.enable = true;
-      pass-secret-service.enable = false;
+      pass-secret-service.enable = true;
     };
 
     programs = {
