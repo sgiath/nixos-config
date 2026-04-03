@@ -10,7 +10,7 @@
       package = pkgs.ungoogled-chromium;
       dictionaries = [ pkgs.hunspellDictsChromium.en_US ];
       commandLineArgs = [
-        "--password-store=gnome-libsecret"
+        "--password-store=basic"
         "--ozone-platform-hint=wayland"
         "--gtk-version=4"
         "--enable-wayland-ime"
