@@ -64,6 +64,10 @@ in
           batch_tool = true;
         };
       };
+
+      web = {
+        enable = true;
+      };
     };
     stylix.targets.opencode.enable = false;
 

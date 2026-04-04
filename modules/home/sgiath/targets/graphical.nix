@@ -13,7 +13,6 @@
       xterm
 
       gimp
-      obsidian
       # libreoffice
       vlc
       kdePackages.okular
@@ -71,6 +70,11 @@
       pandoc.enable = true;
       vscode.enable = true;
       obs-studio.enable = true;
+
+      obsidian = {
+        enable = true;
+        cli.enable = true;
+      };
     };
 
     sgiath = {
