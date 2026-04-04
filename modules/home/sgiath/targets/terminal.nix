@@ -42,7 +42,10 @@
       ssh.enable = true;
       starship.enable = true;
       tmux.enable = true;
-      yazi.enable = true;
+      yazi = {
+        enable = true;
+        shellWrapperName = "y";
+      };
       zsh.enable = true;
 
       # install zed-server even in terminal environment

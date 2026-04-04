@@ -210,6 +210,7 @@
 
       password-store = {
         enable = true;
+        settings = { };
         package = pkgs.pass-wayland.withExtensions (exts: [ exts.pass-otp ]);
       };
     };
