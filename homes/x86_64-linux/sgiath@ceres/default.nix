@@ -48,7 +48,7 @@ in
   };
 
   services = {
-    niamh.enable = true;
+    niamh.enable = false;
   };
 
   systemd.user.services = {
