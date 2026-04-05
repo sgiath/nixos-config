@@ -6,9 +6,9 @@
   namespace,
   ...
 }:
-let
-  forge = inputs.forgecode.packages.${pkgs.stdenv.hostPlatform.system}.default;
-in
+# let
+#   forge = inputs.forgecode.packages.${pkgs.stdenv.hostPlatform.system}.default;
+# in
 {
   options.sgiath.agents = {
     enable = lib.mkEnableOption "LLM agents";
@@ -25,7 +25,7 @@ in
       pkgs.${namespace}.claude-agent-acp
 
       # ForgeCode
-      forge
+      # forge
 
       # Hermes
       inputs.hermes-agent.packages.${pkgs.stdenv.hostPlatform.system}.default
@@ -46,15 +46,15 @@ in
     };
 
     # ForgeCode shell integration
-    programs.zsh.initContent = lib.mkAfter ''
-      if [[ -z "$_FORGE_PLUGIN_LOADED" ]]; then
-        eval "$(${lib.getExe forge} zsh plugin)"
-      fi
+    # programs.zsh.initContent = lib.mkAfter ''
+    #   if [[ -z "$_FORGE_PLUGIN_LOADED" ]]; then
+    #     eval "$(${lib.getExe forge} zsh plugin)"
+    #   fi
 
-      if [[ -z "$_FORGE_THEME_LOADED" ]]; then
-        eval "$(${lib.getExe forge} zsh theme)"
-      fi
-    '';
+    #   if [[ -z "$_FORGE_THEME_LOADED" ]]; then
+    #     eval "$(${lib.getExe forge} zsh theme)"
+    #   fi
+    # '';
 
     # bun
     programs.bun.enable = true;
