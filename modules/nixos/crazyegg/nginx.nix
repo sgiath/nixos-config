@@ -63,8 +63,8 @@
           chat.crazyeggdev.com 'http://127.0.0.1:4051';
 
           # Core v2 shell, shell
-          core.crazyeggdev.com 'http://127.0.0.1:4173';
-          share.crazyeggdev.com 'http://127.0.0.1:4173';
+          core.crazyeggdev.com 'http://127.0.0.1:8080';
+          share.crazyeggdev.com 'http://127.0.0.1:8080';
 
           # Mocky Frontend, mocky-frontend
           script.mocky.crazyeggdev.com 'http://127.0.0.1:8081';
