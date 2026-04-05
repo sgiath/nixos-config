@@ -57,7 +57,7 @@
 
     gtk = pkgs.lib.mkForce {
       enable = true;
-      gtk4.theme = config.gtk.theme;
+      gtk4.theme = null;
       theme = {
         package = pkgs.flat-remix-gtk;
         name = "Flat-Remix-GTK-Grey-Darkest";

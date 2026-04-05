@@ -210,7 +210,9 @@
 
       password-store = {
         enable = true;
-        settings = { };
+        settings = {
+          PASSWORD_STORE_DIR = "$XDG_DATA_HOME/password-store";
+        };
         package = pkgs.pass-wayland.withExtensions (exts: [ exts.pass-otp ]);
       };
     };
