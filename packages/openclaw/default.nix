@@ -6,36 +6,7 @@
 }:
 
 let
-  bundledPluginRuntimeDeps = {
-    "@aws-sdk/client-s3" = "3.1020.0";
-    "@aws-sdk/s3-request-presigner" = "3.1020.0";
-    "@lancedb/lancedb" = "^0.27.1";
-    "@microsoft/teams.api" = "2.0.6";
-    "@microsoft/teams.apps" = "2.0.6";
-    "@opentelemetry/api" = "^1.9.1";
-    "@opentelemetry/api-logs" = "^0.214.0";
-    "@opentelemetry/exporter-logs-otlp-proto" = "^0.214.0";
-    "@opentelemetry/exporter-metrics-otlp-proto" = "^0.214.0";
-    "@opentelemetry/exporter-trace-otlp-proto" = "^0.214.0";
-    "@opentelemetry/resources" = "^2.6.1";
-    "@opentelemetry/sdk-logs" = "^0.214.0";
-    "@opentelemetry/sdk-metrics" = "^2.6.1";
-    "@opentelemetry/sdk-node" = "^0.214.0";
-    "@opentelemetry/sdk-trace-base" = "^2.6.1";
-    "@opentelemetry/semantic-conventions" = "^1.40.0";
-    "@tloncorp/tlon-skill" = "0.3.1";
-    "@twurple/api" = "^8.0.3";
-    "@twurple/auth" = "^8.0.3";
-    "@twurple/chat" = "^8.0.3";
-    "@urbit/aura" = "^3.0.0";
-    "@whiskeysockets/baileys" = "7.0.0-rc.9";
-    acpx = "0.4.0";
-    "fake-indexeddb" = "^6.2.5";
-    jimp = "^1.6.0";
-    "music-metadata" = "^11.12.3";
-    "nostr-tools" = "^2.23.3";
-    "zca-js" = "2.1.2";
-  };
+  bundledPluginRuntimeDeps = builtins.fromJSON (builtins.readFile ./bundled-plugin-runtime-deps.json);
 in
 
 buildNpmPackage rec {
@@ -75,7 +46,7 @@ buildNpmPackage rec {
     cp ${./package-lock.json} package-lock.json
   '';
 
-  npmDepsHash = "sha256-Ewclib/d64djWkOucJi7dHWg4DIkTCJ6BvPN6w3ntbA=";
+  npmDepsHash = "sha256-yqRerPLuCKPpw7F39WbNMh+RIj5n7vpeLP8jKOs33SI=";
 
   dontNpmBuild = true;
 

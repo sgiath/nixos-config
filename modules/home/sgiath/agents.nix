@@ -6,9 +6,9 @@
   namespace,
   ...
 }:
-# let
-#   forge = inputs.forgecode.packages.${pkgs.stdenv.hostPlatform.system}.default;
-# in
+let
+  forge = inputs.forgecode.packages.${pkgs.stdenv.hostPlatform.system}.default;
+in
 {
   options.sgiath.agents = {
     enable = lib.mkEnableOption "LLM agents";
@@ -25,7 +25,7 @@
       pkgs.${namespace}.claude-agent-acp
 
       # ForgeCode
-      # forge
+      forge
 
       # Hermes
       inputs.hermes-agent.packages.${pkgs.stdenv.hostPlatform.system}.default

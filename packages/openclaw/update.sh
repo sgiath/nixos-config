@@ -7,6 +7,7 @@ set -euo pipefail
 
 SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
 DEFAULT_NIX="${SCRIPT_DIR}/default.nix"
+BUNDLED_PLUGIN_RUNTIME_DEPS_JSON="${SCRIPT_DIR}/bundled-plugin-runtime-deps.json"
 
 # Get version - either from argument or latest from npm
 if [[ -n "${1:-}" ]]; then
@@ -57,6 +58,11 @@ if [[ ! -f "dist/plugin-sdk/keyed-async-queue.js" ]]; then
 fi
 
 echo "==> Applying package.json compatibility deps"
+jq --slurpfile bundledPluginRuntimeDeps "${BUNDLED_PLUGIN_RUNTIME_DEPS_JSON}" \
+	'.dependencies = ($bundledPluginRuntimeDeps[0] + (.dependencies // {}))' \
+	package.json >package.json.new
+mv package.json.new package.json
+
 if ! jq -e '.dependencies["matrix-js-sdk"]' package.json >/dev/null; then
 	jq '.dependencies["matrix-js-sdk"] = "^38.2.0"' package.json >package.json.new
 	mv package.json.new package.json
