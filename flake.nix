@@ -122,7 +122,7 @@
 
     # https://github.com/antinomyhq/forgecode/releases/latest
     forgecode = {
-      url = "github:antinomyhq/forgecode/v2.6.0";
+      url = "github:antinomyhq/forgecode/v2.8.0";
       inputs.nixpkgs.follows = "nixpkgs";
     };
 
