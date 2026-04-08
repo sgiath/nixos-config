@@ -11,11 +11,11 @@ in
 
 buildNpmPackage rec {
   pname = "openclaw";
-  version = "2026.4.5";
+  version = "2026.4.8";
 
   src = fetchurl {
     url = "https://registry.npmjs.org/openclaw/-/openclaw-${version}.tgz";
-    hash = "sha256-3x5XpflbaWj1rAvcr8X5cBeMBPSvhXeaUMqISHdD0NU=";
+    hash = "sha256-skK9EgDWOosTMTZQOvFZ89l9njkCNFUPdoFZsKt4MBE=";
   };
 
   matrixCryptoNative = fetchurl {
@@ -46,7 +46,7 @@ buildNpmPackage rec {
     cp ${./package-lock.json} package-lock.json
   '';
 
-  npmDepsHash = "sha256-gKO3q+I+rsrIlcBH+7mQSbm7zENHIEtLygOu134J48o=";
+  npmDepsHash = "sha256-zVbIvTVFSQFUPRgq8GoejIK48J6A25WxG6myZeRnBBI=";
 
   dontNpmBuild = true;
 
