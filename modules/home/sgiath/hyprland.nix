@@ -5,7 +5,9 @@
   ...
 }:
 let
-  screenshot = "${lib.getExe pkgs.grim} -g $(${lib.getExe pkgs.slurp}) - | ${lib.getExe pkgs.swappy} -f -";
+  screenshot = pkgs.writeShellScriptBin "screenshot" ''
+    ${lib.getExe pkgs.grim} -g $(${lib.getExe pkgs.slurp}) - | ${lib.getExe pkgs.swappy} -f -
+  '';
 in
 {
   imports = [
@@ -52,7 +54,9 @@ in
           "10,monitor:DP-2,default:true,gapsin:0,gapsout:0,border:false,persistent:true"
         ];
 
-        bind = ["$mod, S, exec, ${screenshot}" ];
+        bind = [
+          "$mod, S, exec, ${lib.getExe screenshot}"
+        ];
       };
     };
     stylix.targets = {
