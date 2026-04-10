@@ -118,7 +118,7 @@
         "$mod SHIFT, Q, exec, $ipc sessionMenu toggle"
         "$mod, slash, exec, $ipc launcher toggle"
         "$mod, B, exec, $ipc launcher windows"
-        "$mod, S, exec, $ipc plugin:screen-shot-and-record screenshot"
+        # "$mod, S, exec, $ipc plugin:screen-shot-and-record screenshot"
       ];
 
       layerrule = [

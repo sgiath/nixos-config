@@ -4,6 +4,9 @@
   pkgs,
   ...
 }:
+let
+  screenshot = "${lib.getExe pkgs.grim} -g $(${lib.getExe pkgs.slurp}) - | ${lib.getExe pkgs.swappy} -f -";
+in
 {
   imports = [
     ./hyprland/color.nix
@@ -48,6 +51,8 @@
           "9,monitor:DP-3,persistent:true"
           "10,monitor:DP-2,default:true,gapsin:0,gapsout:0,border:false,persistent:true"
         ];
+
+        bind = ["$mod, S, exec, ${screenshot}" ];
       };
     };
     stylix.targets = {
@@ -68,7 +73,10 @@
       };
     };
 
-    home.packages = [ pkgs.grim ];
+    home.packages = [
+      pkgs.grim
+      pkgs.flameshot
+    ];
 
     programs.wofi = {
       enable = false;
