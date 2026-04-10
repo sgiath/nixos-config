@@ -78,7 +78,6 @@ in
     };
 
     home.packages = [
-      pkgs.grim
       pkgs.flameshot
     ];
 
