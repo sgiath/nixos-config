@@ -9,7 +9,7 @@ let
       | ${lib.getExe pkgs.satty} \
         --filename - \
         --output-filename "~/Pictures/Screenshots/%Y-%m-%dT%H%M%S.png" \
-        --copy-command ${lib.getExe pkgs.wl-copy} \
+        --copy-command ${lib.getExe pkgs.wl-wl-clipboard} \
         --floating-hack
   '';
 in
