@@ -34,7 +34,7 @@
     ntfy-sh.enable = true;
     monitoring.enable = false;
 
-    hermes-agent.enable = false;
+    hermes-agent.enable = true;
 
     # proxies
     nas-proxy.enable = true;

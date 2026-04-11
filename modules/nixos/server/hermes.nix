@@ -47,9 +47,7 @@
           };
 
           toolsets = [ "all" ];
-
           agent.max_turns = 150;
-
           approvals.mode = "off";
 
           compression = {
