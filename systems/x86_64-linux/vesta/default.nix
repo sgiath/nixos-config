@@ -41,6 +41,6 @@
     sgiath-dev.proxy = true;
     sinai-camp.proxy = true;
     opencode-proxy.enable = false;
-    openclaw-proxy.enable = true;
+    openclaw-proxy.enable = false;
   };
 }
