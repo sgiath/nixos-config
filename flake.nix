@@ -99,19 +99,19 @@
 
     # https://github.com/zed-industries/zed/releases/latest
     zed-editor = {
-      url = "github:zed-industries/zed/v0.230.2";
+      url = "github:zed-industries/zed/v0.231.2";
       inputs.nixpkgs.follows = "nixpkgs";
     };
 
     # https://github.com/openai/codex/releases/latest
     codex = {
-      url = "github:openai/codex/rust-v0.118.0";
+      url = "github:openai/codex/rust-v0.120.0";
       inputs.nixpkgs.follows = "nixpkgs";
     };
 
     # https://github.com/anomalyco/opencode/releases/latest
     opencode = {
-      url = "github:anomalyco/opencode/65cde7f494e3069f9ee625c357dc17bb899d8961";
+      url = "github:anomalyco/opencode/v1.4.3";
       inputs.nixpkgs.follows = "nixpkgs";
     };
 
@@ -122,7 +122,7 @@
 
     # https://github.com/antinomyhq/forgecode/releases/latest
     forgecode = {
-      url = "github:antinomyhq/forgecode/v2.8.0";
+      url = "github:antinomyhq/forgecode/v2.9.9";
       inputs.nixpkgs.follows = "nixpkgs";
     };
 
