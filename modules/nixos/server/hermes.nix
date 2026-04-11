@@ -32,8 +32,8 @@
 
         settings = {
           model = {
-            default = "claude-opus-4-6";
-            provider = "anthropic";
+            default = "gpt-5.4";
+            provider = "openai-codex";
           };
 
           fallback_model = {
