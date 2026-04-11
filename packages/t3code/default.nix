@@ -21,13 +21,13 @@ appimageTools.wrapType2 {
   inherit pname version src;
 
   extraInstallCommands = ''
-    install -Dm444 ${appimageContents}/t3-code-desktop.desktop \
+    install -Dm444 ${appimageContents}/${pname}.desktop \
       $out/share/applications/${pname}.desktop
     substituteInPlace $out/share/applications/${pname}.desktop \
       --replace-fail 'Exec=AppRun --no-sandbox %U' 'Exec=${pname} --no-sandbox %U'
 
-    install -Dm444 ${appimageContents}/usr/share/icons/hicolor/1024x1024/apps/t3-code-desktop.png \
-      $out/share/icons/hicolor/1024x1024/apps/t3-code-desktop.png
+    install -Dm444 ${appimageContents}/${pname}.png \
+      $out/share/pixmaps/${pname}.png
   '';
 
   meta = with lib; {
