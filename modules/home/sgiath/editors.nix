@@ -2,13 +2,12 @@
   config,
   lib,
   pkgs,
-  inputs,
   ...
 }:
 let
   zed = pkgs.zed-editor;
   # zed = inputs.zed-editor.packages.${pkgs.stdenv.hostPlatform.system}.default;
-  cursor = inputs.cursor.packages.${pkgs.stdenv.hostPlatform.system}.cursor;
+  # cursor = inputs.cursor.packages.${pkgs.stdenv.hostPlatform.system}.cursor;
 in
 {
   options.sgiath.editors = {
@@ -48,6 +47,6 @@ in
     stylix.targets.zed.enable = false;
     programs.zsh.shellAliases.zed = "${lib.getExe zed}";
 
-    home.packages = [ cursor ];
+    # home.packages = [ cursor ];
   };
 }
