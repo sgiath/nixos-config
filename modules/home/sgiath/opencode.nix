@@ -13,22 +13,12 @@ in
     programs.opencode = {
       enable = true;
       package = opencode;
-      rules = ./opencode/AGENTS.md;
+      rules = ./agents/AGENTS.md;
       agents = {
-        explorer = ./opencode/agents/explorer.md;
+        explorer = ./agents/agents/explorer.md;
       };
-      commands = {
-        commit = ./opencode/commands/commit.md;
-        debug = ./opencode/commands/debug.md;
-        handoff = ./opencode/commands/handoff.md;
-        learn = ./opencode/commands/learn.md;
-        start-work = ./opencode/commands/start-work.md;
-        tech-debt = ./opencode/commands/tech-debt.md;
-      };
-      skills = {
-        frontend-design = ./opencode/skills/frontend-design.md;
-        tracer-bullet = ./opencode/skills/tracer-bullet.md;
-      };
+      commands = ./agents/commands;
+      skills = ./agents/skills;
       settings = {
         # theme = "orng";
         autoupdate = false;

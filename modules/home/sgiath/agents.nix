@@ -22,7 +22,7 @@ in
       pkgs.bubblewrap
 
       # Claude Code
-      pkgs.${namespace}.claude-agent-acp
+      # pkgs.${namespace}.claude-agent-acp
 
       # ForgeCode
       forge
@@ -36,14 +36,14 @@ in
 
     # claude code
     programs.claude-code = {
-      enable = true;
+      enable = false;
       package = pkgs.claude-code;
     };
 
     # aliases
-    programs.zsh.shellAliases = {
-      cc = "${lib.getExe pkgs.claude-code} --dangerously-skip-permissions";
-    };
+    # programs.zsh.shellAliases = {
+    #   cc = "${lib.getExe pkgs.claude-code} --dangerously-skip-permissions";
+    # };
 
     # ForgeCode shell integration
     # programs.zsh.initContent = lib.mkAfter ''
