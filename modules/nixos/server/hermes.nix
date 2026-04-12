@@ -35,6 +35,12 @@
             default = "gpt-5.4";
             provider = "openai-codex";
           };
+          toolsets = [ "all" ];
+          terminal = {
+            backend = "local";
+            cwd = ".";
+            timeout = 180;
+          };
 
           fallback_model = {
             provider = "openrouter";
@@ -45,8 +51,11 @@
             personality = "catgirl";
             skin = "charizard";
           };
+          memory = {
+            memory_enabled = true;
+            user_profile_enabled = true;
+          };
 
-          toolsets = [ "all" ];
           agent.max_turns = 150;
           approvals.mode = "off";
 
