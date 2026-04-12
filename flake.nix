@@ -77,11 +77,6 @@
       inputs.nixpkgs.follows = "nixpkgs";
     };
 
-    conduit = {
-      url = "gitlab:famedly/conduit";
-      inputs.nixpkgs.follows = "nixpkgs";
-    };
-
     continuwuity = {
       url = "git+https://forgejo.ellis.link/continuwuation/continuwuity?ref=main";
       inputs.nixpkgs.follows = "nixpkgs";
@@ -92,22 +87,22 @@
       inputs.nixpkgs.follows = "nixpkgs";
     };
 
-    cursor = {
-      url = "github:TudorAndrei/cursor-nixos-flake";
-      inputs.nixpkgs.follows = "nixpkgs";
-    };
+    # cursor = {
+    #   url = "github:TudorAndrei/cursor-nixos-flake";
+    #   inputs.nixpkgs.follows = "nixpkgs";
+    # };
 
     # https://github.com/zed-industries/zed/releases/latest
-    zed-editor = {
-      url = "github:zed-industries/zed/v0.231.2";
-      inputs.nixpkgs.follows = "nixpkgs";
-    };
+    # zed-editor = {
+    #   url = "github:zed-industries/zed/v0.231.2";
+    #   inputs.nixpkgs.follows = "nixpkgs";
+    # };
 
     # https://github.com/openai/codex/releases/latest
-    codex = {
-      url = "github:openai/codex/rust-v0.120.0";
-      inputs.nixpkgs.follows = "nixpkgs";
-    };
+    # codex = {
+    #   url = "github:openai/codex/rust-v0.120.0";
+    #   inputs.nixpkgs.follows = "nixpkgs";
+    # };
 
     # https://github.com/anomalyco/opencode/releases/latest
     opencode = {
@@ -115,10 +110,10 @@
       inputs.nixpkgs.follows = "nixpkgs";
     };
 
-    claude-code = {
-      url = "github:sadjow/claude-code-nix";
-      inputs.nixpkgs.follows = "nixpkgs";
-    };
+    # claude-code = {
+    #   url = "github:sadjow/claude-code-nix";
+    #   inputs.nixpkgs.follows = "nixpkgs";
+    # };
 
     # https://github.com/antinomyhq/forgecode/releases/latest
     forgecode = {
@@ -136,10 +131,10 @@
       inputs.nixpkgs.follows = "nixpkgs";
     };
 
-    niamh = {
-      url = "path:/home/sgiath/develop/sgiath/niamh";
-      inputs.nixpkgs.follows = "nixpkgs";
-    };
+    # niamh = {
+    #   url = "path:/home/sgiath/develop/sgiath/niamh";
+    #   inputs.nixpkgs.follows = "nixpkgs";
+    # };
 
     bird-src = {
       url = "path:/home/sgiath/develop/sgiath/bird";
@@ -190,7 +185,7 @@
       overlays = with inputs; [
         # hyprland.overlays.default
         # zed-editor.overlays.default
-        claude-code.overlays.default
+        # claude-code.overlays.default
         nix-minecraft.overlay
         noctalia.overlays.default
       ];
@@ -212,7 +207,7 @@
         sops-nix.homeManagerModules.sops
         nix-index-database.homeModules.nix-index
         whisper-dict.homeManagerModules.default
-        niamh.homeManagerModules.default
+        # niamh.homeManagerModules.default
       ];
     };
 }
