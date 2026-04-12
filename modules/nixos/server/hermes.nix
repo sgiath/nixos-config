@@ -2,6 +2,7 @@
   config,
   lib,
   pkgs,
+  inputs,
   ...
 }:
 
@@ -28,6 +29,8 @@
           MATRIX_ENCRYPTION = "false";
 
           WEBHOOK_ENABLED = "true";
+
+          HERMES_OPTIONAL_SKILLS = "${inputs.hermes-agent}/optional-skills";
         };
 
         settings = {
