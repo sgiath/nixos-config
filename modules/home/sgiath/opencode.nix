@@ -13,10 +13,8 @@ in
     programs.opencode = {
       enable = true;
       package = opencode;
-      rules = ./agents/AGENTS.md;
-      agents = {
-        explorer = ./agents/agents/explorer.md;
-      };
+      context = ./agents/AGENTS.md;
+      agents = ./agents/agents;
       commands = ./agents/commands;
       skills = ./agents/skills;
       settings = {

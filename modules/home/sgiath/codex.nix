@@ -13,7 +13,7 @@ in
     programs.codex = {
       enable = true;
       package = codex;
-      custom-instructions = builtins.readFile ./agents/AGENTS.md;
+      context = ./agents/AGENTS.md;
       skills = ./agents/skills;
       settings = {
         model = "gpt-5.4";

@@ -146,8 +146,9 @@
       inputs.nixpkgs.follows = "nixpkgs";
     };
 
+    # https://github.com/max-sixty/worktrunk/releases/latest
     worktrunk = {
-      url = "github:max-sixty/worktrunk";
+      url = "github:max-sixty/worktrunk/v0.36.0";
       inputs.nixpkgs.follows = "nixpkgs";
     };
 
