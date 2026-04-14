@@ -8,7 +8,6 @@
   config = lib.mkIf (config.sgiath.enable && config.services.ollama.enable) {
     services.ollama = {
       package = pkgs.ollama-rocm;
-      acceleration = "rocm";
       host = "0.0.0.0";
       rocmOverrideGfx = "10.3.0";
       environmentVariables = {
