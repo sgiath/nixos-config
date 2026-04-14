@@ -21,11 +21,10 @@ fi
 
 CURRENT_VERSION=$(grep 'version = "' "${DEFAULT_NIX}" | head -1 | sed 's/.*version = "\([^"]*\)".*/\1/')
 if [[ "${VERSION}" == "${CURRENT_VERSION}" ]]; then
-	echo "==> Already at version ${VERSION}, nothing to do"
-	exit 0
+	echo "==> Version ${VERSION} unchanged, refreshing generated artifacts"
+else
+	echo "==> Updating from ${CURRENT_VERSION} to ${VERSION}"
 fi
-
-echo "==> Updating from ${CURRENT_VERSION} to ${VERSION}"
 
 # Compute hash for the npm tarball
 echo "==> Prefetching npm tarball..."
@@ -56,6 +55,17 @@ if [[ ! -f "dist/plugin-sdk/keyed-async-queue.js" ]]; then
 	echo "ERROR: expected dist/plugin-sdk/keyed-async-queue.js not found" >&2
 	exit 1
 fi
+
+echo "==> Regenerating bundled plugin runtime deps..."
+find dist/extensions -mindepth 2 -maxdepth 2 -name package.json -print0 |
+	sort -z |
+	xargs -0 jq -s '
+		map(select(.dependencies or .optionalDependencies) | ((.dependencies // {}) + (.optionalDependencies // {})))
+		| add
+		| to_entries
+		| sort_by(.key)
+		| from_entries
+	' >"${BUNDLED_PLUGIN_RUNTIME_DEPS_JSON}"
 
 echo "==> Applying package.json compatibility deps"
 jq --slurpfile bundledPluginRuntimeDeps "${BUNDLED_PLUGIN_RUNTIME_DEPS_JSON}" \

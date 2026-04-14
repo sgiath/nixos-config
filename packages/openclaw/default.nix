@@ -46,7 +46,7 @@ buildNpmPackage rec {
     cp ${./package-lock.json} package-lock.json
   '';
 
-  npmDepsHash = "sha256-BWJngvqh82rjjQ/sbxaHGsNkgIkqsesUOncNoULL4EQ=";
+  npmDepsHash = "sha256-UfdgbG6qJpmdzbMaIvtd8rji5UJVtT0FtFCbbrLqTPo=";
 
   dontNpmBuild = true;
 
