@@ -1,6 +1,5 @@
 pkgs: {
   bird = pkgs.callPackage ./bird { };
-  claude-agent-acp = pkgs.callPackage ./claude-agent-acp { };
   dnd5etools = pkgs.callPackage ./dnd5etools { };
   gogcli = pkgs.callPackage ./gogcli { };
   n8n = pkgs.callPackage ./n8n { };

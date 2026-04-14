@@ -151,17 +151,11 @@
 
           pushd ~/nixos/packages > /dev/null
 
-          echo ""; echo "=== claude-agent-acp ==="
-          ./claude-agent-acp/update.sh
-
           echo ""; echo "=== dnd5etools ==="
           ./dnd5etools/update.sh
 
           echo ""; echo "=== gogcli ==="
           ./gogcli/update.sh
-
-          # echo ""; echo "=== n8n ==="
-          # ./n8n/update.sh
 
           echo ""; echo "=== openclaw ==="
           ./openclaw/update.sh
