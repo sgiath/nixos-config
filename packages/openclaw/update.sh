@@ -83,7 +83,7 @@ if ! jq -e '.dependencies["@matrix-org/matrix-sdk-crypto-nodejs"] // .optionalDe
 	mv package.json.new package.json
 fi
 
-npm install --package-lock-only --ignore-scripts
+npm install --package-lock-only --ignore-scripts --legacy-peer-deps
 cp package-lock.json "${SCRIPT_DIR}/package-lock.json"
 
 echo "==> Resolving Matrix native crypto package version..."

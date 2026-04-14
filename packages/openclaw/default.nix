@@ -11,11 +11,11 @@ in
 
 buildNpmPackage rec {
   pname = "openclaw";
-  version = "2026.4.11";
+  version = "2026.4.12";
 
   src = fetchurl {
     url = "https://registry.npmjs.org/openclaw/-/openclaw-${version}.tgz";
-    hash = "sha256-lf2r96TP3Sz/VJDv86I378Y/lbqblxyeukDgZxFbwOY=";
+    hash = "sha256-dPkD8dKr6L46xceUmAJJYUWWBsTIZgHBzI3JpYEaSFA=";
   };
 
   matrixCryptoNative = fetchurl {
@@ -24,6 +24,7 @@ buildNpmPackage rec {
   };
 
   sourceRoot = "package";
+  patches = [ ./patches/plugin-entry-runtime.patch ];
 
   postPatch = ''
     ${lib.getExe jq} \
@@ -46,11 +47,14 @@ buildNpmPackage rec {
     cp ${./package-lock.json} package-lock.json
   '';
 
-  npmDepsHash = "sha256-UfdgbG6qJpmdzbMaIvtd8rji5UJVtT0FtFCbbrLqTPo=";
+  npmDepsHash = "sha256-2WVfw5sA2/fXuCwU6M5Et06s0CvyLoh7ipuHXB+dAAA=";
 
   dontNpmBuild = true;
 
-  npmFlags = [ "--ignore-scripts" ];
+  npmFlags = [
+    "--ignore-scripts"
+    "--legacy-peer-deps"
+  ];
 
   makeCacheWritable = true;
 
@@ -77,145 +81,6 @@ buildNpmPackage rec {
         ln -s "$source" "$target"
       done < <(printf '%s\n' "$depsJson" | ${lib.getExe jq} -r 'keys[]')
     done < <(find "$packageRoot/dist/extensions" -mindepth 2 -maxdepth 2 -name package.json -print)
-
-    # Upstream ships a loader that imports plugin-entry.runtime.ts via JITI, but
-    # the file is missing from the published tarball. Recreate a bridge that
-    # resolves the current hashed dist chunks at runtime instead of pinning
-    # version-specific filenames.
-    install -Dm644 /dev/stdin "$packageRoot/dist/plugin-entry.runtime.ts" <<'EOF'
-    import type { GatewayRequestHandlerOptions } from "openclaw/plugin-sdk/core";
-    import fsSync from "node:fs";
-    import path from "node:path";
-    import { fileURLToPath, pathToFileURL } from "node:url";
-
-    const distDir = path.dirname(fileURLToPath(import.meta.url));
-
-    type EnsureRuntimeModule = {
-      t: (...args: unknown[]) => Promise<void>;
-    };
-
-    type VerificationModule = {
-      n: (opts?: {
-        accountId?: string;
-        recoveryKey?: string;
-        forceResetCrossSigning?: boolean;
-      }) => Promise<{ success: boolean } & Record<string, unknown>>;
-      u: (opts?: {
-        accountId?: string;
-        includeRecoveryKey?: boolean;
-      }) => Promise<unknown>;
-      v: (
-        recoveryKey: string,
-        opts?: { accountId?: string }
-      ) => Promise<{ success: boolean } & Record<string, unknown>>;
-    };
-
-    function resolveChunk(prefix: string, marker: string): string {
-      const matches = fsSync
-        .readdirSync(distDir)
-        .filter((entry) => entry.startsWith(prefix + "-") && entry.endsWith(".js"))
-        .sort();
-
-      for (const entry of matches) {
-        const fullPath = path.join(distDir, entry);
-        if (fsSync.readFileSync(fullPath, "utf8").includes(marker)) {
-          return fullPath;
-        }
-      }
-
-      throw new Error(
-        `Unable to resolve ''${prefix} runtime chunk containing ''${marker}; candidates: ''${
-          matches.join(", ") || "(none)"
-        }`
-      );
-    }
-
-    let ensureRuntimeModulePromise: Promise<EnsureRuntimeModule> | undefined;
-    let verificationModulePromise: Promise<VerificationModule> | undefined;
-
-    async function loadEnsureRuntimeModule(): Promise<EnsureRuntimeModule> {
-      ensureRuntimeModulePromise ??= import(
-        pathToFileURL(resolveChunk("deps", "ensureMatrixCryptoRuntime")).href
-      ) as Promise<EnsureRuntimeModule>;
-      return await ensureRuntimeModulePromise;
-    }
-
-    async function loadVerificationModule(): Promise<VerificationModule> {
-      verificationModulePromise ??= import(
-        pathToFileURL(resolveChunk("verification", "bootstrapMatrixVerification")).href
-      ) as Promise<VerificationModule>;
-      return await verificationModulePromise;
-    }
-
-    function sendError(respond: (ok: boolean, payload?: unknown) => void, err: unknown) {
-      respond(false, { error: err instanceof Error ? err.message : String(err) });
-    }
-
-    export async function ensureMatrixCryptoRuntime(
-      ...args: Parameters<EnsureRuntimeModule["t"]>
-    ): Promise<void> {
-      const { t: ensureRuntime } = await loadEnsureRuntimeModule();
-      await ensureRuntime(...args);
-    }
-
-    export async function handleVerifyRecoveryKey({
-      params,
-      respond,
-    }: GatewayRequestHandlerOptions): Promise<void> {
-      try {
-        const key = typeof params?.key === "string" ? params.key : "";
-        if (!key.trim()) {
-          respond(false, { error: "key required" });
-          return;
-        }
-
-        const accountId =
-          typeof params?.accountId === "string" ? params.accountId.trim() || undefined : undefined;
-        const { v: verifyMatrixRecoveryKey } = await loadVerificationModule();
-        const result = await verifyMatrixRecoveryKey(key, { accountId });
-        respond(result.success, result);
-      } catch (err) {
-        sendError(respond, err);
-      }
-    }
-
-    export async function handleVerificationBootstrap({
-      params,
-      respond,
-    }: GatewayRequestHandlerOptions): Promise<void> {
-      try {
-        const accountId =
-          typeof params?.accountId === "string" ? params.accountId.trim() || undefined : undefined;
-        const recoveryKey = typeof params?.recoveryKey === "string" ? params.recoveryKey : undefined;
-        const forceResetCrossSigning = params?.forceResetCrossSigning === true;
-        const { n: bootstrapMatrixVerification } = await loadVerificationModule();
-        const result = await bootstrapMatrixVerification({
-          accountId,
-          recoveryKey,
-          forceResetCrossSigning,
-        });
-        respond(result.success, result);
-      } catch (err) {
-        sendError(respond, err);
-      }
-    }
-
-    export async function handleVerificationStatus({
-      params,
-      respond,
-    }: GatewayRequestHandlerOptions): Promise<void> {
-      try {
-        const accountId =
-          typeof params?.accountId === "string" ? params.accountId.trim() || undefined : undefined;
-        const includeRecoveryKey = params?.includeRecoveryKey === true;
-        const { u: getMatrixVerificationStatus } = await loadVerificationModule();
-        const status = await getMatrixVerificationStatus({ accountId, includeRecoveryKey });
-        respond(true, status);
-      } catch (err) {
-        sendError(respond, err);
-      }
-    }
-    EOF
 
     matrixCryptoDest="$out/lib/node_modules/openclaw/node_modules/@matrix-org/matrix-sdk-crypto-nodejs/matrix-sdk-crypto.linux-x64-gnu.node"
 
