@@ -8,6 +8,8 @@
 
 {
   config = lib.mkIf (config.sgiath.server.enable && config.services.hermes-agent.enable) {
+    users.groups.hermes = { };
+    users.users.sgiath.extraGroups = [ "hermes" ];
     services = {
       hermes-agent = {
         createUser = false;
