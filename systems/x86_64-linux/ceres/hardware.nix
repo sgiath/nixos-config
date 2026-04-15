@@ -60,6 +60,15 @@
         "noauto"
       ];
     };
+
+    "/nas/downloads" = {
+      device = "192.168.1.4:/volume1/Downloads";
+      fsType = "nfs";
+      options = [
+        "x-systemd.automount"
+        "noauto"
+      ];
+    };
   };
 
   networking = {

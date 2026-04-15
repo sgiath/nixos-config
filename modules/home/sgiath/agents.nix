@@ -55,5 +55,22 @@ in
 
     # bun
     programs.bun.enable = true;
+
+    programs.mcp = {
+      enable = true;
+      servers = {
+        github = {
+          command = "npx";
+          args = [
+            "-y"
+            "@modelcontextprotocol/server-github"
+          ];
+        };
+
+        datadog = {
+          url = "https://mcp.datadoghq.com/api/unstable/mcp-server/mcp?toolsets=all";
+        };
+      };
+    };
   };
 }

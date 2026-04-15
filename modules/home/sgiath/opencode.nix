@@ -13,6 +13,7 @@ in
     programs.opencode = {
       enable = true;
       package = opencode;
+      enableMcpIntegration = true;
       context = ./agents/AGENTS.md;
       agents = ./agents/agents;
       commands = ./agents/commands;

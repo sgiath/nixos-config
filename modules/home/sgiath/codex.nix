@@ -13,6 +13,7 @@ in
     programs.codex = {
       enable = true;
       package = codex;
+      enableMcpIntegration = true;
       context = ./agents/AGENTS.md;
       skills = ./agents/skills;
       settings = {
