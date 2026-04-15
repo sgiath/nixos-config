@@ -32,7 +32,7 @@ in
     };
 
     programs.zsh.shellAliases = {
-      cx = "${lib.getExe codex} --yolo --dangerously-bypass-approvals-and-sandbox";
+      cx = "${lib.getExe codex} --yolo";
     };
   };
 }
