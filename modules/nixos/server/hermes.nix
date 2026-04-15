@@ -12,6 +12,7 @@
       hermes-agent = {
         createUser = false;
         user = "sgiath";
+        group = "hermes";
         stateDir = "/home/sgiath/hermes";
         addToSystemPackages = true;
 
