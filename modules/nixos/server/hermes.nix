@@ -2,7 +2,6 @@
   config,
   lib,
   pkgs,
-  inputs,
   ...
 }:
 
@@ -35,7 +34,7 @@
 
           WEBHOOK_ENABLED = "true";
 
-          HERMES_OPTIONAL_SKILLS = "${inputs.hermes-agent}/optional-skills";
+          OBSIDIAN_VAULT_PATH = "~/notes";
         };
 
         settings = {
@@ -43,16 +42,16 @@
             default = "gpt-5.4";
             provider = "openai-codex";
           };
+          fallback_model = {
+            provider = "openrouter";
+            model = "z-ai/glm-5-turbo";
+          };
+
           toolsets = [ "all" ];
           terminal = {
             backend = "local";
             cwd = "/home/sgiath/hermes";
             timeout = 180;
-          };
-
-          fallback_model = {
-            provider = "openrouter";
-            model = "z-ai/glm-5-turbo";
           };
 
           matrix = {
@@ -67,15 +66,27 @@
           };
 
           display = {
-            personality = "catgirl";
+            personality = "uwu";
             skin = "charizard";
           };
+
           memory = {
+            provider = "holographic";
             memory_enabled = true;
             user_profile_enabled = true;
           };
+          plugins.hermes-memory-store = {
+            auto_extract = true;
+            db_path = "/home/sgiath/hermes/.hermes/memory_store.db";
+            default_trust = 0.5;
+            hrr_dim = 1024;
+          };
 
-          agent.max_turns = 150;
+          agent = {
+            max_turns = 150;
+            reasoning_effort = "high";
+          };
+
           approvals.mode = "off";
 
           compression = {
