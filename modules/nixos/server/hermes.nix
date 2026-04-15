@@ -8,8 +8,7 @@
 
 {
   config = lib.mkIf (config.sgiath.server.enable && config.services.hermes-agent.enable) {
-    users.groups.hermes = { };
-    users.users.sgiath.extraGroups = [ "hermes" ];
+    users.groups.hermes.members = [ "sgiath" ];
     services = {
       hermes-agent = {
         createUser = false;
@@ -47,13 +46,24 @@
           toolsets = [ "all" ];
           terminal = {
             backend = "local";
-            cwd = ".";
+            cwd = "/home/sgiath/hermes";
             timeout = 180;
           };
 
           fallback_model = {
             provider = "openrouter";
-            model = "minimax/minimax-m2.7";
+            model = "z-ai/glm-5-turbo";
+          };
+
+          matrix = {
+            require_mention = false;
+            free_response_rooms = [
+              "!exHpssN2dwpo9ufw23:sgiath.dev"
+              "!UJC9AZ04bM93iIVfzf:sgiath.dev"
+              "!8XctJQ9bxcnbl2wwB8:sgiath.dev"
+              "!snfKPYkaPfv7JU3Qux:sgiath.dev"
+              "!10Sk6sJuFifga0t3wX:sgiath.dev"
+            ];
           };
 
           display = {
