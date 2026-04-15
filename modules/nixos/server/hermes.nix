@@ -10,6 +10,7 @@
   config = lib.mkIf (config.sgiath.server.enable && config.services.hermes-agent.enable) {
     services = {
       hermes-agent = {
+        createUser = false;
         user = "sgiath";
         stateDir = "/home/sgiath/hermes";
         addToSystemPackages = true;
