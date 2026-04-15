@@ -106,7 +106,7 @@
 
     # https://github.com/anomalyco/opencode/releases/latest
     opencode = {
-      url = "github:anomalyco/opencode/v1.4.3";
+      url = "github:anomalyco/opencode/v1.4.6";
       inputs.nixpkgs.follows = "nixpkgs";
     };
 
