@@ -24,6 +24,9 @@ in
       # ForgeCode
       forge
 
+      # PI
+      pkgs.pi-coding-agent
+
       # Hermes
       inputs.hermes-agent.packages.${pkgs.stdenv.hostPlatform.system}.default
 
