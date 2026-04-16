@@ -37,6 +37,8 @@
       mouse = true;
       historyLimit = 10000;
       extraConfig = ''
+        set -g extended-keys on
+
         unbind c
         bind c display-popup -E "tms"
         unbind s
