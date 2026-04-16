@@ -55,6 +55,10 @@ let
       hash = "sha256-02RgyJQtsx1QTSIs1HlhBZ3xtE/ifYUuxpDwB43K4rA=";
     }
     {
+      name = "z12";
+      hash = "sha256-SuaVRui3QbhzmVVffDX69dBCEqI43YUyxHjZma33Bpo=";
+    }
+    {
       name = "zip";
       hash = "sha256-93i0b3DL2m07/obgSJ8WXVlYwRgghevDgwV/IoceWzk=";
     }
