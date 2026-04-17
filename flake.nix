@@ -92,18 +92,6 @@
     #   inputs.nixpkgs.follows = "nixpkgs";
     # };
 
-    # https://github.com/zed-industries/zed/releases/latest
-    # zed-editor = {
-    #   url = "github:zed-industries/zed/v0.231.2";
-    #   inputs.nixpkgs.follows = "nixpkgs";
-    # };
-
-    # https://github.com/openai/codex/releases/latest
-    # codex = {
-    #   url = "github:openai/codex/rust-v0.120.0";
-    #   inputs.nixpkgs.follows = "nixpkgs";
-    # };
-
     # https://github.com/anomalyco/opencode/releases/latest
     opencode = {
       url = "github:anomalyco/opencode/v1.4.7";
@@ -185,8 +173,6 @@
 
       overlays = with inputs; [
         # hyprland.overlays.default
-        # zed-editor.overlays.default
-        # claude-code.overlays.default
         nix-minecraft.overlay
         noctalia.overlays.default
       ];
