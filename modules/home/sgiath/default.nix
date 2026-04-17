@@ -22,7 +22,7 @@
     ./hyprland.nix
     ./noctalia.nix
     ./nvim.nix
-    ./openclaw.nix
+    # ./openclaw.nix
     ./opencode.nix
     ./ssh.nix
     ./starship.nix
@@ -157,8 +157,8 @@
           echo ""; echo "=== gogcli ==="
           ./gogcli/update.sh
 
-          echo ""; echo "=== openclaw ==="
-          ./openclaw/update.sh
+          # echo ""; echo "=== openclaw ==="
+          # ./openclaw/update.sh
 
           echo ""; echo "=== t3code ==="
           ./t3code/update.sh

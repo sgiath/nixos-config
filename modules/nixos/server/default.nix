@@ -14,7 +14,7 @@
     ./nginx.nix
     ./nostr.nix
     ./ntfy.nix
-    ./openclaw.nix
+    # ./openclaw.nix
     ./opencode.nix
     ./pi-hole.nix
     ./search.nix

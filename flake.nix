@@ -106,7 +106,7 @@
 
     # https://github.com/anomalyco/opencode/releases/latest
     opencode = {
-      url = "github:anomalyco/opencode/v1.4.6";
+      url = "github:anomalyco/opencode/v1.4.7";
       inputs.nixpkgs.follows = "nixpkgs";
     };
 
@@ -117,7 +117,7 @@
 
     # https://github.com/antinomyhq/forgecode/releases/latest
     forgecode = {
-      url = "github:antinomyhq/forgecode/v2.9.9";
+      url = "github:antinomyhq/forgecode/v2.11.2";
       inputs.nixpkgs.follows = "nixpkgs";
     };
 
@@ -148,7 +148,7 @@
 
     # https://github.com/max-sixty/worktrunk/releases/latest
     worktrunk = {
-      url = "github:max-sixty/worktrunk/v0.36.0";
+      url = "github:max-sixty/worktrunk/v0.38.0";
       inputs.nixpkgs.follows = "nixpkgs";
     };
 
