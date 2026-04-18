@@ -195,11 +195,11 @@
     },
     "crane_2": {
       "locked": {
-        "lastModified": 1767744144,
-        "narHash": "sha256-9/9ntI0D+HbN4G0TrK3KmHbTvwgswz7p8IEJsWyef8Q=",
+        "lastModified": 1775839657,
+        "narHash": "sha256-SPm9ck7jh3Un9nwPuMGbRU04UroFmOHjLP56T10MOeM=",
         "owner": "ipetkov",
         "repo": "crane",
-        "rev": "2fb033290bf6b23f226d4c8b32f7f7a16b043d7e",
+        "rev": "7cf72d978629469c4bd4206b95c402514c1f6000",
         "type": "github"
       },
       "original": {
@@ -554,16 +554,16 @@
         ]
       },
       "locked": {
-        "lastModified": 1776395112,
-        "narHash": "sha256-UAPuH9OqKmJDv+SSiV6ES9Vs5PXkjoreWGJ31Ki3x+o=",
+        "lastModified": 1776406716,
+        "narHash": "sha256-6FUIE9EJrmtsneCUMk1mjXfJvjb4XQ4f3ZRlvEVtbPs=",
         "owner": "antinomyhq",
         "repo": "forgecode",
-        "rev": "2039dfefa67ffafa7185b9f23e1dabe215c88d1f",
+        "rev": "a17ff7e56fdd6d711ae591710af3779e46e34faf",
         "type": "github"
       },
       "original": {
         "owner": "antinomyhq",
-        "ref": "v2.11.2",
+        "ref": "v2.11.3",
         "repo": "forgecode",
         "type": "github"
       }
@@ -1456,16 +1456,16 @@
         ]
       },
       "locked": {
-        "lastModified": 1776376494,
-        "narHash": "sha256-YDIXW3eOYtunFqaTFgBJhC+ruaRrUGMkDzVFdV70/+4=",
+        "lastModified": 1776472156,
+        "narHash": "sha256-jlxR2BODV8wk0sP4Kkyza7Zr5I+Q003gldCfp2eYOt8=",
         "owner": "anomalyco",
         "repo": "opencode",
-        "rev": "9f201d637034ff0a4c1e518481c76ba1a4f0eeb6",
+        "rev": "a35b8a95c27d28e979a3826e1289d7ee87f40251",
         "type": "github"
       },
       "original": {
         "owner": "anomalyco",
-        "ref": "v1.4.7",
+        "ref": "v1.4.11",
         "repo": "opencode",
         "type": "github"
       }
@@ -2068,16 +2068,16 @@
         "rust-overlay": "rust-overlay"
       },
       "locked": {
-        "lastModified": 1776144442,
-        "narHash": "sha256-z+Wb0xgu15cSSYB3hPhp6qVwUUXmLJcP788LiQLowqs=",
+        "lastModified": 1776457586,
+        "narHash": "sha256-ji6eim3ed6+/OrW5WqsrEYVTbND3it3pIFRc3uarftI=",
         "owner": "max-sixty",
         "repo": "worktrunk",
-        "rev": "f23023ff0a9bc959d14e2bd1ad11e896ea5e251c",
+        "rev": "c1fad73f36f963e55b281d8fe24d69db696e255e",
         "type": "github"
       },
       "original": {
         "owner": "max-sixty",
-        "ref": "v0.37.0",
+        "ref": "v0.39.0",
         "repo": "worktrunk",
         "type": "github"
       }
