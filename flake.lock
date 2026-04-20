@@ -1347,9 +1347,7 @@
         "nixpkgs": [
           "nixpkgs"
         ],
-        "noctalia-qs": [
-          "noctalia-qs"
-        ]
+        "noctalia-qs": "noctalia-qs"
       },
       "locked": {
         "lastModified": 1776666525,
@@ -1368,6 +1366,7 @@
     "noctalia-qs": {
       "inputs": {
         "nixpkgs": [
+          "noctalia",
           "nixpkgs"
         ],
         "systems": "systems_3",
@@ -1601,7 +1600,6 @@
         "nixpkgs-master": "nixpkgs-master",
         "nixpkgs-stable": "nixpkgs-stable",
         "noctalia": "noctalia",
-        "noctalia-qs": "noctalia-qs",
         "opencode": "opencode",
         "openspec": "openspec",
         "snowfall-flake": "snowfall-flake",
@@ -1950,6 +1948,7 @@
     "treefmt-nix_2": {
       "inputs": {
         "nixpkgs": [
+          "noctalia",
           "noctalia-qs",
           "nixpkgs"
         ]

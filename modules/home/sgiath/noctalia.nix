@@ -15,7 +15,6 @@
     ];
 
     programs.noctalia-shell = {
-      systemd.enable = true;
       settings = {
         bar = {
           density = "spacious";
@@ -113,6 +112,9 @@
     };
 
     wayland.windowManager.hyprland.settings = {
+      exec-once = [
+        "${lib.getExe pkgs.noctalia-shell}"
+      ];
       "$ipc" = "${lib.getExe pkgs.noctalia-shell} ipc call";
       bind = [
         "$mod SHIFT, Q, exec, $ipc sessionMenu toggle"
