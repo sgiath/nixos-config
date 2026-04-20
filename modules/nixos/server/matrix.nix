@@ -57,6 +57,8 @@ in
           trusted_servers = [
             "matrix.org"
             "nixos.org"
+            "matrix.crazyeggstaging.com"
+            "matrix.crazyegg.com"
           ];
 
           well_known = {
