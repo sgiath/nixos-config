@@ -109,7 +109,7 @@
           };
 
           tts = {
-            provider = "elevenlabs";
+            provider = "xai";
             elevenlabs = {
               model_id = "eleven_multilingual_v2";
               voice_id = "XHqlxleHbYnK8xmft8Vq";
