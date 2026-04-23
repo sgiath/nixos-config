@@ -80,7 +80,6 @@
     };
 
     wayland.windowManager.hyprland.settings = {
-      exec-once = [ "${lib.getExe pkgs.noctalia-shell}" ];
       "$ipc" = "${lib.getExe pkgs.noctalia-shell} ipc call";
       bind = [
         "$mod SHIFT, Q, exec, $ipc sessionMenu toggle"
@@ -97,6 +96,24 @@
           blur_popups = true;
         }
       ];
+    };
+
+    systemd.user.services.noctalia-shell = {
+      Unit = {
+        Description = "Noctalia shell";
+        PartOf = [ "graphical-session.target" ];
+        After = [ "graphical-session.target" ];
+      };
+
+      Service = {
+        ExecStart = "${lib.getExe pkgs.noctalia-shell}";
+        Restart = "on-failure";
+        RestartSec = 2;
+      };
+
+      Install = {
+        WantedBy = [ "graphical-session.target" ];
+      };
     };
   };
 }
