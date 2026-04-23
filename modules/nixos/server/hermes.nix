@@ -8,6 +8,7 @@
 {
   config = lib.mkIf (config.sgiath.server.enable && config.services.hermes-agent.enable) {
     users.groups.hermes.members = [ "sgiath" ];
+    systemd.services.hermes-agent.after = [ "continuwuity.service" ];
     services = {
       hermes-agent = {
         createUser = false;
@@ -29,7 +30,7 @@
           MATRIX_HOMESERVER = "https://matrix.sgiath.dev";
           MATRIX_USER_ID = "@niamh:sgiath.dev";
           MATRIX_ALLOWED_USERS = "@sgiath:sgiath.dev";
-          MATRIX_HOME_ROOM = "!UJC9AZ04bM93iIVfzf:sgiath.dev";
+          MATRIX_HOME_CHANNEL = "!exHpssN2dwpo9ufw23:sgiath.dev";
           MATRIX_ENCRYPTION = "false";
 
           WEBHOOK_ENABLED = "true";
@@ -46,6 +47,8 @@
             provider = "openrouter";
             model = "z-ai/glm-5-turbo";
           };
+
+          timezone = "UTC";
 
           toolsets = [ "all" ];
           terminal = {
@@ -106,10 +109,18 @@
           };
 
           tts = {
-            provider = "openai";
+            provider = "elevenlabs";
+            elevenlabs = {
+              model_id = "eleven_multilingual_v2";
+              voice_id = "XHqlxleHbYnK8xmft8Vq";
+            };
             openai = {
               model = "gpt-4o-mini-tts";
               voice = "maple";
+            };
+            xai = {
+              voice_id = "ara";
+              language = "en";
             };
           };
 
