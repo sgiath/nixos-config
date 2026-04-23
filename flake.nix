@@ -99,7 +99,7 @@
 
     # https://github.com/antinomyhq/forgecode/releases/latest
     forgecode = {
-      url = "github:antinomyhq/forgecode/v2.12.0";
+      url = "github:antinomyhq/forgecode/v2.12.2";
       inputs.nixpkgs.follows = "nixpkgs";
     };
 
@@ -131,7 +131,7 @@
 
     # https://github.com/max-sixty/worktrunk/releases/latest
     worktrunk = {
-      url = "github:max-sixty/worktrunk/v0.43.0";
+      url = "github:max-sixty/worktrunk/v0.44.0";
       inputs.nixpkgs.follows = "nixpkgs";
     };
 
