@@ -35,8 +35,6 @@
                 showLabelsOnlyWhenOccupied = false;
                 pillSize = 0.75;
               }
-              { id = "plugin:model-usage"; }
-              { id = "plugin:screen-shot-and-record"; }
             ];
             right = [
               { id = "SystemMonitor"; }
@@ -79,48 +77,15 @@
           monitors = [ "DP-1" ];
         };
       };
-
-      plugins = {
-        version = 2;
-        sources = [
-          {
-            enabled = true;
-            name = "Official Noctalia Plugins";
-            url = "https://github.com/noctalia-dev/noctalia-plugins";
-          }
-        ];
-        states = {
-          zed-provider = {
-            enabled = true;
-            sourceUrl = "https://github.com/noctalia-dev/noctalia-plugins";
-          };
-          model-usage = {
-            enabled = true;
-            sourceUrl = "https://github.com/noctalia-dev/noctalia-plugins";
-          };
-          screen-shot-and-record = {
-            enabled = true;
-            sourceUrl = "https://github.com/noctalia-dev/noctalia-plugins";
-          };
-        };
-      };
-      pluginSettings = {
-        screen-shot-and-record = {
-          screenshotEditor = lib.getExe pkgs.swappy;
-        };
-      };
     };
 
     wayland.windowManager.hyprland.settings = {
-      exec-once = [
-        "${lib.getExe pkgs.noctalia-shell}"
-      ];
-      "$ipc" = "${lib.getExe pkgs.noctalia-shell} ipc call";
+      exec-once = [ "${lib.getExe pkgs.noctalia-shell}" ];
+      "$ipc" = "noctalia-shell ipc call";
       bind = [
         "$mod SHIFT, Q, exec, $ipc sessionMenu toggle"
         "$mod, slash, exec, $ipc launcher toggle"
         "$mod, B, exec, $ipc launcher windows"
-        # "$mod, S, exec, $ipc plugin:screen-shot-and-record screenshot"
       ];
 
       layerrule = [
