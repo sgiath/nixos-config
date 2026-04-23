@@ -6,7 +6,8 @@
   ...
 }:
 let
-  opencode = inputs.opencode.packages.${pkgs.stdenv.hostPlatform.system}.default;
+  # opencode = inputs.opencode.packages.${pkgs.stdenv.hostPlatform.system}.default;
+  opencode = pkgs.opencode;
 in
 {
   config = lib.mkIf config.sgiath.agents.enable {
