@@ -154,12 +154,6 @@
           echo ""; echo "=== dnd5etools ==="
           ./dnd5etools/update.sh
 
-          echo ""; echo "=== gogcli ==="
-          ./gogcli/update.sh
-
-          # echo ""; echo "=== openclaw ==="
-          # ./openclaw/update.sh
-
           echo ""; echo "=== t3code ==="
           ./t3code/update.sh
 
