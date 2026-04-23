@@ -30,4 +30,5 @@ let
 in
 {
   ksa = pkgs-ksa.ksa;
+  opencode = pkgs-master.opencode;
 }
