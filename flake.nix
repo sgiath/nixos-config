@@ -99,7 +99,7 @@
 
     # https://github.com/antinomyhq/forgecode/releases/latest
     forgecode = {
-      url = "github:antinomyhq/forgecode/v2.12.2";
+      url = "github:antinomyhq/forgecode/v2.12.4";
       inputs.nixpkgs.follows = "nixpkgs";
     };
 
@@ -110,7 +110,7 @@
 
     # https://github.com/NousResearch/hermes-agent/releases/latest
     hermes-agent = {
-      url = "github:NousResearch/hermes-agent/v2026.4.16";
+      url = "github:NousResearch/hermes-agent/v2026.4.23";
       inputs.nixpkgs.follows = "nixpkgs";
     };
 
