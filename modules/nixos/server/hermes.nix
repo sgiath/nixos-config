@@ -40,7 +40,7 @@
 
         settings = {
           model = {
-            default = "gpt-5.4";
+            default = "gpt-5.5";
             provider = "openai-codex";
           };
           fallback_model = {
@@ -87,10 +87,18 @@
 
           agent = {
             max_turns = 150;
-            reasoning_effort = "high";
+            reasoning_effort = "low";
+            tool_use_enforcement = "auto";
           };
 
           approvals.mode = "off";
+
+          delegation = {
+            model = "gpt-5.4-mini";
+            provider = "openai-codex";
+            max_concurrent_children = 10;
+            max_spawn_depth = 2;
+          };
 
           compression = {
             enabled = true;

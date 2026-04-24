@@ -17,8 +17,8 @@ in
       context = ./agents/AGENTS.md;
       skills = ./agents/skills;
       settings = {
-        model = "gpt-5.4";
-        model_reasoning_effort = "high";
+        model = "gpt-5.5";
+        model_reasoning_effort = "medium";
         service_tier = "fast";
         suppress_unstable_features_warning = true;
         personality = "pragmatic";
