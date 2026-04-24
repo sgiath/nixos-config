@@ -24,6 +24,9 @@ in
       # ForgeCode
       # forge
 
+      # Cursor
+      pkgs.cursor-cli
+
       # PI
       pkgs.pi-coding-agent
 
