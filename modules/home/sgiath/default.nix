@@ -10,25 +10,26 @@
     ./audio.nix
     ./bitcoin.nix
     ./chromium.nix
+    ./claude.nix
     ./clipboard.nix
     ./codex.nix
     ./comm.nix
+    ./cursor.nix
     ./editors.nix
     ./email_client.nix
-    ./file-explorer.nix
+    ./file_explorer.nix
+    ./forge.nix
     ./games.nix
     ./git.nix
     ./gnupg.nix
     ./hyprland.nix
     ./noctalia.nix
     ./nvim.nix
-    # ./openclaw.nix
     ./opencode.nix
     ./ssh.nix
     ./starship.nix
     ./stylix.nix
     ./tmux.nix
-    # ./wallpaper.nix
     ./waybar.nix
     ./web_browsers.nix
     ./zsh.nix
