@@ -14,7 +14,7 @@ in
       enable = true;
       package = codex;
       enableMcpIntegration = true;
-      custom-instructions = ./AGENTS.md;
+      context = ./AGENTS.md;
       skills = ./skills;
       settings = {
         model = "gpt-5.5";

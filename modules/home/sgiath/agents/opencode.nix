@@ -27,7 +27,7 @@ in
       enable = true;
       package = opencode;
       enableMcpIntegration = true;
-      rules = ./AGENTS.md;
+      context = ./AGENTS.md;
       agents = ./agents;
       commands = ./commands;
       skills = ./skills;
