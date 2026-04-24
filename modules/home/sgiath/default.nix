@@ -28,7 +28,7 @@
     ./web_browsers.nix
     ./zsh.nix
 
-    ./agents
+    # ./agents
     ./targets
   ];
 
