@@ -22,7 +22,7 @@ in
       pkgs.bubblewrap
 
       # ForgeCode
-      forge
+      # forge
 
       # PI
       pkgs.pi-coding-agent

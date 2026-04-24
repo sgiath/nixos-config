@@ -19,7 +19,10 @@
 
     programs = {
       chromium.enable = true;
-      firefox.enable = true;
+      firefox = {
+        enable = true;
+        configPath = "${config.xdg.configHome}/mozilla/firefox";
+      };
 
       # https://librewolf.net/docs/settings/
       librewolf.enable = false;
