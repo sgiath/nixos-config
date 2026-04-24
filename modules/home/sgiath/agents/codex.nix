@@ -14,8 +14,8 @@ in
       enable = true;
       package = codex;
       enableMcpIntegration = true;
-      context = ./agents/AGENTS.md;
-      skills = ./agents/skills;
+      custom-instructions = ./AGENTS.md;
+      skills = ./skills;
       settings = {
         model = "gpt-5.5";
         model_reasoning_effort = "medium";

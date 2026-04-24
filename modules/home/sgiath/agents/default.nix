@@ -7,6 +7,14 @@
   ...
 }:
 {
+  imports = [
+    ./claude.nix
+    ./codex.nix
+    ./cursor.nix
+    ./forge.nix
+    ./opencode.nix
+  ];
+
   options.sgiath.agents = {
     enable = lib.mkEnableOption "LLM agents";
   };

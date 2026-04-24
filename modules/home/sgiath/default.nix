@@ -6,26 +6,20 @@
 }:
 {
   imports = [
-    ./agents.nix
     ./audio.nix
     ./bitcoin.nix
     ./chromium.nix
-    ./claude.nix
     ./clipboard.nix
-    ./codex.nix
     ./comm.nix
-    ./cursor.nix
     ./editors.nix
     ./email_client.nix
     ./file_explorer.nix
-    ./forge.nix
     ./games.nix
     ./git.nix
     ./gnupg.nix
     ./hyprland.nix
     ./noctalia.nix
     ./nvim.nix
-    ./opencode.nix
     ./ssh.nix
     ./starship.nix
     ./stylix.nix
@@ -34,6 +28,7 @@
     ./web_browsers.nix
     ./zsh.nix
 
+    ./agents
     ./targets
   ];
 

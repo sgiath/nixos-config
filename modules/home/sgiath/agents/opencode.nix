@@ -7,6 +7,7 @@
 }:
 let
   # opencode = inputs.opencode.packages.${pkgs.stdenv.hostPlatform.system}.default;
+
   opencode = (
     inputs.opencode.packages.${pkgs.stdenv.hostPlatform.system}.opencode.overrideAttrs (old: {
       preBuild = (old.preBuild or "") + ''
@@ -26,10 +27,10 @@ in
       enable = true;
       package = opencode;
       enableMcpIntegration = true;
-      context = ./agents/AGENTS.md;
-      agents = ./agents/agents;
-      commands = ./agents/commands;
-      skills = ./agents/skills;
+      rules = ./AGENTS.md;
+      agents = ./agents;
+      commands = ./commands;
+      skills = ./skills;
       settings = {
         # theme = "orng";
         autoupdate = false;
