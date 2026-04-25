@@ -19,6 +19,8 @@
       libwacom
       appimage-run
 
+      logseq
+
       # T3 code
       pkgs.${namespace}.t3code
     ];
