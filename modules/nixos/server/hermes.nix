@@ -69,7 +69,7 @@
           };
 
           display = {
-            personality = "uwu";
+            personality = "kawaii";
             skin = "charizard";
           };
 
