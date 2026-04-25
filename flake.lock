@@ -554,16 +554,16 @@
         ]
       },
       "locked": {
-        "lastModified": 1777011705,
-        "narHash": "sha256-zgkODJH6dtChUnGfq/Wr0VuUgAD8exyFh145wQ9/EdQ=",
+        "lastModified": 1777037489,
+        "narHash": "sha256-IReAeBqRtMTea/MIKc9rPJrR0Z7uVOUKQ6+OcZiCtPk=",
         "owner": "antinomyhq",
         "repo": "forgecode",
-        "rev": "e10b0a9afabd24f32fae57a80d716af703ad9969",
+        "rev": "f3c3272058df41fc1d5fc8cb6b47c9ba69637514",
         "type": "github"
       },
       "original": {
         "owner": "antinomyhq",
-        "ref": "v2.12.4",
+        "ref": "v2.12.7",
         "repo": "forgecode",
         "type": "github"
       }
@@ -1456,16 +1456,16 @@
         ]
       },
       "locked": {
-        "lastModified": 1776959796,
-        "narHash": "sha256-T/Dk9Izh/DbbpY5fENJN4xFPMOUfKYNHGkuoY4HBpP0=",
+        "lastModified": 1777045971,
+        "narHash": "sha256-4GL+Lsdzea5nrLNq5Ld0EuiVVuiwTJUIrxdAdAJme1I=",
         "owner": "anomalyco",
         "repo": "opencode",
-        "rev": "596145a71d2e8baa1ffb99894d8499b76d130f13",
+        "rev": "da6683fedcbb57a36c4ba54ba5ad00dd8bc2da65",
         "type": "github"
       },
       "original": {
         "owner": "anomalyco",
-        "ref": "v1.14.22",
+        "ref": "v1.14.24",
         "repo": "opencode",
         "type": "github"
       }

@@ -27,9 +27,6 @@
     ./waybar.nix
     ./web_browsers.nix
     ./zsh.nix
-
-    # ./agents
-    ./targets
   ];
 
   options.sgiath.enable = lib.mkEnableOption "sgiath config";
