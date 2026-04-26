@@ -34,7 +34,6 @@
           MATRIX_ENCRYPTION = "false";
 
           WEBHOOK_ENABLED = "true";
-
           OBSIDIAN_VAULT_PATH = "~/notes";
         };
 
