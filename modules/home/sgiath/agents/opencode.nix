@@ -6,8 +6,16 @@
   ...
 }:
 let
-  opencode = inputs.opencode.packages.${pkgs.stdenv.hostPlatform.system}.default;
+  # opencode = inputs.opencode.packages.${pkgs.stdenv.hostPlatform.system}.default;
 
+  opencode = (
+    inputs.opencode.packages.${pkgs.stdenv.hostPlatform.system}.opencode.overrideAttrs (old: {
+      preBuild = (old.preBuild or "") + ''
+        substituteInPlace package.json \
+          --replace-fail '"packageManager": "bun@1.3.13"' '"packageManager": "bun@${pkgs.bun.version}"'
+      '';
+    })
+  );
   # opencode = (
   #   inputs.opencode.packages.${pkgs.stdenv.hostPlatform.system}.opencode.overrideAttrs (old: {
   #     preBuild = (old.preBuild or "") + ''
