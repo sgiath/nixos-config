@@ -38,7 +38,8 @@
       inputs.openspec.packages.${pkgs.stdenv.hostPlatform.system}.default
     ];
 
-    # bun
+    # Node
+    programs.npm.enable = true;
     programs.bun.enable = true;
 
     programs.mcp = {
