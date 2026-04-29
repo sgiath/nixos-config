@@ -22,11 +22,28 @@ in
         service_tier = "fast";
         suppress_unstable_features_warning = true;
         personality = "pragmatic";
-        sandbox_mode = "danger-full-access";
 
+        # https://developers.openai.com/codex/config-basic#supported-features
         features = {
+          apps = true;
+          memories = true;
           undo = true;
-          use_linux_sandbox_bwrap = true;
+        };
+
+        projects = {
+          "~/nixos".trust_level = "trusted";
+
+          # personal projects
+          "~/develop/sgiath/sgiath.dev".trust_level = "trusted";
+          "~/develop/sgiath/bird".trust_level = "trusted";
+          "~/develop/sgiath/langchain".trust_level = "trusted";
+
+          # CrazyEgg projects
+          "~/develop/crazyegg/core_v2".trust_level = "trusted";
+          "~/develop/crazyegg/skills".trust_level = "trusted";
+          "~/develop/crazyegg/signal".trust_level = "trusted";
+          "~/develop/crazyegg/k8s-config".trust_level = "trusted";
+          "~/develop/crazyegg/db-schemas".trust_level = "trusted";
         };
       };
     };
