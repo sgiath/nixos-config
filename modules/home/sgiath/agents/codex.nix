@@ -31,19 +31,19 @@ in
         };
 
         projects = {
-          "~/nixos".trust_level = "trusted";
+          "${config.home.homeDirectory}/nixos".trust_level = "trusted";
 
           # personal projects
-          "~/develop/sgiath/sgiath.dev".trust_level = "trusted";
-          "~/develop/sgiath/bird".trust_level = "trusted";
-          "~/develop/sgiath/langchain".trust_level = "trusted";
+          "${config.home.homeDirectory}/develop/sgiath/sgiath.dev".trust_level = "trusted";
+          "${config.home.homeDirectory}/develop/sgiath/bird".trust_level = "trusted";
+          "${config.home.homeDirectory}/develop/sgiath/langchain".trust_level = "trusted";
 
           # CrazyEgg projects
-          "~/develop/crazyegg/core_v2".trust_level = "trusted";
-          "~/develop/crazyegg/skills".trust_level = "trusted";
-          "~/develop/crazyegg/signal".trust_level = "trusted";
-          "~/develop/crazyegg/k8s-config".trust_level = "trusted";
-          "~/develop/crazyegg/db-schemas".trust_level = "trusted";
+          "${config.home.homeDirectory}/develop/crazyegg/core_v2".trust_level = "trusted";
+          "${config.home.homeDirectory}/develop/crazyegg/skills".trust_level = "trusted";
+          "${config.home.homeDirectory}/develop/crazyegg/signal".trust_level = "trusted";
+          "${config.home.homeDirectory}/develop/crazyegg/k8s-config".trust_level = "trusted";
+          "${config.home.homeDirectory}/develop/crazyegg/db-schemas".trust_level = "trusted";
         };
       };
     };
