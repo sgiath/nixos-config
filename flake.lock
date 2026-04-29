@@ -554,16 +554,16 @@
         ]
       },
       "locked": {
-        "lastModified": 1777191022,
-        "narHash": "sha256-tA/IOcFcE5vhNGpZNV7sAGEao/LlP6hY/QUnJz0hbeY=",
+        "lastModified": 1777369115,
+        "narHash": "sha256-8PveSEf5ao6He3Excv8eOWEFtbN/Bh4vJTkSIKDRd5A=",
         "owner": "antinomyhq",
         "repo": "forgecode",
-        "rev": "8a9f3410f460d1618931dcc0a4b222e65eff0f58",
+        "rev": "9f97aeed0ca768b8d7bf916b36f04aadbe1ece02",
         "type": "github"
       },
       "original": {
         "owner": "antinomyhq",
-        "ref": "v2.12.9",
+        "ref": "v2.12.10",
         "repo": "forgecode",
         "type": "github"
       }
@@ -1456,16 +1456,16 @@
         ]
       },
       "locked": {
-        "lastModified": 1777263813,
-        "narHash": "sha256-lsyjM6rhSv1HzEd2d/+aGHqrYMARj+TrFrLMGY2X59U=",
+        "lastModified": 1777401277,
+        "narHash": "sha256-nSgd/ld8iG2+Y8ru59ZFZO2DuP5mZoV2GFX+f3nSBKc=",
         "owner": "anomalyco",
         "repo": "opencode",
-        "rev": "acd8783a36d8642ade7038f34ca4f2f2ac3cc824",
+        "rev": "5e67efc2fd5a7caa277a92428ff55f50b8e51f48",
         "type": "github"
       },
       "original": {
         "owner": "anomalyco",
-        "ref": "v1.14.28",
+        "ref": "v1.14.29",
         "repo": "opencode",
         "type": "github"
       }
@@ -2068,16 +2068,16 @@
         "rust-overlay": "rust-overlay"
       },
       "locked": {
-        "lastModified": 1777338879,
-        "narHash": "sha256-ZkOrHA5uWTYhTuXdOzMhvcYzc2dD83N2ix2t4yozMiY=",
+        "lastModified": 1777393911,
+        "narHash": "sha256-eRUqLdWd+5E2kH2C6RwOA7qGOrpp5jos6U26xEBN2xI=",
         "owner": "max-sixty",
         "repo": "worktrunk",
-        "rev": "4ee813c15f1f3d504dd7054e450472d5c4ee0f06",
+        "rev": "99a381ba41316456a8df6fbaddaada754549acfb",
         "type": "github"
       },
       "original": {
         "owner": "max-sixty",
-        "ref": "v0.45.1",
+        "ref": "v0.45.2",
         "repo": "worktrunk",
         "type": "github"
       }
