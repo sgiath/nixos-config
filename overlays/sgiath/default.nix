@@ -5,7 +5,7 @@ let
     system = prev.stdenv.hostPlatform.system;
     config = {
       cudaSupport = false;
-      rocmSupport = false;
+      rocmSupport = true;
       allowUnfree = true;
     };
   };
@@ -14,7 +14,7 @@ let
     system = prev.stdenv.hostPlatform.system;
     config = {
       cudaSupport = false;
-      rocmSupport = false;
+      rocmSupport = true;
       allowUnfree = true;
     };
   };
@@ -24,7 +24,6 @@ let
     config = {
       cudaSupport = false;
       rocmSupport = true;
-      allowUnfree = true;
     };
   };
 in
