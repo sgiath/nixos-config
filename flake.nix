@@ -83,7 +83,7 @@
 
     # https://github.com/zed-industries/zed/releases/latest
     zed = {
-      url = "github:zed-industries/zed/v1.0.0";
+      url = "github:zed-industries/zed/v1.1.2-pre";
       inputs.nixpkgs.follows = "nixpkgs";
     };
 
@@ -197,7 +197,7 @@
 
       overlays = with inputs; [
         # hyprland.overlays.default
-        # zed.overlays.default
+        zed.overlays.default
         nix-minecraft.overlay
         noctalia.overlays.default
       ];
