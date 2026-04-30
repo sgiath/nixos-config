@@ -1,4 +1,2 @@
-# results of Nix builds
 /result*
-
 *.log
