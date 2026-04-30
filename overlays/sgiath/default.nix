@@ -23,7 +23,7 @@ let
     system = prev.stdenv.hostPlatform.system;
     config = {
       cudaSupport = false;
-      rocmSupport = false;
+      rocmSupport = true;
       allowUnfree = true;
     };
   };

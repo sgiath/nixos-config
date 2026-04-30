@@ -186,7 +186,7 @@
     lib.mkFlake {
       channels-config = {
         cudaSupport = false;
-        rocmSupport = false;
+        rocmSupport = true;
         allowUnfree = true;
         permittedInsecurePackages = [
           "jitsi-meet-1.0.8043"
@@ -197,7 +197,7 @@
 
       overlays = with inputs; [
         # hyprland.overlays.default
-        zed.overlays.default
+        # zed.overlays.default
         nix-minecraft.overlay
         noctalia.overlays.default
       ];
