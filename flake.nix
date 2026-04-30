@@ -197,7 +197,7 @@
 
       overlays = with inputs; [
         # hyprland.overlays.default
-        zed.overlays.default
+        # zed.overlays.default
         nix-minecraft.overlay
         noctalia.overlays.default
       ];
