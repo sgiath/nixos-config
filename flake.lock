@@ -1456,16 +1456,16 @@
         ]
       },
       "locked": {
-        "lastModified": 1777401277,
-        "narHash": "sha256-nSgd/ld8iG2+Y8ru59ZFZO2DuP5mZoV2GFX+f3nSBKc=",
+        "lastModified": 1777505608,
+        "narHash": "sha256-pRMPa0ba71wLo4ZumbV18+y80GbcoU7NN6+P3e8LUTM=",
         "owner": "anomalyco",
         "repo": "opencode",
-        "rev": "5e67efc2fd5a7caa277a92428ff55f50b8e51f48",
+        "rev": "eb4219304358a9b70aa73a61433f8de2eb9e5c95",
         "type": "github"
       },
       "original": {
         "owner": "anomalyco",
-        "ref": "v1.14.29",
+        "ref": "v1.14.30",
         "repo": "opencode",
         "type": "github"
       }
@@ -2068,16 +2068,16 @@
         "rust-overlay": "rust-overlay"
       },
       "locked": {
-        "lastModified": 1777393911,
-        "narHash": "sha256-eRUqLdWd+5E2kH2C6RwOA7qGOrpp5jos6U26xEBN2xI=",
+        "lastModified": 1777506005,
+        "narHash": "sha256-p3Oiic28cDgoWmet2Dqd0qWGnak1euqueLOY3x6LOVE=",
         "owner": "max-sixty",
         "repo": "worktrunk",
-        "rev": "99a381ba41316456a8df6fbaddaada754549acfb",
+        "rev": "01a8258b6ee1cfabe88cfef57ae45d3bb2606c00",
         "type": "github"
       },
       "original": {
         "owner": "max-sixty",
-        "ref": "v0.45.2",
+        "ref": "v0.46.0",
         "repo": "worktrunk",
         "type": "github"
       }
