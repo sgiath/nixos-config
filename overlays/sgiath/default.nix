@@ -24,6 +24,7 @@ let
     config = {
       cudaSupport = false;
       rocmSupport = true;
+      allowUnfree = true;
     };
   };
 in
