@@ -164,11 +164,11 @@
         "treefmt-nix": "treefmt-nix"
       },
       "locked": {
-        "lastModified": 1777481115,
-        "narHash": "sha256-9YKAG9ErJz4/HpiMpmixKJo+IKkRnXhoaSfkoOyj2o0=",
+        "lastModified": 1777525510,
+        "narHash": "sha256-8sfb4gLguShKuNJMZttI+jZi8xlMENr9cZqz4K5DMbk=",
         "ref": "main",
-        "rev": "e6cae5b8eda99337ca78b1500e913932f966c9f4",
-        "revCount": 6730,
+        "rev": "cec4abc7cd57cec82d401d9ef9002d2608da7ec7",
+        "revCount": 6731,
         "type": "git",
         "url": "https://forgejo.ellis.link/continuwuation/continuwuity"
       },
@@ -1145,11 +1145,11 @@
         ]
       },
       "locked": {
-        "lastModified": 1777520456,
-        "narHash": "sha256-ZvG68+m1iHg3gP+3W6HMLd3vaj3ZWFIL8NmYIbIaQPE=",
+        "lastModified": 1777538647,
+        "narHash": "sha256-pCdYLPCoZFUjTIOTto86MpJse/I0A8XHy3HIU53s/qM=",
         "owner": "fufexan",
         "repo": "nix-gaming",
-        "rev": "e48372121cf3cae0dd043cce7ab1982a5dc08a7b",
+        "rev": "9a1c5aeb3d0a96aa11f02c33fdba319ddb339aad",
         "type": "github"
       },
       "original": {
@@ -1313,11 +1313,11 @@
     },
     "nixpkgs-master": {
       "locked": {
-        "lastModified": 1777528077,
-        "narHash": "sha256-GckneDcSc9T5+3OETKsawOg6u6C9xgAiNLJ5NsJELsI=",
+        "lastModified": 1777556729,
+        "narHash": "sha256-gT42tCJoiWJ2UdnjcxPRk1CHsNbqLUzl5giQ+oKLKqw=",
         "owner": "NixOS",
         "repo": "nixpkgs",
-        "rev": "be5dd551c290679e0eb2860a50f74c30a229b4d3",
+        "rev": "bf80ed0a9b5ab57dbb64709847b3a811e54d671b",
         "type": "github"
       },
       "original": {
@@ -1329,11 +1329,11 @@
     },
     "nixpkgs-stable": {
       "locked": {
-        "lastModified": 1777077449,
-        "narHash": "sha256-AIiMJiqvGrN4HyLEbKAoCSRRYn0rnlW5VbKNIMIYqm4=",
+        "lastModified": 1777428379,
+        "narHash": "sha256-ypxFOeDz+CqADEQNL72haqGjvZQdBR5Vc7pyx2JDttI=",
         "owner": "NixOS",
         "repo": "nixpkgs",
-        "rev": "a4bf06618f0b5ee50f14ed8f0da77d34ecc19160",
+        "rev": "755f5aa91337890c432639c60b6064bb7fe67769",
         "type": "github"
       },
       "original": {
@@ -1525,11 +1525,11 @@
         ]
       },
       "locked": {
-        "lastModified": 1776788052,
-        "narHash": "sha256-L4LBHVVtgMhSJm+IzZSYOR0UXPbvIRg4xiEV5urYxdI=",
+        "lastModified": 1777556999,
+        "narHash": "sha256-HfFlRwR8IMjudRttN4T8L3DJKnNlpWfeNzQPly/HaRY=",
         "owner": "Fission-AI",
         "repo": "OpenSpec",
-        "rev": "3c7a05c5dc88b2397c478805890b55ed392b19e8",
+        "rev": "347f0277e3be3549cd85cdea364fbd7710f1922b",
         "type": "github"
       },
       "original": {
@@ -2225,11 +2225,11 @@
         ]
       },
       "locked": {
-        "lastModified": 1777484394,
-        "narHash": "sha256-03QK/lM/m4f1FjC4ldYtp8NobTGRdwGC24XBY6Vcdqo=",
+        "lastModified": 1777530527,
+        "narHash": "sha256-EWEMj4tKScXvUD3mx7IQwrBrozKZEOy0Vdge5HwJZ+w=",
         "owner": "0xc000022070",
         "repo": "zen-browser-flake",
-        "rev": "274e039947393bc90f45b8fc6d1af23e45937af0",
+        "rev": "f540b026224e5218512e6fc814d1b5a10638bc1f",
         "type": "github"
       },
       "original": {
