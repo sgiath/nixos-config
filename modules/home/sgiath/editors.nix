@@ -4,11 +4,6 @@
   pkgs,
   ...
 }:
-let
-  zed = pkgs.zed-editor;
-  # zed = inputs.zed-editor.packages.${pkgs.stdenv.hostPlatform.system}.default;
-  # cursor = inputs.cursor.packages.${pkgs.stdenv.hostPlatform.system}.cursor;
-in
 {
   options.sgiath.editors = {
     enable = lib.mkEnableOption "my editors";
@@ -16,14 +11,13 @@ in
 
   config = lib.mkIf config.sgiath.editors.enable {
     home.sessionVariables = {
-      EDITOR = "${lib.getExe zed} --wait";
-      VISUAL = "${lib.getExe zed} --wait";
+      EDITOR = "${lib.getExe pkgs.zed-editor} --wait";
+      VISUAL = "${lib.getExe pkgs.zed-editor} --wait";
     };
 
     # Zed editor
     programs.zed-editor = {
       enable = true;
-      package = zed;
       installRemoteServer = true;
       extensions = [
         "nix"
@@ -45,8 +39,6 @@ in
       ];
     };
     stylix.targets.zed.enable = false;
-    programs.zsh.shellAliases.zed = "${lib.getExe zed}";
-
-    # home.packages = [ cursor ];
+    programs.zsh.shellAliases.zed = "${lib.getExe pkgs.zed-editor}";
   };
 }

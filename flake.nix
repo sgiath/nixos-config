@@ -81,6 +81,12 @@
       inputs.nixpkgs.follows = "nixpkgs";
     };
 
+    # https://github.com/zed-industries/zed/releases/latest
+    zed = {
+      url = "github:zed-industries/zed/v1.0.0";
+      inputs.nixpkgs.follows = "nixpkgs";
+    };
+
     # cursor = {
     #   url = "github:TudorAndrei/cursor-nixos-flake";
     #   inputs.nixpkgs.follows = "nixpkgs";
@@ -143,6 +149,7 @@
       "https://nix-community.cachix.org"
       "https://nixpkgs-wayland.cachix.org"
       "https://hyprland.cachix.org"
+      "https://zed.cachix.org"
       # "https://claude-code.cachix.org"
       # "https://cache.garnix.io"
       # "https://devenv.cachix.org"
@@ -152,6 +159,7 @@
       "nix-community.cachix.org-1:mB9FSh9qf2dCimDSUo8Zy7bkq5CX+/rkCWyvRCYg3Fs="
       "nixpkgs-wayland.cachix.org-1:3lwxaILxMRkVhehr5StQprHdEo4IrE8sRho9R9HOLYA="
       "hyprland.cachix.org-1:a7pgxzMz7+chwVL3/pzj6jIBMioiJM7ypFP8PwtkuGc="
+      "zed.cachix.org-1:/pHQ6dpMsAZk2DiP4WCL0p9YDNKWj2Q5FL20bNmw1cU="
       # "claude-code.cachix.org-1:YeXf2aNu7UTX8Vwrze0za1WEDS+4DuI2kVeWEE4fsRk="
       # "cache.garnix.io:CTFPyKSLcx5RMJKfLo5EEPUObbA78b0YQ2DTCJXqr9g="
       # "devenv.cachix.org-1:w1cLUi8dv3hnoSPGAuibQv+f9TZLr6cv/Hm9XgU50cw="
@@ -189,6 +197,7 @@
 
       overlays = with inputs; [
         # hyprland.overlays.default
+        zed.overlays.default
         nix-minecraft.overlay
         noctalia.overlays.default
       ];
