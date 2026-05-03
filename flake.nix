@@ -99,7 +99,7 @@
 
     # https://github.com/anomalyco/opencode/releases/latest
     opencode = {
-      url = "github:anomalyco/opencode/v1.14.30";
+      url = "github:anomalyco/opencode/v1.14.33";
       inputs.nixpkgs.follows = "nixpkgs";
     };
 
@@ -116,7 +116,7 @@
 
     # https://github.com/NousResearch/hermes-agent/releases/latest
     hermes-agent = {
-      url = "github:NousResearch/hermes-agent/v2026.4.23";
+      url = "github:NousResearch/hermes-agent/v2026.4.30";
       inputs.nixpkgs.follows = "nixpkgs";
     };
 
@@ -137,7 +137,7 @@
 
     # https://github.com/max-sixty/worktrunk/releases/latest
     worktrunk = {
-      url = "github:max-sixty/worktrunk/v0.46.0";
+      url = "github:max-sixty/worktrunk/v0.46.1";
       inputs.nixpkgs.follows = "nixpkgs";
     };
 
