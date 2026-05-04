@@ -8,8 +8,14 @@
   config = lib.mkIf config.programs.zsh.enable {
     # home.packages = with pkgs; [ ];
 
-    home.sessionVariables = {
-      LESS = "-g -i -M -R -S -w -X";
+    home = {
+      sessionPath = [
+        "${config.home.homeDirectory}/.mix/escripts"
+      ];
+
+      sessionVariables = {
+        LESS = "-g -i -M -R -S -w -X";
+      };
     };
 
     programs = {
