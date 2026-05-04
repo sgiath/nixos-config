@@ -2,6 +2,7 @@
   config,
   lib,
   pkgs,
+  inputs,
   ...
 }:
 let
@@ -18,8 +19,7 @@ in
     services = {
       matrix-continuwuity = {
         enable = true;
-        # package = inputs.conduit.packages.${pkgs.stdenv.hostPlatform.system}.default;
-        # package = inputs.continuwuity.packages.${pkgs.stdenv.hostPlatform.system}.default;
+        package = inputs.continuwuity.packages.${pkgs.stdenv.hostPlatform.system}.default;
         settings.global = {
           # server
           server_name = "sgiath.dev";
