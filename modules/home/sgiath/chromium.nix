@@ -2,6 +2,7 @@
   config,
   lib,
   pkgs,
+  inputs,
   ...
 }:
 {
@@ -9,6 +10,9 @@
     programs.chromium = {
       package = pkgs.ungoogled-chromium;
       dictionaries = [ pkgs.hunspellDictsChromium.en_US ];
+      extensions = [
+        { crxPath = inputs.chromium-web-store; }
+      ];
       commandLineArgs = [
         "--password-store=basic"
         "--ozone-platform-hint=wayland"

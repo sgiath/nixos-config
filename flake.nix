@@ -143,6 +143,12 @@
     };
 
     nix-minecraft.url = "github:Infinidoge/nix-minecraft";
+
+    # https://github.com/NeverDecaf/chromium-web-store/releases/latest
+    chromium-web-store = {
+      url = "https://github.com/NeverDecaf/chromium-web-store/releases/latest/download/Chromium.Web.Store.crx";
+      flake = false;
+    };
   };
 
   nixConfig = {
