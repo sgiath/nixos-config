@@ -9,6 +9,10 @@
     services.comfyui = {
       gpuSupport = "rocm";
       enableManager = true;
+      extraArgs = [
+        "--disable-xformers"
+        "--use-pytorch-cross-attention"
+      ];
     };
   };
 }
