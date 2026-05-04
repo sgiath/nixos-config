@@ -2,7 +2,6 @@
   config,
   lib,
   pkgs,
-  inputs,
   ...
 }:
 {
@@ -10,13 +9,9 @@
     programs.chromium = {
       package = pkgs.ungoogled-chromium;
       dictionaries = [ pkgs.hunspellDictsChromium.en_US ];
-      extensions = [
-        {
-          crxPath = inputs.chromium-web-store;
-          version = "1.5.5.3";
-        }
-      ];
       commandLineArgs = [
+        "--user-agent=Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/147.0.0.0 Safari/537.36"
+
         "--password-store=basic"
         "--ozone-platform-hint=wayland"
         "--gtk-version=4"

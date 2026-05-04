@@ -151,18 +151,6 @@
         "type": "github"
       }
     },
-    "chromium-web-store": {
-      "flake": false,
-      "locked": {
-        "narHash": "sha256-RE33yJgbEWWHCaTM685uOwYkywVEj/ob1qIkbyS2pEg=",
-        "type": "file",
-        "url": "https://github.com/NeverDecaf/chromium-web-store/releases/latest/download/Chromium.Web.Store.crx"
-      },
-      "original": {
-        "type": "file",
-        "url": "https://github.com/NeverDecaf/chromium-web-store/releases/latest/download/Chromium.Web.Store.crx"
-      }
-    },
     "continuwuity": {
       "inputs": {
         "advisory-db": "advisory-db",
@@ -1665,7 +1653,6 @@
       "inputs": {
         "bird-src": "bird-src",
         "btc-clients": "btc-clients",
-        "chromium-web-store": "chromium-web-store",
         "continuwuity": "continuwuity",
         "disko": "disko",
         "forgecode": "forgecode",
