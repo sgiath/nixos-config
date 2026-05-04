@@ -20,6 +20,7 @@
 
   services = {
     ollama.enable = true;
+    comfyui.enable = true;
   };
 
   programs = {

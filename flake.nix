@@ -142,6 +142,11 @@
       inputs.nixpkgs.follows = "nixpkgs";
     };
 
+    comfyui = {
+      url = "github:utensils/comfyui-nix";
+      inputs.nixpkgs.follows = "nixpkgs";
+    };
+
     nix-minecraft.url = "github:Infinidoge/nix-minecraft";
   };
 
@@ -212,6 +217,7 @@
         foundryvtt.nixosModules.foundryvtt
         nix-minecraft.nixosModules.minecraft-servers
         nix-gaming.nixosModules.pipewireLowLatency
+        comfyui.nixosModules.default
       ];
 
       homes.modules = with inputs; [
