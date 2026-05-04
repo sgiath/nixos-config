@@ -9,6 +9,7 @@
     home.packages = with pkgs; [
       # this is needed so the escript binary is globally available
       beam_minimal.packages.erlang_28.erlang
+      beam_minimal.packages.erlang_28.elixir_1_19
     ];
 
     home = {
