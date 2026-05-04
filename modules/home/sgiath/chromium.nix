@@ -11,7 +11,10 @@
       package = pkgs.ungoogled-chromium;
       dictionaries = [ pkgs.hunspellDictsChromium.en_US ];
       extensions = [
-        { crxPath = inputs.chromium-web-store; }
+        {
+          crxPath = inputs.chromium-web-store;
+          version = "1.5.5.3";
+        }
       ];
       commandLineArgs = [
         "--password-store=basic"
