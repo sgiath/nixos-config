@@ -142,11 +142,7 @@
       inputs.nixpkgs.follows = "nixpkgs";
     };
 
-    comfyui = {
-      url = "github:utensils/comfyui-nix";
-      # inputs.nixpkgs.follows = "nixpkgs";
-    };
-
+    comfyui.url = "github:utensils/comfyui-nix";
     nix-minecraft.url = "github:Infinidoge/nix-minecraft";
   };
 
