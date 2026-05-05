@@ -99,10 +99,7 @@
     # };
 
     # https://github.com/anomalyco/opencode/releases/latest
-    opencode = {
-      url = "github:anomalyco/opencode/v1.14.35";
-      # inputs.nixpkgs.follows = "nixpkgs";
-    };
+    opencode.url = "github:anomalyco/opencode/v1.14.35";
 
     # https://github.com/antinomyhq/forgecode/releases/latest
     forgecode = {

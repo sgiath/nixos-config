@@ -7,15 +7,6 @@
 }:
 let
   opencode = inputs.opencode.packages.${pkgs.stdenv.hostPlatform.system}.default;
-
-  # opencode = (
-  #   inputs.opencode.packages.${pkgs.stdenv.hostPlatform.system}.opencode.overrideAttrs (old: {
-  #     preBuild = (old.preBuild or "") + ''
-  #       substituteInPlace package.json \
-  #         --replace-fail '"packageManager": "bun@1.3.13"' '"packageManager": "bun@${pkgs.bun.version}"'
-  #     '';
-  #   })
-  # );
 in
 {
   config = lib.mkIf config.sgiath.agents.enable {
@@ -28,7 +19,6 @@ in
       commands = ./commands;
       skills = ./skills;
       settings = {
-        # theme = "orng";
         autoupdate = false;
         permission = {
           bash = {
