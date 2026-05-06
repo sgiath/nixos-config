@@ -84,7 +84,7 @@
 
     # https://github.com/zed-industries/zed/releases/latest
     zed = {
-      url = "github:zed-industries/zed/v1.0.0";
+      url = "github:zed-industries/zed/v1.0.1";
       inputs.nixpkgs.follows = "nixpkgs";
     };
 
@@ -99,7 +99,7 @@
     # };
 
     # https://github.com/anomalyco/opencode/releases/latest
-    opencode.url = "github:anomalyco/opencode/v1.14.35";
+    opencode.url = "github:anomalyco/opencode/v1.14.39";
 
     # https://github.com/antinomyhq/forgecode/releases/latest
     forgecode = {
@@ -135,7 +135,7 @@
 
     # https://github.com/max-sixty/worktrunk/releases/latest
     worktrunk = {
-      url = "github:max-sixty/worktrunk/v0.47.0";
+      url = "github:max-sixty/worktrunk/v0.48.0";
       inputs.nixpkgs.follows = "nixpkgs";
     };
 
