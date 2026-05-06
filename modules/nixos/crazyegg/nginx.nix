@@ -132,6 +132,12 @@
 
           # Matrix server
           matrix.crazyeggdev.com 'http://127.0.0.1:8008';
+
+          # new page editor
+          page-editor.crazyeggdev.com 'http://127.0.0.1:8085';
+
+          # new page editor api
+          page-editor-api.crazyeggdev.com 'http://127.0.0.1:8087';
         }
       '';
     };
