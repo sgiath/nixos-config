@@ -35,6 +35,7 @@
 
           WEBHOOK_ENABLED = "true";
           OBSIDIAN_VAULT_PATH = "~/notes";
+          SEARXNG_URL = "https://search.sgiath.dev";
         };
 
         settings = {
@@ -113,6 +114,11 @@
             mode = "both";
             idle_minutes = 1440;
             at_hour = 4;
+          };
+
+          web = {
+            search_backend = "searxng";
+            extract_backend = "firecrawl";
           };
 
           tts = {

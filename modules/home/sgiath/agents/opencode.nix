@@ -61,7 +61,7 @@ in
 
     # aliases
     programs.zsh.shellAliases = {
-      oc = "OPENCODE_DISABLE_CLAUDE_CODE=true OPENCODE_ENABLE_EXA=1 ${lib.getExe opencode}";
+      oc = "OPENCODE_EXPERIMENTAL_WORKSPACES=true ${lib.getExe opencode}";
     };
   };
 }
