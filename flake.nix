@@ -73,7 +73,7 @@
 
     # https://forgejo.ellis.link/continuwuation/continuwuity/releases
     continuwuity = {
-      url = "git+https://forgejo.ellis.link/continuwuation/continuwuity?rev=b9989f1713dc8042d7ef3ed66bb805e7cb531329";
+      url = "git+https://forgejo.ellis.link/continuwuation/continuwuity?rev=051449118911b03960d5d09f630d7d2959c8330c";
       inputs.nixpkgs.follows = "nixpkgs";
     };
 
@@ -103,7 +103,7 @@
 
     # https://github.com/antinomyhq/forgecode/releases/latest
     forgecode = {
-      url = "github:antinomyhq/forgecode/v2.12.10";
+      url = "github:antinomyhq/forgecode/v2.12.11";
       inputs.nixpkgs.follows = "nixpkgs";
     };
 

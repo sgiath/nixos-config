@@ -183,16 +183,16 @@
         "treefmt-nix": "treefmt-nix"
       },
       "locked": {
-        "lastModified": 1777058507,
-        "narHash": "sha256-o7bZMSsdSt6VOrsuSMrS7fU9u/LrdD/579IMvsZH+ss=",
+        "lastModified": 1778185180,
+        "narHash": "sha256-4zs26kTqwkJV7x+Sm12LnR02bbyH0f6Itbz7bDKUyts=",
         "ref": "refs/heads/main",
-        "rev": "b9989f1713dc8042d7ef3ed66bb805e7cb531329",
-        "revCount": 6603,
+        "rev": "051449118911b03960d5d09f630d7d2959c8330c",
+        "revCount": 6620,
         "type": "git",
         "url": "https://forgejo.ellis.link/continuwuation/continuwuity"
       },
       "original": {
-        "rev": "b9989f1713dc8042d7ef3ed66bb805e7cb531329",
+        "rev": "051449118911b03960d5d09f630d7d2959c8330c",
         "type": "git",
         "url": "https://forgejo.ellis.link/continuwuation/continuwuity"
       }
@@ -624,16 +624,16 @@
         ]
       },
       "locked": {
-        "lastModified": 1777369115,
-        "narHash": "sha256-8PveSEf5ao6He3Excv8eOWEFtbN/Bh4vJTkSIKDRd5A=",
+        "lastModified": 1778143179,
+        "narHash": "sha256-E3w5DnV8ZYs2Vh7L/pMYkpg5t/jZlutqcutQfptOaTM=",
         "owner": "antinomyhq",
         "repo": "forgecode",
-        "rev": "9f97aeed0ca768b8d7bf916b36f04aadbe1ece02",
+        "rev": "c094472450128b09442434e3243aa2ed9a59f837",
         "type": "github"
       },
       "original": {
         "owner": "antinomyhq",
-        "ref": "v2.12.10",
+        "ref": "v2.12.11",
         "repo": "forgecode",
         "type": "github"
       }
