@@ -24,6 +24,7 @@
       pkgs.python3
       pkgs.uv
       pkgs.${namespace}.bird
+      pkgs.nodejs
 
       # Cursor
       pkgs.cursor-cli
@@ -39,7 +40,6 @@
     ];
 
     # Node
-    # programs.npm.enable = true;
     programs.bun.enable = true;
 
     programs.mcp = {
