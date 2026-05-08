@@ -107,6 +107,11 @@
       inputs.nixpkgs.follows = "nixpkgs";
     };
 
+    goose = {
+      url = "github:aaif-goose/goose";
+      inputs.nixpkgs.follows = "nixpkgs";
+    };
+
     openspec = {
       url = "github:Fission-AI/OpenSpec";
       inputs.nixpkgs.follows = "nixpkgs";

@@ -31,6 +31,9 @@
       # PI
       pkgs.pi-coding-agent
 
+      # Goose
+      inputs.goose.packages.${pkgs.stdenv.hostPlatform.system}.default
+
       # Hermes
       inputs.hermes-agent.packages.${pkgs.stdenv.hostPlatform.system}.default
 
