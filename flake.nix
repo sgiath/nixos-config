@@ -88,16 +88,6 @@
       inputs.nixpkgs.follows = "nixpkgs";
     };
 
-    # cursor = {
-    #   url = "github:TudorAndrei/cursor-nixos-flake";
-    #   inputs.nixpkgs.follows = "nixpkgs";
-    # };
-
-    # claude-code = {
-    #   url = "github:sadjow/claude-code-nix";
-    #   inputs.nixpkgs.follows = "nixpkgs";
-    # };
-
     # https://github.com/anomalyco/opencode/releases/latest
     opencode.url = "github:anomalyco/opencode/v1.14.41";
 
@@ -109,7 +99,7 @@
 
     goose = {
       url = "github:aaif-goose/goose";
-      inputs.nixpkgs.follows = "nixpkgs";
+      # inputs.nixpkgs.follows = "nixpkgs";
     };
 
     openspec = {
@@ -154,7 +144,6 @@
       "https://nixpkgs-wayland.cachix.org"
       "https://hyprland.cachix.org"
       "https://zed.cachix.org"
-      # "https://claude-code.cachix.org"
       # "https://cache.garnix.io"
       # "https://devenv.cachix.org"
       "https://noctalia.cachix.org"
@@ -165,7 +154,6 @@
       "nixpkgs-wayland.cachix.org-1:3lwxaILxMRkVhehr5StQprHdEo4IrE8sRho9R9HOLYA="
       "hyprland.cachix.org-1:a7pgxzMz7+chwVL3/pzj6jIBMioiJM7ypFP8PwtkuGc="
       "zed.cachix.org-1:/pHQ6dpMsAZk2DiP4WCL0p9YDNKWj2Q5FL20bNmw1cU="
-      # "claude-code.cachix.org-1:YeXf2aNu7UTX8Vwrze0za1WEDS+4DuI2kVeWEE4fsRk="
       # "cache.garnix.io:CTFPyKSLcx5RMJKfLo5EEPUObbA78b0YQ2DTCJXqr9g="
       # "devenv.cachix.org-1:w1cLUi8dv3hnoSPGAuibQv+f9TZLr6cv/Hm9XgU50cw="
       "noctalia.cachix.org-1:pCOR47nnMEo5thcxNDtzWpOxNFQsBRglJzxWPp3dkU4="
