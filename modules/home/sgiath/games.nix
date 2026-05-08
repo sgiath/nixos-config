@@ -17,25 +17,25 @@ in
     home.packages = with pkgs; [
       protonplus
 
-      # wine64
-      # winetricks
-      # wineWowPackages.waylandFull
+      wine64
+      winetricks
+      wineWowPackages.waylandFull
 
-      # (lutris.override {
-      #   extraLibraries = pkgs: [
-      #     # libraries for KSP mod Principia
-      #     pkgs.llvmPackages.libcxx
-      #     pkgs.llvmPackages.libunwind
-      #   ];
+      (lutris.override {
+        extraLibraries = pkgs: [
+          # libraries for KSP mod Principia
+          pkgs.llvmPackages.libcxx
+          pkgs.llvmPackages.libunwind
+        ];
 
-      #   extraPkgs = pkgs: [
-      #     # default icons
-      #     pkgs.adwaita-icon-theme
+        extraPkgs = pkgs: [
+          # default icons
+          pkgs.adwaita-icon-theme
 
-      #     # MS fonts needed for KSP
-      #     pkgs.corefonts
-      #   ];
-      # })
+          # MS fonts needed for KSP
+          pkgs.corefonts
+        ];
+      })
 
       # KSP mods
       ckan
