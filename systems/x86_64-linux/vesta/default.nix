@@ -41,5 +41,6 @@
     sgiath-dev.proxy = true;
     sinai-camp.proxy = true;
     opencode-proxy.enable = false;
+    eve-proxy.enable = true;
   };
 }

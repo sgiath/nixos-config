@@ -3,6 +3,7 @@
   imports = [
     ./5e.nix
     ./audiobookshelf.nix
+    ./eve.nix
     ./factorio.nix
     ./foundry.nix
     ./hermes.nix
