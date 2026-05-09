@@ -71,6 +71,7 @@ in
     wayland.windowManager.hyprland.settings.windowrule = [
       "match:class .factorio-wrapped, workspace 6 silent"
       "match:class lutris, workspace 6 silent"
+      "match:class steam_app_8500, float on"
     ];
   };
 }
