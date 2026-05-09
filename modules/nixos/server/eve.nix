@@ -4,6 +4,7 @@
   ...
 }:
 {
+  options.services.eve-proxy.enable = lib.mkEnableOption "EVE proxy";
   config = lib.mkIf (config.sgiath.server.enable && config.services.eve-proxy.enable) {
     services.nginx.virtualHosts."eve.sgiath.dev" = {
       # SSL
