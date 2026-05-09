@@ -17,9 +17,9 @@ in
     home.packages = with pkgs; [
       protonplus
 
-      wine64
-      winetricks
-      wineWow64Packages.waylandFull
+      # wine64
+      # winetricks
+      # wineWow64Packages.waylandFull
 
       # (lutris.override {
       #   extraLibraries = pkgs: [
