@@ -30,6 +30,6 @@ let
 in
 {
   ksa = pkgs-ksa.ksa;
-  codex = pkgs-master.codex;
-  zed-editor = pkgs-master.zed-editor;
+  # codex = pkgs-master.codex;
+  # zed-editor = pkgs-master.zed-editor;
 }
