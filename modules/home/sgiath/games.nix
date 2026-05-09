@@ -19,7 +19,7 @@ in
 
       wine64
       winetricks
-      wineWowPackages.waylandFull
+      wineWow64Packages.waylandFull
 
       (lutris.override {
         extraLibraries = pkgs: [
