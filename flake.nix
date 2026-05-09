@@ -83,10 +83,10 @@
     };
 
     # https://github.com/zed-industries/zed/releases/latest
-    zed = {
-      url = "github:zed-industries/zed/v1.1.7";
-      inputs.nixpkgs.follows = "nixpkgs";
-    };
+    # zed = {
+    #   url = "github:zed-industries/zed/v1.1.7";
+    #   inputs.nixpkgs.follows = "nixpkgs";
+    # };
 
     # https://github.com/anomalyco/opencode/releases/latest
     opencode.url = "github:anomalyco/opencode/v1.14.41";
@@ -131,6 +131,7 @@
 
     comfyui.url = "github:utensils/comfyui-nix";
     nix-minecraft.url = "github:Infinidoge/nix-minecraft";
+    eve-preview-manager.url = "https://flakehub.com/f/h0lylag/EVE-Preview-Manager/*";
   };
 
   nixConfig = {

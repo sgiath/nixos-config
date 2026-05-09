@@ -61,6 +61,7 @@ in
       })
       mindustry-wayland
 
+      inputs.eve-preview-manager.packages.${pkgs.stdenv.hostPlatform.system}.default
       inputs.nix-gaming.packages.${pkgs.stdenv.hostPlatform.system}.star-citizen
 
       celestia
