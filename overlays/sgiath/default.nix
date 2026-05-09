@@ -32,12 +32,4 @@ in
   ksa = pkgs-ksa.ksa;
   codex = pkgs-master.codex;
   zed-editor = pkgs-master.zed-editor;
-
-  # Skipping tests while upstream sorts it out, revert once
-  # Hydra consistently builds openldap green.
-  # https://github.com/NixOS/nixpkgs/issues/513245
-  # https://github.com/NixOS/nixpkgs/issues/514113
-  openldap = prev.openldap.overrideAttrs (_: {
-    doCheck = false;
-  });
 }
