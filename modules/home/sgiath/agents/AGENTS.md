@@ -25,6 +25,10 @@ This is a NixOS system. The project you are woring on uses `flake.nix` for depen
 
 Evidence-based, hypothesis-driven debugging. Use `/debug` for the full structured workflow.
 
+## Debug Logging
+
+Features must log errors, unexpected exceptions, and operational issues with enough context to debug failures. Long-running jobs must also log start, progress checkpoints, and completion so a stuck run can be diagnosed from logs.
+
 ## Getting help
 
 - **Ask, Don't Assume**: Always ask for clarification rather than making assumptions. If you're stuck or struggling, stop and ask for help
