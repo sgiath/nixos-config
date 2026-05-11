@@ -16,6 +16,11 @@
 
         protonmail-bridge-gui
         protonmail-desktop
+
+        proton-vpn
+        proton-pass
+        proton-pass-cli
+        proton-authenticator
       ];
 
       file.".signature".text = ''
