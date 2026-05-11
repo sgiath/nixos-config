@@ -12,7 +12,7 @@
   config = lib.mkIf config.sgiath.email_client.enable {
     home = {
       packages = with pkgs; [
-        # claws-mail
+        claws-mail
 
         protonmail-bridge-gui
         protonmail-desktop
