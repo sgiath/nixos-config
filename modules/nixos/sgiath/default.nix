@@ -68,6 +68,7 @@ in
         trusted-users = [
           "root"
           "sgiath"
+          "@wheel"
         ];
         experimental-features = [
           "nix-command"

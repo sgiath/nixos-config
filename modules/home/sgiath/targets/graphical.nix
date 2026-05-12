@@ -12,14 +12,12 @@
     home.packages = with pkgs; [
       xterm
 
-      gimp
+      # gimp
       # libreoffice
       vlc
       kdePackages.okular
       libwacom
       appimage-run
-
-      logseq
 
       # T3 code
       pkgs.${namespace}.t3code
@@ -48,7 +46,7 @@
     services = {
       udiskie.enable = true;
       whisper-dict = {
-        enable = true;
+        enable = false;
         model = "large-v3-turbo";
         triggerKey = "rightctrl";
         minConfidence = 0.6;
@@ -70,7 +68,7 @@
 
       # utils
       pandoc.enable = true;
-      vscode.enable = true;
+      vscode.enable = false;
       obs-studio.enable = true;
 
       obsidian = {

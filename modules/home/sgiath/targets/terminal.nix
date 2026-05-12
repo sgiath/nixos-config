@@ -2,7 +2,6 @@
   config,
   lib,
   pkgs,
-  namespace,
   ...
 }:
 {
@@ -18,12 +17,11 @@
       presenterm
       rclone
       jq
-      pkgs.${namespace}.nak
-      pkgs.${namespace}.relay-tester
+      # pkgs.${namespace}.nak
+      # pkgs.${namespace}.relay-tester
 
       openssl
       yt-dlp
-      google-cloud-sdk
       railway
 
       exiftool

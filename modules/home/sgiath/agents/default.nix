@@ -3,7 +3,6 @@
   lib,
   pkgs,
   inputs,
-  namespace,
   ...
 }:
 {
@@ -23,17 +22,17 @@
     home.packages = [
       pkgs.python3
       pkgs.uv
-      pkgs.${namespace}.bird
+      # pkgs.${namespace}.bird
       pkgs.nodejs
 
       # Cursor
-      pkgs.cursor-cli
+      # pkgs.cursor-cli
 
       # PI
       pkgs.pi-coding-agent
 
       # Hermes
-      inputs.hermes-agent.packages.${pkgs.stdenv.hostPlatform.system}.default
+      # inputs.hermes-agent.packages.${pkgs.stdenv.hostPlatform.system}.default
 
       # LLM tools
       inputs.openspec.packages.${pkgs.stdenv.hostPlatform.system}.default

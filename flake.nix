@@ -92,10 +92,10 @@
     opencode.url = "github:anomalyco/opencode/v1.14.48";
 
     # https://github.com/antinomyhq/forgecode/releases/latest
-    forgecode = {
-      url = "github:antinomyhq/forgecode/v2.12.14";
-      inputs.nixpkgs.follows = "nixpkgs";
-    };
+    # forgecode = {
+    #   url = "github:antinomyhq/forgecode/v2.12.14";
+    #   inputs.nixpkgs.follows = "nixpkgs";
+    # };
 
     openspec = {
       url = "github:Fission-AI/OpenSpec";
@@ -113,15 +113,15 @@
     #   inputs.nixpkgs.follows = "nixpkgs";
     # };
 
-    bird-src = {
-      url = "path:/home/sgiath/develop/sgiath/bird";
-      flake = false;
-    };
+    # bird-src = {
+    #   url = "path:/home/sgiath/develop/sgiath/bird";
+    #   flake = false;
+    # };
 
-    whisper-dict = {
-      url = "github:sgiath/whisper-dict";
-      inputs.nixpkgs.follows = "nixpkgs";
-    };
+    # whisper-dict = {
+    #   url = "github:sgiath/whisper-dict";
+    #   inputs.nixpkgs.follows = "nixpkgs";
+    # };
 
     # https://github.com/max-sixty/worktrunk/releases/latest
     worktrunk = {
