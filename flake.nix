@@ -208,7 +208,7 @@
         noctalia.homeModules.default
         sops-nix.homeManagerModules.sops
         nix-index-database.homeModules.nix-index
-        whisper-dict.homeManagerModules.default
+        # whisper-dict.homeManagerModules.default
         # niamh.homeManagerModules.default
       ];
     };
