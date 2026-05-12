@@ -21,6 +21,7 @@
           monitors = [
             "DP-1"
             "DP-3"
+            "eDP-1"
           ];
           widgets = {
             left = [

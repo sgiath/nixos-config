@@ -1,44 +1,53 @@
 { config, lib, ... }:
 {
-  config = lib.mkIf config.sgiath.enable {
-    networking = {
-      defaultGateway = "192.168.1.1";
-      defaultGateway6.address = "fe80::1";
-      hosts = {
-        "192.168.1.1" = [ "router.sgiath" ];
-        "192.168.1.2" = [
-          "vesta.sgiath.dev"
-          "niamh.sgiath.dev"
-          "matrix.sgiath.dev"
-          "matrix-rtc.sgiath.dev"
-          "turn.sgiath.dev"
+  config = lib.mkIf config.sgiath.enable (
+    lib.mkMerge [
+      {
+        networking = {
+          hosts = {
+            "192.168.1.1" = [ "router.sgiath" ];
+            "192.168.1.2" = [
+              "vesta.sgiath.dev"
+              "niamh.sgiath.dev"
+              "matrix.sgiath.dev"
+              "matrix-rtc.sgiath.dev"
+              "turn.sgiath.dev"
 
-          "dns.sgiath"
-        ];
-        "192.168.1.4" = [ "nas.sgiath" ];
-        "192.168.1.5" = [ "nas.sgiath" ];
-      };
-      networkmanager.enable = false;
-      resolvconf.enable = lib.mkForce false;
-      dhcpcd = {
-        denyInterfaces = [
-          "veth*"
-          "docker*"
-          "br-*"
-        ];
-        extraConfig = "nohook resolv.conf";
-      };
-      firewall.enable = false;
-    };
-    environment.etc."resolv.conf".text = ''
-      search sgiath.dev
+              "dns.sgiath"
+            ];
+            "192.168.1.4" = [ "nas.sgiath" ];
+            "192.168.1.5" = [ "nas.sgiath" ];
+          };
+          firewall.enable = false;
+          resolvconf.enable = lib.mkForce false;
+        };
 
-      nameserver 192.168.1.2
-      nameserver 192.168.1.1
-      nameserver 1.1.1.1
-      nameserver 8.8.8.8
-    '';
+        users.users.sgiath.extraGroups = [ "networkmanager" ];
+      }
 
-    users.users.sgiath.extraGroups = [ "networkmanager" ];
-  };
+      (lib.mkIf (!config.networking.networkmanager.enable) {
+        networking = {
+          defaultGateway = "192.168.1.1";
+          defaultGateway6.address = "fe80::1";
+          dhcpcd = {
+            denyInterfaces = [
+              "veth*"
+              "docker*"
+              "br-*"
+            ];
+            extraConfig = "nohook resolv.conf";
+          };
+        };
+
+        environment.etc."resolv.conf".text = ''
+          search sgiath.dev
+
+          nameserver 192.168.1.2
+          nameserver 192.168.1.1
+          nameserver 1.1.1.1
+          nameserver 8.8.8.8
+        '';
+      })
+    ]
+  );
 }
