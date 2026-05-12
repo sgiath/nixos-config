@@ -12,7 +12,7 @@
     "$mod" = "SUPER";
     bind = [
       "$mod SHIFT, C, killactive,"
-      "$mod, R, togglesplit,"
+      # "$mod, R, togglesplit,"
       "$mod, F, togglefloating, active"
       "$mod SHIFT, Space, fullscreen, 0"
 
