@@ -18,7 +18,6 @@
         "192.168.1.4" = [ "nas.sgiath" ];
         "192.168.1.5" = [ "nas.sgiath" ];
       };
-      useDHCP = false;
       networkmanager.enable = false;
       resolvconf.enable = lib.mkForce false;
       dhcpcd = {

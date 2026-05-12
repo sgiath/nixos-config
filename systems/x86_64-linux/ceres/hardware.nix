@@ -78,9 +78,10 @@
   };
 
   networking = {
+    useDHCP = false;
     defaultGateway6.interface = "enp57s0";
     interfaces = {
-      # 10 Gbps
+      # 10G Aquantia, atlantic
       enp57s0 = {
         useDHCP = false;
         ipv4.addresses = [
@@ -97,7 +98,7 @@
         ];
       };
 
-      # 2.5 Gbps
+      # 2.5G Intel I225-V, igc
       enp59s0 = {
         useDHCP = false;
         ipv4.addresses = [
