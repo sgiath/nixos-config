@@ -45,13 +45,13 @@
 
     services = {
       udiskie.enable = true;
-      whisper-dict = {
-        enable = false;
-        model = "large-v3-turbo";
-        triggerKey = "rightctrl";
-        minConfidence = 0.6;
-        minRecordingMs = 250;
-      };
+      # whisper-dict = {
+      #   enable = false;
+      #   model = "large-v3-turbo";
+      #   triggerKey = "rightctrl";
+      #   minConfidence = 0.6;
+      #   minRecordingMs = 250;
+      # };
     };
 
     programs = {
