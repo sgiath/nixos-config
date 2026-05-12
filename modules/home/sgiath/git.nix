@@ -12,7 +12,6 @@ in
   config = lib.mkIf config.programs.git.enable {
     home = {
       packages = with pkgs; [
-        git-protonmail
         git-crypt
         worktrunk
       ];
