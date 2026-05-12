@@ -18,9 +18,17 @@
         "192.168.1.4" = [ "nas.sgiath" ];
         "192.168.1.5" = [ "nas.sgiath" ];
       };
+      useDHCP = false;
       networkmanager.enable = false;
       resolvconf.enable = lib.mkForce false;
-      dhcpcd.extraConfig = "nohook resolv.conf";
+      dhcpcd = {
+        denyInterfaces = [
+          "veth*"
+          "docker*"
+          "br-*"
+        ];
+        extraConfig = "nohook resolv.conf";
+      };
       firewall.enable = false;
     };
     environment.etc."resolv.conf".text = ''

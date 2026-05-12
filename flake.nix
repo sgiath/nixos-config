@@ -39,7 +39,7 @@
     };
 
     # https://github.com/hyprwm/Hyprland/releases/latest
-    hyprland.url = "github:hyprwm/Hyprland/v0.54.3";
+    hyprland.url = "github:hyprwm/Hyprland/v0.55.0";
     # hyprland.url = "github:hyprwm/Hyprland";
     hyprland-plugins = {
       url = "github:hyprwm/hyprland-plugins";
@@ -185,7 +185,7 @@
       };
 
       overlays = with inputs; [
-        # hyprland.overlays.default
+        hyprland.overlays.default
         # zed.overlays.default
         nix-minecraft.overlay
         noctalia.overlays.default
