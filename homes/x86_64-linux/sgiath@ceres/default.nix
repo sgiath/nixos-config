@@ -1,4 +1,13 @@
-{ pkgs, ... }:
+{
+  config,
+  lib,
+  namespace,
+  pkgs,
+  ...
+}:
+let
+  eveFlipper = pkgs.${namespace}.eve-flipper;
+in
 {
   home.packages = with pkgs; [
     texliveMedium
@@ -6,6 +15,27 @@
     # davinci-resolve-studio
     whisper-cpp-vulkan
   ];
+
+  systemd.user.services.eve-flipper = {
+    Unit = {
+      Description = "EVE Flipper local web app";
+      After = [ "network-online.target" ];
+      Wants = [ "network-online.target" ];
+    };
+    Service = {
+      Restart = "always";
+      RestartSec = 5;
+      KillMode = "process";
+      WorkingDirectory = "${config.xdg.dataHome}/eve-flipper";
+      Environment = [
+        "HOME=${config.home.homeDirectory}"
+      ];
+      ExecStart = "${lib.getExe eveFlipper} --host 127.0.0.1 --port 13370";
+    };
+    Install = {
+      WantedBy = [ "default.target" ];
+    };
+  };
 
   sgiath = {
     enable = true;

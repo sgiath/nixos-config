@@ -1,6 +1,7 @@
 pkgs: {
   bird = pkgs.callPackage ./bird { };
   dnd5etools = pkgs.callPackage ./dnd5etools { };
+  eve-flipper = pkgs.callPackage ./eve-flipper { };
   gogcli = pkgs.callPackage ./gogcli { };
   n8n = pkgs.callPackage ./n8n { };
   nak = pkgs.callPackage ./nak { };
