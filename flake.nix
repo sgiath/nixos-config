@@ -84,7 +84,7 @@
 
     # https://github.com/zed-industries/zed/releases/latest
     zed = {
-      url = "github:zed-industries/zed/v1.1.7";
+      url = "github:zed-industries/zed/v1.1.8";
       # inputs.nixpkgs.follows = "nixpkgs";
     };
 
@@ -125,7 +125,7 @@
 
     # https://github.com/max-sixty/worktrunk/releases/latest
     worktrunk = {
-      url = "github:max-sixty/worktrunk/v0.49.0";
+      url = "github:max-sixty/worktrunk/v0.50.0";
       inputs.nixpkgs.follows = "nixpkgs";
     };
 
@@ -185,7 +185,7 @@
       };
 
       overlays = with inputs; [
-        hyprland.overlays.default
+        # hyprland.overlays.default
         # zed.overlays.default
         nix-minecraft.overlay
         noctalia.overlays.default
