@@ -31,7 +31,7 @@
     };
 
     animations = {
-      enabled = true;
+      enabled = false;
 
       # Curves
       bezier = [
