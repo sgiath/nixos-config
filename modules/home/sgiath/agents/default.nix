@@ -5,6 +5,9 @@
   inputs,
   ...
 }:
+let
+  secrets = builtins.fromJSON (builtins.readFile ./../../../secrets.json);
+in
 {
   imports = [
     ./claude.nix
@@ -43,6 +46,7 @@
 
     programs.mcp = {
       enable = true;
+
       servers = {
         github = {
           command = "npx";
@@ -54,6 +58,13 @@
 
         datadog = {
           url = "https://mcp.datadoghq.com/api/unstable/mcp-server/mcp?toolsets=all";
+        };
+
+        gate-agent = {
+          url = "https://gate-agent.crazyegg.com/mcp";
+          headers = {
+            Authorization = "Bearer ${secrets.gate-agent_api_key}";
+          };
         };
       };
     };
