@@ -39,7 +39,7 @@
     };
 
     # https://github.com/hyprwm/Hyprland/releases/latest
-    hyprland.url = "github:hyprwm/Hyprland/v0.55.0";
+    hyprland.url = "github:hyprwm/Hyprland/v0.55.1";
     # hyprland.url = "github:hyprwm/Hyprland";
     hyprland-plugins = {
       url = "github:hyprwm/hyprland-plugins";
@@ -84,12 +84,12 @@
 
     # https://github.com/zed-industries/zed/releases/latest
     zed = {
-      url = "github:zed-industries/zed/v1.1.8";
+      url = "github:zed-industries/zed/v1.2.3";
       # inputs.nixpkgs.follows = "nixpkgs";
     };
 
     # https://github.com/anomalyco/opencode/releases/latest
-    opencode.url = "github:anomalyco/opencode/v1.14.48";
+    opencode.url = "github:anomalyco/opencode/v1.14.50";
 
     # https://github.com/antinomyhq/forgecode/releases/latest
     # forgecode = {
