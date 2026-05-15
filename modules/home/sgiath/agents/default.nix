@@ -3,6 +3,7 @@
   lib,
   pkgs,
   inputs,
+  namespace,
   ...
 }:
 let
@@ -31,11 +32,17 @@ in
       # Cursor
       # pkgs.cursor-cli
 
+      # Fusion
+      pkgs.${namespace}.fusion
+
       # PI
       pkgs.pi-coding-agent
 
+      # Plannotator
+      pkgs.${namespace}.plannotator
+
       # Hermes
-      # inputs.hermes-agent.packages.${pkgs.stdenv.hostPlatform.system}.default
+      inputs.hermes-agent.packages.${pkgs.stdenv.hostPlatform.system}.default
 
       # LLM tools
       inputs.openspec.packages.${pkgs.stdenv.hostPlatform.system}.default

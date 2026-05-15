@@ -38,6 +38,9 @@ in
             "~/**" = "allow";
           };
         };
+        plugin = [
+          "@plannotator/opencode@latest"
+        ];
         server = {
           hostname = "0.0.0.0";
           mdns = true;

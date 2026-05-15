@@ -91,11 +91,11 @@ in
 
     users.defaultUserShell = pkgs.zsh;
     environment.sessionVariables = {
-      OPENAI_API_KEY = secrets.openai;
-      XAI_API_KEY = secrets.xai;
-      GEMINI_API_KEY = secrets.gemini;
-      ANTHROPIC_API_KEY = secrets.anthropic;
-      OPENROUTER_API_KEY = secrets.openrouter;
+      # OPENAI_API_KEY = secrets.openai;
+      # XAI_API_KEY = secrets.xai;
+      # GEMINI_API_KEY = secrets.gemini;
+      # ANTHROPIC_API_KEY = secrets.anthropic;
+      # OPENROUTER_API_KEY = secrets.openrouter;
       GITHUB_PERSONAL_ACCESS_TOKEN = secrets.github_token;
       LINEAR_API_KEY = secrets.linear_api_key;
     };

@@ -28,6 +28,7 @@ in
           apps = true;
           memories = true;
           undo = true;
+          hooks = true;
         };
 
         projects = {
