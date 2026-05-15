@@ -23,7 +23,7 @@ buildNpmPackage rec {
     cp ${./package-lock.json} package-lock.json
   '';
 
-  npmDepsHash = "sha256-GyV2QZAsKOquIHcqSWK9TvLsiObEDO6ls4YSyyUlscY=";
+  npmDepsHash = "sha256-HHuxGR1IO/xmzZgrIuJaJT2NYLDjzXKP/UMFdY9gQqo=";
 
   nativeBuildInputs = [
     autoPatchelfHook
@@ -41,6 +41,9 @@ buildNpmPackage rec {
 
   postInstall = ''
     packageRoot="$out/lib/node_modules/@runfusion/fusion"
+
+    mkdir -p "$out/lib/node_modules/@runfusion/skill"
+    cp -R "$packageRoot/skill/fusion" "$out/lib/node_modules/@runfusion/skill/fusion"
 
     find "$packageRoot/node_modules/node-pty/prebuilds" -mindepth 1 -maxdepth 1 ! -name linux-x64 -exec rm -rf {} +
     rm -f "$packageRoot"/node_modules/node-pty/prebuilds/linux-x64/*.musl.node

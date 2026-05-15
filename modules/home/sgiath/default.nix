@@ -150,6 +150,18 @@
           echo ""; echo "=== eve-flipper ==="
           ./eve-flipper/update.sh
 
+          echo ""; echo "=== fusion ==="
+          ./fusion/update.sh
+
+          echo ""; echo "=== kimi webbridge ==="
+          ./kimi-webbridge/update.sh
+
+          echo ""; echo "=== plannotator ==="
+          ./plannotator/update.sh
+
+          echo ""; echo "=== qmd ==="
+          ./qmd/update.sh
+
           echo ""; echo "=== t3code ==="
           ./t3code/update.sh
 
