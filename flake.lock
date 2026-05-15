@@ -1568,16 +1568,16 @@
         "nixpkgs": "nixpkgs_6"
       },
       "locked": {
-        "lastModified": 1778727792,
-        "narHash": "sha256-SMWJb0Ykxklnh8DQ6UcSv1JIeuqK2qKyUgrwB8ioZCI=",
+        "lastModified": 1778817823,
+        "narHash": "sha256-qVkOgLXUU/vaWDZIkBeR3Fhkcz7cPshpyQIkuxwKUEM=",
         "owner": "anomalyco",
         "repo": "opencode",
-        "rev": "744a17379b1e45c32f7cfa548f223eb0ee18ea8d",
+        "rev": "2662a4f955e563fd22cd5c4873ca350d21745275",
         "type": "github"
       },
       "original": {
         "owner": "anomalyco",
-        "ref": "v1.14.50",
+        "ref": "v1.15.0",
         "repo": "opencode",
         "type": "github"
       }
@@ -2243,16 +2243,16 @@
         "rust-overlay": "rust-overlay_2"
       },
       "locked": {
-        "lastModified": 1778692187,
-        "narHash": "sha256-ACoHKgc7kazCSpWkCgbGxqt6mWgpFflkeCUbglELMXs=",
+        "lastModified": 1778817640,
+        "narHash": "sha256-IyUY3Hx0Ie0JQewRgQQVWa7IF+GBGGVD+7xV4LfWnxk=",
         "owner": "zed-industries",
         "repo": "zed",
-        "rev": "ede077939fbe732d38afe7cf2576d3a19ef3ca57",
+        "rev": "f2d2d2a1b84d198de7193a212a36b8053c5aa59b",
         "type": "github"
       },
       "original": {
         "owner": "zed-industries",
-        "ref": "v1.2.3",
+        "ref": "v1.2.5",
         "repo": "zed",
         "type": "github"
       }

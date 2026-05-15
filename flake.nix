@@ -84,12 +84,12 @@
 
     # https://github.com/zed-industries/zed/releases/latest
     zed = {
-      url = "github:zed-industries/zed/v1.2.3";
+      url = "github:zed-industries/zed/v1.2.5";
       # inputs.nixpkgs.follows = "nixpkgs";
     };
 
     # https://github.com/anomalyco/opencode/releases/latest
-    opencode.url = "github:anomalyco/opencode/v1.14.50";
+    opencode.url = "github:anomalyco/opencode/v1.15.0";
 
     # https://github.com/antinomyhq/forgecode/releases/latest
     # forgecode = {
@@ -185,7 +185,7 @@
       };
 
       overlays = with inputs; [
-        # hyprland.overlays.default
+        hyprland.overlays.default
         # zed.overlays.default
         nix-minecraft.overlay
         noctalia.overlays.default
