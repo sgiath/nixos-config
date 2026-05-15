@@ -11,13 +11,13 @@
 
 let
   pname = "eve-flipper";
-  version = "1.6.2";
+  version = "1.6.3";
 
   src = fetchFromGitHub {
     owner = "ilyaux";
     repo = "Eve-flipper";
     rev = "v${version}";
-    hash = "sha256-y60rUZvFpPZ5a4AyaB1yJ5NF9j9wAQnbxrueB2IHIQs=";
+    hash = "sha256-TpFLOAWvYb5SZoBThHWARuvSeM1iYbreF2M/1No6ZOU=";
   };
 
   frontend = buildNpmPackage {
@@ -25,7 +25,7 @@ let
     inherit version src;
 
     sourceRoot = "${src.name}/frontend";
-    npmDepsHash = "sha256-P0LtydngzHJJWBqNNjMZBh6N1EHUDkoypSqvRKNMEmI=";
+    npmDepsHash = "sha256-/i0f1MshBmlogXekk2JkTYOFPUKpUfs+PeFSJFzZuFc=";
 
     npmBuildScript = "build";
 

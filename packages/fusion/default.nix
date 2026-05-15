@@ -10,11 +10,11 @@
 
 buildNpmPackage rec {
   pname = "fusion";
-  version = "0.30.0";
+  version = "0.31.0";
 
   src = fetchurl {
     url = "https://registry.npmjs.org/@runfusion/fusion/-/fusion-${version}.tgz";
-    hash = "sha512-4/GfCRI4oEFEV91zCEeqsKhbQT7EjWmjLgvIsQysJxGKLmMjS5sy2cxsrBeu4fvlMgcFSMDn5oZs5WsVUgHPfQ==";
+    hash = "sha512-EMmnePCVfOkkoSHvvE5JAWmmLk9RsuB0A1MVubdiThLNRhOcFoAzbI/OUIS6SmJB7JLmoALehlUuEQpwfBsCdw==";
   };
 
   sourceRoot = "package";
@@ -23,7 +23,7 @@ buildNpmPackage rec {
     cp ${./package-lock.json} package-lock.json
   '';
 
-  npmDepsHash = "sha256-HHuxGR1IO/xmzZgrIuJaJT2NYLDjzXKP/UMFdY9gQqo=";
+  npmDepsHash = "sha256-kZj1IBAQ6gDKpgt0J9WWbRmQtRRAD+9bc53ElJoFfqY=";
 
   nativeBuildInputs = [
     autoPatchelfHook

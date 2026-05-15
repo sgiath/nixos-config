@@ -26,8 +26,10 @@ HASH_SRI=$(nix hash convert --to sri --hash-algo sha256 "${HASH_B32}")
 echo "    Version: ${VERSION}"
 echo "    Hash: ${HASH_SRI}"
 
-perl -0pi -e 's/version = "[^"]+";/version = "'"${VERSION}"'";/' "${DEFAULT_NIX}"
-perl -0pi -e 's/hash = "sha256-[^"]+";/hash = "'"${HASH_SRI}"'";/' "${DEFAULT_NIX}"
+VERSION="${VERSION}" HASH_SRI="${HASH_SRI}" perl -0pi -e '
+  s/version = "[^"]+";/version = "$ENV{VERSION}";/;
+  s/hash = "sha256-[^"]+";/hash = "$ENV{HASH_SRI}";/;
+' "${DEFAULT_NIX}"
 
 echo "==> Done"
 echo "Next step: nix build '.#kimi-webbridge'"

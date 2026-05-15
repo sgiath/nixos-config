@@ -20,10 +20,11 @@ fi
 
 CURRENT_VERSION="$(grep 'version = "' "${DEFAULT_NIX}" | head -1 | sed 's/.*version = "\([^"]*\)".*/\1/')"
 if [[ "${VERSION}" == "${CURRENT_VERSION}" ]]; then
-	echo "==> Version ${VERSION} unchanged, refreshing generated artifacts"
-else
-	echo "==> Updating from ${CURRENT_VERSION} to ${VERSION}"
+	echo "==> Already at version ${VERSION}, nothing to do"
+	exit 0
 fi
+
+echo "==> Updating from ${CURRENT_VERSION} to ${VERSION}"
 
 echo "==> Fetching npm metadata..."
 TARBALL_URL="$(npm view "${PACKAGE}@${VERSION}" dist.tarball 2>/dev/null)"
