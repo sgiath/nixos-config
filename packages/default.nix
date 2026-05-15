@@ -10,6 +10,7 @@ pkgs: {
   omnisearch = pkgs.callPackage ./omnisearch { };
   openclaw = pkgs.callPackage ./openclaw { };
   plannotator = pkgs.callPackage ./plannotator { };
+  qmd = pkgs.callPackage ./qmd { };
   relay-tester = pkgs.callPackage ./relay-tester { };
   t3code = pkgs.callPackage ./t3code { };
 }

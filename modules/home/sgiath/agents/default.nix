@@ -41,6 +41,9 @@ in
       # Plannotator
       pkgs.${namespace}.plannotator
 
+      # QMD
+      pkgs.${namespace}.qmd
+
       # Hermes
       inputs.hermes-agent.packages.${pkgs.stdenv.hostPlatform.system}.default
 
