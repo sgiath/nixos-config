@@ -11,7 +11,15 @@
     systemd.services.hermes-agent.after = [ "continuwuity.service" ];
     services = {
       hermes-agent = {
-        package = pkgs.hermes-agent.override { extraDependencyGroups = [ "matrix" ]; };
+        package = pkgs.hermes-agent.override {
+          extraDependencyGroups = [
+            "matrix"
+            "firecrawl"
+            "cli"
+            "youtube"
+            "web"
+          ];
+        };
         createUser = false;
         user = "sgiath";
         group = "hermes";
