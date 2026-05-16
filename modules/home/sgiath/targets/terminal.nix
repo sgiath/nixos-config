@@ -40,6 +40,7 @@
       neovim = {
         enable = true;
         withPython3 = false;
+        withRuby = false;
       };
       ssh.enable = true;
       starship.enable = true;
