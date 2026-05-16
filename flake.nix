@@ -98,7 +98,7 @@
 
     # https://github.com/NousResearch/hermes-agent/releases/latest
     hermes-agent = {
-      url = "github:NousResearch/hermes-agent/v2026.5.7";
+      url = "github:NousResearch/hermes-agent/v2026.5.16";
       inputs.nixpkgs.follows = "nixpkgs";
     };
 
