@@ -1,60 +1,82 @@
 {
   autoPatchelfHook,
-  buildNpmPackage,
-  fetchurl,
+  fetchFromGitHub,
+  fetchPnpmDeps,
   git,
   lib,
   makeWrapper,
+  nodejs,
+  pnpm_10,
+  pnpmConfigHook,
   stdenv,
 }:
 
-buildNpmPackage rec {
+stdenv.mkDerivation (finalAttrs: {
   pname = "fusion";
   version = "0.31.0";
 
-  src = fetchurl {
-    url = "https://registry.npmjs.org/@runfusion/fusion/-/fusion-${version}.tgz";
-    hash = "sha512-EMmnePCVfOkkoSHvvE5JAWmmLk9RsuB0A1MVubdiThLNRhOcFoAzbI/OUIS6SmJB7JLmoALehlUuEQpwfBsCdw==";
+  src = fetchFromGitHub {
+    owner = "Runfusion";
+    repo = "Fusion";
+    tag = "v${finalAttrs.version}";
+    hash = "sha256-lkj2j8dgr+ORniqMws7oRlMBPfHVPuHixaJ/6Y3XCB0=";
   };
 
-  sourceRoot = "package";
-
-  postPatch = ''
-    cp ${./package-lock.json} package-lock.json
-  '';
-
-  npmDepsHash = "sha256-kZj1IBAQ6gDKpgt0J9WWbRmQtRRAD+9bc53ElJoFfqY=";
+  pnpmDeps = fetchPnpmDeps {
+    inherit (finalAttrs) pname version src;
+    fetcherVersion = 3;
+    hash = "sha256-KWoswBIdDvQe1gFEd2QGT6GN88PIw9eNHYhPu8CgWIk=";
+  };
 
   nativeBuildInputs = [
     autoPatchelfHook
     makeWrapper
+    pnpm_10
+    pnpmConfigHook
   ];
 
-  buildInputs = [ stdenv.cc.cc.lib ];
-
-  dontNpmBuild = true;
-
-  npmFlags = [
-    "--ignore-scripts"
-    "--legacy-peer-deps"
+  buildInputs = [
+    nodejs
+    stdenv.cc.cc.lib
   ];
 
-  postInstall = ''
-    packageRoot="$out/lib/node_modules/@runfusion/fusion"
+  buildPhase = ''
+    runHook preBuild
 
-    mkdir -p "$out/lib/node_modules/@runfusion/skill"
-    cp -R "$packageRoot/skill/fusion" "$out/lib/node_modules/@runfusion/skill/fusion"
+    pnpm build
 
-    find "$packageRoot/node_modules/node-pty/prebuilds" -mindepth 1 -maxdepth 1 ! -name linux-x64 -exec rm -rf {} +
-    rm -f "$packageRoot"/node_modules/node-pty/prebuilds/linux-x64/*.musl.node
+    runHook postBuild
+  '';
 
-    find "$packageRoot/node_modules/koffi/build/koffi" -mindepth 1 -maxdepth 1 ! -name linux_x64 -exec rm -rf {} +
+  installPhase = ''
+    runHook preInstall
 
-    wrapProgram "$out/bin/fusion" \
+    packageRoot="$out/lib/fusion"
+
+    mkdir -p "$out/bin" "$packageRoot" "$out/lib/node_modules/@runfusion/skill"
+    cp -R package.json pnpm-lock.yaml node_modules "$packageRoot/"
+    cp -R packages plugins "$packageRoot/"
+    cp -R "$packageRoot/packages/cli/skill/fusion" "$out/lib/node_modules/@runfusion/skill/fusion"
+    mkdir -p "$packageRoot/packages/skill"
+    cp -R "$packageRoot/packages/cli/skill/fusion" "$packageRoot/packages/skill/fusion"
+
+    find "$packageRoot" -path '*/node-pty-prebuilt-multiarch/prebuilds/*' ! -path '*/linux-x64/*' -exec rm -rf {} +
+    find "$packageRoot" -path '*/node-pty-prebuilt-multiarch/prebuilds/linux-x64/*.musl.node' -delete
+
+    find "$packageRoot" -path '*/koffi/build/koffi' -type d -print0 |
+      while IFS= read -r -d "" koffiBuild; do
+        find "$koffiBuild" -mindepth 1 -maxdepth 1 ! -name linux_x64 -exec rm -rf {} +
+      done
+
+    makeWrapper ${lib.getExe nodejs} "$out/bin/fusion" \
+      --add-flags "$packageRoot/packages/cli/dist/bin.js" \
       --prefix PATH : "${lib.makeBinPath [ git ]}"
 
-    wrapProgram "$out/bin/fn" \
+    makeWrapper ${lib.getExe nodejs} "$out/bin/fn" \
+      --add-flags "$packageRoot/packages/cli/dist/bin.js" \
       --prefix PATH : "${lib.makeBinPath [ git ]}"
+
+    runHook postInstall
   '';
 
   meta = {
@@ -64,4 +86,4 @@ buildNpmPackage rec {
     mainProgram = "fusion";
     platforms = lib.platforms.unix;
   };
-}
+})

@@ -89,7 +89,7 @@
     };
 
     # https://github.com/anomalyco/opencode/releases/latest
-    opencode.url = "github:anomalyco/opencode/v1.15.0";
+    opencode.url = "github:anomalyco/opencode/v1.15.1";
 
     openspec = {
       url = "github:Fission-AI/OpenSpec";
