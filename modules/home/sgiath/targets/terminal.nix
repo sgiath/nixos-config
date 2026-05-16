@@ -37,7 +37,7 @@
     programs = {
       git.enable = true;
       gpg.enable = true;
-      nvim.enable = true;
+      neovim.enable = true;
       ssh.enable = true;
       starship.enable = true;
       tmux.enable = true;
