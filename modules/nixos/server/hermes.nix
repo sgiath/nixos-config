@@ -170,12 +170,12 @@
 
           locations = {
             "/webhooks" = {
-              proxyPass = "http://127.0.0.1:8644";
+              proxyPass = "http://127.0.0.1:9119";
             };
 
             "/" = {
               proxyWebsockets = true;
-              proxyPass = "http://127.0.0.1:8644";
+              proxyPass = "http://127.0.0.1:9119";
               extraConfig = ''
                 allow 127.0.0.1;
                 allow ::1;
