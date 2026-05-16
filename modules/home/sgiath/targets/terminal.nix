@@ -37,7 +37,10 @@
     programs = {
       git.enable = true;
       gpg.enable = true;
-      neovim.enable = true;
+      neovim = {
+        enable = true;
+        withPython3 = false;
+      };
       ssh.enable = true;
       starship.enable = true;
       tmux.enable = true;
