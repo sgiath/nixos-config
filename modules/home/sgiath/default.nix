@@ -19,7 +19,6 @@
     ./gnupg.nix
     ./hyprland.nix
     ./noctalia.nix
-    ./nvim.nix
     ./ssh.nix
     ./starship.nix
     ./stylix.nix
