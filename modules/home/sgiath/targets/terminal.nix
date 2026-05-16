@@ -46,6 +46,7 @@
         shellWrapperName = "y";
       };
       zsh.enable = true;
+      ripgrep.enable = true;
 
       # install zed-server even in terminal environment
       zed-editor = {
