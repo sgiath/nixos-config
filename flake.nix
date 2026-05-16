@@ -123,6 +123,7 @@
       inputs.nixpkgs.follows = "nixpkgs";
     };
 
+    beads.url = "github:gastownhall/beads/v1.0.4";
     comfyui.url = "github:utensils/comfyui-nix";
     nix-minecraft.url = "github:Infinidoge/nix-minecraft";
   };

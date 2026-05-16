@@ -44,6 +44,9 @@ in
       # QMD
       pkgs.${namespace}.qmd
 
+      # beads
+      inputs.beads.packages.${pkgs.stdenv.hostPlatform.system}.default
+
       # Hermes
       inputs.hermes-agent.packages.${pkgs.stdenv.hostPlatform.system}.default
 
