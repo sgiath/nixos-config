@@ -128,7 +128,7 @@
             -o -iname "*.tif" -o -iname "*.tiff" -o -iname "*.webp" -o -iname "*.heic" \
             -o -iname "*.heif" \) -print0 | \
           ${lib.getExe parallel-full} -0 --eta \
-            exiftool -quiet -api PNGEarlyXMP=1 -JUMBF:all= -overwrite_original {}
+            ${lib.getExe exiftool} -quiet -api PNGEarlyXMP=1 -JUMBF:all= -overwrite_original {}
         '')
 
         (writeShellScriptBin "clear-cache" ''
@@ -137,6 +137,11 @@
 
           doas nix-store --gc
           doas nix-store --optimise
+
+          docker system prune -a -f
+          docker volume prune -f
+
+          doas journalctl --vacuum-time=14d
         '')
 
         (writeShellScriptBin "update-pkgs" ''
@@ -169,7 +174,6 @@
 
           echo ""
           echo "==> All packages updated!"
-          echo "Test builds with: nix build '.#<package>'"
         '')
 
         # general programs I want to have always available
