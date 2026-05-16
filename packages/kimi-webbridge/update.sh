@@ -19,6 +19,16 @@ fi
 VERSION_DATE=$(date -u -d "${LAST_MODIFIED}" +%Y-%m-%d)
 VERSION="latest-${VERSION_DATE}"
 
+echo "    Latest version: ${VERSION}"
+
+CURRENT_VERSION="$(grep 'version = "' "${DEFAULT_NIX}" | head -1 | sed 's/.*version = "\([^"]*\)".*/\1/')"
+if [[ "${VERSION}" == "${CURRENT_VERSION}" ]]; then
+  echo "==> Already at version ${VERSION}, nothing to do"
+  exit 0
+fi
+
+echo "==> Updating from ${CURRENT_VERSION} to ${VERSION}"
+
 echo "==> Prefetching binary..."
 HASH_B32=$(nix-prefetch-url "${URL}" 2>/dev/null)
 HASH_SRI=$(nix hash convert --to sri --hash-algo sha256 "${HASH_B32}")
