@@ -179,6 +179,7 @@
         # zed.overlays.default
         nix-minecraft.overlay
         noctalia.overlays.default
+        hermes-agent.overlays.default
       ];
 
       systems.modules.nixos = with inputs; [
