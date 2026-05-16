@@ -40,12 +40,12 @@
 
         settings = {
           model = {
-            default = "gpt-5.5";
-            provider = "openai-codex";
+            default = "grok-4.3";
+            provider = "xai-oauth";
           };
           fallback_model = {
-            provider = "openrouter";
-            model = "z-ai/glm-5-turbo";
+            provider = "openai-codex";
+            model = "gpt-5.5";
           };
 
           timezone = "UTC";
