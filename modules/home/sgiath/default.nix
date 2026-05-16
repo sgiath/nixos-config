@@ -153,8 +153,8 @@
           echo ""; echo "=== fusion ==="
           ./fusion/update.sh
 
-          echo ""; echo "=== kimi webbridge ==="
-          ./kimi-webbridge/update.sh
+          # echo ""; echo "=== kimi webbridge ==="
+          # ./kimi-webbridge/update.sh
 
           echo ""; echo "=== plannotator ==="
           ./plannotator/update.sh

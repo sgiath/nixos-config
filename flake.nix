@@ -84,7 +84,7 @@
 
     # https://github.com/zed-industries/zed/releases/latest
     zed = {
-      url = "github:zed-industries/zed/v1.2.5";
+      url = "github:zed-industries/zed/v1.2.6";
       # inputs.nixpkgs.follows = "nixpkgs";
     };
 
