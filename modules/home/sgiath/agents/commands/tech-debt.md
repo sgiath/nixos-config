@@ -14,10 +14,12 @@ Systematically scan the codebase for technical debt and improvement opportunitie
 ## Step 1: Determine Scan Targets
 
 If full codebase:
+
 1. Identify major directories/modules (src, lib, app, etc.)
 2. Note the primary language(s) and frameworks
 
 If targeted:
+
 1. Verify the path/module exists
 2. Identify related files and dependencies
 
@@ -28,7 +30,7 @@ If targeted:
 ```
 Agent 1: POTENTIAL BUGS
 - Null/undefined handling gaps
-- Error handling inconsistencies  
+- Error handling inconsistencies
 - Race conditions
 - Unvalidated inputs
 - Edge cases not handled
@@ -47,7 +49,7 @@ Agent 3: COMPLEXITY
 - God objects/classes
 - Long parameter lists (>4 params)
 
-Agent 4: REFACTORING OPPORTUNITIES  
+Agent 4: REFACTORING OPPORTUNITIES
 - Code duplication
 - Inconsistent patterns
 - Magic numbers/strings
@@ -67,6 +69,7 @@ For targeted scans, adjust agent count based on scope size.
 ## Step 3: Collect & Deduplicate
 
 Gather results from all agents:
+
 - Remove duplicates (same issue found by multiple agents)
 - Group related issues
 - Prioritize by impact
@@ -80,7 +83,7 @@ For each issue, provide:
 
 **Location**: `path/to/file.ts:42-58`
 
-**Current State**: 
+**Current State**:
 Brief description of current code behavior
 
 **Problem**:
@@ -103,13 +106,13 @@ Concrete proposal for improvement
 
 ## Summary by Category
 
-| Category | Count | High | Med | Low |
-|----------|-------|------|-----|-----|
-| Bugs     | X     | X    | X   | X   |
-| Dead Code| X     | X    | X   | X   |
-| Complexity| X    | X    | X   | X   |
-| Refactor | X     | X    | X   | X   |
-| Architecture | X | X    | X   | X   |
+| Category     | Count | High | Med | Low |
+| ------------ | ----- | ---- | --- | --- |
+| Bugs         | X     | X    | X   | X   |
+| Dead Code    | X     | X    | X   | X   |
+| Complexity   | X     | X    | X   | X   |
+| Refactor     | X     | X    | X   | X   |
+| Architecture | X     | X    | X   | X   |
 
 ## High Priority Issues
 
@@ -119,7 +122,7 @@ Concrete proposal for improvement
 
 [List MEDIUM priority items]
 
-## Low Priority Issues  
+## Low Priority Issues
 
 [List LOW priority items]
 
@@ -137,18 +140,21 @@ Concrete proposal for improvement
 ## Priority Guidelines
 
 **HIGH**:
+
 - Active bugs or data corruption risks
 - Security concerns
 - Blocks other improvements
 - Causes frequent developer friction
 
 **MEDIUM**:
+
 - Code smell but working
 - Moderate maintenance burden
 - Would improve testability
 - Inconsistencies causing confusion
 
 **LOW**:
+
 - Style/preference issues
 - Minor cleanup
 - Nice-to-have improvements

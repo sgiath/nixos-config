@@ -12,6 +12,7 @@ Check the root AGENTS.md for references to other documents (workflows, overviews
 - **Other referenced docs** → whatever AGENTS.md points to
 
 Place learnings at appropriate scope:
+
 - Global → root AGENTS.md or global config
 - Project-specific → project's AGENTS.md
 - Feature/module-specific → nested AGENTS.md near relevant code
@@ -19,6 +20,7 @@ Place learnings at appropriate scope:
 ## What Counts as a Learning
 
 Non-obvious discoveries only:
+
 - Hidden relationships between components
 - Execution paths that differ from how code appears
 - Non-obvious config, env vars, flags

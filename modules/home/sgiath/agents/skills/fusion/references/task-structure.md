@@ -7,6 +7,7 @@ Fusion uses a hybrid storage architecture: structured metadata in SQLite, large 
 **Project database:** `.fusion/fusion.db` (SQLite with WAL mode)
 
 **Filesystem blobs:**
+
 ```
 .fusion/
 ├── fusion.db                # SQLite database (WAL mode)
@@ -24,32 +25,32 @@ Fusion uses a hybrid storage architecture: structured metadata in SQLite, large 
 
 Key fields stored in the `tasks` table:
 
-| Field | Type | Description |
-|-------|------|-------------|
-| `id` | string | Task ID (e.g., FN-001) |
-| `title` | string? | Short title (optional, can be auto-generated) |
-| `description` | string | Full task description |
-| `column` | string | Current column: triage/todo/in-progress/in-review/done/archived |
-| `status` | string? | Sub-status: failed, paused, awaiting-approval |
-| `size` | string? | Size estimate: S, M, L |
-| `reviewLevel` | number? | Review intensity: 0-3 |
-| `currentStep` | number | Index of current execution step |
-| `steps` | JSON | Array of step objects with name, status |
-| `dependencies` | JSON | Array of task IDs this depends on |
-| `log` | JSON | Array of log entries (action, outcome, timestamp) |
-| `attachments` | JSON | Array of attachment metadata |
-| `prInfo` | JSON? | GitHub PR info (number, url, state) |
-| `issueInfo` | JSON? | GitHub issue info (number, url) |
-| `modelProvider` | string? | Per-task executor model provider |
-| `modelId` | string? | Per-task executor model ID |
-| `validatorModelProvider` | string? | Per-task reviewer model provider |
-| `validatorModelId` | string? | Per-task reviewer model ID |
-| `enabledWorkflowSteps` | JSON | Array of workflow step IDs to run |
-| `missionId` | string? | Linked mission ID |
-| `sliceId` | string? | Linked slice ID |
-| `paused` | boolean | Whether automation is paused |
-| `createdAt` | string | ISO timestamp |
-| `updatedAt` | string | ISO timestamp |
+| Field                    | Type    | Description                                                     |
+| ------------------------ | ------- | --------------------------------------------------------------- |
+| `id`                     | string  | Task ID (e.g., FN-001)                                          |
+| `title`                  | string? | Short title (optional, can be auto-generated)                   |
+| `description`            | string  | Full task description                                           |
+| `column`                 | string  | Current column: triage/todo/in-progress/in-review/done/archived |
+| `status`                 | string? | Sub-status: failed, paused, awaiting-approval                   |
+| `size`                   | string? | Size estimate: S, M, L                                          |
+| `reviewLevel`            | number? | Review intensity: 0-3                                           |
+| `currentStep`            | number  | Index of current execution step                                 |
+| `steps`                  | JSON    | Array of step objects with name, status                         |
+| `dependencies`           | JSON    | Array of task IDs this depends on                               |
+| `log`                    | JSON    | Array of log entries (action, outcome, timestamp)               |
+| `attachments`            | JSON    | Array of attachment metadata                                    |
+| `prInfo`                 | JSON?   | GitHub PR info (number, url, state)                             |
+| `issueInfo`              | JSON?   | GitHub issue info (number, url)                                 |
+| `modelProvider`          | string? | Per-task executor model provider                                |
+| `modelId`                | string? | Per-task executor model ID                                      |
+| `validatorModelProvider` | string? | Per-task reviewer model provider                                |
+| `validatorModelId`       | string? | Per-task reviewer model ID                                      |
+| `enabledWorkflowSteps`   | JSON    | Array of workflow step IDs to run                               |
+| `missionId`              | string? | Linked mission ID                                               |
+| `sliceId`                | string? | Linked slice ID                                                 |
+| `paused`                 | boolean | Whether automation is paused                                    |
+| `createdAt`              | string  | ISO timestamp                                                   |
+| `updatedAt`              | string  | ISO timestamp                                                   |
 
 ## PROMPT.md Specification Format
 
@@ -84,10 +85,12 @@ What the task should accomplish.
 ## Steps
 
 ### Step 1: Research existing patterns
+
 - [ ] Look at existing validation in SignupForm
 - [ ] Identify the validation utility pattern
 
 ### Step 2: Implement email validation
+
 - [ ] Add validation function
 - [ ] Wire up to form submit
 
@@ -153,6 +156,7 @@ User-level settings at `~/.fusion/settings.json`:
 ## Central Database (Multi-Project)
 
 For multi-project setups: `~/.fusion/fusion-central.db`
+
 - Project registry
 - Unified activity feed
 - Global concurrency management

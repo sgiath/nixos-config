@@ -9,6 +9,7 @@ commit and push
 ## Atomic Commits
 
 If changes span multiple concerns, create **separate commits** for each. Each commit should:
+
 - Do one thing, describable in one short sentence
 - Be as small as possible but complete
 - Not break tests (green suite)

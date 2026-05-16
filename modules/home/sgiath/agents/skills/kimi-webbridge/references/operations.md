@@ -17,12 +17,12 @@ Do not run the upstream installer, uninstaller, or upgrader by default. Changes 
 
 Run: `kimi-webbridge status`
 
-| Observed | Action |
-|---|---|
-| `command not found` or binary missing | Repo/system not rebuilt yet. From `/home/sgiath/nixos`, run `nix build '.#kimi-webbridge'` to verify the package, then ask before running `nixos-rebuild switch --sudo --flake .` if a system switch is needed. |
-| `{"running": false, ...}` | Daemon not running. Run `systemctl --user start kimi-webbridge.service`, then re-check `kimi-webbridge status`. |
+| Observed                                               | Action                                                                                                                                                                                                                                                                                        |
+| ------------------------------------------------------ | --------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| `command not found` or binary missing                  | Repo/system not rebuilt yet. From `/home/sgiath/nixos`, run `nix build '.#kimi-webbridge'` to verify the package, then ask before running `nixos-rebuild switch --sudo --flake .` if a system switch is needed.                                                                               |
+| `{"running": false, ...}`                              | Daemon not running. Run `systemctl --user start kimi-webbridge.service`, then re-check `kimi-webbridge status`.                                                                                                                                                                               |
 | `{"running": true, "extension_connected": false, ...}` | Extension not connected. Tell the user: "If you've already installed the Kimi WebBridge extension, please open your browser and try again. If not yet installed, see https://www.kimi.com/features/webbridge (中文: https://www.kimi.com/zh-cn/features/webbridge) for install instructions." |
-| `{"running": true, "extension_connected": true, ...}` | Healthy. Return to the main SKILL.md to make tool calls. |
+| `{"running": true, "extension_connected": true, ...}`  | Healthy. Return to the main SKILL.md to make tool calls.                                                                                                                                                                                                                                      |
 
 ## /status JSON fields
 
@@ -46,9 +46,9 @@ Run: `kimi-webbridge status`
 
 ## Diagnosing common failures
 
-| Symptom | Action |
-|---|---|
-| Service fails with "address already in use" | `systemctl --user stop kimi-webbridge.service`, then check the conflicting process with `ss -ltnp 'sport = :10086'` or `lsof -i :10086` if available. |
-| Tool calls time out | `journalctl --user -u kimi-webbridge.service -n 100` and `kimi-webbridge logs -n 100`; check for `[error]` / `panic` lines. |
-| `extension_connected` stays `false` after install | Browser extension not running. If the user has it installed, ask them to open the browser and retry; otherwise direct them to https://www.kimi.com/features/webbridge (中文: https://www.kimi.com/zh-cn/features/webbridge). |
-| `status` returns `extension_connected: true` but tool call fails | May be a multi-browser conflict. `kimi-webbridge logs -n 100` will show recent upgrade rejections. |
+| Symptom                                                          | Action                                                                                                                                                                                                                       |
+| ---------------------------------------------------------------- | ---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| Service fails with "address already in use"                      | `systemctl --user stop kimi-webbridge.service`, then check the conflicting process with `ss -ltnp 'sport = :10086'` or `lsof -i :10086` if available.                                                                        |
+| Tool calls time out                                              | `journalctl --user -u kimi-webbridge.service -n 100` and `kimi-webbridge logs -n 100`; check for `[error]` / `panic` lines.                                                                                                  |
+| `extension_connected` stays `false` after install                | Browser extension not running. If the user has it installed, ask them to open the browser and retry; otherwise direct them to https://www.kimi.com/features/webbridge (中文: https://www.kimi.com/zh-cn/features/webbridge). |
+| `status` returns `extension_connected: true` but tool call fails | May be a multi-browser conflict. `kimi-webbridge logs -n 100` will show recent upgrade rejections.                                                                                                                           |

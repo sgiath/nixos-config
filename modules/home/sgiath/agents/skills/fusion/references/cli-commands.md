@@ -121,11 +121,11 @@ fn settings --project my-app
 
 ## Columns (valid values for `fn task move`)
 
-| Column | Description |
-|--------|-------------|
-| `triage` | Awaiting specification |
-| `todo` | Specified, waiting for execution |
-| `in-progress` | Being executed by AI |
-| `in-review` | Ready for merge |
-| `done` | Merged to main |
-| `archived` | Removed from active view |
+| Column        | Description                      |
+| ------------- | -------------------------------- |
+| `triage`      | Awaiting specification           |
+| `todo`        | Specified, waiting for execution |
+| `in-progress` | Being executed by AI             |
+| `in-review`   | Ready for merge                  |
+| `done`        | Merged to main                   |
+| `archived`    | Removed from active view         |

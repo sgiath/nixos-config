@@ -25,21 +25,21 @@ Don't guess fixes here — every non-healthy state is handled in `references/ope
 
 ## Tools
 
-| Tool | Args | Returns | Note |
-|------|------|---------|------|
-| `navigate` | `url`, `newTab`(bool), `group_title` | `{success, url, tabId}` | Always use `newTab:true` on first call. `group_title` sets the tab group's visible label |
-| `find_tab` | `url`, `active`(bool) | `{success, url, tabId}` | **Reuse an already-open tab** — pass any URL or domain; `active:true` picks the tab the user is currently viewing, default picks the leftmost match |
-| `snapshot` | — | `{url, title, tree}` with `@e` refs | **Accessibility tree** (text) — use this to read page content and locate elements |
-| `click` | `selector` (@e ref or CSS) | `{success, tag, text}` | Synthetic `el.click()` |
-| `fill` | `selector`, `value` | `{success, tag, mode}` | Works on `<input>`/`<textarea>` AND `[contenteditable]` (ProseMirror/Lexical/Slate). `mode` is `"value"` or `"contenteditable"` |
-| `evaluate` | `code` (supports async/await) | `{type, value}` | |
-| `screenshot` | `format`(png\|jpeg), `quality`(0-100), optional `selector` (@e/CSS) | `{format, dataLength, data}` (base64) | Full page floods context — use helper script (saves to disk, returns path). With `selector` only that element is captured (small, OK to call API directly) |
-| `network` | `cmd`(start\|stop\|list\|detail), `filter`, `requestId` | request/response data | |
-| `upload` | `selector`, `files`(string[]) | `{success, fileCount}` | |
-| `save_as_pdf` | `paper_format`, `landscape`, `scale`, `print_background`, `file_name` | `{path, sizeBytes, mimeType, pageTitle}` | Render current page → PDF, saved under `/tmp/kimi-webbridge-pdfs/` |
-| `list_tabs` | — | `{success, tabs:[{tabId, url, title, active, groupTitle}]}` | Inspect tabs in the current session |
-| `close_tab` | — | `{success, closed: bool}` | Close the current tab in the session |
-| `close_session` | — | `{success, closed: int}` | Close all tabs for the named session. Use only for tabs you opened or when the user asks. |
+| Tool            | Args                                                                  | Returns                                                     | Note                                                                                                                                                       |
+| --------------- | --------------------------------------------------------------------- | ----------------------------------------------------------- | ---------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| `navigate`      | `url`, `newTab`(bool), `group_title`                                  | `{success, url, tabId}`                                     | Always use `newTab:true` on first call. `group_title` sets the tab group's visible label                                                                   |
+| `find_tab`      | `url`, `active`(bool)                                                 | `{success, url, tabId}`                                     | **Reuse an already-open tab** — pass any URL or domain; `active:true` picks the tab the user is currently viewing, default picks the leftmost match        |
+| `snapshot`      | —                                                                     | `{url, title, tree}` with `@e` refs                         | **Accessibility tree** (text) — use this to read page content and locate elements                                                                          |
+| `click`         | `selector` (@e ref or CSS)                                            | `{success, tag, text}`                                      | Synthetic `el.click()`                                                                                                                                     |
+| `fill`          | `selector`, `value`                                                   | `{success, tag, mode}`                                      | Works on `<input>`/`<textarea>` AND `[contenteditable]` (ProseMirror/Lexical/Slate). `mode` is `"value"` or `"contenteditable"`                            |
+| `evaluate`      | `code` (supports async/await)                                         | `{type, value}`                                             |                                                                                                                                                            |
+| `screenshot`    | `format`(png\|jpeg), `quality`(0-100), optional `selector` (@e/CSS)   | `{format, dataLength, data}` (base64)                       | Full page floods context — use helper script (saves to disk, returns path). With `selector` only that element is captured (small, OK to call API directly) |
+| `network`       | `cmd`(start\|stop\|list\|detail), `filter`, `requestId`               | request/response data                                       |                                                                                                                                                            |
+| `upload`        | `selector`, `files`(string[])                                         | `{success, fileCount}`                                      |                                                                                                                                                            |
+| `save_as_pdf`   | `paper_format`, `landscape`, `scale`, `print_background`, `file_name` | `{path, sizeBytes, mimeType, pageTitle}`                    | Render current page → PDF, saved under `/tmp/kimi-webbridge-pdfs/`                                                                                         |
+| `list_tabs`     | —                                                                     | `{success, tabs:[{tabId, url, title, active, groupTitle}]}` | Inspect tabs in the current session                                                                                                                        |
+| `close_tab`     | —                                                                     | `{success, closed: bool}`                                   | Close the current tab in the session                                                                                                                       |
+| `close_session` | —                                                                     | `{success, closed: int}`                                    | Close all tabs for the named session. Use only for tabs you opened or when the user asks.                                                                  |
 
 ### Using find_tab
 
@@ -102,6 +102,7 @@ If `$SKILL_PATH` is unavailable, call the script by its absolute path.
 `snapshot` returns interactive elements with `@e` refs based on semantic role/name. Use them directly with click/fill — they survive CSS class hash changes that break manually-written selectors.
 
 Fall back to `evaluate` (JS) only when:
+
 - The target has no `@e` ref in the snapshot
 - You need attributes not in the snapshot (e.g., `href`)
 - You need to dispatch complex event sequences, or scroll
@@ -115,11 +116,11 @@ Fall back to `evaluate` (JS) only when:
 
 `fill` handles all three text input shapes. Pass selector (CSS or `@e` ref) + value:
 
-| Target | What `fill` does | Returned `mode` |
-|--------|------|------|
-| `<input>` / `<textarea>` | Sets `.value` via native setter, fires `input`/`change`. | `"value"` |
+| Target                                                                    | What `fill` does                                                                                                                                                         | Returned `mode`     |
+| ------------------------------------------------------------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------ | ------------------- |
+| `<input>` / `<textarea>`                                                  | Sets `.value` via native setter, fires `input`/`change`.                                                                                                                 | `"value"`           |
 | `[contenteditable]` (ProseMirror / TipTap / Lexical / Slate / Quill etc.) | Focuses, selects all existing content, calls `document.execCommand('insertText', ...)` which fires `beforeinput`/`input` with `inputType:'insertText'` and `data:value`. | `"contenteditable"` |
-| Other element | Best-effort `.value` + events. | `"value"` |
+| Other element                                                             | Best-effort `.value` + events.                                                                                                                                           | `"value"`           |
 
 `fill` is **clear-and-insert**: existing content is replaced. For "append to existing text", read the current value via `evaluate`, concatenate, then `fill` with the result.
 
@@ -136,6 +137,7 @@ There's no separate "press Enter" tool. To submit a form, click the submit butto
 `save_as_pdf` renders the current page to PDF, writes it to `/tmp/kimi-webbridge-pdfs/`, and returns the file path (the daemon strips the base64 — agent never sees raw PDF bytes).
 
 All args optional:
+
 - `paper_format`: `letter` (default) \| `a4` \| `legal` \| `a3` \| `tabloid`
 - `landscape`: `false` (default)
 - `scale`: `1.0` (default), range `[0.1, 2.0]`

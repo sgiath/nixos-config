@@ -1,7 +1,8 @@
 <required_reading>
+
 - references/task-structure.md — PROMPT.md format and file structure
 - references/best-practices.md — Tips for writing effective specifications
-</required_reading>
+  </required_reading>
 
 <objective>
 Guide the agent through creating well-specified tasks and organizing work using the mission hierarchy for complex multi-phase projects.
@@ -21,6 +22,7 @@ The AI triage agent uses your description to write a PROMPT.md specification. Be
 4. **Mention scope** — What's in scope and what's explicitly not
 
 Good example:
+
 ```
 "The settings page loads all user preferences in a single API call, causing 3s delays.
 Split into lazy-loaded sections that fetch only when the tab is opened.
@@ -29,6 +31,7 @@ change the API endpoints themselves."
 ```
 
 Bad example:
+
 ```
 "Settings page is slow, fix it"
 ```
@@ -51,11 +54,13 @@ The executor agent follows this specification step by step.
 **Using AI-guided planning:**
 
 For complex or vague ideas, use `fn_task_plan`:
+
 ```
 fn_task_plan({ description: "Build a notification system for the app" })
 ```
 
 The planning mode will:
+
 1. Ask clarifying questions about scope, channels (email, push, in-app), users
 2. Identify technical constraints and dependencies
 3. Suggest breaking the work into multiple tasks if needed
@@ -66,11 +71,13 @@ The planning mode will:
 For large-scale projects spanning multiple tasks, use the mission hierarchy:
 
 1. **Create a mission** — The high-level objective
+
    ```
    fn_mission_create({ title: "Build Authentication System", description: "Complete auth with login, signup, password reset, and OAuth" })
    ```
 
 2. **Add milestones** — Major phases
+
    ```
    fn_milestone_add({ missionId: "M-001", title: "Database Schema" })
    fn_milestone_add({ missionId: "M-001", title: "API Endpoints" })
@@ -78,18 +85,21 @@ For large-scale projects spanning multiple tasks, use the mission hierarchy:
    ```
 
 3. **Add slices** — Parallel work units within milestones
+
    ```
    fn_slice_add({ milestoneId: "MS-001", title: "User Tables" })
    fn_slice_add({ milestoneId: "MS-001", title: "Token Storage" })
    ```
 
 4. **Add features** — Individual deliverables
+
    ```
    fn_feature_add({ sliceId: "SL-001", title: "User model", description: "Create user table with email, password hash, timestamps" })
    fn_feature_add({ sliceId: "SL-001", title: "Session table", description: "Create session table with token, expiry, user FK" })
    ```
 
 5. **Activate a slice** — Enable it for implementation
+
    ```
    fn_slice_activate({ id: "SL-001" })
    ```
@@ -102,6 +112,7 @@ For large-scale projects spanning multiple tasks, use the mission hierarchy:
    ```
 
 **Mission status flows automatically:**
+
 - When linked tasks complete → feature status updates to done
 - When all features in a slice are done → slice completes
 - When all slices in a milestone are done → milestone completes
@@ -110,17 +121,21 @@ For large-scale projects spanning multiple tasks, use the mission hierarchy:
 **Auto-advance:** Enable `autoAdvance` on a mission to automatically activate the next pending slice when the current one completes.
 
 **Viewing mission progress:**
+
 ```
 fn_mission_show({ id: "M-001" })
 ```
+
 Shows the full hierarchy with status icons:
+
 - `●` active, `○` pending, `✓` complete, `⚠` blocked
 
 </process>
 
 <success_criteria>
+
 - Task descriptions are specific enough for the AI to generate a useful specification
 - Complex work is broken down using missions when it spans 5+ tasks
 - Mission hierarchy follows the correct nesting: Mission → Milestone → Slice → Feature → Task
 - Features are linked to tasks after slice activation
-</success_criteria>
+  </success_criteria>

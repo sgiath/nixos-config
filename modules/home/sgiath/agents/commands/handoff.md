@@ -9,6 +9,7 @@ Create GitHub issue(s) capturing the current planning/discussion for future work
 ## Step 1: Gather Context
 
 Extract from conversation:
+
 - **Goal**: What problem/feature was discussed
 - **Approach**: Agreed implementation strategy
 - **Tasks**: Action items, todos, refactoring list
@@ -21,6 +22,7 @@ Extract from conversation:
 Count distinct work items. If **3+ independent tasks** that could be worked separately:
 
 Ask user:
+
 ```
 Found [N] distinct work items:
 1. [brief description]
@@ -85,6 +87,7 @@ EOF
 ### Multiple Issues Format
 
 For each work item:
+
 ```bash
 gh issue create \
   --title "[type]: [specific task]" \
@@ -117,6 +120,7 @@ EOF
 ## Step 5: Report Results
 
 Output:
+
 ```
 Created [N] issue(s):
 - #123: [title] - [url]
@@ -128,6 +132,7 @@ Ready for future work session.
 ## Issue Title Prefixes
 
 Use appropriate prefix:
+
 - `feat:` - New functionality
 - `fix:` - Bug fix
 - `refactor:` - Code improvement, no behavior change

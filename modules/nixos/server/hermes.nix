@@ -127,10 +127,12 @@
               model_id = "eleven_multilingual_v2";
               voice_id = "XHqlxleHbYnK8xmft8Vq";
             };
+
             openai = {
               model = "gpt-4o-mini-tts";
               voice = "maple";
             };
+
             xai = {
               voice_id = "ara";
               language = "en";

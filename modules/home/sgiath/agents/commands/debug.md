@@ -5,6 +5,7 @@ description: Structured scientific debugging workflow
 # Debug: $ARGUMENTS
 
 When `$ARGUMENTS` is empty, infer what to debug from the current conversation context - look for:
+
 - Recent errors or unexpected behavior discussed
 - Failed tests or commands
 - User frustration with something not working
@@ -14,8 +15,9 @@ If nothing obvious, ask: "What issue should I debug?"
 ## Prerequisites Check
 
 Determine reproduction method:
+
 - **Unit test provided?** → Run automatically
-- **Command to trigger?** → Run automatically  
+- **Command to trigger?** → Run automatically
 - **Neither?** → Will need user to manually reproduce
 
 ## Step 1: Explore Relevant Code
@@ -28,12 +30,14 @@ Determine reproduction method:
 ## Step 2: Form 3-5 Hypotheses
 
 Each hypothesis must be:
+
 - Specific and testable
 - Identify concrete code location
 - Explain what's wrong, expected vs actual
 - Distinct from others
 
 Format:
+
 ```
 ## Hypotheses
 
@@ -47,6 +51,7 @@ Format:
 **CRITICAL**: Do NOT use standard logging. Write JSON to `debug.log` in project root.
 
 ### Elixir Pattern
+
 ```elixir
 defp debug_log(hypothesis, label, data) do
   entry = %{
@@ -66,6 +71,7 @@ debug_log(1, "input_params", %{user_id: user_id, filters: filters})
 ```
 
 ### TypeScript/JavaScript Pattern
+
 ```typescript
 const debugLog = (hypothesis: number, label: string, data: unknown) => {
   const entry = JSON.stringify({
@@ -75,11 +81,12 @@ const debugLog = (hypothesis: number, label: string, data: unknown) => {
     data,
     file: import.meta.url,
   });
-  require('fs').appendFileSync('debug.log', entry + '\n');
+  require("fs").appendFileSync("debug.log", entry + "\n");
 };
 ```
 
 ### Python Pattern
+
 ```python
 import json
 from datetime import datetime
@@ -96,6 +103,7 @@ def debug_log(hypothesis: int, label: str, data):
 ```
 
 Log at strategic points:
+
 - Function entry/exit with params and return values
 - Before/after conditional branches
 - Data transformation inputs/outputs
@@ -110,11 +118,13 @@ Log at strategic points:
 ## Step 5: Analyze Debug Log
 
 Read `debug.log` and determine for each hypothesis:
+
 - **CONFIRMED** - Log shows this IS the problem
 - **DISPROVED** - Log shows this is NOT the problem
 - **INCONCLUSIVE** - Need more data
 
 Format:
+
 ```
 ## Hypothesis Analysis
 
@@ -144,15 +154,18 @@ Re-run test/command or ask user to reproduce again.
 ## Step 8: Confirm and Clean Up
 
 Read debug.log one final time to verify:
+
 - Fix working as expected
 - No unexpected side effects
 
 **If FIXED:**
+
 - Remove ALL debug instrumentation
 - Delete `debug.log`
 - Report success
 
 **If NOT FIXED:**
+
 - Keep instrumentation
 - Return to Step 1 with new info
 

@@ -43,27 +43,30 @@ The flake uses `snowfall-lib` with namespace `sgiath`. Directory structure follo
 ### Module Organization
 
 **NixOS modules** (`modules/nixos/`):
+
 - `sgiath/` - Personal system modules (boot, networking, GPU drivers, desktop, Docker, etc.)
 - `server/` - Server services (Matrix, nginx, Plex, GitLab, Minecraft, etc.)
 - `crazyegg/` - Additional configuration group
 
 **Home modules** (`modules/home/`):
+
 - `sgiath/` - User configuration (Hyprland, Neovim, shells, applications)
 - `sgiath/targets/` - Configuration profiles (graphical, terminal)
 - `crazyegg/` - AWS-related configuration
 
 ### Systems
 
-| System | Purpose |
-|--------|---------|
-| ceres | **Primary** - Main daily desktop/gaming workstation (AMD GPU, Steam). Default configuration. |
-| pallas | Notebook, used occasionally |
-| vesta | Home lab server |
-| hygiea | Decommissioned (was offsite server) |
+| System | Purpose                                                                                      |
+| ------ | -------------------------------------------------------------------------------------------- |
+| ceres  | **Primary** - Main daily desktop/gaming workstation (AMD GPU, Steam). Default configuration. |
+| pallas | Notebook, used occasionally                                                                  |
+| vesta  | Home lab server                                                                              |
+| hygiea | Decommissioned (was offsite server)                                                          |
 
 ### Module Enable Pattern
 
 Modules use a standard enable pattern:
+
 ```nix
 options.feature.enable = lib.mkEnableOption "feature name";
 config = lib.mkIf config.feature.enable { /* configuration */ };
@@ -76,6 +79,7 @@ Secrets are stored in `secrets.json` (encrypted with git-crypt) and loaded via `
 ### Multi-Channel Nixpkgs
 
 Three nixpkgs channels available via overlays:
+
 - `nixpkgs-master` - Latest master branch
 - `nixpkgs` - Unstable channel
 - `nixpkgs-stable` - 24.11 stable
@@ -90,6 +94,7 @@ Three nixpkgs channels available via overlays:
 ## Package Guidelines
 
 When creating new packages in `packages/`:
+
 - Always include an executable `update.sh` script for version updates. Use nearby package scripts as references.
 - Remember to `git add` new package files before Nix can see them
 - Follow the existing pattern: `packages/<name>/default.nix` + entry in `packages/default.nix`

@@ -91,12 +91,6 @@
     # https://github.com/anomalyco/opencode/releases/latest
     opencode.url = "github:anomalyco/opencode/v1.15.0";
 
-    # https://github.com/antinomyhq/forgecode/releases/latest
-    # forgecode = {
-    #   url = "github:antinomyhq/forgecode/v2.12.14";
-    #   inputs.nixpkgs.follows = "nixpkgs";
-    # };
-
     openspec = {
       url = "github:Fission-AI/OpenSpec";
       inputs.nixpkgs.follows = "nixpkgs";
@@ -139,8 +133,6 @@
       "https://nixpkgs-wayland.cachix.org"
       "https://hyprland.cachix.org"
       "https://zed.cachix.org"
-      # "https://cache.garnix.io"
-      # "https://devenv.cachix.org"
       "https://noctalia.cachix.org"
       "https://comfyui.cachix.org"
     ];
@@ -149,8 +141,6 @@
       "nixpkgs-wayland.cachix.org-1:3lwxaILxMRkVhehr5StQprHdEo4IrE8sRho9R9HOLYA="
       "hyprland.cachix.org-1:a7pgxzMz7+chwVL3/pzj6jIBMioiJM7ypFP8PwtkuGc="
       "zed.cachix.org-1:/pHQ6dpMsAZk2DiP4WCL0p9YDNKWj2Q5FL20bNmw1cU="
-      # "cache.garnix.io:CTFPyKSLcx5RMJKfLo5EEPUObbA78b0YQ2DTCJXqr9g="
-      # "devenv.cachix.org-1:w1cLUi8dv3hnoSPGAuibQv+f9TZLr6cv/Hm9XgU50cw="
       "noctalia.cachix.org-1:pCOR47nnMEo5thcxNDtzWpOxNFQsBRglJzxWPp3dkU4="
       "comfyui.cachix.org-1:33mf9VzoIjzVbp0zwj+fT51HG0y31ZTK3nzYZAX0rec="
     ];
