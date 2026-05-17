@@ -39,7 +39,7 @@
     };
 
     # https://github.com/hyprwm/Hyprland/releases/latest
-    hyprland.url = "github:hyprwm/Hyprland/v0.55.1";
+    hyprland.url = "github:hyprwm/Hyprland/v0.55.2";
     # hyprland.url = "github:hyprwm/Hyprland";
     hyprland-plugins = {
       url = "github:hyprwm/hyprland-plugins";
@@ -89,7 +89,7 @@
     };
 
     # https://github.com/anomalyco/opencode/releases/latest
-    opencode.url = "github:anomalyco/opencode/v1.15.1";
+    opencode.url = "github:anomalyco/opencode/v1.15.3";
 
     openspec = {
       url = "github:Fission-AI/OpenSpec";
@@ -123,6 +123,7 @@
       inputs.nixpkgs.follows = "nixpkgs";
     };
 
+    # https://github.com/gastownhall/beads/releases/latest
     beads.url = "github:gastownhall/beads/v1.0.4";
     comfyui.url = "github:utensils/comfyui-nix";
     nix-minecraft.url = "github:Infinidoge/nix-minecraft";

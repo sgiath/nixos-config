@@ -883,16 +883,16 @@
         "xdph": "xdph"
       },
       "locked": {
-        "lastModified": 1778712946,
-        "narHash": "sha256-Dn4NCfBRCZ6PW/8C7grx9HyVb8WC8YNRCkRMMa5xRhQ=",
+        "lastModified": 1778936359,
+        "narHash": "sha256-ZuZ9nfmb1Oh3qOPfrQ0zeTBRuMS0DqYTkKiuG9x06CQ=",
         "owner": "hyprwm",
         "repo": "Hyprland",
-        "rev": "a47147bc095e5b3be3eb8bd04f0ac242b968cd4d",
+        "rev": "39d7e209c79d451efab1b21151d5938289da838d",
         "type": "github"
       },
       "original": {
         "owner": "hyprwm",
-        "ref": "v0.55.1",
+        "ref": "v0.55.2",
         "repo": "Hyprland",
         "type": "github"
       }
@@ -1603,16 +1603,16 @@
         "nixpkgs": "nixpkgs_7"
       },
       "locked": {
-        "lastModified": 1778910272,
-        "narHash": "sha256-3+LxzZuiiP9oIDFfOG7rJ/rpn9660HHnLxdtOdC3r9Y=",
+        "lastModified": 1778940442,
+        "narHash": "sha256-OKQR76q7trKQTvlMxH8tG2jNnRtBe3YeFfvNw8c3+8I=",
         "owner": "anomalyco",
         "repo": "opencode",
-        "rev": "be12b43849152b960e385ceb23461cc5b370f457",
+        "rev": "37f89b742907c43b20d38b68eabe65981a59690a",
         "type": "github"
       },
       "original": {
         "owner": "anomalyco",
-        "ref": "v1.15.1",
+        "ref": "v1.15.3",
         "repo": "opencode",
         "type": "github"
       }
