@@ -13,21 +13,21 @@
 
 stdenv.mkDerivation (finalAttrs: {
   pname = "fusion";
-  version = "0.31.0-unstable-2026-05-17";
+  version = "0.31.0";
 
   src = fetchFromGitHub {
     owner = "Runfusion";
     repo = "Fusion";
-    # tag = "v${finalAttrs.version}";
-    rev = "5750dd76ae6b98d941d880d240c8892637f7ef1c";
-    hash = "sha256-ysV2a3A8lgvToTiE8Hc00JWl3rFzxmYTNJigi5EAXgQ=";
+    tag = "v${finalAttrs.version}";
+    # rev = "5750dd76ae6b98d941d880d240c8892637f7ef1c";
+    hash = "sha256-lkj2j8dgr+ORniqMws7oRlMBPfHVPuHixaJ/6Y3XCB0=";
   };
 
   pnpmDeps = fetchPnpmDeps {
     inherit (finalAttrs) pname version src;
     pnpm = pnpm_10;
     fetcherVersion = 3;
-    hash = "sha256-ebxTGZe4n1cSHBPdQAX8ge1/HYTm6qg3vGYJtMlVHCc=";
+    hash = "sha256-KWoswBIdDvQe1gFEd2QGT6GN88PIw9eNHYhPu8CgWIk=";
   };
 
   nativeBuildInputs = [
