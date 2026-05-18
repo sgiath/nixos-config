@@ -8,11 +8,11 @@
 {
   imports = [ (modulesPath + "/installer/scan/not-detected.nix") ];
 
-  hardware.nvidia.prime = {
-    sync.enable = true;
-    amdgpuBusId = "PCI:101:0:0";
-    nvidiaBusId = "PCI:1:0:0";
-  };
+  # hardware.nvidia.prime = {
+  #   sync.enable = true;
+  #   amdgpuBusId = "PCI:101:0:0";
+  #   nvidiaBusId = "PCI:1:0:0";
+  # };
 
   boot = {
     initrd.availableKernelModules = [
