@@ -26,6 +26,7 @@ in
     home.packages = [
       pkgs.python3
       pkgs.uv
+      pkgs.cookiecutter
       # pkgs.${namespace}.bird
       pkgs.nodejs
 
