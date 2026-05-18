@@ -25,6 +25,7 @@
     ];
     extraModulePackages = [ ];
     kernelModules = [ "kvm-amd" ];
+    blacklistedKernelModules = [ "amdgpu" ];
     # kernelParams = [ ];
     loader.systemd-boot = {
       windows."11".efiDeviceHandle = "HD0c";
