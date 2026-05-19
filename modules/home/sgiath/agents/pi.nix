@@ -5,6 +5,6 @@
       pkgs.pi-coding-agent
     ];
 
-    file.".pi/AGENTS.md".source = ./AGENTS.md;
+    file.".pi/agent/AGENTS.md".source = ./AGENTS.md;
   };
 }
