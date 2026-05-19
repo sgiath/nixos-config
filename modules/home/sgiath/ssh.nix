@@ -4,69 +4,67 @@
     programs.ssh = {
       enableDefaultConfig = false;
 
-      matchBlocks = {
+      settings = {
         # git
         "github.com" = {
-          hostname = "github.com";
-          user = "git";
+          HostName = "github.com";
+          User = "git";
         };
         "sr.ht" = {
-          hostname = "git.sr.ht";
-          user = "git";
+          HostName = "git.sr.ht";
+          User = "git";
         };
 
         # servers
         "vesta.sgiath.dev" = {
-          hostname = "193.165.30.198";
-          port = 2200;
+          HostName = "193.165.30.198";
+          Port = 2200;
         };
 
         # local network
         "turris.local" = {
-          hostname = "192.168.1.1";
-          user = "root";
+          HostName = "192.168.1.1";
+          User = "root";
         };
-        "vesta.local".hostname = "192.168.1.2";
-        "nas.local".hostname = "192.168.1.4";
-        "ceres.local".hostname = "192.168.1.6";
+        "vesta.local".HostName = "192.168.1.2";
+        "nas.local".HostName = "192.168.1.4";
+        "ceres.local".HostName = "192.168.1.6";
 
         # CrazyEgg
         "scramble.crazyegg.com" = {
-          hostname = "ec2-3-82-224-38.compute-1.amazonaws.com";
-          user = "ubuntu";
+          HostName = "ec2-3-82-224-38.compute-1.amazonaws.com";
+          User = "ubuntu";
         };
         "bastion.crazyegg.com" = {
-          hostname = "us-east-1.general-purpose.bastion.crazyegg.com";
-          user = "filip";
-          proxyCommand = "none";
-          forwardAgent = true;
+          HostName = "us-east-1.general-purpose.bastion.crazyegg.com";
+          User = "filip";
+          ProxyCommand = "none";
+          ForwardAgent = true;
         };
         "i.*.crazyegg.com" = {
-          user = "crazyegg";
-          proxyCommand = "ssh bastion.crazyegg.com -W %h:%p";
+          User = "crazyegg";
+          ProxyCommand = "ssh bastion.crazyegg.com -W %h:%p";
         };
 
         # defaults
         "*" = {
-          user = "sgiath";
-          port = 22;
-          compression = true;
-          serverAliveInterval = 60;
-          serverAliveCountMax = 30;
+          User = "sgiath";
+          Compression = true;
+          ServerAliveInterval = 60;
+          ServerAliveCountMax = 30;
+          Protocol = "2";
+          HashKnownHosts = "yes";
 
-          extraOptions = {
-            Protocol = "2";
+          PasswordAuthentication = "yes";
+          ChallengeResponseAuthentication = "yes";
+          PubkeyAuthentication = "yes";
+          AuthenticationMethods = "publickey";
+          PreferredAuthentications = "publickey";
 
-            PasswordAuthentication = "yes";
-            ChallengeResponseAuthentication = "yes";
-            PubkeyAuthentication = "yes";
-            PreferredAuthentications = "publickey";
-
-            Ciphers = "chacha20-poly1305@openssh.com,aes256-gcm@openssh.com,aes256-ctr";
-            KexAlgorithms = "curve25519-sha256@libssh.org,diffie-hellman-group-exchange-sha256";
-            HostKeyAlgorithms = "ssh-ed25519-cert-v01@openssh.com,ssh-rsa-cert-v01@openssh.com,ssh-ed25519,ssh-rsa";
-            MACs = "hmac-sha2-512-etm@openssh.com,hmac-sha2-256-etm@openssh.com,hmac-sha2-512,hmac-sha2-256";
-          };
+          Ciphers = "chacha20-poly1305@openssh.com,aes256-gcm@openssh.com,aes128-gcm@openssh.com,aes256-ctr,aes192-ctr,aes128-ctr";
+          KexAlgorithms = "curve25519-sha256@libssh.org,ecdh-sha2-nistp521,ecdh-sha2-nistp384,ecdh-sha2-nistp256,diffie-hellman-group-exchange-sha256";
+          HostKeyAlgorithms = "ssh-ed25519-cert-v01@openssh.com,ssh-rsa-cert-v01@openssh.com,ssh-ed25519,ssh-rsa,ecdsa-sha2-nistp521-cert-v01@openssh.com,ecdsa-sha2-nistp384-cert-v01@openssh.com,ecdsa-sha2-nistp256-cert-v01@openssh.com,ecdsa-sha2-nistp521,ecdsa-sha2-nistp384,ecdsa-sha2-nistp256";
+          MACs = "hmac-sha2-512-etm@openssh.com,hmac-sha2-256-etm@openssh.com,umac-128-etm@openssh.com,hmac-sha2-512,hmac-sha2-256,umac-128@openssh.com";
         };
       };
     };
