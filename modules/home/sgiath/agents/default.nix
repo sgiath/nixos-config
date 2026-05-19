@@ -16,6 +16,7 @@ in
     ./cursor.nix
     ./forge.nix
     ./opencode.nix
+    ./pi.nix
   ];
 
   options.sgiath.agents = {
@@ -26,33 +27,22 @@ in
     home.packages = [
       pkgs.python3
       pkgs.uv
-      pkgs.cookiecutter
       # pkgs.${namespace}.bird
       pkgs.nodejs
 
       # Cursor
       # pkgs.cursor-cli
 
-      # Fusion
       pkgs.${namespace}.fusion
-
-      # PI
-      pkgs.pi-coding-agent
-
-      # Plannotator
       pkgs.${namespace}.plannotator
-
-      # QMD
       pkgs.${namespace}.qmd
-
-      # beads
-      inputs.beads.packages.${pkgs.stdenv.hostPlatform.system}.default
 
       # Hermes
       inputs.hermes-agent.packages.${pkgs.stdenv.hostPlatform.system}.default
 
       # LLM tools
       inputs.openspec.packages.${pkgs.stdenv.hostPlatform.system}.default
+      inputs.beads.packages.${pkgs.stdenv.hostPlatform.system}.default
     ];
 
     # Node
