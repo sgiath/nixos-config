@@ -33,13 +33,33 @@ echo "    Source hash: ${src_hash}"
 tmp="$(mktemp -d)"
 trap 'rm -rf "$tmp"' EXIT
 
-echo "==> Downloading source for frontend lockfile..."
-curl -fsSL "https://github.com/${REPO_OWNER}/${REPO_NAME}/archive/refs/tags/v${version}.tar.gz" \
-  | tar -xz -C "$tmp"
-
-echo "==> Computing npm dependencies hash..."
-npm_hash="$(prefetch-npm-deps "$tmp/Eve-flipper-${version}/frontend/package-lock.json")"
-echo "    npm deps hash: ${npm_hash}"
+echo "==> Computing pnpm dependencies hash..."
+cat >"${tmp}/pnpm-deps.nix" <<EOF
+let
+  pkgs = import <nixpkgs> {};
+in
+pkgs.fetchPnpmDeps {
+  pname = "eve-flipper-frontend";
+  version = "${version}";
+  src = pkgs.fetchFromGitHub {
+    owner = "${REPO_OWNER}";
+    repo = "${REPO_NAME}";
+    rev = "v${version}";
+    hash = "${src_hash}";
+  };
+  sourceRoot = "source/frontend";
+  fetcherVersion = 3;
+  hash = "sha256-AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA=";
+}
+EOF
+pnpm_output="$(nix-build "${tmp}/pnpm-deps.nix" 2>&1 || true)"
+pnpm_hash="$(grep -oP 'got:\s+\Ksha256-[A-Za-z0-9+/=]+' <<<"${pnpm_output}" | tail -n1 || true)"
+if [[ -z "${pnpm_hash}" ]]; then
+  echo "ERROR: Could not determine pnpm dependencies hash" >&2
+  echo "${pnpm_output}" >&2
+  exit 1
+fi
+echo "    pnpm deps hash: ${pnpm_hash}"
 
 echo "==> Computing Go vendor hash..."
 cat >"${tmp}/go-vendor.nix" <<EOF
@@ -68,12 +88,12 @@ fi
 echo "    vendor hash: ${vendor_hash}"
 
 echo "==> Updating default.nix..."
-sed -i \
-  -e "s|version = \"[^\"]*\";|version = \"${version}\";|" \
-  -e "s|hash = \"sha256-[^\"]*\";|hash = \"${src_hash}\";|" \
-  -e "s|npmDepsHash = \"sha256-[^\"]*\";|npmDepsHash = \"${npm_hash}\";|" \
-  -e "s|vendorHash = \"sha256-[^\"]*\";|vendorHash = \"${vendor_hash}\";|" \
-  "${DEFAULT_NIX}"
+VERSION="${version}" SRC_HASH="${src_hash}" PNPM_HASH="${pnpm_hash}" VENDOR_HASH="${vendor_hash}" \
+  perl -0pi -e 's|version = "[^"]*";|version = "$ENV{VERSION}";|g;
+    s#(src = fetchFromGitHub \{\n    owner = "ilyaux";\n    repo = "Eve-flipper";\n    rev = "v\$\{version\}";\n    hash = ")[^"]+(";\n  \};)#\1$ENV{SRC_HASH}\2#g;
+    s#(fetcherVersion = 3;\n      hash = ")[^"]+(";\n    \};)#\1$ENV{PNPM_HASH}\2#g;
+    s|vendorHash = "[^"]*";|vendorHash = "$ENV{VENDOR_HASH}";|g;' \
+    "${DEFAULT_NIX}"
 
 echo "==> Done! Updated eve-flipper to version ${version}"
 echo ""

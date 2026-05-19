@@ -89,7 +89,7 @@
     };
 
     # https://github.com/anomalyco/opencode/releases/latest
-    opencode.url = "github:anomalyco/opencode/v1.15.4";
+    opencode.url = "github:anomalyco/opencode/v1.15.5";
 
     openspec = {
       url = "github:Fission-AI/OpenSpec";
@@ -119,7 +119,7 @@
 
     # https://github.com/max-sixty/worktrunk/releases/latest
     worktrunk = {
-      url = "github:max-sixty/worktrunk/v0.50.0";
+      url = "github:max-sixty/worktrunk/v0.51.0";
       inputs.nixpkgs.follows = "nixpkgs";
     };
 

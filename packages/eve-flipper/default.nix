@@ -1,33 +1,53 @@
 {
   lib,
   buildGoModule,
-  buildNpmPackage,
   esiCallbackUrl ? "http://localhost:13370/api/auth/callback",
   esiClientId ? (builtins.fromJSON (builtins.readFile ./../../secrets.json)).esi_client_id,
   esiClientSecret ? (builtins.fromJSON (builtins.readFile ./../../secrets.json)).esi_client_secret,
   fetchFromGitHub,
+  fetchPnpmDeps,
+  nodejs,
   perl,
+  pnpm,
+  pnpmConfigHook,
+  stdenvNoCC,
 }:
 
 let
   pname = "eve-flipper";
-  version = "1.6.3";
+  version = "1.6.4";
 
   src = fetchFromGitHub {
     owner = "ilyaux";
     repo = "Eve-flipper";
     rev = "v${version}";
-    hash = "sha256-TpFLOAWvYb5SZoBThHWARuvSeM1iYbreF2M/1No6ZOU=";
+    hash = "sha256-qIa0R8xTZYEQqR28/Ib6LwCQoAUooJHl5wkF/rfWOps=";
   };
 
-  frontend = buildNpmPackage {
+  frontend = stdenvNoCC.mkDerivation (finalAttrs: {
     pname = "${pname}-frontend";
     inherit version src;
 
     sourceRoot = "${src.name}/frontend";
-    npmDepsHash = "sha256-/i0f1MshBmlogXekk2JkTYOFPUKpUfs+PeFSJFzZuFc=";
+    pnpmDeps = fetchPnpmDeps {
+      inherit (finalAttrs) pname version src sourceRoot;
+      fetcherVersion = 3;
+      hash = "sha256-S5R5RHjbpHuc6E5zJZZfbTo44iFdSxcG5xyrLaUCN9g=";
+    };
 
-    npmBuildScript = "build";
+    nativeBuildInputs = [
+      nodejs
+      pnpm
+      pnpmConfigHook
+    ];
+
+    buildPhase = ''
+      runHook preBuild
+
+      pnpm build
+
+      runHook postBuild
+    '';
 
     installPhase = ''
       runHook preInstall
@@ -37,7 +57,7 @@ let
 
       runHook postInstall
     '';
-  };
+  });
 in
 buildGoModule {
   inherit pname version src;

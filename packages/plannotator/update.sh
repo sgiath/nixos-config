@@ -32,12 +32,9 @@ get_sri_hash() {
 
 echo "==> Fetching checksums..."
 X64_HASH=$(get_sri_hash x64)
-ARM64_HASH=$(get_sri_hash arm64)
 echo "    x64: ${X64_HASH}"
-echo "    arm64: ${ARM64_HASH}"
 
-sed -i "s/version = \"[^"]*\";/version = \"${VERSION}\";/" "${DEFAULT_NIX}"
-sed -i '/arch = "x64";/{n; s|hash = "sha256-[^"]*";|hash = "'"${X64_HASH}"'";|}' "${DEFAULT_NIX}"
-sed -i '/arch = "arm64";/{n; s|hash = "sha256-[^"]*";|hash = "'"${ARM64_HASH}"'";|}' "${DEFAULT_NIX}"
+sed -i "s|version = \"[^\"]*\";|version = \"${VERSION}\";|" "${DEFAULT_NIX}"
+sed -i "s|hash = \"sha256-[^\"]*\";|hash = \"${X64_HASH}\";|" "${DEFAULT_NIX}"
 
 echo "==> Done! Build to verify: nix build '.#plannotator'"
