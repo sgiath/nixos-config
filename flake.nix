@@ -84,7 +84,7 @@
 
     # https://github.com/zed-industries/zed/releases/latest
     zed = {
-      url = "github:zed-industries/zed/v1.2.6";
+      url = "github:zed-industries/zed/v1.2.7";
       # inputs.nixpkgs.follows = "nixpkgs";
     };
 
@@ -119,7 +119,7 @@
 
     # https://github.com/max-sixty/worktrunk/releases/latest
     worktrunk = {
-      url = "github:max-sixty/worktrunk/v0.51.0";
+      url = "github:max-sixty/worktrunk/v0.52.0";
       inputs.nixpkgs.follows = "nixpkgs";
     };
 
