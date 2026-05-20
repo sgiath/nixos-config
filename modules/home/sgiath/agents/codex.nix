@@ -28,7 +28,8 @@ in
           apps = true;
           memories = true;
           undo = true;
-          hooks = true;
+          plugin_hooks = true;
+          codex_git_commit = true;
         };
 
         projects = {

@@ -61,9 +61,8 @@ in
           ];
         };
 
-        datadog = {
-          url = "https://mcp.datadoghq.com/api/unstable/mcp-server/mcp?toolsets=all";
-        };
+        datadog.url = "https://mcp.datadoghq.com/api/unstable/mcp-server/mcp?toolsets=all";
+        linear.url = "https://mcp.linear.app/mcp";
 
         gate-agent = {
           url = "https://gate-agent.crazyegg.com/mcp";
