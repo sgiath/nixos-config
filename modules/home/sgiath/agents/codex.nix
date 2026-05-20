@@ -31,11 +31,6 @@ in
           hooks = true;
         };
 
-        marketplaces.worktrunk = {
-          source_type = "git";
-          source = "https://github.com/max-sixty/worktrunk.git";
-        };
-
         projects = {
           "${config.home.homeDirectory}/nixos".trust_level = "trusted";
 
