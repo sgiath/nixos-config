@@ -107,20 +107,6 @@
           popd
         '')
 
-        (writeShellScriptBin "upgrade" ''
-          pushd ~/nixos
-
-          git add --all
-          git commit --signoff -m "changes"
-
-          nix flake update
-          git add --all
-          git commit --signoff -m "flake update"
-          git push
-
-          popd
-        '')
-
         (writeShellScriptBin "fix-images" ''
           find . -type f \( \
             -iname "*.jpg" -o -iname "*.jpeg" -o -iname "*.png" -o -iname "*.gif" \
