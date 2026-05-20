@@ -134,6 +134,9 @@
 
           pushd ~/nixos/packages > /dev/null
 
+          echo ""; echo "=== clawpatch ==="
+          ./clawpatch/update.sh
+
           echo ""; echo "=== dnd5etools ==="
           ./dnd5etools/update.sh
 

@@ -7,6 +7,7 @@ mkShell {
   packages = with pkgs; [
     nil
     nixd
+    nixfmt
     nixfmt-tree
     nodejs
     shfmt
