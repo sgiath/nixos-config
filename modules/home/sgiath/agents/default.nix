@@ -42,7 +42,10 @@
       # LLM tools
       inputs.openspec.packages.${pkgs.stdenv.hostPlatform.system}.default
       inputs.beads.packages.${pkgs.stdenv.hostPlatform.system}.default
-      inputs.gas-town.packages.${pkgs.stdenv.hostPlatform.system}.default
+      (inputs.gas-town.packages.${pkgs.stdenv.hostPlatform.system}.default.overrideAttrs (_: {
+        version = "1.1.0";
+        vendorHash = "sha256-PQT/Xq9na3vI8Oy9INBYJf3GsiN5IxAVCxrNLhyIpO8=";
+      }))
     ];
 
     # Node
