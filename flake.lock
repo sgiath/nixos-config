@@ -701,16 +701,15 @@
         "nixpkgs": "nixpkgs_4"
       },
       "locked": {
-        "lastModified": 1778112361,
-        "narHash": "sha256-AZ36s/YXR271/BCrNkz5SRrWd4GwrHUOr480prZegiU=",
+        "lastModified": 1779250668,
+        "narHash": "sha256-/dtDnO7c6AKZMIdcTRFcun+pxdLO2fsTATAemS7+YDc=",
         "owner": "gastownhall",
         "repo": "gastown",
-        "rev": "ebef3c851e5e1e8e13de6ec67b16125a4cb86eed",
+        "rev": "625bcf8a92f9faef9804f73624a8bf770085ebd2",
         "type": "github"
       },
       "original": {
         "owner": "gastownhall",
-        "ref": "v1.1.0",
         "repo": "gastown",
         "type": "github"
       }
