@@ -51,6 +51,7 @@ pkgs.fetchPnpmDeps {
     tag = "v${VERSION}";
     hash = "${SRC_HASH}";
   };
+  pnpm = pkgs.pnpm_10;
   fetcherVersion = 3;
   hash = "sha256-AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA=";
 }
@@ -68,8 +69,21 @@ echo "    pnpm deps hash: ${PNPM_HASH}"
 
 echo "==> Updating default.nix..."
 perl -0pi -e 's#version = "[^"]+";#version = "'"${VERSION}"'";#' "${DEFAULT_NIX}"
-perl -0pi -e 's#(tag = "v\$\{finalAttrs\.version\}";\n    hash = ")[^"]+(";)#$1'"${SRC_HASH}"'$2#' "${DEFAULT_NIX}"
-perl -0pi -e 's#(fetcherVersion = 3;\n    hash = ")[^"]+(";)#$1'"${PNPM_HASH}"'$2#' "${DEFAULT_NIX}"
+perl -0pi -e 's#(src = fetchFromGitHub \{\n(?:(?!  \};).*\n)*?    hash = ")[^"]+(";\n  \};)#$1'"${SRC_HASH}"'$2#s' "${DEFAULT_NIX}"
+perl -0pi -e 's#(pnpmDeps = fetchPnpmDeps \{\n(?:(?!  \};).*\n)*?    hash = ")[^"]+(";\n  \};)#$1'"${PNPM_HASH}"'$2#s' "${DEFAULT_NIX}"
+
+if ! grep -Fq "version = \"${VERSION}\";" "${DEFAULT_NIX}"; then
+	echo "ERROR: version was not updated in ${DEFAULT_NIX}" >&2
+	exit 1
+fi
+if ! grep -Fq "hash = \"${SRC_HASH}\";" "${DEFAULT_NIX}"; then
+	echo "ERROR: source hash was not updated in ${DEFAULT_NIX}" >&2
+	exit 1
+fi
+if ! grep -Fq "hash = \"${PNPM_HASH}\";" "${DEFAULT_NIX}"; then
+	echo "ERROR: pnpm deps hash was not updated in ${DEFAULT_NIX}" >&2
+	exit 1
+fi
 
 echo "==> Done! Updated fusion to ${VERSION}"
 echo ""

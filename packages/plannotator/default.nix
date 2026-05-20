@@ -5,11 +5,11 @@
 }:
 stdenv.mkDerivation rec {
   pname = "plannotator";
-  version = "0.19.18";
+  version = "0.19.20";
 
   src = fetchurl {
     url = "https://github.com/backnotprop/plannotator/releases/download/v${version}/plannotator-linux-x64";
-    hash = "sha256-WiKYOfs8ZZ7TWe4zzCzVKrsh2eD0Msl4egpCtgRYUBE=";
+    hash = "sha256-KM8VxQLaROkQgqup2a0zAs17NoLOo7fPHwiEVtkP2S8=";
   };
 
   dontUnpack = true;
