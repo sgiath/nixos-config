@@ -1,4 +1,5 @@
 pkgs: {
+  beadboard = pkgs.callPackage ./beadboard { };
   bird = pkgs.callPackage ./bird { };
   clawpatch = pkgs.callPackage ./clawpatch { };
   dnd5etools = pkgs.callPackage ./dnd5etools { };

@@ -35,6 +35,7 @@
       pkgs.${namespace}.qmd
       pkgs.${namespace}.clawpatch
       pkgs.${namespace}.linear-cli
+      pkgs.${namespace}.beadboard
 
       # Hermes
       inputs.hermes-agent.packages.${pkgs.stdenv.hostPlatform.system}.default
