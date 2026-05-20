@@ -36,6 +36,7 @@ in
       pkgs.${namespace}.fusion
       pkgs.${namespace}.plannotator
       pkgs.${namespace}.qmd
+      pkgs.${namespace}.clawpatch
 
       # Hermes
       inputs.hermes-agent.packages.${pkgs.stdenv.hostPlatform.system}.default
