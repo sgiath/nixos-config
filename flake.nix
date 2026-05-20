@@ -125,6 +125,9 @@
 
     # https://github.com/gastownhall/beads/releases/latest
     beads.url = "github:gastownhall/beads/v1.0.4";
+    # https://github.com/gastownhall/gastown/releases/latest
+    gas-town.url = "github:gastownhall/gastown/v1.1.0";
+
     comfyui.url = "github:utensils/comfyui-nix";
     nix-minecraft.url = "github:Infinidoge/nix-minecraft";
   };

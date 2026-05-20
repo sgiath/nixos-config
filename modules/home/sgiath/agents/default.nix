@@ -6,9 +6,6 @@
   namespace,
   ...
 }:
-let
-  secrets = builtins.fromJSON (builtins.readFile ./../../../../secrets.json);
-in
 {
   imports = [
     ./claude.nix
@@ -37,6 +34,7 @@ in
       pkgs.${namespace}.plannotator
       pkgs.${namespace}.qmd
       pkgs.${namespace}.clawpatch
+      pkgs.${namespace}.linear-cli
 
       # Hermes
       inputs.hermes-agent.packages.${pkgs.stdenv.hostPlatform.system}.default
@@ -44,6 +42,7 @@ in
       # LLM tools
       inputs.openspec.packages.${pkgs.stdenv.hostPlatform.system}.default
       inputs.beads.packages.${pkgs.stdenv.hostPlatform.system}.default
+      inputs.gas-town.packages.${pkgs.stdenv.hostPlatform.system}.default
     ];
 
     # Node

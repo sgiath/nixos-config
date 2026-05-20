@@ -6,6 +6,7 @@ pkgs: {
   fusion = pkgs.callPackage ./fusion { };
   gogcli = pkgs.callPackage ./gogcli { };
   kimi-webbridge = pkgs.callPackage ./kimi-webbridge { };
+  linear-cli = pkgs.callPackage ./linear-cli { };
   n8n = pkgs.callPackage ./n8n { };
   nak = pkgs.callPackage ./nak { };
   omnisearch = pkgs.callPackage ./omnisearch { };
