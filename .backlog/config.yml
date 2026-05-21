@@ -1,0 +1,18 @@
+project_name: "nixos-config"
+default_status: "todo"
+statuses: ["todo", "in-progress", "done"]
+labels: ["bug", "enhancement", "needs-triage", "needs-info", "ready-for-agent", "ready-for-human", "wontfix"]
+definition_of_done: []
+date_format: yyyy-mm-dd
+max_column_width: 20
+default_editor: "zeditor --wait"
+auto_open_browser: true
+default_port: 6420
+remote_operations: true
+auto_commit: false
+filesystem_only: false
+zero_padded_ids: 3
+bypass_git_hooks: false
+check_active_branches: true
+active_branch_days: 30
+task_prefix: "task"

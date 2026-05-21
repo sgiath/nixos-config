@@ -52,6 +52,10 @@
       }))
     ];
 
+    programs.zsh.shellAliases = {
+      bl = "${lib.getExe inputs.backlog-md.packages.${pkgs.stdenv.hostPlatform.system}.default}";
+    };
+
     # Node
     programs.bun.enable = true;
 
