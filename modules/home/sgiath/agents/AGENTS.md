@@ -1,12 +1,12 @@
 ## NixOS
 
-This is a NixOS system. The project you are woring on uses `flake.nix` for dependency management so you need to run commands like this `nix develop -c <command>` to use the correct, project specific, version of the tool.
+This is a NixOS system. The project you are woring on uses `flake.nix` for dependency management so you migh need to run commands like this `nix develop -c <command>` to use the correct, project specific, version of the tool.
 
 ## Git
 
-- Safe by default: git status/diff/log. Push only when user asks.
+- Safe by default: git status/diff/log.
 - Destructive ops forbidden unless explicit (reset --hard, clean, restore, rm, …).
-- If user types a command (“pull and push”), that’s consent for that command.
+- All new work should be done in a separate branch and worktree. Use worktrunk to manage branches and worktrees.
 
 ## Plan Mode
 
@@ -21,17 +21,13 @@ This is a NixOS system. The project you are woring on uses `flake.nix` for depen
 - If a problem can be solved in a simpler way, propose it
 - If asked to do too much work at once, stop and state that clearly
 
-## Debugging issues
-
-Evidence-based, hypothesis-driven debugging. Use `/debug` for the full structured workflow.
-
 ## Debug Logging
 
 Features must log errors, unexpected exceptions, and operational issues with enough context to debug failures. Long-running jobs must also log start, progress checkpoints, and completion so a stuck run can be diagnosed from logs.
 
 ## Getting help
 
-- **Ask, Don't Assume**: Always ask for clarification rather than making assumptions. If you're stuck or struggling, stop and ask for help
+**Ask, Don't Assume**: Always ask for clarification rather than making assumptions. If you're stuck or struggling, stop and ask for help
 
 ## Critical Thinking
 
@@ -39,4 +35,3 @@ Features must log errors, unexpected exceptions, and operational issues with eno
 - Unsure: read more code; if still stuck, ask w/ short options.
 - Conflicts: call out; pick safer path.
 - Unrecognized changes: assume other agent; keep going; focus your changes. If it causes issues, stop + ask user.
-- Leave breadcrumb notes in thread.

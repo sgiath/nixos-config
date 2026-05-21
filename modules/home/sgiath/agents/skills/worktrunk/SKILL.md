@@ -273,11 +273,6 @@ When the user requests spawning a worktree with an agent in a background session
 tmux new-session -d -s <branch-name> "wt switch --create <branch-name> -x <agent-cli> -- '<task description>'"
 ```
 
-**Zellij** (check `$ZELLIJ` env var):
-```bash
-zellij run -- wt switch --create <branch-name> -x <agent-cli> -- '<task description>'
-```
-
 **Requirements** (all must be true):
 - User explicitly requests spawning/handoff
 - User is in a supported multiplexer (tmux or Zellij)
@@ -285,16 +280,10 @@ zellij run -- wt switch --create <branch-name> -x <agent-cli> -- '<task descript
 
 **Do not use this pattern** for normal worktree operations.
 
-Example (tmux, Claude Code):
+Example (tmux, OpenCode):
 ```bash
-tmux new-session -d -s fix-auth-bug "wt switch --create fix-auth-bug -x claude -- \
+tmux new-session -d -s fix-auth-bug "wt switch --create fix-auth-bug -x opencode run -- \
   'The login session expires after 5 minutes. Find the session timeout config and extend it to 24 hours.'"
-```
-
-Example (Zellij, OpenCode):
-```bash
-zellij run -- wt switch --create fix-auth-bug -x 'opencode run' -- \
-  'The login session expires after 5 minutes. Find the session timeout config and extend it to 24 hours.'
 ```
 
 ### Parallel sub-Agents (single Claude Code session)
