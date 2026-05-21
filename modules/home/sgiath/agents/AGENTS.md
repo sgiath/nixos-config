@@ -6,7 +6,6 @@ This is a NixOS system. The project you are woring on uses `flake.nix` for depen
 
 - Safe by default: git status/diff/log.
 - Destructive ops forbidden unless explicit (reset --hard, clean, restore, rm, …).
-- All new work should be done in a separate branch and worktree. Use worktrunk to manage branches and worktrees.
 
 ## Plan Mode
 

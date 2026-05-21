@@ -128,6 +128,9 @@
     # https://github.com/gastownhall/gastown/releases/latest
     gas-town.url = "github:gastownhall/gastown/v1.1.0";
 
+    # https://github.com/MrLesk/Backlog.md/releases/latest
+    backlog-md.url = "github:MrLesk/Backlog.md/v1.45.1";
+
     comfyui.url = "github:utensils/comfyui-nix";
     nix-minecraft.url = "github:Infinidoge/nix-minecraft";
   };
