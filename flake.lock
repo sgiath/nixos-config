@@ -830,11 +830,11 @@
         "nixpkgs": "nixpkgs_5"
       },
       "locked": {
-        "lastModified": 1779213149,
-        "narHash": "sha256-Cf+p/T4Z3n9Sw0TiR3kQaIwQI+/hfvLJcoTzeq6yS3E=",
+        "lastModified": 1779336838,
+        "narHash": "sha256-n1+l78hJRABp4cQHKeD0BVByT0vZLPqd09Tvoq8Q+d8=",
         "owner": "nix-community",
         "repo": "home-manager",
-        "rev": "bd868f769a69d3b6091a1da68a75cb83a181033c",
+        "rev": "928d72376949e222ea4f07b44828a55b0136422e",
         "type": "github"
       },
       "original": {
@@ -1406,11 +1406,11 @@
     },
     "nixpkgs-master": {
       "locked": {
-        "lastModified": 1779306905,
-        "narHash": "sha256-ge1chPxTmWjhOemOIOuEKl+t9cQICIa6U/TORBJTwvM=",
+        "lastModified": 1779341285,
+        "narHash": "sha256-cSDp+SHQSdAScHeN4Oyg2851ZtPjhYU/GsTLWCN92HM=",
         "owner": "NixOS",
         "repo": "nixpkgs",
-        "rev": "5ac79fdcbd10abbc790573580fc24fb6ea12098e",
+        "rev": "838e49ca74f6d8a3ca4d233b321b801fd18fe40e",
         "type": "github"
       },
       "original": {
@@ -1675,16 +1675,16 @@
         "nixpkgs": "nixpkgs_9"
       },
       "locked": {
-        "lastModified": 1779039880,
-        "narHash": "sha256-aCoajfdfNsEq5YGFwX+YKkC6Bo19f34BbKt3wJ1FNmA=",
+        "lastModified": 1779313437,
+        "narHash": "sha256-neISh7Gs1y8+2M0/5erhhNip5ZBYlUFqbgOsVljZ2Gc=",
         "owner": "anomalyco",
         "repo": "opencode",
-        "rev": "2b92c5677e830e95d34fc3d5664a69297d2d0b51",
+        "rev": "b5f092837d009f26f8f5f1557743654af3b3424b",
         "type": "github"
       },
       "original": {
         "owner": "anomalyco",
-        "ref": "v1.15.4",
+        "ref": "v1.15.6",
         "repo": "opencode",
         "type": "github"
       }
@@ -2367,16 +2367,16 @@
         "rust-overlay": "rust-overlay_2"
       },
       "locked": {
-        "lastModified": 1779215777,
-        "narHash": "sha256-480HTo6kHhJ1bVUzHBxYhWI6gVCpoVyPuNNMPQ6wWbw=",
+        "lastModified": 1779287502,
+        "narHash": "sha256-ToOIxcbK7cSfl1IJKFR8gg+Ps4zoLHlLqHII3cVXpbg=",
         "owner": "zed-industries",
         "repo": "zed",
-        "rev": "deb48ceb47125223df73902d1c3b72f2f442222b",
+        "rev": "0e3bab3c345882d3d500df826c46d2cebe1cb6a8",
         "type": "github"
       },
       "original": {
         "owner": "zed-industries",
-        "ref": "v1.2.7",
+        "ref": "v1.3.5",
         "repo": "zed",
         "type": "github"
       }

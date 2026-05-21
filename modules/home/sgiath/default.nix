@@ -134,6 +134,12 @@
 
           pushd ~/nixos/packages > /dev/null
 
+          echo ""; echo "=== beadboard ==="
+          ./beadboard/update.sh
+
+          # echo ""; echo "=== bird ==="
+          # ./bird/update.sh
+
           echo ""; echo "=== clawpatch ==="
           ./clawpatch/update.sh
 
@@ -146,14 +152,35 @@
           echo ""; echo "=== fusion ==="
           ./fusion/update.sh
 
+          # echo ""; echo "=== gogcli ==="
+          # ./gogcli/update.sh
+
           # echo ""; echo "=== kimi webbridge ==="
           # ./kimi-webbridge/update.sh
+
+          echo ""; echo "=== linear-cli ==="
+          ./linear-cli/update.sh
+
+          # echo ""; echo "=== n8n ==="
+          # ./n8n/update.sh
+
+          # echo ""; echo "=== nak ==="
+          # ./nak/update.sh
+
+          # echo ""; echo "=== omnisearch ==="
+          # ./omnisearch/update.sh
+
+          # echo ""; echo "=== openclaw ==="
+          # ./openclaw/update.sh
 
           echo ""; echo "=== plannotator ==="
           ./plannotator/update.sh
 
           echo ""; echo "=== qmd ==="
           ./qmd/update.sh
+
+          # echo ""; echo "=== relay-tester ==="
+          # ./relay-tester/update.sh
 
           echo ""; echo "=== t3code ==="
           ./t3code/update.sh
