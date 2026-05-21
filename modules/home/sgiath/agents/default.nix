@@ -30,6 +30,7 @@
       # Cursor
       # pkgs.cursor-cli
 
+      pkgs.${namespace}.coderabbit
       pkgs.${namespace}.fusion
       pkgs.${namespace}.plannotator
       pkgs.${namespace}.qmd

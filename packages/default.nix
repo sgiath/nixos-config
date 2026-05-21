@@ -2,6 +2,7 @@ pkgs: {
   beadboard = pkgs.callPackage ./beadboard { };
   bird = pkgs.callPackage ./bird { };
   clawpatch = pkgs.callPackage ./clawpatch { };
+  coderabbit = pkgs.callPackage ./coderabbit { };
   dnd5etools = pkgs.callPackage ./dnd5etools { };
   eve-flipper = pkgs.callPackage ./eve-flipper { };
   fusion = pkgs.callPackage ./fusion { };
