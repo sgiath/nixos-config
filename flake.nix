@@ -84,12 +84,12 @@
 
     # https://github.com/zed-industries/zed/releases/latest
     zed = {
-      url = "github:zed-industries/zed/v1.3.5";
+      url = "github:zed-industries/zed/v1.3.6";
       # inputs.nixpkgs.follows = "nixpkgs";
     };
 
     # https://github.com/anomalyco/opencode/releases/latest
-    opencode.url = "github:anomalyco/opencode/v1.15.4";
+    opencode.url = "github:anomalyco/opencode/v1.15.7";
 
     openspec = {
       url = "github:Fission-AI/OpenSpec";
