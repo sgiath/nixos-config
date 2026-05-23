@@ -6,6 +6,9 @@
   namespace,
   ...
 }:
+let
+  voxtype = inputs.voxtype.packages.${pkgs.stdenv.hostPlatform.system}.rocm;
+in
 {
   options.sgiath.targets.graphical = lib.mkEnableOption "graphical target";
 
@@ -31,6 +34,10 @@
       ];
       bind = [
         "$mod, Return, exec, ${lib.getExe pkgs.kitty}"
+        "$mod, V, exec, ${lib.getExe voxtype} record start"
+      ];
+      bindr = [
+        "$mod, V, exec, ${lib.getExe voxtype} record stop"
       ];
       windowrule = [
         "match:class alacritty, workspace 1"
@@ -79,7 +86,7 @@
 
       voxtype = {
         enable = true;
-        package = inputs.voxtype.packages.${pkgs.stdenv.hostPlatform.system}.rocm;
+        package = voxtype;
         model.name = "large-v3-turbo";
         service.enable = true;
         settings = {
