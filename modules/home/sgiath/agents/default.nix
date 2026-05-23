@@ -42,8 +42,8 @@
       inputs.hermes-agent.packages.${pkgs.stdenv.hostPlatform.system}.default
 
       # LLM tools
+      pkgs.openspec
       inputs.backlog-md.packages.${pkgs.stdenv.hostPlatform.system}.default
-      # inputs.openspec.packages.${pkgs.stdenv.hostPlatform.system}.default
       inputs.beads.packages.${pkgs.stdenv.hostPlatform.system}.default
       (inputs.gas-town.packages.${pkgs.stdenv.hostPlatform.system}.default.overrideAttrs (_: {
         __intentionallyOverridingVersion = true;

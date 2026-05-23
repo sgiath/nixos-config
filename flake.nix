@@ -91,11 +91,6 @@
     # https://github.com/anomalyco/opencode/releases/latest
     opencode = {
       url = "github:anomalyco/opencode/v1.15.10";
-      # inputs.nixpkgs.follows = "nixpkgs";
-    };
-
-    openspec = {
-      url = "github:Fission-AI/OpenSpec";
       inputs.nixpkgs.follows = "nixpkgs";
     };
 
