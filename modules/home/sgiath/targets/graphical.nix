@@ -7,7 +7,7 @@
   ...
 }:
 let
-  voxtype = inputs.voxtype.packages.${pkgs.stdenv.hostPlatform.system}.rocm;
+  voxtype = inputs.voxtype.packages.${pkgs.stdenv.hostPlatform.system}.vulkan;
 in
 {
   options.sgiath.targets.graphical = lib.mkEnableOption "graphical target";
