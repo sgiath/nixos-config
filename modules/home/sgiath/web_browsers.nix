@@ -13,8 +13,6 @@
     home.packages = [
       pkgs.tor-browser
       inputs.zen-browser.packages.${pkgs.stdenv.hostPlatform.system}.default
-      pkgs.lynx
-      pkgs.ladybird
     ];
 
     programs = {
