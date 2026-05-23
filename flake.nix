@@ -82,12 +82,6 @@
       inputs.nixpkgs.follows = "nixpkgs";
     };
 
-    # https://github.com/zed-industries/zed/releases/latest
-    zed = {
-      url = "github:zed-industries/zed/v1.3.6";
-      # inputs.nixpkgs.follows = "nixpkgs";
-    };
-
     # https://github.com/anomalyco/opencode/releases/latest
     opencode = {
       url = "github:anomalyco/opencode/v1.15.4";
@@ -174,15 +168,14 @@
         rocmSupport = true;
         allowUnfree = true;
         permittedInsecurePackages = [
-          "jitsi-meet-1.0.8043"
-          "electron-36.9.5"
-          "olm-3.2.16"
+          # "jitsi-meet-1.0.8043"
+          # "electron-36.9.5"
+          # "olm-3.2.16"
         ];
       };
 
       overlays = with inputs; [
         hyprland.overlays.default
-        zed.overlays.default
         nix-minecraft.overlay
         noctalia.overlays.default
         hermes-agent.overlays.default
