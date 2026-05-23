@@ -30,6 +30,9 @@
       # Cursor
       # pkgs.cursor-cli
 
+      pkgs.openspec
+      inputs.backlog-md.packages.${pkgs.stdenv.hostPlatform.system}.default
+      inputs.beads.packages.${pkgs.stdenv.hostPlatform.system}.default
       pkgs.${namespace}.coderabbit
       pkgs.${namespace}.fusion
       pkgs.${namespace}.plannotator
@@ -40,16 +43,6 @@
 
       # Hermes
       inputs.hermes-agent.packages.${pkgs.stdenv.hostPlatform.system}.default
-
-      # LLM tools
-      pkgs.openspec
-      inputs.backlog-md.packages.${pkgs.stdenv.hostPlatform.system}.default
-      inputs.beads.packages.${pkgs.stdenv.hostPlatform.system}.default
-      (inputs.gas-town.packages.${pkgs.stdenv.hostPlatform.system}.default.overrideAttrs (_: {
-        __intentionallyOverridingVersion = true;
-        version = "1.1.0";
-        vendorHash = "sha256-PQT/Xq9na3vI8Oy9INBYJf3GsiN5IxAVCxrNLhyIpO8=";
-      }))
     ];
 
     programs.zsh.shellAliases = {
