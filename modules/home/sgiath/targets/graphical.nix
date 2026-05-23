@@ -1,4 +1,5 @@
 {
+  inputs,
   config,
   lib,
   pkgs,
@@ -74,6 +75,17 @@
       obsidian = {
         enable = true;
         cli.enable = true;
+      };
+
+      voxtype = {
+        enable = true;
+        package = inputs.voxtype.packages.${pkgs.stdenv.hostPlatform.system}.rocm;
+        model.name = "large-v3-turbo";
+        service.enable = true;
+        settings = {
+          hotkey.enabled = false;
+          whisper.language = "en";
+        };
       };
     };
 

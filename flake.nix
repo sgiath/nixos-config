@@ -123,6 +123,9 @@
     # https://github.com/MrLesk/Backlog.md/releases/latest
     backlog-md.url = "github:MrLesk/Backlog.md/v1.45.1";
 
+    # https://github.com/peteonrails/voxtype/releases/latest
+    voxtype.url = "github:peteonrails/voxtype/v0.7.3";
+
     comfyui.url = "github:utensils/comfyui-nix";
     nix-minecraft.url = "github:Infinidoge/nix-minecraft";
   };
@@ -167,11 +170,7 @@
         cudaSupport = false;
         rocmSupport = true;
         allowUnfree = true;
-        permittedInsecurePackages = [
-          # "jitsi-meet-1.0.8043"
-          # "electron-36.9.5"
-          # "olm-3.2.16"
-        ];
+        permittedInsecurePackages = [ ];
       };
 
       overlays = with inputs; [
@@ -198,6 +197,7 @@
         noctalia.homeModules.default
         sops-nix.homeManagerModules.sops
         nix-index-database.homeModules.nix-index
+        voxtype.homeManagerModules.default
         # whisper-dict.homeManagerModules.default
         # niamh.homeManagerModules.default
       ];

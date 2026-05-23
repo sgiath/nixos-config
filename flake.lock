@@ -209,11 +209,11 @@
         ]
       },
       "locked": {
-        "lastModified": 1779373552,
-        "narHash": "sha256-9FCY5+WZmoZi4zN0xbdq3lNcPudvYjONpv21/9ddV/0=",
+        "lastModified": 1779545578,
+        "narHash": "sha256-Ygah30BbK0Gv7dMB19w7G7JLuybTEddan+C+cfBfgI8=",
         "owner": "emmanuelrosa",
         "repo": "btc-clients-nix",
-        "rev": "94797b5b75bbc021b0ceb83473110bcb58683542",
+        "rev": "37aae8ddd8a45d4b1592316371f6d9d1024c53b9",
         "type": "github"
       },
       "original": {
@@ -700,6 +700,24 @@
     "flake-utils_5": {
       "inputs": {
         "systems": "systems_9"
+      },
+      "locked": {
+        "lastModified": 1731533236,
+        "narHash": "sha256-l0KFg5HjrsfsO/JpG+r7fRrqm12kzFHyUHqHCVpMMbI=",
+        "owner": "numtide",
+        "repo": "flake-utils",
+        "rev": "11707dc2f618dd54ca8739b309ec4fc024de578b",
+        "type": "github"
+      },
+      "original": {
+        "owner": "numtide",
+        "repo": "flake-utils",
+        "type": "github"
+      }
+    },
+    "flake-utils_6": {
+      "inputs": {
+        "systems": "systems_10"
       },
       "locked": {
         "lastModified": 1731533236,
@@ -1448,11 +1466,11 @@
     },
     "nixpkgs-master": {
       "locked": {
-        "lastModified": 1779514668,
-        "narHash": "sha256-j98k8jwEFea0cpwx/2lLizPqYQa3MSpPfPz7azwNHn8=",
+        "lastModified": 1779563535,
+        "narHash": "sha256-jiu420ESWD+FXwk1EEKQH1jLMIQj3j9pbOuHIeJAo5k=",
         "owner": "NixOS",
         "repo": "nixpkgs",
-        "rev": "b29bcec04941674b8a273933caf3f3c06773566a",
+        "rev": "0710aaa0e301f18afc330eef0000ca9f3c5898a6",
         "type": "github"
       },
       "original": {
@@ -1490,6 +1508,22 @@
       "original": {
         "owner": "NixOS",
         "ref": "nixpkgs-unstable",
+        "repo": "nixpkgs",
+        "type": "github"
+      }
+    },
+    "nixpkgs_11": {
+      "locked": {
+        "lastModified": 1774386573,
+        "narHash": "sha256-4hAV26quOxdC6iyG7kYaZcM3VOskcPUrdCQd/nx8obc=",
+        "owner": "NixOS",
+        "repo": "nixpkgs",
+        "rev": "46db2e09e1d3f113a13c0d7b81e2f221c63b8ce9",
+        "type": "github"
+      },
+      "original": {
+        "owner": "NixOS",
+        "ref": "nixos-unstable",
         "repo": "nixpkgs",
         "type": "github"
       }
@@ -1608,11 +1642,11 @@
     },
     "nixpkgs_9": {
       "locked": {
-        "lastModified": 1779357205,
-        "narHash": "sha256-cCO8aTqss5x9Ky8GWkpY0Hy5fyTZEbtifSUV8QjSzic=",
+        "lastModified": 1779508470,
+        "narHash": "sha256-Ap9KJX+5xHIn3bPIpfNgT6MEXdAECECwo4/rmlQD74M=",
         "owner": "NixOS",
         "repo": "nixpkgs",
-        "rev": "f83fc3c307e74bc5fd5adb7eb6b8b13ffd2a36e1",
+        "rev": "29916453413845e54a65b8a1cf996842300cd299",
         "type": "github"
       },
       "original": {
@@ -1870,6 +1904,7 @@
         "snowfall-lib": "snowfall-lib_2",
         "sops-nix": "sops-nix",
         "stylix": "stylix",
+        "voxtype": "voxtype",
         "worktrunk": "worktrunk",
         "zen-browser": "zen-browser"
       }
@@ -2034,6 +2069,21 @@
       }
     },
     "systems": {
+      "locked": {
+        "lastModified": 1681028828,
+        "narHash": "sha256-Vy1rq5AaRuLzOxct8nz4T6wlgyUR7zLU309k9mBC768=",
+        "owner": "nix-systems",
+        "repo": "default",
+        "rev": "da67096a3b9bf56a91d16901293e51ba5b49a27e",
+        "type": "github"
+      },
+      "original": {
+        "owner": "nix-systems",
+        "repo": "default",
+        "type": "github"
+      }
+    },
+    "systems_10": {
       "locked": {
         "lastModified": 1681028828,
         "narHash": "sha256-Vy1rq5AaRuLzOxct8nz4T6wlgyUR7zLU309k9mBC768=",
@@ -2346,10 +2396,30 @@
         "type": "github"
       }
     },
+    "voxtype": {
+      "inputs": {
+        "flake-utils": "flake-utils_5",
+        "nixpkgs": "nixpkgs_11"
+      },
+      "locked": {
+        "lastModified": 1779167046,
+        "narHash": "sha256-iFrEc15kWf9Q8WxZB5m3Mn6VIvVe2m4agquaTBDGKGk=",
+        "owner": "peteonrails",
+        "repo": "voxtype",
+        "rev": "d4d4aafe2b93a2cabee05fff0036f708c99f7b57",
+        "type": "github"
+      },
+      "original": {
+        "owner": "peteonrails",
+        "ref": "v0.7.3",
+        "repo": "voxtype",
+        "type": "github"
+      }
+    },
     "worktrunk": {
       "inputs": {
         "crane": "crane_2",
-        "flake-utils": "flake-utils_5",
+        "flake-utils": "flake-utils_6",
         "nixpkgs": [
           "nixpkgs"
         ],
