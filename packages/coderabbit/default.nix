@@ -10,11 +10,11 @@
 
 stdenv.mkDerivation rec {
   pname = "coderabbit";
-  version = "0.5.1";
+  version = "0.5.2";
 
   src = fetchurl {
     url = "https://cli.coderabbit.ai/releases/${version}/coderabbit-linux-x64.zip";
-    hash = "sha256-+iuoLgYemQDvoyU9wSMk2tX8MeMAlgndKx7Gk/0nBnI=";
+    hash = "sha256-ybnZQkU+pGsXnQX/wPrrcXZ+8mSqiIAHgBA1AlIj4so=";
   };
 
   nativeBuildInputs = [

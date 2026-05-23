@@ -69,8 +69,10 @@ echo "    pnpm deps hash: ${PNPM_HASH}"
 
 echo "==> Updating default.nix..."
 perl -0pi -e 's#version = "[^"]+";#version = "'"${VERSION}"'";#' "${DEFAULT_NIX}"
-perl -0pi -e 's#(src = fetchFromGitHub \{\n(?:(?!  \};).*\n)*?    hash = ")[^"]+(";\n  \};)#$1'"${SRC_HASH}"'$2#s' "${DEFAULT_NIX}"
-perl -0pi -e 's#(pnpmDeps = fetchPnpmDeps \{\n(?:(?!  \};).*\n)*?    hash = ")[^"]+(";\n  \};)#$1'"${PNPM_HASH}"'$2#s' "${DEFAULT_NIX}"
+SRC_HASH="${SRC_HASH}" PNPM_HASH="${PNPM_HASH}" perl -0pi -e '
+  s#(src = fetchFromGitHub \{\n(?:(?!  \};)[^\n]*\n)*?    hash = ")[^"]+(";\n  \};)#$1$ENV{SRC_HASH}$2#;
+  s#(pnpmDeps = fetchPnpmDeps \{\n(?:(?!  \};)[^\n]*\n)*?    hash = ")[^"]+(";\n  \};)#$1$ENV{PNPM_HASH}$2#;
+' "${DEFAULT_NIX}"
 
 if ! grep -Fq "version = \"${VERSION}\";" "${DEFAULT_NIX}"; then
 	echo "ERROR: version was not updated in ${DEFAULT_NIX}" >&2

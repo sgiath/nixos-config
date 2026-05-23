@@ -12,13 +12,13 @@
 
 stdenv.mkDerivation (finalAttrs: {
   pname = "clawpatch";
-  version = "0.3.0";
+  version = "0.4.0";
 
   src = fetchFromGitHub {
     owner = "openclaw";
     repo = "clawpatch";
     tag = "v${finalAttrs.version}";
-    hash = "sha256-y4MLZtHgPOnuOhysGQsptBtQZglhZNXeZM/UUpkFL/8=";
+    hash = "sha256-+4FxNes/lfEFpkEqAq4iQILrgOQBQRxAcfJ5MngO0vM=";
   };
 
   pnpmDeps = fetchPnpmDeps {
