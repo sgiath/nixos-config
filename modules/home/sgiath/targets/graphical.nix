@@ -34,10 +34,10 @@ in
       ];
       bind = [
         "$mod, Return, exec, ${lib.getExe pkgs.kitty}"
-        "$mod, V, exec, ${lib.getExe voxtype} record start"
+        "$mod, B, exec, ${lib.getExe voxtype} record start"
       ];
       bindr = [
-        "$mod, V, exec, ${lib.getExe voxtype} record stop"
+        "$mod, B, exec, ${lib.getExe voxtype} record stop"
       ];
       windowrule = [
         "match:class alacritty, workspace 1"

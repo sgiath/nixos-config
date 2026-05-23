@@ -85,7 +85,6 @@
       bind = [
         "$mod SHIFT, Q, exec, $ipc sessionMenu toggle"
         "$mod, slash, exec, $ipc launcher toggle"
-        "$mod, B, exec, $ipc launcher windows"
       ];
 
       layerrule = [
