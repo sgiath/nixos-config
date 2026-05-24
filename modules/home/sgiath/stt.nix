@@ -7,12 +7,17 @@
 }:
 
 let
-  voxtype = inputs.voxtype.packages.${pkgs.stdenv.hostPlatform.system}.vulkan;
+  voxtype = inputs.voxtype.packages.${pkgs.stdenv.hostPlatform.system};
 in
 {
   config = lib.mkIf config.programs.voxtype.enable {
+    home.packages = [
+      voxtype.vulkan
+      voxtype.osd-native
+    ];
+
     programs.voxtype = {
-      package = voxtype;
+      package = voxtype.vulkan;
       model.name = "large-v3-turbo";
       service.enable = true;
       settings = {
@@ -27,15 +32,15 @@ in
 
     wayland.windowManager.hyprland.settings = {
       bind = [
-        "$mod, B, exec, ${lib.getExe voxtype} record start"
+        "$mod, B, exec, ${lib.getExe voxtype.vulkan} record start"
       ];
       bindr = [
-        "$mod, B, exec, ${lib.getExe voxtype} record stop"
+        "$mod, B, exec, ${lib.getExe voxtype.vulkan} record stop"
       ];
     };
 
     systemd.user.services.voxtype = {
-      Service.Environment = "VOXTYPE_VULKAN_DEVICE=amd";
+      Service.Environment = "'VOXTYPE_VULKAN_DEVICE=amd' 'HSA_OVERRIDE_GFX_VERSION=10.3.0'";
     };
   };
 }
