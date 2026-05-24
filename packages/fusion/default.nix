@@ -13,7 +13,7 @@
 
 stdenv.mkDerivation (finalAttrs: {
   pname = "fusion";
-  version = "0.32.0";
+  version = "0.33.0";
 
   src = fetchFromGitHub {
     owner = "Runfusion";
@@ -26,7 +26,7 @@ stdenv.mkDerivation (finalAttrs: {
     inherit (finalAttrs) pname version src;
     pnpm = pnpm_10;
     fetcherVersion = 3;
-    hash = "sha256-ebxTGZe4n1cSHBPdQAX8ge1/HYTm6qg3vGYJtMlVHCc=";
+    hash = "sha256-Ja1dop7W4crXZE2wXkgbOVl4/r5IR4SEkRG79aZXN0s=";
   };
 
   nativeBuildInputs = [
