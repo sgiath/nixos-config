@@ -55,8 +55,4 @@ in
     popups = 10;
     terminal = 10;
   };
-
-  # services = {
-  #   niamh.enable = false;
-  # };
 }

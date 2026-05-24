@@ -94,21 +94,6 @@
       inputs.nixpkgs.follows = "nixpkgs";
     };
 
-    # niamh = {
-    #   url = "path:/home/sgiath/develop/sgiath/niamh";
-    #   inputs.nixpkgs.follows = "nixpkgs";
-    # };
-
-    # bird-src = {
-    #   url = "path:/home/sgiath/develop/sgiath/bird";
-    #   flake = false;
-    # };
-
-    # whisper-dict = {
-    #   url = "github:sgiath/whisper-dict";
-    #   inputs.nixpkgs.follows = "nixpkgs";
-    # };
-
     # https://github.com/max-sixty/worktrunk/releases/latest
     worktrunk = {
       url = "github:max-sixty/worktrunk/v0.53.0";
@@ -198,8 +183,6 @@
         sops-nix.homeManagerModules.sops
         nix-index-database.homeModules.nix-index
         voxtype.homeManagerModules.default
-        # whisper-dict.homeManagerModules.default
-        # niamh.homeManagerModules.default
       ];
     };
 }
