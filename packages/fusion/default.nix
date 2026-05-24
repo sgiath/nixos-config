@@ -5,9 +5,11 @@
   git,
   lib,
   makeWrapper,
+  node-gyp,
   nodejs,
   pnpm_10,
   pnpmConfigHook,
+  python3,
   stdenv,
 }:
 
@@ -32,8 +34,10 @@ stdenv.mkDerivation (finalAttrs: {
   nativeBuildInputs = [
     autoPatchelfHook
     makeWrapper
+    node-gyp
     pnpm_10
     pnpmConfigHook
+    python3
   ];
 
   buildInputs = [
@@ -43,6 +47,10 @@ stdenv.mkDerivation (finalAttrs: {
 
   buildPhase = ''
     runHook preBuild
+
+    pushd node_modules/.pnpm/@homebridge+node-pty-prebuilt-multiarch@0.13.1/node_modules/@homebridge/node-pty-prebuilt-multiarch
+    node-gyp rebuild
+    popd
 
     pnpm build
 
