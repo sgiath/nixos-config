@@ -39,9 +39,9 @@ in
     };
 
     systemd.user.services.voxtype = {
-      Service.Environment = [
-        "VOXTYPE_VULKAN_DEVICE=amd"
-      ];
+      Service.Environment = {
+        VOXTYPE_VULKAN_DEVICE = "amd";
+      };
     };
   };
 }
