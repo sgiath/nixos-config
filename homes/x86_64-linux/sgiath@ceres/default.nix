@@ -7,14 +7,12 @@
 }:
 let
   eveFlipper = pkgs.${namespace}.eve-flipper;
-  kimiWebbridge = pkgs.${namespace}.kimi-webbridge;
 in
 {
   home.packages = with pkgs; [
     texliveMedium
     # lmstudio
     # davinci-resolve-studio
-    kimiWebbridge
     whisper-cpp-vulkan
   ];
 
@@ -33,26 +31,6 @@ in
         "HOME=${config.home.homeDirectory}"
       ];
       ExecStart = "${lib.getExe eveFlipper} --host 127.0.0.1 --port 13370";
-    };
-    Install = {
-      WantedBy = [ "default.target" ];
-    };
-  };
-
-  systemd.user.services.kimi-webbridge = {
-    Unit = {
-      Description = "Kimi WebBridge daemon";
-      After = [ "network-online.target" ];
-      Wants = [ "network-online.target" ];
-    };
-    Service = {
-      Restart = "always";
-      RestartSec = 5;
-      KillMode = "process";
-      Environment = [
-        "HOME=${config.home.homeDirectory}"
-      ];
-      ExecStart = "${lib.getExe kimiWebbridge} start --foreground";
     };
     Install = {
       WantedBy = [ "default.target" ];

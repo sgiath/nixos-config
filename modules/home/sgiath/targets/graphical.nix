@@ -1,23 +1,16 @@
 {
-  inputs,
   config,
   lib,
   pkgs,
   namespace,
   ...
 }:
-let
-  voxtype = inputs.voxtype.packages.${pkgs.stdenv.hostPlatform.system}.vulkan;
-in
 {
   options.sgiath.targets.graphical = lib.mkEnableOption "graphical target";
 
   config = lib.mkIf (config.sgiath.targets.graphical) {
     home.packages = with pkgs; [
       xterm
-
-      # gimp
-      # libreoffice
       vlc
       kdePackages.okular
       libwacom
@@ -34,10 +27,6 @@ in
       ];
       bind = [
         "$mod, Return, exec, ${lib.getExe pkgs.kitty}"
-        "$mod, B, exec, ${lib.getExe voxtype} record start"
-      ];
-      bindr = [
-        "$mod, B, exec, ${lib.getExe voxtype} record stop"
       ];
       windowrule = [
         "match:class alacritty, workspace 1"
@@ -53,13 +42,6 @@ in
 
     services = {
       udiskie.enable = true;
-      # whisper-dict = {
-      #   enable = false;
-      #   model = "large-v3-turbo";
-      #   triggerKey = "rightctrl";
-      #   minConfidence = 0.6;
-      #   minRecordingMs = 250;
-      # };
     };
 
     programs = {
@@ -75,6 +57,7 @@ in
       ghostty.enable = false;
 
       # utils
+      voxtype.enable = true;
       pandoc.enable = true;
       vscode.enable = false;
       obs-studio.enable = true;
@@ -82,17 +65,6 @@ in
       obsidian = {
         enable = true;
         cli.enable = true;
-      };
-
-      voxtype = {
-        enable = true;
-        package = voxtype;
-        model.name = "large-v3-turbo";
-        service.enable = true;
-        settings = {
-          hotkey.enabled = false;
-          whisper.language = "en";
-        };
       };
     };
 

@@ -21,6 +21,7 @@
     ./noctalia.nix
     ./ssh.nix
     ./starship.nix
+    ./stt.nix
     ./stylix.nix
     ./tmux.nix
     ./waybar.nix
