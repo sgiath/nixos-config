@@ -12,12 +12,12 @@ in
 {
   config = lib.mkIf config.programs.voxtype.enable {
     home.packages = [
-      voxtype.vulkan
+      voxtype.rocm
       voxtype.osd-native
     ];
 
     programs.voxtype = {
-      package = voxtype.vulkan;
+      package = voxtype.rocm;
       model.name = "large-v3-turbo";
       service.enable = true;
       settings = {
@@ -32,10 +32,10 @@ in
 
     wayland.windowManager.hyprland.settings = {
       bind = [
-        "$mod, B, exec, ${lib.getExe voxtype.vulkan} record start"
+        "$mod, B, exec, ${lib.getExe voxtype.rocm} record start"
       ];
       bindr = [
-        "$mod, B, exec, ${lib.getExe voxtype.vulkan} record stop"
+        "$mod, B, exec, ${lib.getExe voxtype.rocm} record stop"
       ];
     };
 
