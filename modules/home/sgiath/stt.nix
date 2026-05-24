@@ -33,5 +33,9 @@ in
         "$mod, B, exec, ${lib.getExe voxtype} record stop"
       ];
     };
+
+    systemd.user.services.voxtype = {
+      Service.Environment = "VOXTYPE_VULKAN_DEVICE=amd";
+    };
   };
 }
