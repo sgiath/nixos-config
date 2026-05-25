@@ -66,7 +66,7 @@
 
         datadog.url = "https://mcp.datadoghq.com/api/unstable/mcp-server/mcp?toolsets=all";
         linear.url = "https://mcp.linear.app/mcp";
-        notion.url = "https://mcp.notion.app/mcp";
+        notion.url = "https://mcp.notion.com/mcp";
       };
     };
   };
