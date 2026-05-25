@@ -4,15 +4,23 @@
   lib,
   ...
 }:
-let
-  # codex = inputs.codex.packages.${pkgs.stdenv.hostPlatform.system}.codex-rs;
-  codex = pkgs.codex;
-in
 {
   config = lib.mkIf config.sgiath.agents.enable {
+    home.packages = with pkgs; [
+      (writeShellScriptBin "codex-temp" ''
+        tmp="$(mktemp -d -p "$HOME" .codex-hook-trust.XXXXXX)"
+        chmod 700 "$tmp"
+
+        cp ~/.codex/auth.json "$tmp/auth.json"
+        cp ~/.codex/config.toml "$tmp/config.toml"
+
+        CODEX_HOME="$tmp" ${lib.getExe codex} -C "''${1:-$PWD}"
+      '')
+    ];
+
     programs.codex = {
       enable = true;
-      package = codex;
+      package = pkgs.codex;
       enableMcpIntegration = true;
       context = ./AGENTS.md;
       skills = ./skills;
@@ -47,11 +55,17 @@ in
           "${config.home.homeDirectory}/develop/crazyegg/k8s-config".trust_level = "trusted";
           "${config.home.homeDirectory}/develop/crazyegg/db-schemas".trust_level = "trusted";
         };
+
+        hooks.state = {
+          "${config.home.homeDirectory}/develop/crazyegg/core_v2/.codex/hooks.json:stop:0:0" = {
+            trusted_hash = "sha256:5327d25062b16a8e306ee324a31b89e733a60a27a1d68cb53f2721c7b23c8b1a";
+          };
+        };
       };
     };
 
     programs.zsh.shellAliases = {
-      cx = "${lib.getExe codex} --yolo --dangerously-bypass-hook-trust";
+      cx = "${lib.getExe pkgs.codex} --yolo --dangerously-bypass-hook-trust";
     };
   };
 }
