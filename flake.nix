@@ -109,7 +109,7 @@
     backlog-md.url = "github:MrLesk/Backlog.md/v1.45.1";
 
     # https://github.com/peteonrails/voxtype/releases/latest
-    voxtype.url = "github:peteonrails/voxtype/v0.7.3";
+    voxtype.url = "github:peteonrails/voxtype/v0.7.4";
 
     comfyui.url = "github:utensils/comfyui-nix";
     nix-minecraft.url = "github:Infinidoge/nix-minecraft";

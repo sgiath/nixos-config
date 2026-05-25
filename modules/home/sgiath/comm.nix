@@ -12,6 +12,7 @@
 
   config = lib.mkIf (config.sgiath.comm.enable) {
     home.packages = with pkgs; [
+      slack
       # webcord
       telegram-desktop
       signal-desktop
@@ -59,13 +60,14 @@
 
     wayland.windowManager.hyprland.settings = {
       exec-once = [
+        "${lib.getExe pkgs.slack}"
         # "${lib.getExe pkgs.webcord}"
         # "${lib.getExe pkgs.telegram-desktop}"
         "${lib.getExe pkgs.signal-desktop}"
         "${lib.getExe pkgs.cinny-desktop}"
       ];
       windowrule = [
-        "match:class Slack, workspace 10 silent, no_initial_focus on"
+        "match:class slack, workspace 10 silent, no_initial_focus on"
         "match:class WebCord, workspace 10 silent, no_initial_focus on"
         "match:class signal, workspace 10 silent, no_initial_focus on"
         "match:class org.telegram.desktop, workspace 10 silent, no_initial_focus on"

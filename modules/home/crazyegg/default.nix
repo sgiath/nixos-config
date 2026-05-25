@@ -14,12 +14,8 @@
 
   config = lib.mkIf config.crazyegg.enable {
     home.packages = with pkgs; [
-      slack
       google-chrome
       insomnia
-    ];
-    wayland.windowManager.hyprland.settings.exec-once = [
-      "${lib.getExe pkgs.slack}"
     ];
     wayland.windowManager.hyprland.settings.windowrule = [
       "match:class google-chrome, workspace 3 silent"

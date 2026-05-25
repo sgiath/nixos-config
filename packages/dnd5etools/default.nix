@@ -6,7 +6,7 @@
   p7zip,
 }:
 let
-  version = "2.28.0";
+  version = "2.28.1";
   pname = "5etools";
 
   imgHashes = [
@@ -85,11 +85,11 @@ buildNpmPackage {
     pname = "5etools-src";
     url = "https://github.com/5etools-mirror-3/5etools-src/releases/download/v${version}/${pname}-v${version}.zip";
     stripRoot = false;
-    hash = "sha256-mTYMqVWyCvduzhUVXuDX/Ifr/qsl6NYRD7ht3uKMz3U=";
+    hash = "sha256-QuF24XBuHmAiwfyhYr3cnljo3mAcZf3Zlms9IrywtpM=";
   };
 
   # To update: nix run nixpkgs#prefetch-npm-deps -- package-lock.json
-  npmDepsHash = "sha256-stI3hfX5Pvg9u63yycLJ3gPKga02PD6wErYA7Y6hzYw=";
+  npmDepsHash = "sha256-SGTEl3Xs3r+bCuWRKCy7GU7IC1XDSWfn/65p4FB9m7k=";
 
   nativeBuildInputs = [ p7zip ];
 
