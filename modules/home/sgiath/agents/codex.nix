@@ -31,6 +31,8 @@
         suppress_unstable_features_warning = true;
         personality = "pragmatic";
 
+        tui.model_availability_nux."gpt-5.5" = 1;
+
         # https://developers.openai.com/codex/config-basic#supported-features
         features = {
           apps = true;
