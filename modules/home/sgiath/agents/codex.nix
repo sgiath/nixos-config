@@ -51,7 +51,7 @@ in
     };
 
     programs.zsh.shellAliases = {
-      cx = "${lib.getExe codex} --yolo  --dangerously-bypass-approvals-and-sandbox --dangerously-bypass-hook-trust";
+      cx = "${lib.getExe codex} --yolo --dangerously-bypass-hook-trust";
     };
   };
 }
