@@ -40,6 +40,7 @@
       pkgs.${namespace}.clawpatch
       pkgs.${namespace}.linear-cli
       pkgs.${namespace}.beadboard
+      pkgs.${namespace}.grok
 
       # Hermes
       inputs.hermes-agent.packages.${pkgs.stdenv.hostPlatform.system}.default

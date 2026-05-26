@@ -7,6 +7,7 @@ pkgs: {
   eve-flipper = pkgs.callPackage ./eve-flipper { };
   fusion = pkgs.callPackage ./fusion { };
   gogcli = pkgs.callPackage ./gogcli { };
+  grok = pkgs.callPackage ./grok { };
   kimi-webbridge = pkgs.callPackage ./kimi-webbridge { };
   linear-cli = pkgs.callPackage ./linear-cli { };
   nak = pkgs.callPackage ./nak { };

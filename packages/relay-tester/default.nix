@@ -6,7 +6,7 @@
   openssl,
 }:
 
-rustPlatform.buildRustPackage rec {
+rustPlatform.buildRustPackage {
   pname = "relay-tester";
   version = "0.2.0";
 
