@@ -78,11 +78,11 @@ Created by `wt switch <branch>` when switching to a branch that doesn't have a w
 
 ### 2. Config files
 
-| File | Created by | Purpose |
-|------|------------|---------|
-| `~/.config/worktrunk/config.toml` | `wt config create` | User preferences |
-| `~/.config/worktrunk/approvals.toml` | Approving project commands | Approved hook and alias commands |
-| `.config/wt.toml` | `wt config create --project` | Project hooks (checked into repo) |
+| File                                 | Created by                   | Purpose                           |
+| ------------------------------------ | ---------------------------- | --------------------------------- |
+| `~/.config/worktrunk/config.toml`    | `wt config create`           | User preferences                  |
+| `~/.config/worktrunk/approvals.toml` | Approving project commands   | Approved hook and alias commands  |
+| `.config/wt.toml`                    | `wt config create --project` | Project hooks (checked into repo) |
 
 User config location: `$XDG_CONFIG_HOME/worktrunk/` (or `~/.config/worktrunk/`) on Linux/macOS, `%APPDATA%\worktrunk\` on Windows.
 
@@ -108,17 +108,17 @@ Created by `wt config shell install`:
 
 Worktrunk stores small amounts of cache and log data in the repository's `.git/` directory:
 
-| Location | Purpose | Created by |
-|----------|---------|------------|
-| `git config worktrunk.*` | Cached default branch, switch history, branch markers, custom variables | Various commands |
-| `.git/wt/cache/{kind}/*.json` | Cached CI status and git command results (merge-tree, integration probes, diff stats, ancestry checks, ahead/behind counts) | `wt list`, `wt merge`, `wt remove` |
-| `.git/wt/cache/summary/{branch}/{hash}.json` | Cached LLM branch summaries, content-addressed by diff hash | `wt list --full`, `wt switch` (when `[list] summary = true`) |
-| `.git/wt/logs/{branch}/**/*.log` | Background hook output (nested per branch) | Hooks, background `wt remove` |
-| `.git/wt/logs/commands.jsonl` | Command audit log (~2MB max) | Hooks, LLM commands |
-| `.git/wt/logs/trace.log` | Debug log (mirrors stderr) for issue reporting | Running with `-vv` |
-| `.git/wt/logs/output.log` | Raw uncapped subprocess stdout/stderr (may be multi-MB) | Running with `-vv` |
-| `.git/wt/logs/diagnostic.md` | Diagnostic report for issue reporting | Running with `-vv` when warnings occur |
-| `.git/wt/trash/<name>-<timestamp>` | Staged worktree contents pending background deletion | `wt remove` |
+| Location                                     | Purpose                                                                                                                     | Created by                                                   |
+| -------------------------------------------- | --------------------------------------------------------------------------------------------------------------------------- | ------------------------------------------------------------ |
+| `git config worktrunk.*`                     | Cached default branch, switch history, branch markers, custom variables                                                     | Various commands                                             |
+| `.git/wt/cache/{kind}/*.json`                | Cached CI status and git command results (merge-tree, integration probes, diff stats, ancestry checks, ahead/behind counts) | `wt list`, `wt merge`, `wt remove`                           |
+| `.git/wt/cache/summary/{branch}/{hash}.json` | Cached LLM branch summaries, content-addressed by diff hash                                                                 | `wt list --full`, `wt switch` (when `[list] summary = true`) |
+| `.git/wt/logs/{branch}/**/*.log`             | Background hook output (nested per branch)                                                                                  | Hooks, background `wt remove`                                |
+| `.git/wt/logs/commands.jsonl`                | Command audit log (~2MB max)                                                                                                | Hooks, LLM commands                                          |
+| `.git/wt/logs/trace.log`                     | Debug log (mirrors stderr) for issue reporting                                                                              | Running with `-vv`                                           |
+| `.git/wt/logs/output.log`                    | Raw uncapped subprocess stdout/stderr (may be multi-MB)                                                                     | Running with `-vv`                                           |
+| `.git/wt/logs/diagnostic.md`                 | Diagnostic report for issue reporting                                                                                       | Running with `-vv` when warnings occur                       |
+| `.git/wt/trash/<name>-<timestamp>`           | Staged worktree contents pending background deletion                                                                        | `wt remove`                                                  |
 
 None of this is tracked by git or pushed to remotes.
 
@@ -180,11 +180,11 @@ User hooks and user aliases don't require approval (you defined them). Commands 
 ▲ repo needs approval to execute 3 commands:
 
 ○ pre-start install:
-  npm ci
+npm ci
 ○ pre-start build:
-  cargo build --release
+cargo build --release
 ○ pre-start env:
-  echo 'PORT={{ branch | hash_port }}' > .env.local
+echo 'PORT={{ branch | hash_port }}' > .env.local
 
 ❯ Allow and remember? [y/N]
 

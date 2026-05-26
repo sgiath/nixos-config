@@ -95,11 +95,11 @@ See [LLM-generated commit messages](https://worktrunk.dev/llm-commits/) for conf
 
 Controls what to stage before committing:
 
-| Value | Behavior |
-|-------|----------|
-| `all` | Stage all changes including untracked files (default) |
-| `tracked` | Stage only modified tracked files |
-| `none` | Don't stage anything, commit only what's already staged |
+| Value     | Behavior                                                |
+| --------- | ------------------------------------------------------- |
+| `all`     | Stage all changes including untracked files (default)   |
+| `tracked` | Stage only modified tracked files                       |
+| `none`    | Don't stage anything, commit only what's already staged |
 
 ```bash
 $ wt step commit --stage=tracked
@@ -189,11 +189,11 @@ See [LLM-generated commit messages](https://worktrunk.dev/llm-commits/) for conf
 
 Controls what to stage before squashing:
 
-| Value | Behavior |
-|-------|----------|
-| `all` | Stage all changes including untracked files (default) |
-| `tracked` | Stage only modified tracked files |
-| `none` | Don't stage anything, squash only committed changes |
+| Value     | Behavior                                              |
+| --------- | ----------------------------------------------------- |
+| `all`     | Stage all changes including untracked files (default) |
+| `tracked` | Stage only modified tracked files                     |
+| `none`    | Don't stage anything, squash only committed changes   |
 
 ```bash
 $ wt step squash --stage=none
@@ -383,12 +383,12 @@ exclude = [".cache/", ".turbo/"]
 
 ### Common patterns
 
-| Type | Patterns |
-|------|----------|
-| Dependencies | `node_modules/`, `.venv/`, `target/`, `vendor/`, `Pods/` |
-| Build caches | `.cache/`, `.next/`, `.parcel-cache/`, `.turbo/` |
-| Generated assets | Images, ML models, binaries too large for git |
-| Environment files | `.env` (if not generated per-worktree) |
+| Type              | Patterns                                                 |
+| ----------------- | -------------------------------------------------------- |
+| Dependencies      | `node_modules/`, `.venv/`, `target/`, `vendor/`, `Pods/` |
+| Build caches      | `.cache/`, `.next/`, `.parcel-cache/`, `.turbo/`         |
+| Generated assets  | Images, ML models, binaries too large for git            |
+| Environment files | `.env` (if not generated per-worktree)                   |
 
 ### Features
 
@@ -402,10 +402,10 @@ exclude = [".cache/", ".turbo/"]
 
 Reflink copies share disk blocks until modified — no data is actually copied. For a 14GB `target/` directory:
 
-| Command | Time |
-|---------|------|
-| `cp -R` (full copy) | 2m |
-| `cp -Rc` / `wt step copy-ignored` | 20s |
+| Command                           | Time |
+| --------------------------------- | ---- |
+| `cp -R` (full copy)               | 2m   |
+| `cp -Rc` / `wt step copy-ignored` | 20s  |
 
 Uses per-file reflink (like `cp -Rc`) — copy time scales with file count.
 

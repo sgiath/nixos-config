@@ -79,7 +79,7 @@ if [[ -n "${1:-}" ]]; then
 	echo "==> Updating gogcli to specified version ${VERSION}"
 else
 	echo "==> Fetching latest gogcli version from GitHub..."
-	LATEST_TAG=$(curl -s "https://api.github.com/repos/steipete/gogcli/tags" | jq -r '.[0].name')
+	LATEST_TAG=$(gh api repos/steipete/gogcli/tags --jq '.[0].name')
 	VERSION="${LATEST_TAG#v}"
 	echo "    Latest version: ${VERSION}"
 fi

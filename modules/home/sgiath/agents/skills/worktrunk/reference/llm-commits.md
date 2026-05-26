@@ -152,16 +152,16 @@ Diff:
 
 ### Template variables
 
-| Variable | Description |
-|----------|-------------|
-| `{{ git_diff }}` | The diff (staged changes or combined diff for squash) |
-| `{{ git_diff_stat }}` | Diff statistics (files changed, insertions, deletions) |
-| `{{ branch }}` | Current branch name |
-| `{{ repo }}` | Repository name |
-| `{{ recent_commits }}` | Recent commit subjects (for style reference) |
-| `{{ commits }}` | Commits being squashed (squash template only) |
-| `{{ target_branch }}` | Merge target branch (squash template only) |
-| `{{ user_guidance }}` | Rendered user `template-append` fragment (see below) |
+| Variable                 | Description                                             |
+| ------------------------ | ------------------------------------------------------- |
+| `{{ git_diff }}`         | The diff (staged changes or combined diff for squash)   |
+| `{{ git_diff_stat }}`    | Diff statistics (files changed, insertions, deletions)  |
+| `{{ branch }}`           | Current branch name                                     |
+| `{{ repo }}`             | Repository name                                         |
+| `{{ recent_commits }}`   | Recent commit subjects (for style reference)            |
+| `{{ commits }}`          | Commits being squashed (squash template only)           |
+| `{{ target_branch }}`    | Merge target branch (squash template only)              |
+| `{{ user_guidance }}`    | Rendered user `template-append` fragment (see below)    |
 | `{{ project_guidance }}` | Rendered project `template-append` fragment (see below) |
 
 ### Template syntax

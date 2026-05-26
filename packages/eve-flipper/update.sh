@@ -13,7 +13,7 @@ if [[ -n "${1:-}" ]]; then
   echo "==> Updating eve-flipper to specified version ${version}"
 else
   echo "==> Fetching latest eve-flipper version from GitHub..."
-  latest_tag="$(curl -fsSL "https://api.github.com/repos/${REPO_OWNER}/${REPO_NAME}/releases/latest" | jq -r '.tag_name')"
+  latest_tag="$(gh api "repos/${REPO_OWNER}/${REPO_NAME}/releases/latest" --jq '.tag_name')"
   version="${latest_tag#v}"
   echo "    Latest version: ${version}"
 fi

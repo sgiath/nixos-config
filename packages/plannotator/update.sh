@@ -10,7 +10,7 @@ if [[ -n "${1:-}" ]]; then
 	echo "==> Updating plannotator to specified version ${VERSION}"
 else
 	echo "==> Fetching latest plannotator version from GitHub..."
-	LATEST_TAG=$(curl -fsSL "https://api.github.com/repos/${REPO}/releases/latest" | jq -r '.tag_name')
+	LATEST_TAG=$(gh api "repos/${REPO}/releases/latest" --jq '.tag_name')
 	VERSION="${LATEST_TAG#v}"
 	echo "    Latest version: ${VERSION}"
 fi

@@ -27,7 +27,6 @@ after it. Otherwise the task starts at the second token.
 ## What to do
 
 1. **First action — before reading any files or running any commands:**
-
    - If a repo was given, `cd` into it first with a `Bash` call (the working
      directory persists for the rest of the session). `EnterWorktree` has no
      repo parameter — it creates the worktree wherever the session is rooted.
@@ -41,7 +40,7 @@ after it. Otherwise the task starts at the second token.
      `.claude/worktrees/`.
    - `wt switch --create` is idempotent: if the branch already exists, this
      just re-enters its worktree.
-   - If you are *already* inside an `EnterWorktree`-created worktree (e.g. the
+   - If you are _already_ inside an `EnterWorktree`-created worktree (e.g. the
      background harness isolated this session), **skip `EnterWorktree`** — it
      refuses to nest. Reuse the existing worktree and continue. But if a repo
      was given and that worktree belongs to a different repo, you can't honor

@@ -28,6 +28,7 @@ For command-specific options, run `wt <command> --help`. For configuration, foll
 Worktrunk uses two separate config files with different scopes and behaviors:
 
 ### User Config (`~/.config/worktrunk/config.toml`)
+
 - **Scope**: Personal preferences for the individual developer
 - **Location**: `~/.config/worktrunk/config.toml` (never checked into git)
 - **Contains**: LLM integration, worktree path templates, command settings, user hooks, approved commands
@@ -35,6 +36,7 @@ Worktrunk uses two separate config files with different scopes and behaviors:
 - **See**: `reference/config.md` for detailed guidance
 
 ### Project Config (`.config/wt.toml`)
+
 - **Scope**: Team-wide automation shared by all developers
 - **Location**: `<repo>/.config/wt.toml` (checked into git)
 - **Contains**: Hooks for worktree lifecycle (pre-start, pre-merge, etc.)
@@ -46,12 +48,14 @@ Worktrunk uses two separate config files with different scopes and behaviors:
 When a user asks for configuration help, determine which type based on:
 
 **User config indicators**:
+
 - "set up LLM" or "configure commit generation"
 - "change where worktrees are created"
 - "customize commit message templates"
 - Affects only their environment
 
 **Project config indicators**:
+
 - "set up hooks for this project"
 - "automate npm install"
 - "run tests before merge"
@@ -66,6 +70,7 @@ When a user asks for configuration help, determine which type based on:
 Most common request. See `reference/llm-commits.md` for supported tools and exact command syntax.
 
 1. **Detect available tools**
+
    ```bash
    which claude codex llm aichat 2>/dev/null
    ```
@@ -73,10 +78,12 @@ Most common request. See `reference/llm-commits.md` for supported tools and exac
 2. **If none installed, recommend Claude Code** (already available in Claude Code sessions)
 
 3. **Propose config change** — Get the exact command from `reference/llm-commits.md`
+
    ```toml
    [commit.generation]
    command = "..."  # see reference/llm-commits.md for tool-specific commands
    ```
+
    Ask: "Should I add this to your config?"
 
 4. **After approval, apply**
@@ -95,6 +102,7 @@ Most common request. See `reference/llm-commits.md` for supported tools and exac
 Common request for workflow automation. Follow discovery process:
 
 1. **Detect project type**
+
    ```bash
    ls package.json Cargo.toml pyproject.toml
    ```
@@ -113,12 +121,14 @@ Common request for workflow automation. Follow discovery process:
    - Cleanup tasks → `pre-remove`
 
 4. **Validate commands work**
+
    ```bash
    npm run lint  # verify exists
    which cargo   # verify tool exists
    ```
 
 5. **Create `.config/wt.toml`**
+
    ```toml
    # Install dependencies when creating worktrees
    pre-start = "npm install"
@@ -159,6 +169,7 @@ When users want to add automation to an existing project:
 3. **Handle format conversion if needed**
 
    Single command to named table:
+
    ```toml
    # Before
    pre-start = "npm install"
@@ -188,6 +199,7 @@ bash -n -c "if [ true ]; then echo ok; fi"
 ```
 
 **Dangerous patterns** — Warn users before creating hooks with:
+
 - Destructive commands: `rm -rf`, `DROP TABLE`
 - External dependencies: `curl http://...`
 - Privilege escalation: `sudo`
@@ -195,12 +207,14 @@ bash -n -c "if [ true ]; then echo ok; fi"
 ## Permission Models
 
 ### User Config: Conservative
+
 - **Never edit without consent** - Always show proposed change and wait for approval
 - **Never install tools** - Provide commands for users to run themselves
 - **Preserve structure** - Keep existing comments and organization
 - **Validate first** - Ensure TOML is valid before writing
 
 ### Project Config: Proactive
+
 - **Create directly** - Changes are versioned, easily reversible
 - **Validate commands** - Check commands exist before adding
 - **Explain choices** - Add comments documenting why hooks exist
@@ -209,6 +223,7 @@ bash -n -c "if [ true ]; then echo ok; fi"
 ## Common Tasks Reference
 
 ### User Config Tasks
+
 - Set up commit message generation → `reference/llm-commits.md`
 - Customize worktree paths → `reference/config.md#worktree-path-template`
 - Custom commit templates → `reference/llm-commits.md#templates`
@@ -216,6 +231,7 @@ bash -n -c "if [ true ]; then echo ok; fi"
 - Set up personal hooks → `reference/config.md#user-hooks`
 
 ### Project Config Tasks
+
 - Set up hooks for new project → `reference/hook.md`
 - Add hook to existing config → `reference/hook.md#configuration`
 - Use template variables → `reference/hook.md#template-variables`
@@ -239,6 +255,7 @@ wt config --help
 Load **reference files** for detailed configuration, hook specifications, and troubleshooting.
 
 Find specific sections with grep:
+
 ```bash
 grep -A 20 "## Setup" reference/llm-commits.md
 grep -A 30 "### pre-start" reference/hook.md
@@ -269,11 +286,13 @@ Two resolutions exist — pick based on who the agent is running for:
 When the user requests spawning a worktree with an agent in a background session ("spawn a worktree for...", "hand off to another agent"), use the appropriate pattern for their terminal multiplexer. Substitute `<agent-cli>` with the CLI you are running as: `claude` for Claude Code, `'opencode run'` for OpenCode.
 
 **tmux** (check `$TMUX` env var):
+
 ```bash
 tmux new-session -d -s <branch-name> "wt switch --create <branch-name> -x <agent-cli> -- '<task description>'"
 ```
 
 **Requirements** (all must be true):
+
 - User explicitly requests spawning/handoff
 - User is in a supported multiplexer (tmux or Zellij)
 - The user's project instructions (`CLAUDE.md` or `AGENTS.md`) or an explicit prompt authorize this pattern
@@ -281,6 +300,7 @@ tmux new-session -d -s <branch-name> "wt switch --create <branch-name> -x <agent
 **Do not use this pattern** for normal worktree operations.
 
 Example (tmux, OpenCode):
+
 ```bash
 tmux new-session -d -s fix-auth-bug "wt switch --create fix-auth-bug -x opencode run -- \
   'The login session expires after 5 minutes. Find the session timeout config and extend it to 24 hours.'"

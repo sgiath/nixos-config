@@ -38,16 +38,14 @@
       inputs.nixpkgs.follows = "nixpkgs";
     };
 
-    # https://github.com/hyprwm/Hyprland/releases/latest
     hyprland.url = "github:hyprwm/Hyprland/v0.55.2";
-    # hyprland.url = "github:hyprwm/Hyprland";
     hyprland-plugins = {
       url = "github:hyprwm/hyprland-plugins";
       inputs.hyprland.follows = "hyprland";
     };
 
     noctalia = {
-      url = "github:noctalia-dev/noctalia-shell";
+      url = "github:noctalia-dev/noctalia-shell/v4.7.7";
       inputs.nixpkgs.follows = "nixpkgs";
     };
 
@@ -82,37 +80,24 @@
       inputs.nixpkgs.follows = "nixpkgs";
     };
 
-    # https://github.com/anomalyco/opencode/releases/latest
-    opencode = {
-      url = "github:anomalyco/opencode/v1.15.4";
-      # inputs.nixpkgs.follows = "nixpkgs";
-    };
+    # flake-release-pin: v1.15.4
+    opencode.url = "github:anomalyco/opencode/v1.15.4";
 
-    # https://github.com/NousResearch/hermes-agent/releases/latest
     hermes-agent = {
       url = "github:NousResearch/hermes-agent/v2026.5.16";
       inputs.nixpkgs.follows = "nixpkgs";
     };
 
-    # https://github.com/max-sixty/worktrunk/releases/latest
     worktrunk = {
       url = "github:max-sixty/worktrunk/v0.53.0";
       inputs.nixpkgs.follows = "nixpkgs";
     };
 
-    # https://github.com/gastownhall/beads/releases/latest
     beads.url = "github:gastownhall/beads/v1.0.4";
-    # https://github.com/gastownhall/gastown/releases/latest
     gas-town.url = "github:gastownhall/gastown/v1.1.0";
-
-    # https://github.com/MrLesk/Backlog.md/releases/latest
     backlog-md.url = "github:MrLesk/Backlog.md/v1.45.1";
-
-    # https://github.com/peteonrails/voxtype/releases/latest
     voxtype.url = "github:peteonrails/voxtype/v0.7.4";
-
-    comfyui.url = "github:utensils/comfyui-nix";
-    nix-minecraft.url = "github:Infinidoge/nix-minecraft";
+    comfyui.url = "github:utensils/comfyui-nix/v0.18.2";
   };
 
   nixConfig = {
@@ -160,7 +145,6 @@
 
       overlays = with inputs; [
         hyprland.overlays.default
-        nix-minecraft.overlay
         noctalia.overlays.default
         hermes-agent.overlays.default
       ];
@@ -172,7 +156,6 @@
         stylix.nixosModules.stylix
         hermes-agent.nixosModules.default
         foundryvtt.nixosModules.foundryvtt
-        nix-minecraft.nixosModules.minecraft-servers
         nix-gaming.nixosModules.pipewireLowLatency
         comfyui.nixosModules.default
       ];

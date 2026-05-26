@@ -24,6 +24,7 @@ echo "say hello" | <your-configured-command>
 ```
 
 Common issues:
+
 - **API key not set**: Each tool has its own auth mechanism
 - **Model not available**: Check model name with the tool's help
 - **Network issues**: Check internet connectivity
@@ -38,6 +39,7 @@ Common issues:
 ### Template conflicts
 
 Check for mutually exclusive options:
+
 - `template` and `template-file` cannot both be set
 - `squash-template` and `squash-template-file` cannot both be set
 
@@ -48,6 +50,7 @@ If a template file is used, verify it exists at the specified path.
 ### Hook not running
 
 Check sequence:
+
 1. Verify `.config/wt.toml` exists: `ls -la .config/wt.toml`
 2. Check TOML syntax (use `wt hook show` to see parsed config)
 3. Verify hook type spelling matches one of the seven types
@@ -56,6 +59,7 @@ Check sequence:
 ### Hook failing
 
 Debug steps:
+
 1. Run the command manually in the worktree to see errors
 2. Check for missing dependencies (npm packages, system tools)
 3. Verify template variables expand correctly (`wt hook show --verbose`)
@@ -108,13 +112,14 @@ Sockets listed as bare `fsmonitor--daemon.ipc` (no resolved path) belong to dele
 
 `wt remove` also force-terminates the removed worktree's own daemon as part of the synchronous teardown — it sends `git fsmonitor--daemon stop`, then resolves the daemon's PID from its IPC socket and SIGTERM/SIGKILLs it if it didn't exit. So removing a worktree never leaves a daemon behind, even one that has stopped answering its IPC.
 
-The residual case both paths deliberately leave is a wedged daemon on a *live* worktree that is never removed: `git status` in that worktree blocks on the unresponsive IPC, but the daemon still serves a real worktree, so reaping it implicitly is out of scope. Terminate it manually: kill the daemon whose socket path matches the worktree, or `pkill -9 -f 'git fsmonitor--daemon'` and let the next `wt list` respawn the live ones. Disabling fsmonitor globally (`git config --global core.fsmonitor false`) avoids the class of problem entirely at the cost of some `git status` speed on large repos.
+The residual case both paths deliberately leave is a wedged daemon on a _live_ worktree that is never removed: `git status` in that worktree blocks on the unresponsive IPC, but the daemon still serves a real worktree, so reaping it implicitly is out of scope. Terminate it manually: kill the daemon whose socket path matches the worktree, or `pkill -9 -f 'git fsmonitor--daemon'` and let the next `wt list` respawn the live ones. Disabling fsmonitor globally (`git config --global core.fsmonitor false`) avoids the class of problem entirely at the cost of some `git status` speed on large repos.
 
 ## PowerShell on Windows
 
 ### PowerShell profiles not created
 
 On Windows, `wt config shell install` creates PowerShell profiles automatically when running from cmd.exe or PowerShell. It creates both:
+
 - `Documents/PowerShell/Microsoft.PowerShell_profile.ps1` (PowerShell 7+/pwsh)
 - `Documents/WindowsPowerShell/Microsoft.PowerShell_profile.ps1` (Windows PowerShell 5.1)
 
@@ -139,7 +144,7 @@ session:
    didn't define the function (restart shell, or profile load failed).
 
 2. `(Get-Command git-wt -CommandType Function).ScriptBlock | Select-String
-   WORKTRUNK` — verifies the wrapper function body sets
+WORKTRUNK` — verifies the wrapper function body sets
    `WORKTRUNK_DIRECTIVE_CD_FILE`. If this doesn't appear, the function is
    incomplete or corrupted.
 
@@ -150,5 +155,6 @@ session:
 ### Detection logic
 
 Worktrunk detects Windows-native shells (cmd/PowerShell) by checking if the `SHELL` environment variable is **not** set:
+
 - `SHELL` not set → Windows-native shell → create both PowerShell profiles
 - `SHELL` set (e.g., `/usr/bin/bash`) → Git Bash/MSYS2 → skip PowerShell

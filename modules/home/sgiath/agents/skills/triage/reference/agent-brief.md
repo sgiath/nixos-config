@@ -55,16 +55,19 @@ Describe what should happen after the agent's work is complete.
 Be specific about edge cases and error conditions.
 
 **Key interfaces:**
+
 - `TypeName` — what needs to change and why
 - `functionName()` return type — what it currently returns vs what it should return
 - Config shape — any new configuration options needed
 
 **Acceptance criteria:**
+
 - [ ] Specific, testable criterion 1
 - [ ] Specific, testable criterion 2
 - [ ] Specific, testable criterion 3
 
 **Out of scope:**
+
 - Thing that should NOT be changed or addressed in this task
 - Adjacent feature that might seem related but is separate
 ```
@@ -89,12 +92,14 @@ Truncation should break at the last word boundary before 1024 characters
 and append "..." to indicate truncation.
 
 **Key interfaces:**
+
 - The `SkillMetadata` type's `description` field — no type change needed,
   but the validation/processing logic that populates it needs to respect
   word boundaries
 - Any function that reads SKILL.md frontmatter and extracts the description
 
 **Acceptance criteria:**
+
 - [ ] Descriptions under 1024 chars are unchanged
 - [ ] Descriptions over 1024 chars are truncated at the last word boundary
       before 1024 chars
@@ -102,6 +107,7 @@ and append "..." to indicate truncation.
 - [ ] The total length including "..." does not exceed 1024 chars
 
 **Out of scope:**
+
 - Changing the 1024 char limit itself
 - Multi-line description support
 ```
@@ -127,6 +133,7 @@ issues that requested the feature. When triaging new tasks, these files should b
 checked for matches.
 
 **Key interfaces:**
+
 - Markdown file format in `.out-of-scope/` — each file should have a
   `# Concept Name` heading, a `**Decision:**` line, a `**Reason:**` line,
   and a `**Prior requests:**` list with Backlog task IDs or issue links
@@ -134,6 +141,7 @@ checked for matches.
   and match incoming tasks against them by concept similarity
 
 **Acceptance criteria:**
+
 - [ ] Closing a feature as wontfix creates/updates a file in `.out-of-scope/`
 - [ ] The file includes the decision, reasoning, and link or ID for the closed task
 - [ ] If a matching `.out-of-scope/` file already exists, the new task is
@@ -142,6 +150,7 @@ checked for matches.
       when a new task matches a prior rejection
 
 **Out of scope:**
+
 - Automated matching (human confirms the match)
 - Reopening previously rejected features
 - Bug reports (only enhancement rejections go to `.out-of-scope/`)
@@ -159,11 +168,13 @@ The triage thing is broken. Look at the main file and fix it.
 The function around line 150 has the issue.
 
 **Files to change:**
+
 - src/triage/handler.ts (line 150)
 - src/types.ts (line 42)
 ```
 
 This is bad because:
+
 - No category
 - Vague description ("the triage thing is broken")
 - References file paths and line numbers that will go stale

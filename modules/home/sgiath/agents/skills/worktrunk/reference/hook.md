@@ -6,32 +6,32 @@ Hooks are shell commands that run at key points in the worktree lifecycle — au
 
 # Hook Types
 
-| Event | `pre-` — blocking | `post-` — background |
-|-------|-------------------|---------------------|
-| **switch** | `pre-switch` | `post-switch` |
-| **start** | `pre-start` | `post-start` |
-| **commit** | `pre-commit` | `post-commit` |
-| **merge** | `pre-merge` | `post-merge` |
-| **remove** | `pre-remove` | `post-remove` |
+| Event      | `pre-` — blocking | `post-` — background |
+| ---------- | ----------------- | -------------------- |
+| **switch** | `pre-switch`      | `post-switch`        |
+| **start**  | `pre-start`       | `post-start`         |
+| **commit** | `pre-commit`      | `post-commit`        |
+| **merge**  | `pre-merge`       | `post-merge`         |
+| **remove** | `pre-remove`      | `post-remove`        |
 
 `pre-*` hooks block — failure aborts the operation. `post-*` hooks run in the background with output logged (use [`wt config state logs`](https://worktrunk.dev/config/#wt-config-state-logs) to find and manage log files). Use `-v` to see expanded command details for background hooks.
 
 The most common starting point is `post-start` — it runs background tasks (dev servers, file copying, builds) without blocking worktree creation. Prefer `post-start` over `pre-start` unless a later step needs the work completed first.
 
-| Hook | Purpose |
-|------|---------|
-| `pre-switch` | Runs before branch resolution or worktree creation. `{{ branch }}` is the destination as typed (before resolution) |
-| `post-switch` | Triggers on all switch results: creating, switching to existing, or staying on current |
-| `pre-start` | Runs once when a new worktree is created, blocking `post-start`/`--execute` until complete: dependency install, env file generation |
-| `post-start` | Runs once when a new worktree is created, in the background: dev servers, long builds, file watchers, copying caches |
-| `pre-commit` | Formatters, linters, type checking — runs during `wt merge` before the squash commit |
-| `post-commit` | CI triggers, notifications, background linting |
-| `pre-merge` | Tests, security scans, build verification — runs after rebase, before merge to target |
-| `post-merge` | Deployment, notifications, installing updated binaries. Runs in the target branch worktree if it exists, otherwise the primary worktree |
-| `pre-remove` | Cleanup before worktree deletion: saving test artifacts, backing up state. Runs in the worktree being removed |
-| `post-remove` | Stopping dev servers, removing containers, notifying external systems. Template variables reference the removed worktree |
+| Hook          | Purpose                                                                                                                                 |
+| ------------- | --------------------------------------------------------------------------------------------------------------------------------------- |
+| `pre-switch`  | Runs before branch resolution or worktree creation. `{{ branch }}` is the destination as typed (before resolution)                      |
+| `post-switch` | Triggers on all switch results: creating, switching to existing, or staying on current                                                  |
+| `pre-start`   | Runs once when a new worktree is created, blocking `post-start`/`--execute` until complete: dependency install, env file generation     |
+| `post-start`  | Runs once when a new worktree is created, in the background: dev servers, long builds, file watchers, copying caches                    |
+| `pre-commit`  | Formatters, linters, type checking — runs during `wt merge` before the squash commit                                                    |
+| `post-commit` | CI triggers, notifications, background linting                                                                                          |
+| `pre-merge`   | Tests, security scans, build verification — runs after rebase, before merge to target                                                   |
+| `post-merge`  | Deployment, notifications, installing updated binaries. Runs in the target branch worktree if it exists, otherwise the primary worktree |
+| `pre-remove`  | Cleanup before worktree deletion: saving test artifacts, backing up state. Runs in the worktree being removed                           |
+| `post-remove` | Stopping dev servers, removing containers, notifying external systems. Template variables reference the removed worktree                |
 
-During `wt merge`, hooks run in this order: pre-commit → post-commit → pre-merge → pre-remove → post-remove + post-merge. As usual, post-* hooks run in the background. See [`wt merge`](https://worktrunk.dev/merge/#pipeline) for the complete pipeline.
+During `wt merge`, hooks run in this order: pre-commit → post-commit → pre-merge → pre-remove → post-remove + post-merge. As usual, post-\* hooks run in the background. See [`wt merge`](https://worktrunk.dev/merge/#pipeline) for the complete pipeline.
 
 # Security
 
@@ -95,16 +95,16 @@ Here `install` runs first, then `build` and `server` run together.
 
 Most hooks don't need `[[hook]]` blocks. Reach for them when there's a dependency chain — typically setup that must complete before later steps, like installing dependencies before running a build and dev server concurrently.
 
-Table form for pre-* hooks is deprecated and its behavior will change in a future version — use `[[hook]]` blocks instead.
+Table form for pre-\* hooks is deprecated and its behavior will change in a future version — use `[[hook]]` blocks instead.
 
 ## Project vs user hooks
 
-| Aspect | Project hooks | User hooks |
-|--------|--------------|------------|
-| Location | `.config/wt.toml` | `~/.config/worktrunk/config.toml` |
-| Scope | Single repository | All repositories (or [per-project](https://worktrunk.dev/config/#user-project-specific-settings)) |
-| Approval | Required | Not required |
-| Execution order | After user hooks | First |
+| Aspect          | Project hooks     | User hooks                                                                                        |
+| --------------- | ----------------- | ------------------------------------------------------------------------------------------------- |
+| Location        | `.config/wt.toml` | `~/.config/worktrunk/config.toml`                                                                 |
+| Scope           | Single repository | All repositories (or [per-project](https://worktrunk.dev/config/#user-project-specific-settings)) |
+| Approval        | Required          | Not required                                                                                      |
+| Execution order | After user hooks  | First                                                                                             |
 
 Skip all hooks with `--no-hooks`. To run a specific hook when user and project both define the same name, use `user:name` or `project:name` syntax.
 
@@ -112,41 +112,41 @@ Skip all hooks with `--no-hooks`. To run a specific hook when user and project b
 
 Hooks can use template variables that expand at runtime:
 
-| Kind | Variable | Description |
-|------|----------|-------------|
-| active    | `{{ branch }}`                | Branch name |
-|           | `{{ worktree_path }}`         | Worktree path |
-|           | `{{ worktree_name }}`         | Worktree directory name |
-|           | `{{ commit }}`                | Branch HEAD SHA |
-|           | `{{ short_commit }}`          | Branch HEAD SHA, abbreviated per `core.abbrev` |
-|           | `{{ upstream }}`              | Branch upstream (if tracking a remote) |
-| operation | `{{ base }}`                  | Base branch name |
-|           | `{{ base_worktree_path }}`    | Base worktree path |
-|           | `{{ target }}`                | Target branch name |
-|           | `{{ target_worktree_path }}`  | Target worktree path |
-|           | `{{ pr_number }}`             | PR/MR number (when creating via `pr:N` / `mr:N`) |
-|           | `{{ pr_url }}`                | PR/MR web URL (when creating via `pr:N` / `mr:N`) |
-| repo      | `{{ repo }}`                  | Repository directory name |
-|           | `{{ repo_path }}`             | Absolute path to repository root |
-|           | `{{ owner }}`                 | Primary remote owner path (may include subgroups) |
-|           | `{{ primary_worktree_path }}` | Primary worktree path |
-|           | `{{ default_branch }}`        | Default branch name |
-|           | `{{ remote }}`                | Primary remote name |
-|           | `{{ remote_url }}`            | Remote URL |
-| exec      | `{{ cwd }}`                   | Directory where the hook command runs |
-|           | `{{ hook_type }}`             | Hook type being run (e.g. `pre-start`, `pre-merge`) |
-|           | `{{ hook_name }}`             | Hook command name (if named) |
-|           | `{{ args }}`                  | Tokens forwarded from the CLI — see [Running Hooks Manually](#running-hooks-manually) |
+| Kind      | Variable                      | Description                                                                                            |
+| --------- | ----------------------------- | ------------------------------------------------------------------------------------------------------ |
+| active    | `{{ branch }}`                | Branch name                                                                                            |
+|           | `{{ worktree_path }}`         | Worktree path                                                                                          |
+|           | `{{ worktree_name }}`         | Worktree directory name                                                                                |
+|           | `{{ commit }}`                | Branch HEAD SHA                                                                                        |
+|           | `{{ short_commit }}`          | Branch HEAD SHA, abbreviated per `core.abbrev`                                                         |
+|           | `{{ upstream }}`              | Branch upstream (if tracking a remote)                                                                 |
+| operation | `{{ base }}`                  | Base branch name                                                                                       |
+|           | `{{ base_worktree_path }}`    | Base worktree path                                                                                     |
+|           | `{{ target }}`                | Target branch name                                                                                     |
+|           | `{{ target_worktree_path }}`  | Target worktree path                                                                                   |
+|           | `{{ pr_number }}`             | PR/MR number (when creating via `pr:N` / `mr:N`)                                                       |
+|           | `{{ pr_url }}`                | PR/MR web URL (when creating via `pr:N` / `mr:N`)                                                      |
+| repo      | `{{ repo }}`                  | Repository directory name                                                                              |
+|           | `{{ repo_path }}`             | Absolute path to repository root                                                                       |
+|           | `{{ owner }}`                 | Primary remote owner path (may include subgroups)                                                      |
+|           | `{{ primary_worktree_path }}` | Primary worktree path                                                                                  |
+|           | `{{ default_branch }}`        | Default branch name                                                                                    |
+|           | `{{ remote }}`                | Primary remote name                                                                                    |
+|           | `{{ remote_url }}`            | Remote URL                                                                                             |
+| exec      | `{{ cwd }}`                   | Directory where the hook command runs                                                                  |
+|           | `{{ hook_type }}`             | Hook type being run (e.g. `pre-start`, `pre-merge`)                                                    |
+|           | `{{ hook_name }}`             | Hook command name (if named)                                                                           |
+|           | `{{ args }}`                  | Tokens forwarded from the CLI — see [Running Hooks Manually](#running-hooks-manually)                  |
 | user      | `{{ vars.<key> }}`            | Per-branch variables from [`wt config state vars`](https://worktrunk.dev/config/#wt-config-state-vars) |
 
 Bare variables (`branch`, `worktree_path`, `commit`) refer to the branch the operation acts on: the destination for switch/create, the source for merge/remove. `base` and `target` give the other side:
 
-| Operation | Bare vars | `base` | `target` |
-|-----------|-----------|--------|----------|
-| switch/create | destination | where you came from | = bare vars |
-| commit (during merge/squash) | worktree being squashed | = bare vars | integration target |
-| merge | feature being merged | = bare vars | merge target |
-| remove | branch being removed | = bare vars | where you end up |
+| Operation                    | Bare vars               | `base`              | `target`           |
+| ---------------------------- | ----------------------- | ------------------- | ------------------ |
+| switch/create                | destination             | where you came from | = bare vars        |
+| commit (during merge/squash) | worktree being squashed | = bare vars         | integration target |
+| merge                        | feature being merged    | = bare vars         | merge target       |
+| remove                       | branch being removed    | = bare vars         | where you end up   |
 
 Pre and post hooks share the same perspective — `{{ branch | hash_port }}` produces the same port in `post-start` and `post-remove`. `cwd` is the worktree root where the hook command runs. It differs from `worktree_path` in three cases: pre-switch, where the hook runs in the source but `worktree_path` is the destination; post-remove, where the active worktree is gone so the hook runs in primary; and post-merge with removal, same — the active worktree is gone, so the hook runs in target.
 
@@ -171,16 +171,16 @@ dev = "ENV={{ vars.env | default('development') }} npm start -- --port {{ vars.c
 
 Templates support Jinja2 filters for transforming values:
 
-| Filter | Example | Description |
-|--------|---------|-------------|
-| `sanitize` | `{{ branch \| sanitize }}` | Replace `/` and `\` with `-` |
-| `sanitize_db` | `{{ branch \| sanitize_db }}` | Database-safe identifier with hash suffix (`[a-z0-9_]`, max 48 chars) |
-| `sanitize_hash` | `{{ branch \| sanitize_hash }}` | Filesystem-safe name with hash suffix for uniqueness |
-| `hash` | `{{ branch \| hash }}` | 3-character base36 digest of the input |
-| `hash_port` | `{{ branch \| hash_port }}` | Hash to port 10000-19999 |
-| `dirname` | `{{ repo_path \| dirname }}` | Strip the last path component (`/a/b/c` → `/a/b`) |
-| `basename` | `{{ repo_path \| basename }}` | Keep only the last path component (`/a/b/c` → `c`) |
-| `codename(n)` | `{{ branch \| codename(2) }}` | Deterministic friendly words |
+| Filter          | Example                         | Description                                                           |
+| --------------- | ------------------------------- | --------------------------------------------------------------------- |
+| `sanitize`      | `{{ branch \| sanitize }}`      | Replace `/` and `\` with `-`                                          |
+| `sanitize_db`   | `{{ branch \| sanitize_db }}`   | Database-safe identifier with hash suffix (`[a-z0-9_]`, max 48 chars) |
+| `sanitize_hash` | `{{ branch \| sanitize_hash }}` | Filesystem-safe name with hash suffix for uniqueness                  |
+| `hash`          | `{{ branch \| hash }}`          | 3-character base36 digest of the input                                |
+| `hash_port`     | `{{ branch \| hash_port }}`     | Hash to port 10000-19999                                              |
+| `dirname`       | `{{ repo_path \| dirname }}`    | Strip the last path component (`/a/b/c` → `/a/b`)                     |
+| `basename`      | `{{ repo_path \| basename }}`   | Keep only the last path component (`/a/b/c` → `c`)                    |
+| `codename(n)`   | `{{ branch \| codename(2) }}`   | Deterministic friendly words                                          |
 
 The `sanitize` filter makes branch names safe for filesystem paths. The `sanitize_db` filter produces database-safe identifiers — lowercase alphanumeric and underscores, no leading digits, with a 3-character hash suffix to avoid collisions and reserved words. The `sanitize_hash` filter produces a filesystem-safe name and appends a 3-character hash suffix when sanitization changed the input, so distinct originals never collide — already-safe names pass through unchanged. The `codename(n)` filter produces deterministic friendly names from an input string: `codename(1)` returns a noun, `codename(2)` returns `adjective-noun`, and higher counts add more adjectives. The pool is large (~1.26M combinations for `codename(2)`), so it usually stands alone as a worktree leaf:
 
@@ -229,8 +229,8 @@ Variables are shell-escaped automatically — quotes around `{{ ... }}` are unne
 
 Templates also support functions for dynamic lookups:
 
-| Function | Example | Description |
-|----------|---------|-------------|
+| Function                          | Example                                 | Description                             |
+| --------------------------------- | --------------------------------------- | --------------------------------------- |
 | `worktree_path_of_branch(branch)` | `{{ worktree_path_of_branch("main") }}` | Look up the path of a branch's worktree |
 
 The `worktree_path_of_branch` function returns the filesystem path of a worktree given a branch name, or an empty string if no worktree exists for that branch. This is useful for referencing files in other worktrees:

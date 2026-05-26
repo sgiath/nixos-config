@@ -275,12 +275,14 @@ wt switch --create feature-part2 --base=@
 Spawn a worktree with an agent CLI running in the background. Examples below use `claude`; for OpenCode, replace `claude` with `'opencode run'`.
 
 **tmux** (new detached session):
+
 ```bash
 tmux new-session -d -s fix-auth-bug "wt switch --create fix-auth-bug -x claude -- \
   'The login session expires after 5 minutes. Find the session timeout config and extend it to 24 hours.'"
 ```
 
 **Zellij** (new pane in current session):
+
 ```bash
 zellij run -- wt switch --create fix-auth-bug -x claude -- \
   'The login session expires after 5 minutes. Find the session timeout config and extend it to 24 hours.'
@@ -352,6 +354,7 @@ clean-derived = """
 This precisely targets only the DerivedData for the removed worktree, leaving caches for other worktrees and the main repository intact.
 
 ## Subdomain routing with Caddy
+
 <!-- Hand-tested 2026-03-07 -->
 
 Clean URLs like `http://feature-auth.myproject.localhost` without port numbers. Useful for cookies, CORS, and matching production URL structure.

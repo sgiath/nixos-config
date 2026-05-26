@@ -55,10 +55,10 @@ Branches matching these conditions and with empty working trees are dimmed in `w
 
 Worktrunk has two force flags for different situations:
 
-| Flag | Scope | When to use |
-|------|-------|-------------|
-| `--force` (`-f`) | Worktree | Worktree has untracked files |
-| `--force-delete` (`-D`) | Branch | Branch has unmerged commits |
+| Flag                    | Scope    | When to use                  |
+| ----------------------- | -------- | ---------------------------- |
+| `--force` (`-f`)        | Worktree | Worktree has untracked files |
+| `--force-delete` (`-D`) | Branch   | Branch has unmerged commits  |
 
 ```bash
 $ wt remove feature --force       # Remove worktree with untracked files

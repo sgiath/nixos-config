@@ -17,7 +17,7 @@ if [[ -n "${1:-}" ]]; then
   echo "==> Updating 5etools to specified version ${VERSION}"
 else
   echo "==> Fetching latest 5etools version from GitHub..."
-  LATEST_TAG=$(curl -s "https://api.github.com/repos/5etools-mirror-3/5etools-src/releases/latest" | jq -r '.tag_name')
+  LATEST_TAG=$(gh api repos/5etools-mirror-3/5etools-src/releases/latest --jq '.tag_name')
   VERSION="${LATEST_TAG#v}"
   echo "    Latest version: ${VERSION}"
 fi

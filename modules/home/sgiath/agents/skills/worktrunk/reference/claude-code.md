@@ -2,12 +2,12 @@
 
 Worktrunk ships a plugin for each supported agent CLI. What a plugin provides depends on the hooks that CLI exposes:
 
-| Capability | Claude Code | Codex | OpenCode | Gemini CLI |
-|---|:-:|:-:|:-:|:-:|
-| Configuration skill | ✓ | ✓ |  | ✓ |
-| Activity tracking (🤖/💬 in `wt list`) | ✓ |  | ✓ | ✓ |
-| Worktree isolation | ✓ |  |  |  |
-| `/wt-switch-create` command | ✓ |  |  |  |
+| Capability                             | Claude Code | Codex | OpenCode | Gemini CLI |
+| -------------------------------------- | :---------: | :---: | :------: | :--------: |
+| Configuration skill                    |      ✓      |   ✓   |          |     ✓      |
+| Activity tracking (🤖/💬 in `wt list`) |      ✓      |       |    ✓     |     ✓      |
+| Worktree isolation                     |      ✓      |       |          |            |
+| `/wt-switch-create` command            |      ✓      |       |          |            |
 
 The configuration skill is documentation the agent reads to help set up LLM commits, hooks, and troubleshooting. Activity tracking shows which worktrees have running sessions. Worktree isolation and `/wt-switch-create` need worktree-lifecycle hooks that only Claude Code exposes, so Codex, OpenCode, and Gemini users invoke `wt switch --create` and `wt remove` directly. Codex omits activity tracking because its hooks have no turn-end event, so a 🤖 marker could never clear back to 💬.
 
@@ -111,7 +111,7 @@ On session exit the worktree is offered for removal via the `WorktreeRemove` hoo
 
 `wt list statusline --format=claude-code` outputs a single-line status for the Claude Code statusline. When the CI status cache is stale, this fetches from the network — typically 1–2 seconds — making it suitable for async statuslines but too slow for synchronous shell prompts. If a faster version would be helpful, please [open an issue](https://github.com/max-sixty/worktrunk/issues).
 
-<code>~/w/myproject.feature-auth  !🤖  @<span style='color:#0a0'>+42</span> <span style='color:#a00'>-8</span>  <span style='color:#0a0'>↑3</span>  <span style='color:#0a0'>⇡1</span>  <span style='color:#0a0'>●</span>  | Opus 🌔 65%</code>
+<code>~/w/myproject.feature-auth !🤖 @<span style='color:#0a0'>+42</span> <span style='color:#a00'>-8</span> <span style='color:#0a0'>↑3</span> <span style='color:#0a0'>⇡1</span> <span style='color:#0a0'>●</span> | Opus 🌔 65%</code>
 
 When Claude Code provides context window usage via stdin JSON, a moon phase gauge appears (🌕→🌑 as context fills).
 

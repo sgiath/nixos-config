@@ -30,10 +30,10 @@ $ wt config show
 
 ## Configuration files
 
-| File | Location | Contains | Committed & shared |
-|------|----------|----------|--------------------|
-| **User config** | `~/.config/worktrunk/config.toml` | Worktree path template, LLM commit configs, etc | ✗ |
-| **Project config** | `.config/wt.toml` | Project hooks, dev server URL | ✓ |
+| File               | Location                          | Contains                                        | Committed & shared |
+| ------------------ | --------------------------------- | ----------------------------------------------- | ------------------ |
+| **User config**    | `~/.config/worktrunk/config.toml` | Worktree path template, LLM commit configs, etc | ✗                  |
+| **Project config** | `.config/wt.toml`                 | Project hooks, dev server URL                   | ✓                  |
 
 Organizations can also deploy a system-wide config file for shared defaults — run `wt config show` for the platform-specific location.
 
@@ -59,6 +59,7 @@ test = "npm test"
 ```
 
 <!-- USER_CONFIG_START -->
+
 # User Configuration
 
 Create with `wt config create`. Values shown are defaults unless noted otherwise.
@@ -310,6 +311,7 @@ Available variables:
 Default template:
 
 <!-- DEFAULT_TEMPLATE_START -->
+
 ```toml
 [commit.generation]
 template = """
@@ -352,6 +354,7 @@ Branch: {{ branch }}
 
 """
 ```
+
 <!-- DEFAULT_TEMPLATE_END -->
 
 #### Squash template
@@ -364,6 +367,7 @@ Available variables (in addition to commit template variables):
 Default template:
 
 <!-- DEFAULT_SQUASH_TEMPLATE_START -->
+
 ```toml
 [commit.generation]
 squash-template = """
@@ -403,6 +407,7 @@ squash-template = """
 
 """
 ```
+
 <!-- DEFAULT_SQUASH_TEMPLATE_END -->
 
 #### Appending to the prompt [experimental]
@@ -421,8 +426,10 @@ The [project config](https://worktrunk.dev/config/#project-configuration) has a 
 ## Hooks
 
 See [`wt hook`](https://worktrunk.dev/hook/) for hook types, execution order, template variables, and examples. User hooks apply to all projects; [project hooks](https://worktrunk.dev/config/#project-configuration) apply only to that repository.
+
 <!-- USER_CONFIG_END -->
 <!-- PROJECT_CONFIG_START -->
+
 # Project Configuration
 
 Project configuration lets teams share repository-specific settings — hooks, dev server URLs, and other defaults. The file lives in `.config/wt.toml` and is typically checked into version control.
@@ -494,6 +501,7 @@ url = "echo http://localhost:{{ branch | hash_port }}"
 ```
 
 Aliases defined here are shared with teammates. For personal aliases, use the [user config](https://worktrunk.dev/config/#aliases) `[aliases]` section instead.
+
 <!-- PROJECT_CONFIG_END -->
 
 # Shell Integration
@@ -524,11 +532,11 @@ Config keys use kebab-case (`worktree-path`), while env vars use SCREAMING_SNAKE
 
 For nested config sections, use double underscores to separate levels:
 
-| Config | Environment Variable |
-|--------|---------------------|
-| `worktree-path` | `WORKTRUNK_WORKTREE_PATH` |
+| Config                      | Environment Variable                    |
+| --------------------------- | --------------------------------------- |
+| `worktree-path`             | `WORKTRUNK_WORKTREE_PATH`               |
 | `commit.generation.command` | `WORKTRUNK_COMMIT__GENERATION__COMMAND` |
-| `commit.stage` | `WORKTRUNK_COMMIT__STAGE` |
+| `commit.stage`              | `WORKTRUNK_COMMIT__STAGE`               |
 
 Note the single underscore after `WORKTRUNK` and double underscores between nested keys.
 
@@ -542,19 +550,19 @@ $ WORKTRUNK_COMMIT__GENERATION__COMMAND="echo 'test: automated commit'" wt merge
 
 ### Other environment variables
 
-| Variable | Purpose |
-|----------|---------|
-| `WORKTRUNK_BIN` | Override binary path for shell wrappers; useful for testing dev builds |
-| `WORKTRUNK_CONFIG_PATH` | Override user config file location |
-| `WORKTRUNK_SYSTEM_CONFIG_PATH` | Override system config file location |
-| `WORKTRUNK_PROJECT_CONFIG_PATH` | Override project config file location (defaults to `.config/wt.toml`) |
-| `XDG_CONFIG_DIRS` | Colon-separated system config directories (default: `/etc/xdg`) |
-| `WORKTRUNK_DIRECTIVE_CD_FILE` | Internal: set by shell wrappers. wt writes a raw path; the wrapper `cd`s to it |
-| `WORKTRUNK_DIRECTIVE_EXEC_FILE` | Internal: set by shell wrappers. wt writes shell commands; the wrapper sources the file |
-| `WORKTRUNK_SHELL` | Internal: set by shell wrappers to indicate shell type (e.g., `powershell`) |
-| `WORKTRUNK_MAX_CONCURRENT_COMMANDS` | Max parallel git commands (default: 32). Lower if hitting file descriptor limits. |
-| `NO_COLOR` | Disable colored output ([standard](https://no-color.org/)) |
-| `CLICOLOR_FORCE` | Force colored output even when not a TTY |
+| Variable                            | Purpose                                                                                 |
+| ----------------------------------- | --------------------------------------------------------------------------------------- |
+| `WORKTRUNK_BIN`                     | Override binary path for shell wrappers; useful for testing dev builds                  |
+| `WORKTRUNK_CONFIG_PATH`             | Override user config file location                                                      |
+| `WORKTRUNK_SYSTEM_CONFIG_PATH`      | Override system config file location                                                    |
+| `WORKTRUNK_PROJECT_CONFIG_PATH`     | Override project config file location (defaults to `.config/wt.toml`)                   |
+| `XDG_CONFIG_DIRS`                   | Colon-separated system config directories (default: `/etc/xdg`)                         |
+| `WORKTRUNK_DIRECTIVE_CD_FILE`       | Internal: set by shell wrappers. wt writes a raw path; the wrapper `cd`s to it          |
+| `WORKTRUNK_DIRECTIVE_EXEC_FILE`     | Internal: set by shell wrappers. wt writes shell commands; the wrapper sources the file |
+| `WORKTRUNK_SHELL`                   | Internal: set by shell wrappers to indicate shell type (e.g., `powershell`)             |
+| `WORKTRUNK_MAX_CONCURRENT_COMMANDS` | Max parallel git commands (default: 32). Lower if hitting file descriptor limits.       |
+| `NO_COLOR`                          | Disable colored output ([standard](https://no-color.org/))                              |
+| `CLICOLOR_FORCE`                    | Force colored output even when not a TTY                                                |
 
 ## Command reference
 
@@ -614,6 +622,7 @@ $ wt config show --full
 ```
 
 This tests:
+
 - **CI tool status** — Whether `gh` (GitHub) or `glab` (GitLab) is installed and authenticated
 - **Commit generation** — Whether the LLM command can generate commit messages
 - **Version check** — Whether a newer version is available on GitHub
@@ -666,16 +675,19 @@ Project hooks and project aliases prompt for approval on first run to prevent un
 ### Examples
 
 Pre-approve all hook and alias commands for current project:
+
 ```bash
 $ wt config approvals add
 ```
 
 Clear approvals for current project:
+
 ```bash
 $ wt config approvals clear
 ```
 
 Clear global approvals:
+
 ```bash
 $ wt config approvals clear --global
 ```
@@ -723,16 +735,19 @@ Aliases are command templates configured in user (`~/.config/worktrunk/config.to
 ### Examples
 
 Show every configured alias's template:
+
 ```bash
 $ wt config alias show
 ```
 
 Show the template for `deploy`:
+
 ```bash
 $ wt config alias show deploy
 ```
 
 Preview an invocation without running it:
+
 ```bash
 $ wt config alias dry-run deploy
 $ wt config alias dry-run deploy -- --env=staging
@@ -786,36 +801,43 @@ State is stored in `.git/` (config entries and log files), separate from configu
 ### Examples
 
 Get the default branch:
+
 ```bash
 $ wt config state default-branch
 ```
 
 Set the default branch manually:
+
 ```bash
 $ wt config state default-branch set main
 ```
 
 Set a marker for current branch:
+
 ```bash
 $ wt config state marker set 🚧
 ```
 
 Store arbitrary data:
+
 ```bash
 $ wt config state vars set env=staging
 ```
 
 Clear all CI status cache:
+
 ```bash
 $ wt config state ci-status clear --all
 ```
 
 Show all stored state:
+
 ```bash
 $ wt config state get
 ```
 
 Clear all stored state:
+
 ```bash
 $ wt config state clear
 ```
@@ -881,6 +903,7 @@ Worktrunk detects the default branch automatically:
 Once detected, the result is cached in `worktrunk.default-branch` for fast access.
 
 The local inference fallback uses these heuristics in order:
+
 - If only one local branch exists, uses it
 - For bare repos or empty repos, checks `symbolic-ref HEAD`
 - Checks `git config init.defaultBranch`
@@ -931,14 +954,14 @@ Three kinds of logs live in `.git/wt/logs/`:
 
 All hook executions and LLM commands are recorded automatically — one JSON object per line. Rotates to `commands.jsonl.old` at 1MB (~2MB total). Fields:
 
-| Field | Description |
-|-------|-------------|
-| `ts` | ISO 8601 timestamp |
-| `wt` | The `wt` command that triggered this (e.g., `wt hook pre-merge --yes`) |
-| `label` | What ran (e.g., `pre-merge user:lint`, `commit.generation`) |
-| `cmd` | Shell command executed |
-| `exit` | Exit code (`null` for background commands) |
-| `dur_ms` | Duration in milliseconds (`null` for background commands) |
+| Field    | Description                                                            |
+| -------- | ---------------------------------------------------------------------- |
+| `ts`     | ISO 8601 timestamp                                                     |
+| `wt`     | The `wt` command that triggered this (e.g., `wt hook pre-merge --yes`) |
+| `label`  | What ran (e.g., `pre-merge user:lint`, `commit.generation`)            |
+| `cmd`    | Shell command executed                                                 |
+| `exit`   | Exit code (`null` for background commands)                             |
+| `dur_ms` | Duration in milliseconds (`null` for background commands)              |
 
 The command log appends entries and is not branch-specific — it records all activity across all worktrees.
 
@@ -946,19 +969,19 @@ The command log appends entries and is not branch-specific — it records all ac
 
 Hook output lives in per-branch subtrees under `.git/wt/logs/{branch}/`:
 
-| Operation | Log path |
-|-----------|----------|
-| Background hooks | `{branch}/{source}/{hook-type}/{name}.log` |
-| Background removal | `{branch}/internal/remove.log` |
+| Operation          | Log path                                   |
+| ------------------ | ------------------------------------------ |
+| Background hooks   | `{branch}/{source}/{hook-type}/{name}.log` |
+| Background removal | `{branch}/internal/remove.log`             |
 
 All `post-*` hooks (post-start, post-switch, post-commit, post-merge) run in the background and produce log files. Source is `user` or `project`. Branch and hook names are sanitized for filesystem safety (invalid characters → `-`; short collision-avoidance hash appended). Same operation on same branch overwrites the previous log. Removing a branch clears its subtree; orphans from deleted branches can be swept with `wt config state logs clear`.
 
 #### Diagnostic files
 
-| File | Created when |
-|------|-------------|
-| `trace.log` | Running with `-vv` |
-| `output.log` | Running with `-vv` |
+| File            | Created when                           |
+| --------------- | -------------------------------------- |
+| `trace.log`     | Running with `-vv`                     |
+| `output.log`    | Running with `-vv`                     |
 | `diagnostic.md` | Running with `-vv` when warnings occur |
 
 `trace.log` mirrors stderr (commands, `[wt-trace]` records, bounded subprocess previews). `output.log` holds the raw uncapped subprocess stdout/stderr bodies. Both are overwritten on each `-vv` run. `diagnostic.md` is a markdown report for pasting into GitHub issues — written only when warnings occur, and inlines `trace.log` (never `output.log`, which can be multi-MB).
@@ -974,26 +997,31 @@ All logs are stored in `.git/wt/logs/` (in the main worktree's git directory). A
 ### Examples
 
 List all log files:
+
 ```bash
 $ wt config state logs
 ```
 
 Query the command log:
+
 ```bash
 $ tail -5 .git/wt/logs/commands.jsonl | jq .
 ```
 
 Path to one hook log (e.g. the `post-start` `server` hook for the current branch):
+
 ```bash
 $ wt config state logs --format=json | jq -r '.hook_output[] | select(.source == "user" and .hook_type == "post-start" and (.name | startswith("server"))) | .path'
 ```
 
 Logs for a specific branch:
+
 ```bash
 $ wt config state logs --format=json | jq '.hook_output[] | select(.branch | startswith("feature"))'
 ```
 
 Clear all logs:
+
 ```bash
 $ wt config state logs clear
 ```
@@ -1046,14 +1074,14 @@ Results cache for 30-60 seconds. Indicators dim when local changes haven't been 
 
 ### Status values
 
-| Status | Meaning |
-|--------|---------|
-| `passed` | All checks passed |
-| `running` | Checks in progress |
-| `failed` | Checks failed |
-| `conflicts` | PR has merge conflicts |
-| `no-ci` | No checks configured |
-| `error` | Fetch error (rate limit, network, auth) |
+| Status      | Meaning                                 |
+| ----------- | --------------------------------------- |
+| `passed`    | All checks passed                       |
+| `running`   | Checks in progress                      |
+| `failed`    | Checks failed                           |
+| `conflicts` | PR has merge conflicts                  |
+| `no-ci`     | No checks configured                    |
+| `error`     | Fetch error (rate limit, network, auth) |
 
 See [`wt list` CI status](https://worktrunk.dev/list/#ci-status) for display symbols and colors.
 
@@ -1176,22 +1204,26 @@ Store custom variables per branch. Values are stored as-is — plain strings or 
 ### Examples
 
 Set and get values:
+
 ```bash
 $ wt config state vars set env=staging
 $ wt config state vars get env
 ```
 
 Store JSON:
+
 ```bash
 $ wt config state vars set config='{"port": 3000, "debug": true}'
 ```
 
 List all keys:
+
 ```bash
 $ wt config state vars list
 ```
 
 Operate on a different branch:
+
 ```bash
 $ wt config state vars set env=production --branch=main
 ```
@@ -1210,6 +1242,7 @@ JSON object and array values support dot access:
 ```bash
 $ wt config state vars set config='{"port": 3000, "debug": true}'
 ```
+
 ```toml
 [post-start]
 dev = "npm start -- --port {{ vars.config.port }}"

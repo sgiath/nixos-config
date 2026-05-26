@@ -78,6 +78,7 @@ or `/usr/local/bin/wt`) instead of just `wt`. The shell wrapper only intercepts
 the bare command `wt`.
 
 **Fix**: Use `wt` without a path. For testing dev builds, set `WORKTRUNK_BIN`:
+
 ```bash
 export WORKTRUNK_BIN=./target/debug/wt
 wt switch feature  # Now uses the dev build with shell integration
@@ -100,6 +101,7 @@ When shell integration is installed, it creates a shell function named `wt` (or
 and shell integration won't work.
 
 **Examples that bypass** (won't auto-cd):
+
 ```bash
 alias gwt="/usr/bin/wt"
 alias gwt="wt.exe"
@@ -107,6 +109,7 @@ alias wt="/path/to/wt"
 ```
 
 **Fix**: Change the alias to point to the function name instead of the binary:
+
 ```bash
 alias gwt="wt"       # Good - uses the shell function
 alias gwt="git-wt"   # Good - uses the shell function
@@ -128,6 +131,7 @@ function that:
 6. Cleans up both temp files
 
 Simplified example (actual wrapper handles completions and edge cases):
+
 ```bash
 wt() {
     local cd_file exec_file exit_code=0
@@ -223,6 +227,7 @@ rm -f $WORKTRUNK_DIRECTIVE_CD_FILE $WORKTRUNK_DIRECTIVE_EXEC_FILE
 ### Shell integration works in terminal but not in IDE terminal
 
 IDE terminals may use different shell configs. Check:
+
 - VS Code: Settings → Terminal → Integrated → Shell Args
 - The IDE terminal might source a different profile
 
@@ -248,12 +253,12 @@ If you see path issues, ensure you're using a recent Git for Windows version.
 
 ## Environment Variables
 
-| Variable | Purpose |
-|----------|---------|
-| `WORKTRUNK_DIRECTIVE_CD_FILE` | Set by shell wrapper; wt writes a raw path, wrapper `cd`s to it |
+| Variable                        | Purpose                                                                  |
+| ------------------------------- | ------------------------------------------------------------------------ |
+| `WORKTRUNK_DIRECTIVE_CD_FILE`   | Set by shell wrapper; wt writes a raw path, wrapper `cd`s to it          |
 | `WORKTRUNK_DIRECTIVE_EXEC_FILE` | Set by shell wrapper; wt writes shell commands, wrapper sources the file |
-| `WORKTRUNK_BIN` | Override binary path (for testing dev builds) |
-| `WORKTRUNK_SHELL` | Set by PowerShell wrapper to indicate shell type |
+| `WORKTRUNK_BIN`                 | Override binary path (for testing dev builds)                            |
+| `WORKTRUNK_SHELL`               | Set by PowerShell wrapper to indicate shell type                         |
 
 ## See Also
 

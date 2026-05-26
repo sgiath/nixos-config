@@ -37,13 +37,13 @@ $ wt switch --create temp --no-hooks       # Skip hooks
 
 ## Shortcuts
 
-| Shortcut | Meaning |
-|----------|---------|
-| `^` | Default branch (`main`/`master`) |
-| `@` | Current branch/worktree |
-| `-` | Previous worktree (like `cd -`) |
-| `pr:{N}` | GitHub PR #N's branch |
-| `mr:{N}` | GitLab MR !N's branch |
+| Shortcut | Meaning                          |
+| -------- | -------------------------------- |
+| `^`      | Default branch (`main`/`master`) |
+| `@`      | Current branch/worktree          |
+| `-`      | Previous worktree (like `cd -`)  |
+| `pr:{N}` | GitHub PR #N's branch            |
+| `mr:{N}` | GitLab MR !N's branch            |
 
 ```bash
 $ wt switch -                           # Back to previous
@@ -62,16 +62,17 @@ When called without arguments, `wt switch` opens an interactive picker to browse
 
 **Keybindings:**
 
-| Key | Action |
-|-----|--------|
-| `↑`/`↓` | Navigate worktree list |
-| (type) | Filter worktrees |
-| `Enter` | Switch to selected worktree |
-| `Alt-c` | Create new worktree named as entered text |
-| `Esc` | Cancel |
-| `1`–`5` | Switch preview tab |
-| `Alt-p` | Toggle preview panel |
-| `Ctrl-u`/`Ctrl-d` | Scroll preview up/down |
+| Key               | Action                                    |
+| ----------------- | ----------------------------------------- |
+| `↑`/`↓`           | Navigate worktree list                    |
+| (type)            | Filter worktrees                          |
+| `Enter`           | Switch to selected worktree               |
+| `Alt-c`           | Create new worktree named as entered text |
+| `Esc`             | Cancel                                    |
+| `1`–`5`           | Switch preview tab                        |
+| `Alt-p`           | Toggle preview panel                      |
+| `Ctrl-u`/`Ctrl-d` | Scroll preview up/down                    |
+
 <!-- Alt-r (remove worktree) works but is omitted: cursor resets after skim reload (#1695). Add once fixed. See #1881. -->
 
 **Preview tabs** — toggle with number keys:

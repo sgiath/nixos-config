@@ -43,7 +43,6 @@ Good interfaces make testing natural:
    ```
 
 4. **Small surface area**
-
    - Fewer public functions = fewer behavior contracts to test
    - Fewer loose params = simpler setup and clearer pattern matching
    - Explicit `{:ok, value}` / `{:error, reason}` results = straightforward assertions

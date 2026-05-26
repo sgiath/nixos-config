@@ -8,13 +8,13 @@ Worktrunk has three extension mechanisms.
 
 **[Custom subcommands](#custom-subcommands)** are standalone executables. Drop `wt-foo` on `PATH` and it becomes `wt foo`. No configuration needed.
 
-| | Hooks | Aliases | Custom subcommands |
-|---|---|---|---|
-| **Trigger** | Automatic (lifecycle events) | Manual (`wt <name>`) | Manual (`wt <name>`) |
-| **Defined in** | TOML config | TOML config | Any executable on `PATH` |
-| **Template variables** | Yes | Yes | No |
-| **Shareable via repo** | `.config/wt.toml` | `.config/wt.toml` | Distribute the binary |
-| **Language** | Shell commands | Shell commands | Any |
+|                        | Hooks                        | Aliases              | Custom subcommands       |
+| ---------------------- | ---------------------------- | -------------------- | ------------------------ |
+| **Trigger**            | Automatic (lifecycle events) | Manual (`wt <name>`) | Manual (`wt <name>`)     |
+| **Defined in**         | TOML config                  | TOML config          | Any executable on `PATH` |
+| **Template variables** | Yes                          | Yes                  | No                       |
+| **Shareable via repo** | `.config/wt.toml`            | `.config/wt.toml`    | Distribute the binary    |
+| **Language**           | Shell commands               | Shell commands       | Any                      |
 
 Hooks and aliases share the TOML config file, the [template engine](https://worktrunk.dev/hook/#template-variables) (variables, filters, and functions), the [`[[block]]` pipeline syntax](https://worktrunk.dev/hook/#hook-forms) (blocks run in order, keys within a block run concurrently), and the approval model: user config is trusted; project config requires approval on first run. When both sources define the same name, both run — user first.
 
@@ -22,13 +22,13 @@ Hooks and aliases share the TOML config file, the [template engine](https://work
 
 Hooks are shell commands that run at key points in the worktree lifecycle. Ten hooks cover five events:
 
-| Event | `pre-` (blocking) | `post-` (background) |
-|-------|-------------------|---------------------|
-| **switch** | `pre-switch` | `post-switch` |
-| **start** | `pre-start` | `post-start` |
-| **commit** | `pre-commit` | `post-commit` |
-| **merge** | `pre-merge` | `post-merge` |
-| **remove** | `pre-remove` | `post-remove` |
+| Event      | `pre-` (blocking) | `post-` (background) |
+| ---------- | ----------------- | -------------------- |
+| **switch** | `pre-switch`      | `post-switch`        |
+| **start**  | `pre-start`       | `post-start`         |
+| **commit** | `pre-commit`      | `post-commit`        |
+| **merge**  | `pre-merge`       | `post-merge`         |
+| **remove** | `pre-remove`      | `post-remove`        |
 
 `pre-*` hooks block — failure aborts the operation. `post-*` hooks run in the background.
 
@@ -123,7 +123,7 @@ Every step sees the same `{{ args }}` and bound variables — `wt release -- --d
 
 ### Deferring expansion to a nested `wt` command
 
-Alias templates render once at dispatch, using the alias-invocation worktree's context. A nested `wt` command in the alias body — for example `wt switch --execute '…'` — therefore receives already-rendered text, so a variable like `{{ worktree_path }}` inside the inner command's template resolves to the *outer* worktree rather than the one `wt switch` is targeting. Wrap the inner template in `{% raw %}…{% endraw %}` so it passes through unrendered and the inner `wt` command expands it in its own context:
+Alias templates render once at dispatch, using the alias-invocation worktree's context. A nested `wt` command in the alias body — for example `wt switch --execute '…'` — therefore receives already-rendered text, so a variable like `{{ worktree_path }}` inside the inner command's template resolves to the _outer_ worktree rather than the one `wt switch` is targeting. Wrap the inner template in `{% raw %}…{% endraw %}` so it passes through unrendered and the inner `wt` command expands it in its own context:
 
 ```toml
 [aliases]
@@ -209,17 +209,17 @@ Hooks and aliases share a template-variable model and a smart-routing rule for `
 <details>
 <summary>Interface differences</summary>
 
-| Axis | Hooks | Aliases |
-|------|-------|---------|
-| Invocation | `wt hook <type> [args...]` — nested under the `hook` built-in | `wt <name> [args...]` — top-level |
-| Bare positionals | Filter names (`wt hook pre-merge test build` runs only `test` and `build`) | Forwarded to `{{ args }}` |
-| Reach `{{ args }}` from positionals | Must use `--` (`wt hook pre-merge -- extra`) | Any bare positional lands there |
-| Approval skip flag | Post-subcommand `--yes` / `-y` supported (`wt hook pre-merge --yes`) | Only the global form (`wt -y <alias>`); post-alias `--yes` falls through to `{{ args }}` |
-| Source discrimination | `user:` / `project:` / `user:name` / `project:name` filter syntax | Run user first, then project; no filter syntax |
-| Force-bind escape | `--var KEY=VALUE` (deprecated — prefer `--KEY=VALUE` — but still force-binds) | None — smart routing is the only path |
-| `--help` | `wt hook --help` lists hook types; `wt hook <type> --help` shows flags and arguments for that type | The template body is the documentation — `wt <alias> --help` redirects to `wt config alias show` / `dry-run`; `wt --help` and `wt step --help` list configured aliases alongside built-in commands |
-| Inspection | `wt hook show [type] [--expanded]` | `wt config alias show <name>` / `wt config alias dry-run <name>` |
-| Stdin | All template variables as JSON (parse with `json.load(sys.stdin)`) | Inherits parent stdin — pipes pass through; interactive TUIs (e.g. `wt switch`) keep the tty |
-| Template-context extras | `hook_type`, `hook_name`, per-type operation vars (`base`, `target`, `pr_number`, …) | `args` on top of the shared base variables |
+| Axis                                | Hooks                                                                                              | Aliases                                                                                                                                                                                            |
+| ----------------------------------- | -------------------------------------------------------------------------------------------------- | -------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| Invocation                          | `wt hook <type> [args...]` — nested under the `hook` built-in                                      | `wt <name> [args...]` — top-level                                                                                                                                                                  |
+| Bare positionals                    | Filter names (`wt hook pre-merge test build` runs only `test` and `build`)                         | Forwarded to `{{ args }}`                                                                                                                                                                          |
+| Reach `{{ args }}` from positionals | Must use `--` (`wt hook pre-merge -- extra`)                                                       | Any bare positional lands there                                                                                                                                                                    |
+| Approval skip flag                  | Post-subcommand `--yes` / `-y` supported (`wt hook pre-merge --yes`)                               | Only the global form (`wt -y <alias>`); post-alias `--yes` falls through to `{{ args }}`                                                                                                           |
+| Source discrimination               | `user:` / `project:` / `user:name` / `project:name` filter syntax                                  | Run user first, then project; no filter syntax                                                                                                                                                     |
+| Force-bind escape                   | `--var KEY=VALUE` (deprecated — prefer `--KEY=VALUE` — but still force-binds)                      | None — smart routing is the only path                                                                                                                                                              |
+| `--help`                            | `wt hook --help` lists hook types; `wt hook <type> --help` shows flags and arguments for that type | The template body is the documentation — `wt <alias> --help` redirects to `wt config alias show` / `dry-run`; `wt --help` and `wt step --help` list configured aliases alongside built-in commands |
+| Inspection                          | `wt hook show [type] [--expanded]`                                                                 | `wt config alias show <name>` / `wt config alias dry-run <name>`                                                                                                                                   |
+| Stdin                               | All template variables as JSON (parse with `json.load(sys.stdin)`)                                 | Inherits parent stdin — pipes pass through; interactive TUIs (e.g. `wt switch`) keep the tty                                                                                                       |
+| Template-context extras             | `hook_type`, `hook_name`, per-type operation vars (`base`, `target`, `pr_number`, …)               | `args` on top of the shared base variables                                                                                                                                                         |
 
 </details>
