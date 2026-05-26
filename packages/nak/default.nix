@@ -17,7 +17,7 @@ buildGoModule rec {
     hash = "sha256-7j9O8SAig3OMdvtVsxP9Ar1CjUWOhFovKo63S5IbNf8=";
   };
 
-  vendorHash = lib.fakeHash;
+  vendorHash = "sha256-Eeg49ida69AUY5viTHHNgiL8wTXtXRG3kTMiCrU6zCY=";
 
   buildInputs = [
     lmdb
