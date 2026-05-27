@@ -10,6 +10,16 @@
       pkgs.opencode-desktop
     ];
 
+    xdg.desktopEntries = lib.mkIf (config.sgiath.targets.graphical) {
+      opencode-desktop = {
+        desktopName = "OpenCode";
+        exec = "opencode-desktop %U";
+        icon = "opencode-desktop";
+        categories = [ "Development" ];
+        mimeType = [ "x-scheme-handler/opencode" ];
+      };
+    };
+
     programs.opencode = {
       enable = true;
       package = pkgs.opencode;
