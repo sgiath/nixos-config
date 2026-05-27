@@ -12,6 +12,7 @@
 
     xdg.desktopEntries = lib.mkIf (config.sgiath.targets.graphical) {
       opencode-desktop = {
+        name = "OpenCode";
         genericName = "OpenCode";
         exec = "opencode-desktop %U";
         icon = "opencode-desktop";
