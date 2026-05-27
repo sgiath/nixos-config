@@ -10,7 +10,7 @@ let
 in
 {
   config = lib.mkIf config.sgiath.agents.enable {
-    home.programs = lib.mkIf (config.sgiath.targets.graphical) [
+    home.packages = lib.mkIf (config.sgiath.targets.graphical) [
       inputs.opencode.packages.${pkgs.stdenv.hostPlatform.system}.opencode-desktop
     ];
 
