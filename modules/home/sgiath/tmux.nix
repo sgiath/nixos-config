@@ -39,6 +39,7 @@
       extraConfig = ''
         set -g extended-keys on
         set -g extended-keys-format csi-u
+        set -g allow-passthrough on
 
         unbind c
         bind c display-popup -E "tms"

@@ -6,6 +6,9 @@
   namespace,
   ...
 }:
+let
+  backlog = inputs.backlog-md.packages.${pkgs.stdenv.hostPlatform.system}.default;
+in
 {
   imports = [
     ./claude.nix
@@ -31,7 +34,7 @@
       # pkgs.cursor-cli
 
       pkgs.openspec
-      inputs.backlog-md.packages.${pkgs.stdenv.hostPlatform.system}.default
+      backlog
       inputs.beads.packages.${pkgs.stdenv.hostPlatform.system}.default
       pkgs.${namespace}.coderabbit
       pkgs.${namespace}.fusion
@@ -47,7 +50,8 @@
     ];
 
     programs.zsh.shellAliases = {
-      bl = "${lib.getExe inputs.backlog-md.packages.${pkgs.stdenv.hostPlatform.system}.default}";
+      bl = "${lib.getExe backlog}";
+      gr = "${lib.getExe pkgs.${namespace}.grok} --experimental-memory";
     };
 
     # Node
