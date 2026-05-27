@@ -17,6 +17,7 @@
       appimage-run
 
       # T3 code
+      opencode-desktop
       pkgs.${namespace}.t3code
     ];
 
