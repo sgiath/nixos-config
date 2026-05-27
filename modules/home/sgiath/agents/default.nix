@@ -47,6 +47,9 @@ in
 
       # Hermes
       inputs.hermes-agent.packages.${pkgs.stdenv.hostPlatform.system}.default
+
+      # T3 code
+      (lib.mkIf (config.sgiath.targets.graphical) pkgs.${namespace}.t3code)
     ];
 
     programs.zsh.shellAliases = {
