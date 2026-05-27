@@ -81,7 +81,7 @@
     };
 
     # flake-release-pin: v1.15.4
-    opencode.url = "github:anomalyco/opencode/v1.15.4";
+    opencode.url = "github:anomalyco/opencode/v1.15.11";
 
     hermes-agent = {
       url = "github:NousResearch/hermes-agent/v2026.5.16";
@@ -146,6 +146,7 @@
       overlays = with inputs; [
         hyprland.overlays.default
         noctalia.overlays.default
+        opencode.overlays.default
         hermes-agent.overlays.default
       ];
 

@@ -2,21 +2,17 @@
   config,
   lib,
   pkgs,
-  inputs,
   ...
 }:
-let
-  opencode = inputs.opencode.packages.${pkgs.stdenv.hostPlatform.system}.default;
-in
 {
   config = lib.mkIf config.sgiath.agents.enable {
     home.packages = lib.mkIf (config.sgiath.targets.graphical) [
-      inputs.opencode.packages.${pkgs.stdenv.hostPlatform.system}.opencode-desktop
+      pkgs.opencode-desktop
     ];
 
     programs.opencode = {
       enable = true;
-      package = opencode;
+      package = pkgs.opencode;
       enableMcpIntegration = true;
       context = ./AGENTS.md;
       agents = ./agents;
@@ -68,7 +64,7 @@ in
 
     # aliases
     programs.zsh.shellAliases = {
-      oc = "OPENCODE_EXPERIMENTAL_WORKSPACES=true ${lib.getExe opencode}";
+      oc = "OPENCODE_EXPERIMENTAL_WORKSPACES=true ${lib.getExe pkgs.opencode}";
     };
   };
 }
