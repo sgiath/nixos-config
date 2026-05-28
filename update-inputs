@@ -21,7 +21,6 @@ Put one of these comments immediately above an input to pin it instead:
   # flake-release-pin: v1.2.3
 
 Options:
-  --dry-run      Print planned changes without editing files or running package scripts
   --no-lock      Update flake.nix only; skip nix flake lock
   --no-packages  Skip packages/*/update.sh scripts
 EOF
@@ -29,9 +28,6 @@ EOF
 
 while [[ $# -gt 0 ]]; do
   case "$1" in
-  --dry-run)
-    DRY_RUN=1
-    ;;
   --no-lock)
     UPDATE_LOCK=0
     ;;
@@ -60,10 +56,6 @@ require_cmd() {
 
 require_cmd curl
 require_cmd jq
-if [[ "${DRY_RUN}" -eq 0 && "${UPDATE_LOCK}" -eq 1 ]]; then
-  require_cmd nix
-fi
-
 if [[ ! -f "${FLAKE_NIX}" ]]; then
   echo "ERROR: ${FLAKE_NIX} does not exist" >&2
   exit 1
@@ -101,14 +93,6 @@ run_package_updaters() {
   mapfile -t package_scripts < <(find "${PACKAGES_DIR}" -mindepth 2 -maxdepth 2 -type f -name update.sh | sort)
   if [[ "${#package_scripts[@]}" -eq 0 ]]; then
     echo "==> No package update scripts found"
-    return
-  fi
-
-  if [[ "${DRY_RUN}" -eq 1 ]]; then
-    echo "==> Dry run; would run ${#package_scripts[@]} package update scripts"
-    for script in "${package_scripts[@]}"; do
-      echo "    ${script#${SCRIPT_DIR}/}"
-    done
     return
   fi
 
@@ -250,13 +234,6 @@ if [[ "${#CHANGED_INPUTS[@]}" -eq 0 ]]; then
   exit 0
 fi
 
-if [[ "${DRY_RUN}" -eq 1 ]]; then
-  echo "==> Dry run; no files changed"
-  run_package_updaters
-  echo "==> Done"
-  exit 0
-fi
-
 tmp_file="$(mktemp)"
 trap 'rm -f "${tmp_file}"' EXIT
 cp "${FLAKE_NIX}" "${tmp_file}"
@@ -275,9 +252,6 @@ done
 
 mv "${tmp_file}" "${FLAKE_NIX}"
 trap - EXIT
-
-echo "==> Updated flake.nix"
-nix flake update
 
 run_package_updaters
 

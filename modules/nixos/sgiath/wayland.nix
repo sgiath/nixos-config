@@ -15,7 +15,6 @@
       MOZ_ENABLE_WAYLAND = "1"; # ensure enable wayland for Firefox
       WLR_RENDERER_ALLOW_SOFTWARE = "1"; # enable software rendering for wlroots
       WLR_NO_HARDWARE_CURSORS = "1"; # disable hardware cursors for wlroots
-      NIXOS_XDG_OPEN_USE_PORTAL = "1"; # needed to open apps after web login
     };
     environment.etc."issue".text = ''
       The Times 03/Jan/2009 Chancellor on brink of second bailout for banks
