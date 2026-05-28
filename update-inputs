@@ -21,6 +21,7 @@ Put one of these comments immediately above an input to pin it instead:
   # flake-release-pin: v1.2.3
 
 Options:
+  --dry-run      Show what would change; do not edit files, open URLs, or run package scripts
   --no-lock      Update flake.nix only; skip nix flake lock
   --no-packages  Skip packages/*/update.sh scripts
 EOF
@@ -28,6 +29,9 @@ EOF
 
 while [[ $# -gt 0 ]]; do
   case "$1" in
+  --dry-run)
+    DRY_RUN=1
+    ;;
   --no-lock)
     UPDATE_LOCK=0
     ;;
@@ -72,6 +76,26 @@ latest_release_tag() {
   gh api "repos/${repo}/releases/latest" --jq .tag_name
 }
 
+open_latest_release_page() {
+  local repo="$1"
+  local url="https://github.com/${repo}/releases/latest"
+
+  if [[ "${DRY_RUN}" -eq 1 ]]; then
+    echo "    Would open ${url}"
+    return
+  fi
+
+  if ! command -v xdg-open >/dev/null 2>&1; then
+    echo "WARNING: xdg-open not found; could not open ${url}" >&2
+    return
+  fi
+
+  echo "    Opening ${url}"
+  if ! xdg-open "${url}" >/dev/null 2>&1; then
+    echo "WARNING: xdg-open failed for ${url}" >&2
+  fi
+}
+
 run_package_updaters() {
   if [[ "${RUN_PACKAGE_UPDATERS}" -eq 0 ]]; then
     echo "==> Skipping package update scripts"
@@ -93,6 +117,15 @@ run_package_updaters() {
   mapfile -t package_scripts < <(find "${PACKAGES_DIR}" -mindepth 2 -maxdepth 2 -type f -name update.sh | sort)
   if [[ "${#package_scripts[@]}" -eq 0 ]]; then
     echo "==> No package update scripts found"
+    return
+  fi
+
+  if [[ "${DRY_RUN}" -eq 1 ]]; then
+    echo "==> Would run ${#package_scripts[@]} package update scripts"
+    for script in "${package_scripts[@]}"; do
+      package_name="$(basename "$(dirname "${script}")")"
+      echo "    ${package_name}: ${script}"
+    done
     return
   fi
 
@@ -124,7 +157,7 @@ run_package_updaters() {
 declare -a INPUTS=()
 declare -a REPOS=()
 declare -a CURRENT_REFS=()
-declare -a LATEST_REFS=()
+declare -a TARGET_REFS=()
 declare -a PINNED_REFS=()
 declare -a CHANGED_INPUTS=()
 
@@ -195,32 +228,41 @@ for i in "${!INPUTS[@]}"; do
   current_ref="${CURRENT_REFS[$i]}"
   pinned_ref="${PINNED_REFS[$i]}"
 
+  echo "==> ${input}: checking ${repo}"
+  latest_ref="$(latest_release_tag "${repo}")"
+  if [[ -z "${latest_ref}" || "${latest_ref}" == "null" ]]; then
+    echo "ERROR: could not resolve latest release tag for ${repo}" >&2
+    exit 1
+  fi
+
   if [[ -n "${pinned_ref}" ]]; then
     if ! is_release_ref "${pinned_ref}"; then
       echo "ERROR: ${input} has invalid pin ref: ${pinned_ref}" >&2
       exit 1
     fi
 
-    LATEST_REFS+=("${pinned_ref}")
-    if [[ "${pinned_ref}" == "${current_ref}" ]]; then
-      echo "==> ${input}: pinned at ${current_ref}; skipping latest check"
+    TARGET_REFS+=("${pinned_ref}")
+    if [[ "${latest_ref}" == "${pinned_ref}" ]]; then
+      echo "    Pinned to ${pinned_ref}; latest release is unchanged"
     else
-      echo "==> ${input}: pinned ${current_ref} -> ${pinned_ref}"
+      echo "    Pinned to ${pinned_ref}; latest release is ${latest_ref}"
+      open_latest_release_page "${repo}"
+    fi
+
+    if [[ "${pinned_ref}" == "${current_ref}" ]]; then
+      :
+    else
+      echo "    Applying pin: ${current_ref} -> ${pinned_ref}"
       CHANGED_INPUTS+=("${input}")
     fi
   else
-    echo "==> ${input}: checking ${repo}"
-    latest_ref="$(latest_release_tag "${repo}")"
-    if [[ -z "${latest_ref}" || "${latest_ref}" == "null" ]]; then
-      echo "ERROR: could not resolve latest release tag for ${repo}" >&2
-      exit 1
-    fi
-    LATEST_REFS+=("${latest_ref}")
+    TARGET_REFS+=("${latest_ref}")
 
     if [[ "${latest_ref}" == "${current_ref}" ]]; then
       echo "    Already at ${current_ref}"
     else
       echo "    ${current_ref} -> ${latest_ref}"
+      open_latest_release_page "${repo}"
       CHANGED_INPUTS+=("${input}")
     fi
   fi
@@ -228,7 +270,17 @@ for i in "${!INPUTS[@]}"; do
 done
 
 if [[ "${#CHANGED_INPUTS[@]}" -eq 0 ]]; then
-  echo "==> All release-pinned flake inputs are already current"
+  echo "==> No flake input refs need updating"
+  run_package_updaters
+  echo "==> Done"
+  exit 0
+fi
+
+if [[ "${DRY_RUN}" -eq 1 ]]; then
+  echo "==> Would update flake inputs:"
+  for input in "${CHANGED_INPUTS[@]}"; do
+    echo "    ${input}"
+  done
   run_package_updaters
   echo "==> Done"
   exit 0
@@ -240,14 +292,14 @@ cp "${FLAKE_NIX}" "${tmp_file}"
 
 for i in "${!INPUTS[@]}"; do
   current_ref="${CURRENT_REFS[$i]}"
-  latest_ref="${LATEST_REFS[$i]}"
-  if [[ "${current_ref}" == "${latest_ref}" ]]; then
+  target_ref="${TARGET_REFS[$i]}"
+  if [[ "${current_ref}" == "${target_ref}" ]]; then
     continue
   fi
 
   repo_escaped="$(printf '%s' "${REPOS[$i]}" | sed 's/[.[\*^$()+?{}|\\/]/\\&/g')"
   current_escaped="$(printf '%s' "${current_ref}" | sed 's/[.[\*^$()+?{}|\\/]/\\&/g')"
-  perl -0pi -e 's#github:'"${repo_escaped}"'/'"${current_escaped}"'([\"?])#github:'"${REPOS[$i]}"'/'"${latest_ref}"'$1#g' "${tmp_file}"
+  perl -0pi -e 's#github:'"${repo_escaped}"'/'"${current_escaped}"'([\"?])#github:'"${REPOS[$i]}"'/'"${target_ref}"'$1#g' "${tmp_file}"
 done
 
 mv "${tmp_file}" "${FLAKE_NIX}"

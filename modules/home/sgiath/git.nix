@@ -49,9 +49,7 @@ in
 
         maintenance = {
           enable = true;
-          repositories = [
-
-          ];
+          repositories = [ ];
         };
 
         attributes = [
@@ -83,12 +81,12 @@ in
             d = "diff";
             aa = "add --all";
             ap = "add --patch";
-            cm = "commit --verbose --signoff";
-            cn = "commit --verbose --signoff --no-verify";
-            ca = "commit --verbose --signoff --all";
+            cm = "commit --verbose";
+            cn = "commit --verbose --no-verify";
+            ca = "commit --verbose --all";
             amend = "commit --amend --no-edit";
             ps = "push --progress";
-            pl = "pull --autostash --rebase --signoff";
+            pl = "pull --autostash --rebase";
             pf = "push --progress --force-with-lease";
             ss = "status --short";
             ll = "log --all --graph --pretty=format:'%C(magenta)%h %C(white) %an  %ar%C(auto)  %D%n%s%n'";
