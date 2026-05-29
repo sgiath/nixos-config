@@ -84,7 +84,7 @@
     opencode.url = "github:anomalyco/opencode/v1.15.4";
 
     hermes-agent = {
-      url = "github:NousResearch/hermes-agent/v2026.5.16";
+      url = "github:NousResearch/hermes-agent/v2026.5.29";
       inputs.nixpkgs.follows = "nixpkgs";
     };
 
@@ -93,10 +93,10 @@
       inputs.nixpkgs.follows = "nixpkgs";
     };
 
-    beads.url = "github:gastownhall/beads/v1.0.4";
+    beads.url = "github:gastownhall/beads/v1.0.5";
     gas-town.url = "github:gastownhall/gastown/v1.1.0";
     backlog-md.url = "github:MrLesk/Backlog.md/v1.45.1";
-    voxtype.url = "github:peteonrails/voxtype/v0.7.4";
+    voxtype.url = "github:peteonrails/voxtype/v0.7.5";
     comfyui.url = "github:utensils/comfyui-nix/v0.18.2";
   };
 

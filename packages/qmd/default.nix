@@ -10,11 +10,11 @@
 
 (buildNpmPackage.override { nodejs = nodejs_22; }) rec {
   pname = "qmd";
-  version = "2.5.2";
+  version = "2.5.3";
 
   src = fetchurl {
     url = "https://registry.npmjs.org/@tobilu/qmd/-/qmd-${version}.tgz";
-    hash = "sha512-kuF+6eGdpWAsgYnRB7O8AEp5XpgEbagTuzcZPE8NbtGjPpWWhb4f35DkoV31lyfe5Ip2RVL6jZoTTCYndu7o/g==";
+    hash = "sha512-wUKc4pSPDbgs7mV7JYE8/Qj1pNXXatJFV8byTT/T3yLaoAXheFtWu0BgSWwoWGhRkMmxl5Qyitt66NHgbMyeBA==";
   };
 
   sourceRoot = "package";
@@ -23,7 +23,7 @@
     cp ${./package-lock.json} package-lock.json
   '';
 
-  npmDepsHash = "sha256-dqyJiC4xImCRJO/GKL/FrN56oZW1TI4+Mhc01OCptnc=";
+  npmDepsHash = "sha256-YrqUnmCfA+gteUGCbEOWR7wP7RdJ4ajvIrctfNHZPe8=";
 
   nativeBuildInputs = [
     autoPatchelfHook

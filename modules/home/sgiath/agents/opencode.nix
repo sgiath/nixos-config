@@ -75,7 +75,7 @@
 
     # aliases
     programs.zsh.shellAliases = {
-      oc = "OPENCODE_EXPERIMENTAL_WORKSPACES=true ${lib.getExe pkgs.opencode}";
+      oc = "OPENCODE_EXPERIMENTAL_WORKSPACES=true OPENCODE_EXPERIMENTAL_WEBSOCKETS=true ${lib.getExe pkgs.opencode}";
     };
   };
 }
