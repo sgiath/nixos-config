@@ -27,7 +27,7 @@ in
     home.packages = [
       pkgs.python3
       pkgs.uv
-      # pkgs.${namespace}.bird
+      pkgs.${namespace}.bird
       pkgs.nodejs
 
       # Cursor

@@ -93,6 +93,11 @@
       inputs.nixpkgs.follows = "nixpkgs";
     };
 
+    bird-scr = {
+      url = "path:/home/sgiath/develop/sgiath/bird";
+      flake = false;
+    };
+
     beads.url = "github:gastownhall/beads/v1.0.5";
     gas-town.url = "github:gastownhall/gastown/v1.1.0";
     backlog-md.url = "github:MrLesk/Backlog.md/v1.45.1";

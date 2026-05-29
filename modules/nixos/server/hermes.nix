@@ -34,6 +34,7 @@
           yt-dlp
           jq
           pkgs.${namespace}.xurl
+          pkgs.${namespace}.bird
         ];
 
         environmentFiles = [ "/data/hermes_env" ];

@@ -175,6 +175,19 @@
         "type": "github"
       }
     },
+    "bird-scr": {
+      "flake": false,
+      "locked": {
+        "lastModified": 1770928049,
+        "narHash": "sha256-OCRfx7qu7+UaAwd+g/Ga/WM9Faebo5DlyRqzYT9TAVE=",
+        "path": "/home/sgiath/develop/sgiath/bird",
+        "type": "path"
+      },
+      "original": {
+        "path": "/home/sgiath/develop/sgiath/bird",
+        "type": "path"
+      }
+    },
     "blueprint": {
       "inputs": {
         "nixpkgs": [
@@ -1830,6 +1843,7 @@
       "inputs": {
         "backlog-md": "backlog-md",
         "beads": "beads",
+        "bird-scr": "bird-scr",
         "btc-clients": "btc-clients",
         "comfyui": "comfyui",
         "continuwuity": "continuwuity",
