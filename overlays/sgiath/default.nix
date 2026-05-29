@@ -31,5 +31,5 @@ in
 {
   ksa = pkgs-ksa.ksa;
   codex = pkgs-master.codex;
-  # zed-editor = pkgs-master.zed-editor;
+  lutris = pkgs-master.lutris;
 }
