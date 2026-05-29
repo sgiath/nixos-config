@@ -2,6 +2,7 @@
   config,
   lib,
   pkgs,
+  namespace,
   ...
 }:
 
@@ -32,6 +33,7 @@
           whisper-cpp-vulkan
           yt-dlp
           jq
+          pkgs.${namespace}.xurl
         ];
 
         environmentFiles = [ "/data/hermes_env" ];

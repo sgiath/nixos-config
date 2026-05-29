@@ -1,7 +1,3 @@
-## NixOS
-
-This is a NixOS system. The project you are woring on uses `flake.nix` for dependency management so you migh need to run commands like this `nix develop -c <command>` to use the correct, project specific, version of the tool.
-
 ## Git
 
 - Safe by default: git status/diff/log.

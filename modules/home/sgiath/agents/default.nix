@@ -44,6 +44,7 @@ in
       pkgs.${namespace}.linear-cli
       pkgs.${namespace}.beadboard
       pkgs.${namespace}.grok
+      pkgs.${namespace}.xurl
 
       # Hermes
       inputs.hermes-agent.packages.${pkgs.stdenv.hostPlatform.system}.default

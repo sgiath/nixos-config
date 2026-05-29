@@ -16,4 +16,5 @@ pkgs: {
   qmd = pkgs.callPackage ./qmd { };
   relay-tester = pkgs.callPackage ./relay-tester { };
   t3code = pkgs.callPackage ./t3code { };
+  xurl = pkgs.callPackage ./xurl { };
 }
