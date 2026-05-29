@@ -16,20 +16,20 @@
 
 stdenv.mkDerivation (finalAttrs: {
   pname = "fusion";
-  version = "0.35.0";
+  version = "0.36.0";
 
   src = fetchFromGitHub {
     owner = "Runfusion";
     repo = "Fusion";
     tag = "v${finalAttrs.version}";
-    hash = "sha256-+0x6ZA6GVL5mebErCLnr5jrWld1jh0Kr0JyZ2fp/b8g=";
+    hash = "sha256-GsGIPBGbioJtU4G93mi94pWgpFN1HH1e1kZsWznV108=";
   };
 
   pnpmDeps = fetchPnpmDeps {
     inherit (finalAttrs) pname version src;
     pnpm = pnpm_10;
     fetcherVersion = 3;
-    hash = "sha256-Ja1dop7W4crXZE2wXkgbOVl4/r5IR4SEkRG79aZXN0s=";
+    hash = "sha256-D1vDXHruf3fX7TEFPLInR9WKB0FxU+Qzxzx+XTpmLyU=";
   };
 
   nativeBuildInputs = [
