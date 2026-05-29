@@ -175,7 +175,7 @@
         "type": "github"
       }
     },
-    "bird-scr": {
+    "bird-src": {
       "flake": false,
       "locked": {
         "lastModified": 1770928049,
@@ -1843,7 +1843,7 @@
       "inputs": {
         "backlog-md": "backlog-md",
         "beads": "beads",
-        "bird-scr": "bird-scr",
+        "bird-src": "bird-src",
         "btc-clients": "btc-clients",
         "comfyui": "comfyui",
         "continuwuity": "continuwuity",

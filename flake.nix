@@ -93,7 +93,7 @@
       inputs.nixpkgs.follows = "nixpkgs";
     };
 
-    bird-scr = {
+    bird-src = {
       url = "path:/home/sgiath/develop/sgiath/bird";
       flake = false;
     };
