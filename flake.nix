@@ -2,7 +2,7 @@
   inputs = {
     nixpkgs-master.url = "github:NixOS/nixpkgs/master";
     nixpkgs.url = "github:NixOS/nixpkgs/nixos-unstable";
-    nixpkgs-stable.url = "github:NixOS/nixpkgs/nixos-25.11";
+    nixpkgs-stable.url = "github:NixOS/nixpkgs/nixos-26.05";
 
     nixpkgs-ksa.url = "github:Leha44581/nixpkgs/ksa";
 
@@ -84,12 +84,12 @@
     opencode.url = "github:anomalyco/opencode/v1.15.4";
 
     hermes-agent = {
-      url = "github:NousResearch/hermes-agent/v2026.5.29";
+      url = "github:NousResearch/hermes-agent/v2026.5.29.2";
       inputs.nixpkgs.follows = "nixpkgs";
     };
 
     worktrunk = {
-      url = "github:max-sixty/worktrunk/v0.54.0";
+      url = "github:max-sixty/worktrunk/v0.55.0";
       inputs.nixpkgs.follows = "nixpkgs";
     };
 
@@ -98,9 +98,9 @@
       flake = false;
     };
 
-    beads.url = "github:gastownhall/beads/v1.0.5";
-    gas-town.url = "github:gastownhall/gastown/v1.1.0";
-    backlog-md.url = "github:MrLesk/Backlog.md/v1.45.1";
+    beads.url = "github:gastownhall/beads/v1.0.4";
+    gas-town.url = "github:gastownhall/gastown/v1.2.0";
+    backlog-md.url = "github:MrLesk/Backlog.md/v1.45.2";
     voxtype.url = "github:peteonrails/voxtype/v0.7.5";
     comfyui.url = "github:utensils/comfyui-nix/v0.18.2";
   };
@@ -110,6 +110,7 @@
       "https://nix-community.cachix.org"
       "https://nixpkgs-wayland.cachix.org"
       "https://hyprland.cachix.org"
+      "https://nix-gaming.cachix.org"
       "https://zed.cachix.org"
       "https://noctalia.cachix.org"
       "https://comfyui.cachix.org"
@@ -118,6 +119,7 @@
       "nix-community.cachix.org-1:mB9FSh9qf2dCimDSUo8Zy7bkq5CX+/rkCWyvRCYg3Fs="
       "nixpkgs-wayland.cachix.org-1:3lwxaILxMRkVhehr5StQprHdEo4IrE8sRho9R9HOLYA="
       "hyprland.cachix.org-1:a7pgxzMz7+chwVL3/pzj6jIBMioiJM7ypFP8PwtkuGc="
+      "nix-gaming.cachix.org-1:nbjlureqMbRAxR1gJ/f3hxemL9svXaZF/Ees8vCUUs4="
       "zed.cachix.org-1:/pHQ6dpMsAZk2DiP4WCL0p9YDNKWj2Q5FL20bNmw1cU="
       "noctalia.cachix.org-1:pCOR47nnMEo5thcxNDtzWpOxNFQsBRglJzxWPp3dkU4="
       "comfyui.cachix.org-1:33mf9VzoIjzVbp0zwj+fT51HG0y31ZTK3nzYZAX0rec="
@@ -163,6 +165,8 @@
         hermes-agent.nixosModules.default
         foundryvtt.nixosModules.foundryvtt
         nix-gaming.nixosModules.pipewireLowLatency
+        nix-gaming.nixosModules.platformOptimizations
+        nix-gaming.nixosModules.wine
         comfyui.nixosModules.default
       ];
 

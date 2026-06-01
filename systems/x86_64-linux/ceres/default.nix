@@ -23,9 +23,21 @@
     comfyui.enable = true;
   };
 
+  environment.systemPackages = with pkgs; [
+    protonplus
+    winetricks
+  ];
+
   programs = {
     gamescope.enable = true;
     gamemode.enable = true;
+
+    wine = {
+      enable = true;
+      binfmt = true;
+      ntsync = true;
+      package = pkgs.wineWow64Packages.waylandFull;
+    };
 
     steam = {
       enable = true;

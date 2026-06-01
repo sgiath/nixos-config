@@ -15,12 +15,6 @@ in
 
   config = lib.mkIf config.sgiath.games.enable {
     home.packages = with pkgs; [
-      protonplus
-
-      # wine64
-      # winetricks
-      # wineWow64Packages.waylandFull
-
       (lutris.override {
         extraLibraries = pkgs: [
           # libraries for KSP mod Principia
@@ -31,7 +25,6 @@ in
         extraPkgs = pkgs: [
           # default icons
           pkgs.adwaita-icon-theme
-
           # MS fonts needed for KSP
           pkgs.corefonts
         ];
@@ -45,24 +38,21 @@ in
         jdks = [
           # GT: New Horizons
           zulu25
-
           # Vanilla
           zulu21
-
           # Nomifactory
           zulu8
         ];
       })
 
       # Factorio
-      (factorio-space-age-experimental.override {
+      (factorio-space-age.override {
         username = "Sgiath";
         token = secrets.factorio_token;
       })
-      mindustry-wayland
 
       inputs.nix-gaming.packages.${pkgs.stdenv.hostPlatform.system}.star-citizen
-
+      mindustry-wayland
       celestia
       ksa
     ];

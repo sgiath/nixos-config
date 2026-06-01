@@ -44,6 +44,7 @@ in
       extraGroups = [
         "wheel"
         "input"
+        "gamemode"
       ];
       hashedPassword = "$y$j9T$EBb/Mjo7nNHfmtbiP1GST0$CctYXT62gX0cMDHzRzYxlix43xC3U6kzSDNvyqZOcj4";
       openssh.authorizedKeys.keys = [
@@ -53,9 +54,6 @@ in
 
     system = {
       stateVersion = "23.11";
-      extraDependencies = [
-        # inputs.foundryvtt.packages.${system}.foundryvtt_12.src
-      ];
     };
 
     nix = {
