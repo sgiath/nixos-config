@@ -25,8 +25,6 @@ in
         size = 24;
       };
 
-      targets.kmscon.enable = false;
-
       fonts = {
         monospace = font;
         serif = font;
