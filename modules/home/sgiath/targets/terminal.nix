@@ -23,6 +23,7 @@
       openssl
       yt-dlp
       railway
+      devenv
 
       exiftool
       multitail
