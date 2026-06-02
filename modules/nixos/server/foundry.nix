@@ -3,6 +3,7 @@
   system,
   config,
   lib,
+  pkgs,
   ...
 }:
 
@@ -43,7 +44,10 @@
 
     services.foundryvtt = {
       hostName = "foundry.sgiath.dev";
-      package = inputs.foundryvtt.packages.${system}.foundryvtt_14;
+      package = (pkgs.callPackage (inputs.foundryvtt + "/pkgs/foundryvtt") { }).overrideAttrs {
+        majorVersion = "14";
+        releaseType = "stable";
+      };
       minifyStaticFiles = true;
       proxySSL = true;
       proxyPort = 443;

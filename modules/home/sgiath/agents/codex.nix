@@ -51,6 +51,7 @@
           "${config.home.homeDirectory}/develop/sgiath/langchain".trust_level = "trusted";
 
           # CrazyEgg projects
+          "${config.home.homeDirectory}/develop/crazyegg/core_v1".trust_level = "trusted";
           "${config.home.homeDirectory}/develop/crazyegg/core_v2".trust_level = "trusted";
           "${config.home.homeDirectory}/develop/crazyegg/skills".trust_level = "trusted";
           "${config.home.homeDirectory}/develop/crazyegg/signal".trust_level = "trusted";
