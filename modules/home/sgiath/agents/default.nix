@@ -28,7 +28,7 @@
       pkgs.nodejs
 
       pkgs.llm-agents.openspec
-      pkgs.llm-agents.backlog-md
+      # pkgs.llm-agents.backlog-md
       pkgs.llm-agents.beads
       pkgs.llm-agents.coderabbit-cli
       pkgs.${namespace}.fusion
@@ -40,7 +40,8 @@
       pkgs.${namespace}.xurl
 
       # Hermes
-      inputs.hermes-agent.packages.${pkgs.stdenv.hostPlatform.system}.default
+      # inputs.hermes-agent.packages.${pkgs.stdenv.hostPlatform.system}.default
+      pkgs.llm-agents.hermes-agent
       pkgs.llm-agents.hermes-desktop
       pkgs.llm-agents.hermes-hud
 
@@ -49,7 +50,7 @@
     ];
 
     programs.zsh.shellAliases = {
-      bl = "${lib.getExe pkgs.llm-agents.backlog-md}";
+      # bl = "${lib.getExe pkgs.llm-agents.backlog-md}";
       gr = "${lib.getExe pkgs.llm-agents.grok} --experimental-memory";
     };
 
