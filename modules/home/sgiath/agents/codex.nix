@@ -14,13 +14,13 @@
         cp ~/.codex/auth.json "$tmp/auth.json"
         cp ~/.codex/config.toml "$tmp/config.toml"
 
-        CODEX_HOME="$tmp" ${lib.getExe codex} -C "''${1:-$PWD}"
+        CODEX_HOME="$tmp" ${lib.getExe llm-agents.codex} -C "''${1:-$PWD}"
       '')
     ];
 
     programs.codex = {
       enable = true;
-      package = pkgs.codex;
+      package = pkgs.llm-agents.codex;
       enableMcpIntegration = true;
       context = ./AGENTS.md;
       skills = ./skills;
@@ -68,7 +68,7 @@
     };
 
     programs.zsh.shellAliases = {
-      cx = "${lib.getExe pkgs.codex} --yolo --dangerously-bypass-hook-trust";
+      cx = "${lib.getExe pkgs.llm-agents.codex} --yolo --dangerously-bypass-hook-trust";
     };
   };
 }

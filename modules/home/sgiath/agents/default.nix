@@ -6,9 +6,6 @@
   namespace,
   ...
 }:
-let
-  backlog = inputs.backlog-md.packages.${pkgs.stdenv.hostPlatform.system}.default;
-in
 {
   imports = [
     ./claude.nix
@@ -30,20 +27,16 @@ in
       pkgs.${namespace}.bird
       pkgs.nodejs
 
-      # Cursor
-      # pkgs.cursor-cli
-
-      pkgs.openspec
-      backlog
-      inputs.beads.packages.${pkgs.stdenv.hostPlatform.system}.default
-      pkgs.${namespace}.coderabbit
+      pkgs.llm-agents.openspec
+      pkgs.llm-agents.backlog
+      pkgs.llm-agents.beads
+      pkgs.llm-agents.coderabbit-cli
       pkgs.${namespace}.fusion
       pkgs.${namespace}.plannotator
-      pkgs.${namespace}.qmd
+      pkgs.llm-agents.qmd
       pkgs.${namespace}.clawpatch
       pkgs.${namespace}.linear-cli
-      pkgs.${namespace}.beadboard
-      pkgs.${namespace}.grok
+      pkgs.llm-agents.grok
       pkgs.${namespace}.xurl
 
       # Hermes
@@ -54,8 +47,8 @@ in
     ];
 
     programs.zsh.shellAliases = {
-      bl = "${lib.getExe backlog}";
-      gr = "${lib.getExe pkgs.${namespace}.grok} --experimental-memory";
+      bl = "${lib.getExe pkgs.llm-agents.backlog}";
+      gr = "${lib.getExe pkgs.llm-agents.grok} --experimental-memory";
     };
 
     # Node

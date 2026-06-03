@@ -9,7 +9,7 @@
     programs.claude-code = {
       enable = false;
       enableMcpIntegration = true;
-      package = pkgs.claude-code;
+      package = pkgs.llm-agents.claude-code;
       memory.source = ./AGENTS.md;
       agentsDir = ./agents;
       commandsDir = ./commands;
@@ -17,7 +17,7 @@
     };
 
     programs.zsh.shellAliases = {
-      cc = "${lib.getExe pkgs.claude-code} --dangerously-skip-permissions";
+      cc = "${lib.getExe pkgs.llm-agents.claude-code} --dangerously-skip-permissions";
     };
   };
 }

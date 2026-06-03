@@ -80,9 +80,6 @@
       inputs.nixpkgs.follows = "nixpkgs";
     };
 
-    # flake-release-pin: v1.15.4
-    opencode.url = "github:anomalyco/opencode/v1.15.4";
-
     hermes-agent = {
       url = "github:NousResearch/hermes-agent/v2026.5.29.2";
       inputs.nixpkgs.follows = "nixpkgs";
@@ -98,9 +95,6 @@
       flake = false;
     };
 
-    beads.url = "github:gastownhall/beads/v1.0.4";
-    gas-town.url = "github:gastownhall/gastown/v1.2.0";
-    backlog-md.url = "github:MrLesk/Backlog.md/v1.45.2";
     voxtype.url = "github:peteonrails/voxtype/v0.7.5";
     comfyui.url = "github:utensils/comfyui-nix/v0.18.2";
 
@@ -155,7 +149,6 @@
       overlays = with inputs; [
         hyprland.overlays.default
         noctalia.overlays.default
-        opencode.overlays.default
         hermes-agent.overlays.default
         llm-agents.overlays.default
       ];
