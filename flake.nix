@@ -89,7 +89,7 @@
     };
 
     worktrunk = {
-      url = "github:max-sixty/worktrunk/v0.55.0";
+      url = "github:max-sixty/worktrunk/v0.56.0";
       inputs.nixpkgs.follows = "nixpkgs";
     };
 

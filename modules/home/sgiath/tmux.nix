@@ -14,14 +14,13 @@
       enable = true;
       configFile."tms/config.toml".text = ''
         default_session = "Main"
+        bookmarks = [
+          "/home/sgiath/nixos"
+        ]
 
         [picker_colors]
         highlight_color = "#de8f78"
         border_color = "#6791c9"
-
-        [[search_dirs]]
-        path = "/home/sgiath"
-        depth = 1
 
         [[search_dirs]]
         path = "/home/sgiath/develop"
@@ -89,7 +88,7 @@
         setw -g window-status-style "none,fg=#ddc7a1,bg=#32302f"
 
         set -g status-left "$wg_session"
-        set -g status-right "#[fg=$blue]$wg_date_time #{prefix_highlight}"
+        set -g status-right " #(tms sessions) #[fg=$blue]$wg_date_time #{prefix_highlight}"
         setw -g window-status-format "#[bg=$bg,fg=$fg] #W "
         setw -g window-status-current-format "#[fg=$yellow,bg=$bg]#[bg=$yellow,fg=$bg]#W#[fg=$yellow,bg=$bg]"
 
