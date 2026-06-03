@@ -9,6 +9,8 @@
       enable = true;
       enableReleaseChecks = false;
       base16Scheme = ./../../home/sgiath/theme.yaml;
+
+      targets.kmscon.enable = false;
     };
   };
 }
