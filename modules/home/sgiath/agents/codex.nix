@@ -6,15 +6,15 @@
 }:
 {
   config = lib.mkIf config.sgiath.agents.enable {
-    home.packages = with pkgs; [
-      (writeShellScriptBin "codex-temp" ''
+    home.packages = [
+      (pkgs.writeShellScriptBin "codex-temp" ''
         tmp="$(mktemp -d -p "$HOME" .codex-hook-trust.XXXXXX)"
         chmod 700 "$tmp"
 
         cp ~/.codex/auth.json "$tmp/auth.json"
         cp ~/.codex/config.toml "$tmp/config.toml"
 
-        CODEX_HOME="$tmp" ${lib.getExe llm-agents.codex} -C "''${1:-$PWD}"
+        CODEX_HOME="$tmp" ${lib.getExe pkgs.llm-agents.codex} -C "''${1:-$PWD}"
       '')
     ];
 

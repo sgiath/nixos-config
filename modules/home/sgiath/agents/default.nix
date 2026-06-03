@@ -6,6 +6,9 @@
   namespace,
   ...
 }:
+let
+  backlog-md = inputs.backlog-md.packages.${pkgs.stdenv.hostPlatform.system}.default;
+in
 {
   imports = [
     ./claude.nix
@@ -27,16 +30,18 @@
       pkgs.${namespace}.bird
       pkgs.nodejs
 
+      backlog-md
+
       pkgs.llm-agents.openspec
-      # pkgs.llm-agents.backlog-md
       pkgs.llm-agents.beads
       pkgs.llm-agents.coderabbit-cli
+      pkgs.llm-agents.qmd
+      pkgs.llm-agents.grok
+
       pkgs.${namespace}.fusion
       pkgs.${namespace}.plannotator
-      pkgs.llm-agents.qmd
       pkgs.${namespace}.clawpatch
       pkgs.${namespace}.linear-cli
-      pkgs.llm-agents.grok
       pkgs.${namespace}.xurl
 
       # Hermes
@@ -50,7 +55,7 @@
     ];
 
     programs.zsh.shellAliases = {
-      # bl = "${lib.getExe pkgs.llm-agents.backlog-md}";
+      bl = "${lib.getExe backlog-md}";
       gr = "${lib.getExe pkgs.llm-agents.grok} --experimental-memory";
     };
 

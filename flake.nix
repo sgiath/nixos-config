@@ -80,11 +80,6 @@
       inputs.nixpkgs.follows = "nixpkgs";
     };
 
-    hermes-agent = {
-      url = "github:NousResearch/hermes-agent/v2026.5.29.2";
-      inputs.nixpkgs.follows = "nixpkgs";
-    };
-
     worktrunk = {
       url = "github:max-sixty/worktrunk/v0.56.0";
       inputs.nixpkgs.follows = "nixpkgs";
@@ -98,7 +93,19 @@
     voxtype.url = "github:peteonrails/voxtype/v0.7.5";
     comfyui.url = "github:utensils/comfyui-nix/v0.18.2";
 
+    # LLM tools
+
     llm-agents.url = "github:numtide/llm-agents.nix";
+
+    hermes-agent = {
+      url = "github:NousResearch/hermes-agent/v2026.5.29.2";
+      inputs.nixpkgs.follows = "nixpkgs";
+    };
+
+    backlog-md = {
+      url = "github:MrLesk/Backlog.md/v1.45.2";
+      inputs.nixpkgs.follows = "nixpkgs";
+    };
   };
 
   nixConfig = {

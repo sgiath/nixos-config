@@ -11,8 +11,8 @@
       package = pkgs.llm-agents.opencode;
       enableMcpIntegration = true;
       context = ./AGENTS.md;
-      agents = ./agents;
-      commands = ./commands;
+      # agents = ./agents;
+      # commands = ./commands;
       skills = ./skills;
       settings = {
         autoupdate = false;
