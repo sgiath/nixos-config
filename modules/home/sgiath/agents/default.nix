@@ -41,13 +41,15 @@
 
       # Hermes
       inputs.hermes-agent.packages.${pkgs.stdenv.hostPlatform.system}.default
+      pkgs.llm-agents.hermes-desktop
+      pkgs.llm-agents.hermes-hud
 
       # T3 code
       (lib.mkIf (config.sgiath.targets.graphical) pkgs.${namespace}.t3code)
     ];
 
     programs.zsh.shellAliases = {
-      bl = "${lib.getExe pkgs.llm-agents.backlog}";
+      bl = "${lib.getExe pkgs.llm-agents.backlog-md}";
       gr = "${lib.getExe pkgs.llm-agents.grok} --experimental-memory";
     };
 
