@@ -103,6 +103,8 @@
     backlog-md.url = "github:MrLesk/Backlog.md/v1.45.2";
     voxtype.url = "github:peteonrails/voxtype/v0.7.5";
     comfyui.url = "github:utensils/comfyui-nix/v0.18.2";
+
+    llm-agents.url = "github:numtide/llm-agents.nix";
   };
 
   nixConfig = {
@@ -155,6 +157,7 @@
         noctalia.overlays.default
         opencode.overlays.default
         hermes-agent.overlays.default
+        llm-agents.overlays.default
       ];
 
       systems.modules.nixos = with inputs; [
