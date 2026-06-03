@@ -28,7 +28,7 @@
       pkgs.nodejs
 
       pkgs.llm-agents.openspec
-      pkgs.llm-agents.backlog
+      pkgs.llm-agents.backlog-md
       pkgs.llm-agents.beads
       pkgs.llm-agents.coderabbit-cli
       pkgs.${namespace}.fusion
