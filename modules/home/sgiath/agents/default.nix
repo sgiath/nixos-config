@@ -73,6 +73,13 @@ in
             "@modelcontextprotocol/server-github"
           ];
         };
+        backlog = {
+          command = "backlog";
+          args = [
+            "mcp"
+            "start"
+          ];
+        };
 
         datadog.url = "https://mcp.datadoghq.com/api/unstable/mcp-server/mcp?toolsets=all";
         linear.url = "https://mcp.linear.app/mcp";

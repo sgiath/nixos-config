@@ -49,6 +49,17 @@
           "${config.home.homeDirectory}/develop/sgiath/sgiath.dev".trust_level = "trusted";
           "${config.home.homeDirectory}/develop/sgiath/bird".trust_level = "trusted";
           "${config.home.homeDirectory}/develop/sgiath/langchain".trust_level = "trusted";
+          "${config.home.homeDirectory}/develop/sgiath/secp256k1".trust_level = "trusted";
+          "${config.home.homeDirectory}/develop/sgiath/nostr".trust_level = "trusted";
+          "${config.home.homeDirectory}/develop/sgiath/noise_protocol".trust_level = "trusted";
+          "${config.home.homeDirectory}/develop/sgiath/advent-of-code".trust_level = "trusted";
+          "${config.home.homeDirectory}/develop/sgiath/dragon_forge".trust_level = "trusted";
+          "${config.home.homeDirectory}/develop/sgiath/erotom_dev".trust_level = "trusted";
+          "${config.home.homeDirectory}/develop/sgiath/ex_astro".trust_level = "trusted";
+          "${config.home.homeDirectory}/develop/sgiath/haven".trust_level = "trusted";
+          "${config.home.homeDirectory}/develop/sgiath/playground".trust_level = "trusted";
+          "${config.home.homeDirectory}/develop/sgiath/reticulum".trust_level = "trusted";
+          "${config.home.homeDirectory}/develop/sgiath/spaceboy".trust_level = "trusted";
 
           # CrazyEgg projects
           "${config.home.homeDirectory}/develop/crazyegg/core_v1".trust_level = "trusted";
