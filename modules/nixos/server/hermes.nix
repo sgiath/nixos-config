@@ -19,6 +19,7 @@
             "cli"
             "youtube"
             "web"
+            "pty"
           ];
         };
         createUser = false;
@@ -39,6 +40,8 @@
 
         environmentFiles = [ "/data/hermes_env" ];
         environment = {
+          HERMES_DASHBOARD_TUI = "1";
+
           MATRIX_HOMESERVER = "https://matrix.sgiath.dev";
           MATRIX_USER_ID = "@niamh:sgiath.dev";
           MATRIX_ALLOWED_USERS = "@sgiath:sgiath.dev";
