@@ -5,7 +5,6 @@
   namespace,
   ...
 }:
-
 {
   config = lib.mkIf (config.sgiath.server.enable && config.services.hermes-agent.enable) {
     users.groups.hermes.members = [ "sgiath" ];
@@ -14,17 +13,15 @@
       hermes-agent = {
         package = pkgs.hermes-agent.override {
           extraDependencyGroups = [
-            "all"
-            # "matrix"
-            # "firecrawl"
-            # "cli"
-            # "cron"
-            # "youtube"
-            # "web"
-            # "pty"
+            "matrix"
+            "firecrawl"
+            "cli"
+            "cron"
+            "youtube"
+            "web"
+            "pty"
           ];
         };
-        # package = pkgs.llm-agents.hermes-agent;
         createUser = false;
         user = "sgiath";
         group = "hermes";
@@ -179,7 +176,7 @@
 
           locations = {
             "/webhooks" = {
-              proxyPass = "http://127.0.0.1:9119";
+              proxyPass = "http://127.0.0.1:8644";
             };
 
             "/" = {
