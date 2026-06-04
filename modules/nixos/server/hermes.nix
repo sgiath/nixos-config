@@ -16,7 +16,6 @@
             "matrix"
             "firecrawl"
             "cli"
-            "cron"
             "youtube"
             "web"
             "pty"
