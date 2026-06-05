@@ -17,6 +17,8 @@
       };
     };
 
+    # Work around a Home Manager unit cycle with gpg-agent-ssh.socket.
+    # Remove once upstream no longer adds socket ordering/wants here.
     systemd.user.services."set-SSH_AUTH_SOCK" = {
       Install.WantedBy = lib.mkForce [ "default.target" ];
       Unit.Before = lib.mkForce [ ];

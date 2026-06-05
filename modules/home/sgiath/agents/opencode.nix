@@ -11,7 +11,6 @@
       package = pkgs.llm-agents.opencode;
       enableMcpIntegration = true;
       context = ./AGENTS.md;
-      skills = ./skills;
       settings = {
         autoupdate = false;
         permission = {
@@ -52,7 +51,7 @@
 
       web.enable = true;
     };
-    stylix.targets.opencode.enable = false;
+    stylix.targets.opencode.enable = true;
 
     programs.zsh.shellAliases = {
       oc = "OPENCODE_EXPERIMENTAL_WORKSPACES=true ${lib.getExe pkgs.llm-agents.opencode}";
