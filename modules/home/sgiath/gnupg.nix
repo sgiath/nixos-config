@@ -16,6 +16,12 @@
         sshKeys = [ "191203A373DD9867A125EC6A9D3EC96416186FEE" ];
       };
     };
+
+    systemd.user.services."set-SSH_AUTH_SOCK" = {
+      Install.WantedBy = lib.mkForce [ "default.target" ];
+      Unit.Before = lib.mkForce [ ];
+    };
+
     programs.gpg = {
       settings = {
         default-key = "0x70F9C7DE34CB3BC8";
