@@ -48,7 +48,10 @@
 
       # terminals
       alacritty.enable = false;
-      kitty.enable = true;
+      kitty = {
+        enable = true;
+        settings.auto_reload_config = -1;
+      };
       wezterm.enable = false;
       ghostty.enable = false;
 
