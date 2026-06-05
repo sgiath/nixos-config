@@ -69,7 +69,7 @@ in
           url = "https://api.githubcopilot.com/mcp/x/all";
           oauth = false;
           headers = {
-            Authorization = "Bearer {env:GITHUB_PAT_TOKEN}";
+            Authorization = "Bearer {env:GITHUB_PERSONAL_ACCESS_TOKEN}";
             X-MCP-Insiders = "true";
           };
         };
