@@ -66,11 +66,12 @@ in
 
       servers = {
         github = {
-          command = "npx";
-          args = [
-            "-y"
-            "@modelcontextprotocol/server-github"
-          ];
+          url = "https://api.githubcopilot.com/mcp/x/all";
+          oauth = false;
+          headers = {
+            Authorization = "Bearer {env:GITHUB_PAT_TOKEN}";
+            X-MCP-Insiders = "true";
+          };
         };
         backlog = {
           command = "backlog";
@@ -79,10 +80,7 @@ in
             "start"
           ];
         };
-
-        datadog.url = "https://mcp.datadoghq.com/api/unstable/mcp-server/mcp?toolsets=all";
         linear.url = "https://mcp.linear.app/mcp";
-        notion.url = "https://mcp.notion.com/mcp";
       };
     };
   };
