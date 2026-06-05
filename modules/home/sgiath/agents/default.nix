@@ -45,7 +45,6 @@ in
       pkgs.${namespace}.xurl
 
       # Hermes
-      # inputs.hermes-agent.packages.${pkgs.stdenv.hostPlatform.system}.default
       pkgs.llm-agents.hermes-agent
       pkgs.llm-agents.hermes-desktop
       pkgs.llm-agents.hermes-hud

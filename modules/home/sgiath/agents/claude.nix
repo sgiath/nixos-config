@@ -11,8 +11,6 @@
       enableMcpIntegration = true;
       package = pkgs.llm-agents.claude-code;
       memory.source = ./AGENTS.md;
-      # agentsDir = ./agents;
-      # commandsDir = ./commands;
       skillsDir = ./skills;
     };
 
