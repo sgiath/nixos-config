@@ -51,7 +51,7 @@
 
       web.enable = true;
     };
-    stylix.targets.opencode.enable = true;
+    stylix.targets.opencode.enable = false;
 
     programs.zsh.shellAliases = {
       oc = "OPENCODE_EXPERIMENTAL_WORKSPACES=true ${lib.getExe pkgs.llm-agents.opencode}";
