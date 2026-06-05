@@ -90,7 +90,7 @@
       flake = false;
     };
 
-    voxtype.url = "github:peteonrails/voxtype/v0.7.5";
+    voxtype.url = "github:peteonrails/voxtype/v1.0.0-rc1";
     comfyui.url = "github:utensils/comfyui-nix/v0.18.2";
 
     # LLM tools
