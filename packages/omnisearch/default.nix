@@ -14,7 +14,7 @@ let
 
     src = fetchzip {
       url = "https://git.bwaaa.monster/beaker/snapshot/beaker-${beakerRev}.tar.gz";
-      hash = "sha256-nhSXc+jaOYlDGr5beX+LMcw0BeA5SdWH28aCrV1QMPg=";
+      hash = "sha256-KWpg3DwN4iZ5tPcilbnR+5FS80RaeLbdxE0u0HeMccM=";
     };
 
     enableParallelBuilding = true;
@@ -28,7 +28,7 @@ let
       "LDCONFIG=true"
     ];
   };
-  rev = "24f9909badd4e7aa1f3aeef717b93e9b71c20a4e";
+  rev = "ad949a452fb9ec6290adb8ec14a04171233a8426";
 in
 stdenv.mkDerivation {
   pname = "omnisearch";
@@ -36,7 +36,7 @@ stdenv.mkDerivation {
 
   src = fetchzip {
     url = "https://git.bwaaa.monster/omnisearch/snapshot/omnisearch-${rev}.tar.gz";
-    hash = "sha256-nhSXc+jaOYlDGr5beX+LMcw0BeA5SdWH28aCrV1QMPg=";
+    hash = "sha256-KWpg3DwN4iZ5tPcilbnR+5FS80RaeLbdxE0u0HeMccM=";
   };
 
   buildInputs = [

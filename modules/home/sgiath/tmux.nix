@@ -88,7 +88,7 @@
         setw -g window-status-style "none,fg=#ddc7a1,bg=#32302f"
 
         set -g status-left "$wg_session"
-        set -g status-right " #(tms sessions) #[fg=$blue]$wg_date_time #{prefix_highlight}"
+        set -g status-right "#[fg=$blue]$wg_date_time #{prefix_highlight}"
         setw -g window-status-format "#[bg=$bg,fg=$fg] #W "
         setw -g window-status-current-format "#[fg=$yellow,bg=$bg]#[bg=$yellow,fg=$bg]#W#[fg=$yellow,bg=$bg]"
 

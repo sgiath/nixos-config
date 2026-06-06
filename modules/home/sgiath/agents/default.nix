@@ -24,10 +24,7 @@ in
   };
 
   config = lib.mkIf config.sgiath.agents.enable {
-    home.file.".agents/skills" = {
-      force = true;
-      source = ./skills;
-    };
+    home.file.".agents/skills".source = ./skills;
 
     home.packages = [
       pkgs.python3
@@ -63,7 +60,6 @@ in
       gr = "${lib.getExe pkgs.llm-agents.grok} --experimental-memory";
     };
 
-    # Node
     programs.bun.enable = true;
 
     programs.mcp = {
