@@ -6,13 +6,15 @@
 }:
 {
   config = lib.mkIf config.programs.zsh.enable {
-    home.packages = with pkgs; [
-      # this is needed so the escript binary is globally available
-      beam_minimal.packages.erlang_28.erlang
-      beam_minimal.packages.erlang_28.elixir_1_19
-    ];
-
     home = {
+      packages = with pkgs; [
+        herdr
+
+        # this is needed so the escript binary is globally available
+        beam_minimal.packages.erlang_29.erlang
+        beam_minimal.packages.erlang_29.elixir_1_20
+      ];
+
       sessionPath = [
         "${config.home.homeDirectory}/.mix/escripts"
       ];
@@ -89,7 +91,7 @@
           };
 
           tmux = lib.mkIf config.programs.tmux.enable {
-            autoStartLocal = true;
+            autoStartLocal = false;
             autoStartRemote = false;
             defaultSessionName = "Main";
           };
