@@ -29,6 +29,8 @@
       multitail
 
       gnumake
+
+      herdr
     ];
 
     sgiath = {
