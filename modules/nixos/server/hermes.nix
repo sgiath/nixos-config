@@ -18,7 +18,6 @@
             "cli"
             "youtube"
             "web"
-            "pty"
           ];
         };
         createUser = false;
