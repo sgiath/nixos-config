@@ -20,7 +20,7 @@ if [[ -z "${VERSION}" ]]; then
 fi
 
 # All the parts you currently have
-NAMES=(z01 z02 z03 z04 z05 z06 z07 z08 z09 z10 z11 zip)
+NAMES=(z01 z02 z03 z04 z05 z06 z07 z08 z09 z10 z11 z12 zip)
 
 base_url="https://github.com/5etools-mirror-2/5etools-img/releases/download/v${VERSION}"
 
