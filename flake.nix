@@ -38,7 +38,7 @@
       inputs.nixpkgs.follows = "nixpkgs";
     };
 
-    hyprland.url = "github:hyprwm/Hyprland/v0.55.2";
+    hyprland.url = "github:hyprwm/Hyprland/v0.55.3";
     hyprland-plugins = {
       url = "github:hyprwm/hyprland-plugins";
       inputs.hyprland.follows = "hyprland";
@@ -103,7 +103,7 @@
     };
 
     backlog-md = {
-      url = "github:MrLesk/Backlog.md/v1.45.2";
+      url = "github:MrLesk/Backlog.md/v1.46.0";
       inputs.nixpkgs.follows = "nixpkgs";
     };
 

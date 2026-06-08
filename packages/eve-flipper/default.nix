@@ -15,13 +15,13 @@
 
 let
   pname = "eve-flipper";
-  version = "1.6.5";
+  version = "1.6.6";
 
   src = fetchFromGitHub {
     owner = "ilyaux";
     repo = "Eve-flipper";
     rev = "v${version}";
-    hash = "sha256-oSNGK45tXlAIjb+GAqorkZZDht8q51PaW/Q2/QWVMw0=";
+    hash = "sha256-A1l7RjpPmTTTW+MFv6T4kd1Gi5vmi1e3sMbL7Ei/+/A=";
   };
 
   frontend = stdenvNoCC.mkDerivation (finalAttrs: {
@@ -62,7 +62,7 @@ in
 buildGoModule {
   inherit pname version src;
 
-  vendorHash = "sha256-6qIQ84BFk8daoWVmoOuTIbQG9Rw+eTiOlhKiiNlvTdg=";
+  vendorHash = "sha256-5h/PRjIB1C25EJK7zGP+rNb3HO/yyuHlOdzDB7ytB8A=";
 
   nativeBuildInputs = [ perl ];
 
