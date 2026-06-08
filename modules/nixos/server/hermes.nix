@@ -29,7 +29,7 @@
         extraPackages = with pkgs; [
           imagemagick
           ffmpeg
-          whisper-cpp-vulkan
+          # whisper-cpp-vulkan
           yt-dlp
           jq
           pkgs.${namespace}.xurl

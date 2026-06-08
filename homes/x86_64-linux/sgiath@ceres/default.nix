@@ -13,7 +13,7 @@ in
     texliveMedium
     # lmstudio
     # davinci-resolve-studio
-    whisper-cpp-vulkan
+    # whisper-cpp-vulkan
   ];
 
   systemd.user.services.eve-flipper = {
