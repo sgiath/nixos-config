@@ -2,13 +2,9 @@
   config,
   lib,
   pkgs,
-  inputs,
   namespace,
   ...
 }:
-let
-  backlog-md = inputs.backlog-md.packages.${pkgs.stdenv.hostPlatform.system}.default;
-in
 {
   imports = [
     ./claude.nix
@@ -27,13 +23,14 @@ in
     home.file.".agents/skills".source = ./skills;
 
     home.packages = [
+      pkgs.llm-agents.herdr
+
       pkgs.python3
       pkgs.uv
       pkgs.${namespace}.bird
       pkgs.nodejs
 
-      backlog-md
-
+      pkgs.llm-agents.backlog-md
       pkgs.llm-agents.openspec
       pkgs.llm-agents.beads
       pkgs.llm-agents.coderabbit-cli
@@ -56,7 +53,7 @@ in
     ];
 
     programs.zsh.shellAliases = {
-      bl = "${lib.getExe backlog-md}";
+      bl = "${lib.getExe pkgs.llm-agents.backlog-md}";
       gr = "${lib.getExe pkgs.llm-agents.grok} --experimental-memory";
     };
 
@@ -75,7 +72,7 @@ in
           };
         };
         backlog = {
-          command = "backlog";
+          command = "${lib.getExe pkgs.llm-agents.backlog-md}";
           args = [
             "mcp"
             "start"

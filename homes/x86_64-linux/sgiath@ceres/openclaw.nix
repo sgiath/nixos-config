@@ -2,7 +2,6 @@
   config,
   lib,
   pkgs,
-  namespace,
   ...
 }:
 let
@@ -17,8 +16,7 @@ let
     "${pkgs.whisper-cpp-vulkan}/bin"
   ];
 
-  openclaw = pkgs.${namespace}.openclaw;
-  openclaw-exe = "${openclaw}/lib/node_modules/openclaw/dist/index.js";
+  openclaw = pkgs.llm-agents.openclaw;
 in
 {
   systemd.user.services = {
@@ -42,7 +40,7 @@ in
           "OPENCLAW_SERVICE_KIND=node"
           "OPENCLAW_SERVICE_VERSION=${lib.getVersion openclaw}"
         ];
-        ExecStart = "${openclaw-exe} node run --host niamh.sgiath.dev --port 443 --tls --display-name ceres";
+        ExecStart = "${lib.getExe openclaw} node run --host niamh.sgiath.dev --port 443 --tls --display-name ceres";
       };
       Install = {
         WantedBy = [ "default.target" ];

@@ -101,13 +101,6 @@
       url = "github:NousResearch/hermes-agent/v2026.6.5";
       inputs.nixpkgs.follows = "nixpkgs";
     };
-
-    backlog-md = {
-      url = "github:MrLesk/Backlog.md/v1.46.0";
-      inputs.nixpkgs.follows = "nixpkgs";
-    };
-
-    herdr.url = "github:ogulcancelik/herdr/v0.6.8";
   };
 
   nixConfig = {
@@ -164,7 +157,6 @@
         noctalia.overlays.default
         hermes-agent.overlays.default
         llm-agents.overlays.default
-        herdr.overlays.default
       ];
 
       systems.modules.nixos = with inputs; [

@@ -8,8 +8,6 @@
   config = lib.mkIf config.programs.zsh.enable {
     home = {
       packages = with pkgs; [
-        herdr
-
         # this is needed so the escript binary is globally available
         beam_minimal.packages.erlang_29.erlang
         beam_minimal.packages.erlang_29.elixir_1_20

@@ -2,7 +2,6 @@
   config,
   lib,
   pkgs,
-  namespace,
   ...
 }:
 let
@@ -14,8 +13,7 @@ let
     "${pkgs.yt-dlp}/bin"
   ];
 
-  openclaw = pkgs.${namespace}.openclaw;
-  openclaw-exe = "${openclaw}/lib/node_modules/openclaw/dist/index.js";
+  openclaw = pkgs.llm-agents.openclaw;
 in
 {
   systemd.user.services = {
@@ -46,7 +44,7 @@ in
           "OPENCLAW_SERVICE_KIND=gateway"
           "OPENCLAW_SERVICE_VERSION=${lib.getVersion openclaw}"
         ];
-        ExecStart = "${openclaw-exe} gateway --port 18789";
+        ExecStart = "${lib.getExe openclaw} gateway --port 18789";
       };
       Install = {
         WantedBy = [ "default.target" ];
