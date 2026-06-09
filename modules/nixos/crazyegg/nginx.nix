@@ -58,6 +58,7 @@
 
           # Auth service
           auth.app.crazyeggdev.com 'http://127.0.0.1:4041';
+          keycloak.crazyeggdev.com 'http://127.0.0.1:4045';
 
           # Chat services
           chat.crazyeggdev.com 'http://127.0.0.1:4051';
