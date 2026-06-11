@@ -25,9 +25,10 @@
 
       file.".signature".text = ''
         Filip Vavera
-
         https://sgiath.dev
-        GPG: 0x70F9C7DE34CB3BC8
+
+        GPG fingerprint:
+        B166 3624 D093 688E D5C3 296B 70F9 C7DE 34CB 3BC8
 
         Why is HTML email a security nightmare? See https://useplaintext.email/
       '';

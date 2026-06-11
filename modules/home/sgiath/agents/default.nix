@@ -37,7 +37,6 @@
       pkgs.llm-agents.qmd
       pkgs.llm-agents.grok
 
-      pkgs.${namespace}.fusion
       pkgs.${namespace}.plannotator
       pkgs.${namespace}.clawpatch
       pkgs.${namespace}.linear-cli

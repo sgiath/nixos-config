@@ -3,7 +3,6 @@ pkgs: {
   clawpatch = pkgs.callPackage ./clawpatch { };
   dnd5etools = pkgs.callPackage ./dnd5etools { };
   eve-flipper = pkgs.callPackage ./eve-flipper { };
-  fusion = pkgs.callPackage ./fusion { };
   gogcli = pkgs.callPackage ./gogcli { };
   kimi-webbridge = pkgs.callPackage ./kimi-webbridge { };
   linear-cli = pkgs.callPackage ./linear-cli { };
