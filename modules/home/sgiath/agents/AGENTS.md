@@ -7,6 +7,7 @@
 
 - whenever user mentions task, ticket or issue he means Backlog.md task unless explicitely said otherwise. You can get its content through MCP and if it is not available, through command `backlog task show <task-id> --plain`
 - when working with Backlog.md tasks you should use all the available structured fields as much as possible to preserve the intent. If you are unsure what is available you can always run `backlog task edit --help` to get a comprehensive list of options you can use
+- after any interaction with the ticket make sure to update it with the current status, often just adding a note or comment will be enough but also update all completed items, add modifide files or references, update status or description if necessary
 
 ## Plan Mode
 
