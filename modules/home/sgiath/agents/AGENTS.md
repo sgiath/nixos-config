@@ -2,26 +2,6 @@
 
 - Safe by default: git status/diff/log.
 - Destructive ops forbidden unless explicit (reset --hard, clean, restore, rm, …).
-- Whenever creating commit messages follow the conventional commits:
-
-```
-<type>(<scope>): <subject>
-
-<body>
-
-<footer>
-```
-
-Example commit message:
-
-```
-fix(middleware): ensure Range headers adhere more closely to RFC 2616
-
-Add one new dependency, use `range-parser` (Express dependency) to compute
-range. It is more well-tested in the wild.
-
-Fixes #2310
-```
 
 ## Plan Mode
 
