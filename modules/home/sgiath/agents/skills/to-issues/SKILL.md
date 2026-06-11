@@ -1,13 +1,15 @@
 ---
 name: to-issues
-description: Break a plan, spec, or PRD into independently-grabbable Backlog.md tasks using tracer-bullet vertical slices. Use when user wants to convert a plan into tasks, create implementation tickets, or break down work into Backlog.md tasks.
+description: Break a plan, spec, or PRD into short, independently-plannable Backlog.md tasks using tracer-bullet vertical slices. Use when user wants to convert source material into task intents for later planning.
 ---
 
 # To Issues
 
-Break a plan into independently-grabbable Backlog.md tasks using vertical slices (tracer bullets).
+Break source material into short, independently-plannable Backlog.md tasks using vertical slices (tracer bullets).
 
-Use Backlog.md for task tracking. Prefer the `backlog` CLI and plain output for agent work.
+This is not the full planning agent. Capture the task intent, enough context to preserve why it exists, and lightweight acceptance signals. Always capture provenance: where the task came from and where a planning agent can find more context. Leave detailed implementation plans, documentation strategy, modified-file tracking, and full Definition of Done design to the later planning/implementation workflow.
+
+Use Backlog.md for task tracking. Prefer the Backlog MCP tools when available; otherwise use the `backlog` CLI with structured fields and plain output for agent work.
 
 ## Process
 
@@ -15,13 +17,23 @@ Use Backlog.md for task tracking. Prefer the `backlog` CLI and plain output for 
 
 Work from whatever is already in the conversation context. If the user passes a task reference (`task-7`, `7`, URL, or path) as an argument, fetch it with `backlog task view <id> --plain` and read the full task body, plan, notes, acceptance criteria, labels, and dependencies.
 
+Identify the source and context trail before drafting tasks:
+
+- Parent or source Backlog task, if any.
+- Current milestone or project initiative, if any.
+- Source plan, PRD, spec, issue, conversation, ADR, or decision record.
+- Existing documentation or docs directory where the planning agent should look for background.
+- Related tasks, blockers, follow-ups, or dependencies.
+
+Every created task must include enough provenance that a later planning agent can answer: "Why does this task exist, what larger effort does it belong to, and where do I read more?"
+
 ### 2. Explore the codebase (optional)
 
 If you have not already explored the codebase, do so to understand the current state of the code. Task titles and descriptions should use the project's domain glossary vocabulary, and respect ADRs in the area you're touching.
 
 ### 3. Draft vertical slices
 
-Break the plan into **tracer bullet** tasks. Each task is a thin vertical slice that cuts through ALL integration layers end-to-end, NOT a horizontal slice of one layer.
+Break the source material into **tracer bullet** tasks. Each task is a thin vertical slice that cuts through ALL integration layers end-to-end, NOT a horizontal slice of one layer.
 
 Slices may be 'HITL' or 'AFK'. HITL slices require human interaction, such as an architectural decision or a design review. AFK slices can be implemented and merged without human interaction. Prefer AFK over HITL where possible.
 
@@ -51,46 +63,43 @@ Iterate until the user approves the breakdown.
 
 ### 5. Publish the tasks to Backlog.md
 
-For each approved slice, publish a new Backlog.md task. Use the task body template below. These tasks are considered ready for AFK agents, so keep status `todo` and apply the `ready-for-agent` label unless instructed otherwise.
+For each approved slice, publish a new Backlog.md task using structured Backlog fields. Do not create your own Markdown issue template inside the description. The task should be ready for a planning agent, not already fully planned.
 
 Publish tasks in dependency order (blockers first) so later tasks can use real Backlog dependency identifiers.
 
-Create each task with `backlog task create`:
+Use MCP `task_create` / `task_edit` fields when available. If using the CLI, create each task with `backlog task create`:
 
-- Title: the slice title.
-- Description: the "What to build" content.
-- Acceptance criteria: repeat `--ac` once per criterion.
-- Status: use `--status todo` unless the task is already in active work or already complete.
-- Labels: include `enhancement` or `bug`, plus `ready-for-agent` unless a different triage state is requested.
-- Dependencies: use `--dep task-1,task-2` for blocking tasks.
-- References/docs: use `--ref` and `--doc` for source plan, PRD, issue, or design links.
-- Plain output: add `--plain` when useful for reliable parsing.
+```bash
+backlog task create "<slice title>" \
+  --description "<short intent and desired outcome for this slice>" \
+  --status todo \
+  --labels "enhancement,needs-planning" \
+  --parent "<parent-task-id>" \
+  --dep "<blocking-task-ids>" \
+  --notes "<provenance, source mapping, context links, assumptions, and constraints>" \
+  --ac "<lightweight acceptance signal>" \
+  --ref "<source plan, PRD, issue, ADR, or design reference>" \
+  --plain
+```
 
-Avoid shell-specific newline tricks. For multi-line text, either pass real newlines inside quotes or create/update the task, then append notes line-by-line with `backlog task edit <id> --append-notes "..."`.
+Omit fields that do not apply. Use `--parent` for the parent Backlog task when one exists. Use `--dep` / `--depends-on` only after blocker tasks have been created and their real task ids are known.
 
-<issue-template>
-## Parent
+Use structured fields this way:
 
-A reference to the parent Backlog task, source issue, plan, or PRD (if there is one, otherwise omit this section).
+- **Title:** short slice name, using project domain language.
+- **Description:** short intent and desired outcome. No sectioned issue template and no implementation plan.
+- **Acceptance criteria:** repeat `--ac` for a few lightweight signals that show the slice intent was satisfied. Do not turn this into a full test plan.
+- **Notes:** provenance, source mapping, current milestone or initiative, where to find more context, assumptions, open questions, HITL/AFK classification, and constraints.
+- **Dependencies:** `--dep` / `--depends-on` for blocking Backlog tasks.
+- **References:** `--ref` for source tasks, plans, PRDs, external issues, ADRs, decisions, designs, milestones, or documentation paths.
+- **Definition of done:** usually rely on project defaults. Add `--dod` only for exceptional completion requirements known from the source material.
 
-## What to build
+Do not set these fields from this skill:
 
-A concise description of this vertical slice. Describe the end-to-end behavior, not layer-by-layer implementation.
+- `--plan`: planning belongs to the write-plan skill or planning agent.
+- `--doc`: documentation strategy belongs to the planning/implementation workflow.
+- `--modified-file`: touched files should be recorded after implementation or during detailed planning, not guessed here.
 
-Avoid specific file paths or code snippets — they go stale fast. Exception: if a prototype produced a snippet that encodes a decision more precisely than prose can (state machine, reducer, schema, type shape), inline it here and note briefly that it came from a prototype. Trim to the decision-rich parts — not a working demo, just the important bits.
-
-## Acceptance criteria
-
-- [ ] Criterion 1
-- [ ] Criterion 2
-- [ ] Criterion 3
-
-## Blocked by
-
-- A reference to the blocking Backlog task (if any)
-
-Or "None - can start immediately" if no blockers.
-
-</issue-template>
+Avoid shell-specific newline tricks. For multi-line text, either pass real newlines inside quotes or create the task first and then use `backlog task edit <id> --append-notes "..."`, repeated as needed.
 
 Do NOT close, archive, or modify any parent task.

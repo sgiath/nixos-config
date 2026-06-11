@@ -83,7 +83,7 @@ Show counts and a one-line summary per task. Let the maintainer pick.
 
 3. **Reproduce (bugs only).** Before any grilling, attempt reproduction: read the reporter's steps, trace the relevant code, run tests or commands. Report what happened — successful repro with code path, failed repro, or insufficient detail (a strong `needs-info` signal). A confirmed repro makes a much stronger agent brief.
 
-4. **Grill (if needed).** If the task needs fleshing out, run a `/grill-with-docs` session.
+4. **Grill (if needed).** If the task needs fleshing out, run a `/grill-me` session.
 
 5. **Apply the outcome:**
    - `ready-for-agent` — set category + `ready-for-agent` labels, keep board status `todo`, then write the agent brief to the task plan field ([agent-brief.md](reference/agent-brief.md)).

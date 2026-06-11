@@ -15,9 +15,38 @@ Assume the implementing agent is a skilled developer who will inspect the codeba
 
 **Announce at start:** "I'm using the write-plan skill to create the implementation plan."
 
-**Save plans to:** `docs/plans/filip/YYYY-MM-DD-<feature-name>.md`
+**Save plans primarily to the Backlog task.** Use Backlog's structured fields fully so the task becomes the canonical implementation handoff.
 
+- Put the task breakdown in the task plan field.
+- Put externally verifiable checks in acceptance criteria.
+- Put planning notes, context, constraints, and open questions in task notes.
+- Put documentation expectations in the task documentation field.
+- Put completion requirements in definition of done.
+- Only fall back to `docs/plans/filip/YYYY-MM-DD-<feature-name>.md` when Backlog is not initialized for the current project.
 - User preferences for plan location override this default.
+
+Use the available Backlog interface for the environment. If using the Backlog CLI, prefer:
+
+```bash
+backlog task edit <task-id> \
+  --plan "<task-oriented plan>" \
+  --ac "<reviewable acceptance criterion>" \
+  --ac "<another reviewable acceptance criterion>" \
+  --append-notes "<context, decisions, constraints, open questions>" \
+  --doc "<documentation expectation or location>" \
+  --dod "<definition of done item>" \
+  --dod "<another definition of done item>"
+```
+
+If an equivalent MCP tool is available, use the matching fields there instead of shelling out.
+
+Backlog CLI field behavior to account for:
+
+- `--plan <text>` sets the implementation plan.
+- `--acceptance-criteria <criteria>` sets acceptance criteria; use repeated `--ac <criterion>` when adding individual criteria.
+- `--notes <text>` replaces implementation notes; use repeated `--append-notes <text>` when preserving existing notes.
+- `--doc <documentation>` can be used multiple times.
+- `--dod <item>` can be used multiple times.
 
 ## Scope Check
 
@@ -140,3 +169,49 @@ Before saving the plan, review it against this checklist and fix issues inline:
 6. **Security:** Is security review present as the second-to-last task?
 7. **Documentation:** Is documentation of decisions present as the final task, with code-adjacent docs preferred?
 8. **No placeholders:** Remove vague placeholders and pseudo-implementation.
+
+## Backlog Field Mapping
+
+When Backlog is initialized, save the plan to the task instead of creating a standalone plan document.
+
+Use the fields this way:
+
+- **Plan:** Header summary plus the ordered task list. Each task should keep the Task Structure fields: outcome, scope, touches, dependencies, behavior, acceptance checks, and notes.
+- **Acceptance criteria:** Concise, externally observable checks for the whole task. Include behavior, integration, regression, security, and documentation checks where relevant.
+- **Notes:** Context gathered during planning, assumptions, unresolved questions, constraints, tradeoffs, dependencies on other tasks, and decisions already made.
+- **Documentation:** Required code-adjacent docs and any repo-level docs. Be specific about where documentation should live when known, but do not dictate implementation details.
+- **Definition of done:** Cross-cutting completion requirements, such as tests passing, relevant logs present for operational issues, security review completed, docs updated, and reviewable behavior demonstrated.
+
+If no task id is provided, find the relevant existing task first. If none exists and Backlog is initialized, create or ask for the correct task according to the project's Backlog workflow.
+
+## Docs Fallback
+
+Only when Backlog is not initialized for the current project, save the plan to:
+
+`docs/plans/filip/YYYY-MM-DD-<feature-name>.md`
+
+When using this fallback, include sections corresponding to the Backlog fields:
+
+- Plan
+- Acceptance criteria
+- Notes
+- Documentation
+- Definition of done
+
+## Execution Handoff
+
+After saving to Backlog, say:
+
+```markdown
+Plan complete and saved to Backlog task `<task-id>`.
+
+Implementation should use the execute-plan skill. The implementing agent should choose the execution technique for each task based on the codebase context.
+```
+
+After using the docs fallback, say:
+
+```markdown
+Backlog is not initialized for this project, so the plan was saved to `docs/plans/<filename>.md`.
+
+Implementation should use the execute-plan skill. The implementing agent should choose the execution technique for each task based on the codebase context.
+```
