@@ -21,6 +21,7 @@
 - Always strive for concise, simple solutions
 - If a problem can be solved in a simpler way, propose it
 - If asked to do too much work at once, stop and state that clearly
+- when implementing bug fix or new functionality, prefer using test-driven development approach
 
 ## Debug Logging
 
