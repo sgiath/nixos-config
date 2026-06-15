@@ -13,8 +13,8 @@ rustPlatform.buildRustPackage {
   src = fetchFromGitHub {
     owner = "mikedilger";
     repo = "relay-tester";
-    rev = "3276f71f31c5d5ae74f76220ad5d2048bd31bbc4";
-    hash = "sha256-KKEs4Qc8TqgeTfnHg3aOnax8ySwOC8FdoM3/sDqGWkI=";
+    rev = "a8483f82f4965841faa92fae02105d4fd67d9117";
+    hash = "sha256-e424+SgzE5ptT78ZzOKVR736e36vwGzsVehK1rpVPqk=";
   };
 
   cargoLock = {
