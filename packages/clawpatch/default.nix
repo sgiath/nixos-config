@@ -12,20 +12,23 @@
 
 stdenv.mkDerivation (finalAttrs: {
   pname = "clawpatch";
-  version = "0.6.0";
+  version = "0.7.0";
 
   src = fetchFromGitHub {
     owner = "openclaw";
     repo = "clawpatch";
     tag = "v${finalAttrs.version}";
-    hash = "sha256-0AaJbzyIaAw4wBOolEsy5iA5KSQ0k3/HkgBI6VqxnJg=";
+    hash = "sha256-GhunTn+lVX1s81UTLmLcFMRhvR+9RcEEWhI33uYTdok=";
   };
 
   pnpmDeps = fetchPnpmDeps {
     inherit (finalAttrs) pname version src;
     pnpm = pnpm_11;
     fetcherVersion = 3;
-    hash = "sha256-MdxoOOy0khXDLHLBtYVJV9bDkkVjOECz10Ulkhk1FwU=";
+    prePnpmInstall = ''
+      pnpm config set trust-lockfile true
+    '';
+    hash = "sha256-fbLvvF/jBzOr1sQkmCVhqnXATVpLKYw+2Gch7K4cI3g=";
   };
 
   nativeBuildInputs = [

@@ -53,6 +53,9 @@ pkgs.fetchPnpmDeps {
   };
   pnpm = pkgs.pnpm_11;
   fetcherVersion = 3;
+  prePnpmInstall = ''
+    pnpm config set trust-lockfile true
+  '';
   hash = "sha256-AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA=";
 }
 EOF
