@@ -7,11 +7,11 @@
 
 stdenvNoCC.mkDerivation {
   pname = "kimi-webbridge";
-  version = "latest-2026-06-12";
+  version = "latest-2026-06-16";
 
   src = fetchurl {
     url = "https://kimi-web-img.moonshot.cn/webbridge/latest/releases/kimi-webbridge-linux-amd64";
-    hash = "sha256-rmyVhtWaImfynsg3apAqqzK4qo7eZpTt7dYw9olE19E=";
+    hash = "sha256-Sym4vscVbRqMXSg9EtfWni7o5fENJIpEe6pXTlgJ7xA=";
   };
 
   dontUnpack = true;
