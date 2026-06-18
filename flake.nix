@@ -146,8 +146,6 @@
     in
     lib.mkFlake {
       channels-config = {
-        cudaSupport = false;
-        rocmSupport = true;
         allowUnfree = true;
         permittedInsecurePackages = [ ];
       };
