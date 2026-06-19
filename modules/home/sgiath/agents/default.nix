@@ -8,6 +8,7 @@
 }:
 {
   imports = [
+    ./aoe.nix
     ./claude.nix
     ./codex.nix
     ./cursor.nix
@@ -42,8 +43,6 @@
       pkgs.${namespace}.clawpatch
       pkgs.${namespace}.linear-cli
       pkgs.${namespace}.xurl
-
-      inputs.aoe.packages.${pkgs.stdenv.hostPlatform.system}.aoe-with-web
 
       # Hermes
       pkgs.llm-agents.hermes-agent

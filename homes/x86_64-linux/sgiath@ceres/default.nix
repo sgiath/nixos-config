@@ -40,6 +40,7 @@ in
   sgiath = {
     enable = true;
     games.enable = true;
+    agents.aoe.serve.enable = true;
 
     targets = {
       terminal = true;

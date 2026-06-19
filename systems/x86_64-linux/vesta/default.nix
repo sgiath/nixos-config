@@ -40,7 +40,7 @@
     nas-proxy.enable = true;
     sgiath-dev.proxy = true;
     sinai-camp.proxy = true;
-    opencode-proxy.enable = false;
+    ai-proxy.enable = true;
     eve-proxy.enable = false;
   };
 }
