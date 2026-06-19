@@ -101,6 +101,11 @@
       url = "github:NousResearch/hermes-agent/v2026.6.5";
       inputs.nixpkgs.follows = "nixpkgs";
     };
+
+    aoe = {
+      url = "github:agent-of-empires/agent-of-empires/v1.11.1";
+      inputs.nixpkgs.follows = "nixpkgs";
+    };
   };
 
   nixConfig = {

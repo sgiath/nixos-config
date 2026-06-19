@@ -3,6 +3,7 @@
   lib,
   pkgs,
   namespace,
+  inputs,
   ...
 }:
 {
@@ -41,6 +42,8 @@
       pkgs.${namespace}.clawpatch
       pkgs.${namespace}.linear-cli
       pkgs.${namespace}.xurl
+
+      inputs.aoe.packages.${pkgs.stdenv.hostPlatform.system}.default
 
       # Hermes
       pkgs.llm-agents.hermes-agent
