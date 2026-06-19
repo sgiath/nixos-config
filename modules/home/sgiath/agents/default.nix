@@ -43,7 +43,7 @@
       pkgs.${namespace}.linear-cli
       pkgs.${namespace}.xurl
 
-      inputs.aoe.packages.${pkgs.stdenv.hostPlatform.system}.default
+      inputs.aoe.packages.${pkgs.stdenv.hostPlatform.system}.aoe-with-web
 
       # Hermes
       pkgs.llm-agents.hermes-agent
