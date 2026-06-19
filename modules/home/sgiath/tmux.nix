@@ -102,10 +102,9 @@
         set-option -g status-justify centre
         set-option -g status-left-length 100
         set-option -g status-right-length 100
-
-        run-shell ~/.tmux/plugins/tmux-opencode/opencode-sidebar.tmux
       '';
       plugins = with pkgs; [
+        tmuxPlugins.sidebar
         tmuxPlugins.sensible
         tmuxPlugins.copycat
         tmuxPlugins.open
