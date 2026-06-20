@@ -1,6 +1,6 @@
 {
   wayland.windowManager.hyprland.settings = {
-    general.layout = "master";
+    general.layout = "dwindle";
 
     dwindle = {
       force_split = 2;
