@@ -37,6 +37,7 @@
       pkgs.llm-agents.coderabbit-cli
       pkgs.llm-agents.qmd
       pkgs.llm-agents.grok
+      pkgs.llm-agents.codegraph
 
       pkgs.${namespace}.plannotator
       pkgs.${namespace}.clawpatch
