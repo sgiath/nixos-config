@@ -43,6 +43,13 @@
       recommendedTlsSettings = true;
       recommendedProxySettings = true;
       commonHttpConfig = ''
+        # Content negotiation helper used by sgiath.dev: default to HTML,
+        # choose Markdown when the client Accept header includes text/markdown.
+        map $http_accept $page_ext {
+          default ".html";
+          "~*text/markdown" ".md";
+        }
+
         charset utf-8;
         log_not_found off;
         aio threads;
