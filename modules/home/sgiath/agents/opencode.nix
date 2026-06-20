@@ -17,7 +17,7 @@
       oc = "${lib.getExe pkgs.llm-agents.opencode} attach http://localhost:4096";
     };
 
-    systemd.user.services.opencode = {
+    systemd.user.services.opencode-web = {
       Unit = {
         Description = "OpenCode web";
         After = [ "network-online.target" ];
@@ -32,7 +32,7 @@
         ExecStart = "${lib.getExe pkgs.llm-agents.opencode} web";
         Restart = "always";
         RestartSec = 5;
-        WorkingDirectory = config.home.homeDirectory;
+        WorkingDirectory = "${config.home.homeDirectory}/develop";
       };
 
       Install.WantedBy = [ "default.target" ];
