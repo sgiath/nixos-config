@@ -104,7 +104,6 @@
         set-option -g status-right-length 100
       '';
       plugins = with pkgs; [
-        tmuxPlugins.sidebar
         tmuxPlugins.sensible
         tmuxPlugins.copycat
         tmuxPlugins.open
