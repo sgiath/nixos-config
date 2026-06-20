@@ -83,6 +83,7 @@
           # text/markdown, otherwise fall back to index.html.
           "= /" = {
             extraConfig = ''
+              include /data/www/sgiath.dev/_nginx_link_headers*.conf;
               default_type text/markdown;
               try_files /index$page_ext /index.html =404;
             '';
