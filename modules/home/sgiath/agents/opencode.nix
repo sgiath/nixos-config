@@ -16,4 +16,5 @@
     programs.zsh.shellAliases = {
       oc = "${lib.getExe pkgs.llm-agents.opencode}";
     };
+  };
 }
