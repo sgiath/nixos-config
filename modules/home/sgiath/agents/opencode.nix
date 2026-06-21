@@ -14,7 +14,7 @@
     stylix.targets.opencode.enable = false;
 
     programs.zsh.shellAliases = {
-      oc = "${lib.getExe pkgs.llm-agents.opencode}";
+      oc = "OPENCODE_EXPERIMENTAL_BACKGROUND_SUBAGENTS=true ${lib.getExe pkgs.llm-agents.opencode}";
     };
   };
 }
