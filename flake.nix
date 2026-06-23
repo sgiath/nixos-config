@@ -94,7 +94,7 @@
 
     # LLM tools
 
-    llm-agents.url = "github:numtide/llm-agents.nix/5b8428eff6cf47677e16ce96e1ce8a09eca149c4";
+    llm-agents.url = "github:numtide/llm-agents.nix";
 
     hermes-agent = {
       url = "github:NousResearch/hermes-agent/v2026.6.19";
