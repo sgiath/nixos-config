@@ -67,7 +67,6 @@ in
           ".elixir_ls"
           ".expert"
           ".elixir-tools"
-          ".vscode"
         ];
 
         signing = {
@@ -88,7 +87,7 @@ in
             ps = "push --progress";
             pl = "pull --autostash --rebase";
             pf = "push --progress --force-with-lease";
-            ss = "status --short";
+            ss = "status";
             ll = "log --all --graph --pretty=format:'%C(magenta)%h %C(white) %an  %ar%C(auto)  %D%n%s%n'";
             tag = "tag --sign";
             main-to-master = "!git symbolic-ref refs/heads/master refs/heads/main && git symbolic-ref refs/remotes/origin/master refs/remotes/origin/main";
@@ -113,7 +112,7 @@ in
           advice = {
             addEmptyPathspec = false;
             pushNonFastForward = false;
-            statusHints = false;
+            statusHints = true;
           };
 
           commit = {
