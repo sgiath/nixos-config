@@ -102,7 +102,7 @@
     };
 
     aoe = {
-      url = "github:agent-of-empires/agent-of-empires/v1.11.1";
+      url = "github:agent-of-empires/agent-of-empires/v1.11.2";
       inputs.nixpkgs.follows = "nixpkgs";
     };
   };
