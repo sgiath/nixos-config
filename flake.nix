@@ -96,10 +96,8 @@
 
     llm-agents.url = "github:numtide/llm-agents.nix";
 
-    hermes-agent = {
-      url = "github:NousResearch/hermes-agent/v2026.6.5";
-      inputs.nixpkgs.follows = "nixpkgs";
-    };
+    # pin to v2026.6.5
+    hermes-agent.url = "github:NousResearch/hermes-agent/v2026.6.5";
 
     aoe = {
       url = "github:agent-of-empires/agent-of-empires/v1.11.2";
