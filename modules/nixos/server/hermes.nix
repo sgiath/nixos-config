@@ -14,6 +14,7 @@
         package = pkgs.hermes-agent.override {
           extraDependencyGroups = [
             "matrix"
+            "voice"
             "firecrawl"
             "cli"
             "youtube"
