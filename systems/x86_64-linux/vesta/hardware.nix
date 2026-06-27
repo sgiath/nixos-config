@@ -2,6 +2,7 @@
   config,
   lib,
   modulesPath,
+  pkgs,
   ...
 }:
 
@@ -18,6 +19,7 @@
     "sd_mod"
   ];
   boot.initrd.kernelModules = [ ];
+  boot.kernelPackages = lib.mkForce pkgs.linuxPackages;
   boot.kernelModules = [ "kvm-amd" ];
   boot.extraModulePackages = [ ];
 
