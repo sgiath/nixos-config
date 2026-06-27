@@ -80,7 +80,7 @@
     };
 
     worktrunk = {
-      url = "github:max-sixty/worktrunk/v0.61.0";
+      url = "github:max-sixty/worktrunk/v0.62.0";
       inputs.nixpkgs.follows = "nixpkgs";
     };
 
@@ -100,7 +100,7 @@
     hermes-agent.url = "github:NousResearch/hermes-agent/v2026.6.5";
 
     aoe = {
-      url = "github:agent-of-empires/agent-of-empires/v1.11.2";
+      url = "github:agent-of-empires/agent-of-empires/v1.11.3";
       inputs.nixpkgs.follows = "nixpkgs";
     };
   };
