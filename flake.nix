@@ -68,6 +68,8 @@
       inputs.nixpkgs.follows = "nixpkgs";
     };
 
+    prismlauncher.url = "github:PrismLauncher/PrismLauncher";
+
     # https://forgejo.ellis.link/continuwuation/continuwuity/releases
     continuwuity = {
       url = "git+https://forgejo.ellis.link/continuwuation/continuwuity?rev=051449118911b03960d5d09f630d7d2959c8330c";
@@ -116,6 +118,7 @@
       "https://comfyui.cachix.org"
       # LLM agents
       "https://cache.numtide.com"
+      "https://prismlauncher.cachix.org"
     ];
     extra-trusted-public-keys = [
       "nix-community.cachix.org-1:mB9FSh9qf2dCimDSUo8Zy7bkq5CX+/rkCWyvRCYg3Fs="
@@ -127,6 +130,7 @@
       "comfyui.cachix.org-1:33mf9VzoIjzVbp0zwj+fT51HG0y31ZTK3nzYZAX0rec="
       # LLM agents
       "niks3.numtide.com-1:DTx8wZduET09hRmMtKdQDxNNthLQETkc/yaX7M4qK0g="
+      "prismlauncher.cachix.org-1:9/n/FGyABA2jLUVfY+DEp4hKds/rwO+SCOtbOkDzd+c="
     ];
   };
 
@@ -170,6 +174,7 @@
         nix-gaming.nixosModules.platformOptimizations
         nix-gaming.nixosModules.wine
         comfyui.nixosModules.default
+        prismlauncher.overlays.default
       ];
 
       homes.modules = with inputs; [
