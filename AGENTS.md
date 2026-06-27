@@ -56,6 +56,7 @@ shells/default/default.nix        # dev/update toolchain
 - Secrets are loaded from encrypted `secrets.json` via `builtins.fromJSON`; server runtime secret files usually live under `/data/secrets`.
 - New files must be `git add`ed before Nix flake evaluation can see them.
 - Format Nix with `nixfmt`; use `nix develop` for `nixd`, `nil`, `shfmt`, `prettier`, and update helpers.
+- Do not evaluate Home Manager outputs directly; Stylix Home Manager wiring is provided through the NixOS Stylix module. Validate homes as part of the full NixOS system evaluation/build.
 
 ## ANTI-PATTERNS
 

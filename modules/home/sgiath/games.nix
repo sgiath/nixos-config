@@ -49,8 +49,7 @@ in
       (factorio-space-age-experimental.override {
         username = "Sgiath";
         token = secrets.factorio_token;
-        experimental = true;
-        versionsJson = ./factorio-versions.json;
+        # versionsJson = ./factorio-versions.json;
       })
 
       inputs.nix-gaming.packages.${pkgs.stdenv.hostPlatform.system}.star-citizen

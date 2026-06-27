@@ -4,17 +4,32 @@
 
 ```bash
 # install system config
-sudo nixos-rebuild switch --flake https://git.sr.ht/~sgiath/nix-config#ceres
+nixos-rebuild switch --sudo --flake https://github.com/sgiath/nixos-config#ceres
 
 reboot
 
 # install dotfiles
-git clone https://git.sr.ht/~sgiath/nix-config ~/nixos
+git clone https://github.com/sgiath/nixos-config ~/nixos
 cd nixos/
-sudo nixos-rebuild switch --flake .
+nixos-rebuild switch --sudo --flake '.#ceres'
 
 reboot
-upgrade
+```
+
+## Usage
+
+```bash
+# update release pinned flake inputs and packages
+./update-inputs
+
+# update branch inputs
+nix flake update
+
+# switch current system
+update
+
+# switch server
+update --vesta
 ```
 
 ## Useful fixes

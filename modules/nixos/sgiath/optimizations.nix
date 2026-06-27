@@ -6,6 +6,9 @@
       kernel.sysctl = {
         "vm.swappiness" = 10;
         "fs.file-max" = 524288;
+        "fs.inotify.max_user_watches" = 524288;
+        "fs.inotify.max_user_instances" = 524288;
+        "fs.inotify.max_queued_events" = 65536;
       };
       kernelParams = [ "threadirqs" ];
     };

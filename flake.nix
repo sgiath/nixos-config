@@ -161,6 +161,7 @@
         noctalia.overlays.default
         hermes-agent.overlays.default
         llm-agents.overlays.default
+        prismlauncher.overlays.default
       ];
 
       systems.modules.nixos = with inputs; [
@@ -174,7 +175,6 @@
         nix-gaming.nixosModules.platformOptimizations
         nix-gaming.nixosModules.wine
         comfyui.nixosModules.default
-        prismlauncher.overlays.default
       ];
 
       homes.modules = with inputs; [
