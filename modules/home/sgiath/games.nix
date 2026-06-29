@@ -51,7 +51,7 @@ in
         token = secrets.factorio_token;
       })
 
-      inputs.nix-gaming.packages.${pkgs.stdenv.hostPlatform.system}.star-citizen
+      # inputs.nix-gaming.packages.${pkgs.stdenv.hostPlatform.system}.star-citizen
       mindustry-wayland
       celestia
       ksa
