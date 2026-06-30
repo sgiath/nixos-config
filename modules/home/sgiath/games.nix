@@ -2,7 +2,6 @@
   config,
   lib,
   pkgs,
-  inputs,
   ...
 }:
 let
@@ -30,9 +29,6 @@ in
         ];
       })
 
-      # KSP mods
-      ckan
-
       # Minecraft
       (prismlauncher.override {
         jdks = [
@@ -45,6 +41,12 @@ in
         ];
       })
 
+      # KSP mods
+      ckan
+
+      # Kitten Space Agency
+      ksa
+
       # Factorio
       (factorio-space-age-experimental.override {
         username = "Sgiath";
@@ -52,9 +54,6 @@ in
       })
 
       # inputs.nix-gaming.packages.${pkgs.stdenv.hostPlatform.system}.star-citizen
-      mindustry-wayland
-      celestia
-      ksa
     ];
 
     wayland.windowManager.hyprland.settings.windowrule = [

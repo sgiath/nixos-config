@@ -7,7 +7,6 @@
 }:
 {
   imports = [
-    ./aoe.nix
     ./claude.nix
     ./codex.nix
     ./cursor.nix
