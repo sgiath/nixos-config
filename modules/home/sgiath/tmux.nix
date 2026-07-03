@@ -24,7 +24,7 @@
 
         [[search_dirs]]
         path = "/home/sgiath/develop"
-        depth = 2
+        depth = 4
       '';
     };
 
