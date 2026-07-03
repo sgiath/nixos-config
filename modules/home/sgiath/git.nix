@@ -67,6 +67,8 @@ in
           ".elixir_ls"
           ".expert"
           ".elixir-tools"
+          ".omo/"
+          "opencode.json*"
         ];
 
         signing = {
