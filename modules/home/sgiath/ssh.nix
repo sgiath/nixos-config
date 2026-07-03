@@ -16,6 +16,7 @@
         };
         "gitlab.com" = {
           User = "git";
+          IdentitiesOnly = "yes";
           IdentityFile = "~/.ssh/remote_pgp.pub";
         };
 
@@ -53,7 +54,6 @@
         # defaults
         "*" = {
           User = "sgiath";
-          IdentityFile = "~/.ssh/personal_pgp.pub";
           Compression = true;
           ServerAliveInterval = 60;
           ServerAliveCountMax = 30;
