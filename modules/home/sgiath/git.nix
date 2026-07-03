@@ -77,7 +77,7 @@ in
         includes = [
           {
             condition = "gitdir:~/develop/crazyegg/";
-            path = "${config.xdg.configFile}/git/config.crazyegg";
+            path = "${config.xdg.configHome}/git/config.crazyegg";
             contents = {
               user = "Filip Vavera";
               email = "filip@crazyegg.com";
@@ -85,7 +85,7 @@ in
           }
           {
             condition = "gitdir:~/develop/remote/";
-            path = "${config.xdg.configFile}/git/config.remote";
+            path = "${config.xdg.configHome}/git/config.remote";
             contents = {
               user = "Filip Vavera";
               email = "filip.vavera@remote.com";
