@@ -22,6 +22,21 @@ in
 
           # feat fix docs style refactor perf build test none
         '';
+
+        # CrazyEgg specific config
+        ".gitconfig.crazyegg".text = ''
+          [user]
+            name = "Filip Vavera"
+            email = "filip@crazyegg.com"
+        '';
+
+        # Remote specific config
+        ".gitconfig.remote".text = ''
+          [user]
+            name = "Filip Vavera"
+            email = "filip.vavera@remote.com"
+            signingKey = "0x72494C2C6428E2A2";
+        '';
       };
     };
 
@@ -76,6 +91,9 @@ in
         };
 
         settings = {
+          "includeIf \"gitdir:~/develop/crazyegg/\"".path = ".gitconfig.crazyegg";
+          "includeIf \"gitdir:~/develop/remote/\"".path = ".gitconfig.remote";
+
           alias = {
             d = "diff";
             aa = "add --all";

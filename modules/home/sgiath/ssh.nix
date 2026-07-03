@@ -14,6 +14,10 @@
           HostName = "git.sr.ht";
           User = "git";
         };
+        "gitlab.com" = {
+          User = "git";
+          IdentityFile = "~/.ssh/remote_pgp.pub";
+        };
 
         # servers
         "vesta.sgiath.dev" = {
@@ -49,6 +53,7 @@
         # defaults
         "*" = {
           User = "sgiath";
+          IdentityFile = "~/.ssh/personal_pgp.pub";
           Compression = true;
           ServerAliveInterval = 60;
           ServerAliveCountMax = 30;

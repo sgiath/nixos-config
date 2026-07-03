@@ -13,7 +13,12 @@
         enableSshSupport = true;
         enableZshIntegration = true;
         pinentry.package = pkgs.pinentry-gnome3;
-        sshKeys = [ "191203A373DD9867A125EC6A9D3EC96416186FEE" ];
+        sshKeys = [
+          # personal
+          "191203A373DD9867A125EC6A9D3EC96416186FEE"
+          # Remote
+          "E89D59DFD32593A357E4DDB873DD6F945A928196"
+        ];
       };
     };
 
