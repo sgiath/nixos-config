@@ -43,7 +43,7 @@
       fd.enable = true;
       fzf.enable = true;
       lsd.enable = true;
-      mcfly.enable = true;
+      mcfly.enable = false;
       zoxide.enable = true;
 
       zsh = {
