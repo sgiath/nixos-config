@@ -15,29 +15,27 @@ in
         git-crypt
         worktrunk
       ];
+    };
 
-      file = {
-        ".git/commit-template".text = ''
-          type:
+    xdg.configFile = {
+      "git/commit-template".text = ''
+        type:
 
-          # feat fix docs style refactor perf build test none
-        '';
+        # feat fix docs style refactor perf build test none
+      '';
 
-        # CrazyEgg specific config
-        ".gitconfig.crazyegg".text = ''
-          [user]
-            name = "Filip Vavera"
-            email = "filip@crazyegg.com"
-        '';
+      "git/config.crazyegg".text = ''
+        [user]
+          name = "Filip Vavera"
+          email = "filip@crazyegg.com"
+      '';
 
-        # Remote specific config
-        ".gitconfig.remote".text = ''
-          [user]
-            name = "Filip Vavera"
-            email = "filip.vavera@remote.com"
-            signingKey = "0x72494C2C6428E2A2";
-        '';
-      };
+      "git/config.remote".text = ''
+        [user]
+          name = "Filip Vavera"
+          email = "filip.vavera@remote.com"
+          signingKey = "0x72494C2C6428E2A2";
+      '';
     };
 
     programs = {
@@ -91,8 +89,8 @@ in
         };
 
         settings = {
-          "includeIf \"gitdir:~/develop/crazyegg/\"".path = ".gitconfig.crazyegg";
-          "includeIf \"gitdir:~/develop/remote/\"".path = ".gitconfig.remote";
+          "includeIf \"gitdir:~/develop/crazyegg/\"".path = "config.crazyegg";
+          "includeIf \"gitdir:~/develop/remote/\"".path = "config.remote";
 
           alias = {
             d = "diff";
@@ -135,7 +133,7 @@ in
 
           commit = {
             gpgSign = true;
-            template = "~/.git/commit-template";
+            template = "${config.xdg.configHome}/git/commit-template";
           };
 
           diff = {
