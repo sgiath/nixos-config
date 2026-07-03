@@ -23,19 +23,6 @@ in
 
         # feat fix docs style refactor perf build test none
       '';
-
-      "git/config.crazyegg".text = ''
-        [user]
-          name = "Filip Vavera"
-          email = "filip@crazyegg.com"
-      '';
-
-      "git/config.remote".text = ''
-        [user]
-          name = "Filip Vavera"
-          email = "filip.vavera@remote.com"
-          signingKey = "0x72494C2C6428E2A2";
-      '';
     };
 
     programs = {
@@ -84,14 +71,28 @@ in
 
         signing = {
           format = "openpgp";
-          key = "0x70F9C7DE34CB3BC8";
           signByDefault = true;
         };
 
-        settings = {
-          "includeIf \"gitdir:~/develop/crazyegg/\"".path = "config.crazyegg";
-          "includeIf \"gitdir:~/develop/remote/\"".path = "config.remote";
+        includes = {
+          "crazyegg" = {
+            condition = "gitdir:~/develop/crazyegg/";
+            contents = {
+              user = "Filip Vavera";
+              email = "filip@crazyegg.com";
+            };
+          };
+          "remote" = {
+            condition = "gitdir:~/develop/remote/";
+            contents = {
+              user = "Filip Vavera";
+              email = "filip.vavera@remote.com";
+              signingKey = "0x72494C2C6428E2A2";
+            };
+          };
+        };
 
+        settings = {
           alias = {
             d = "diff";
             aa = "add --all";
