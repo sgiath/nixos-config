@@ -46,7 +46,7 @@
 
         # CrazyEgg
         "scramble.crazyegg.com" = {
-          HostName = "ec2-3-82-224-38.compute-1.amazonaws.com";
+          HostName = "ec2-54-210-222-41.compute-1.amazonaws.com";
           User = "ubuntu";
         };
         "bastion.crazyegg.com" = {
