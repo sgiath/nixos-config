@@ -9,12 +9,19 @@ let
   eveFlipper = pkgs.${namespace}.eve-flipper;
 in
 {
-  home.packages = with pkgs; [
-    texliveMedium
-    # lmstudio
-    # davinci-resolve-studio
-    whisper-cpp-vulkan
-  ];
+  home = {
+    packages = with pkgs; [
+      texliveMedium
+      # lmstudio
+      # davinci-resolve-studio
+      whisper-cpp-vulkan
+    ];
+
+    sessionVariables = {
+      # cd ~/.local/share/whisper-cpp && whisper-cpp-download-ggml-model large-v3-turbo
+      WHISPER_MODEL = "${config.xdg.dataHome}/whisper-cpp/ggml-large-v3-turbo.bin";
+    };
+  };
 
   systemd.user.services.eve-flipper = {
     Unit = {
