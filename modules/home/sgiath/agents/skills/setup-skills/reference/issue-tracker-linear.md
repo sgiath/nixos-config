@@ -2,10 +2,14 @@
 
 Issues and PRDs for this repo live as Linear issues. Use the Linear MCP tools for all operations.
 
+## Project
+
+Tickets for this repo are tracked under the Linear project **[PROJECT NAME]** _(set during setup; pick an existing project or create a new one)_. Always pass this project when creating issues.
+
 ## Conventions
 
 - **Discover workspace context**: use `list_teams`, `list_issue_statuses`, and `list_issue_labels` when the team, states, or labels are not already known. Creating issues requires a Linear team.
-- **Create an issue**: `save_issue` without `id`, passing `title`, `team`, and `description`. Pass `project`, `priority`, `labels`, `state`, `parentId`, `blockedBy`, or `blocks` only when known.
+- **Create an issue**: `save_issue` without `id`, passing `title`, `team`, `description`, and the `project` above. Pass `priority`, `labels`, `state`, `parentId`, `blockedBy`, or `blocks` only when known.
 - **Read an issue**: `get_issue` with the issue identifier, usually with `includeRelations: true`; then use `list_comments` with `issueId` to fetch discussion.
 - **List issues**: `list_issues` with appropriate `team`, `state`, `label`, `project`, `assignee`, `parentId`, or `query` filters. Use `includeArchived: false` unless archived issues are explicitly needed.
 - **Comment on an issue**: `save_comment` with `issueId` and Markdown `body`. Use literal newlines in Markdown; do not escape them.

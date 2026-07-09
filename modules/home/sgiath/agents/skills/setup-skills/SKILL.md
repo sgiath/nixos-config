@@ -21,7 +21,7 @@ This is a prompt-driven skill, not a deterministic script. Explore, present what
 Look at the current repo to understand its starting state. Read whatever exists; don't assume:
 
 - `git remote -v` and `.git/config` — is this a GitHub repo? Which one?
-- `AGENTS.md` at the repo root — does it exist? Is there already an `## Agent skills` section in it?
+- `AGENTS.sgiath.md` at the repo root — does it exist? Is there already an `## Agent skills` section in it? This file (not `AGENTS.md`) is where this skill writes: it holds the user's personal instructions, is git-ignored, and is intentionally not shared with the team. Never write the `## Agent skills` block into `AGENTS.md`.
 - `CONTEXT.md` and `CONTEXT-MAP.md` at the repo root
 - `docs/adr/` and any `src/*/docs/adr/` directories
 - `docs/agents/` — does this skill's prior output already exist?
@@ -43,6 +43,8 @@ Default posture: these skills were designed for Linear. Propose Linear as issue 
 - **GitLab** — issues live in the repo's GitLab Issues (uses the [`glab`](https://gitlab.com/gitlab-org/cli) CLI)
 - **Backlog.md** — issues live as files under `.backlog/` in this repo (good for solo projects or repos without a remote), needs backlog MCP
 - **Other** (Jira, etc.) — ask the user to describe the workflow in one paragraph; the skill will record it as freeform prose
+
+If Linear is chosen, also ask **under which Linear project tickets for this repo should be tracked**. Offer both options: pick an existing project (use `list_projects` to show candidates) or create a new one (`save_project`). Record the chosen project in `docs/agents/issue-tracker.md` so skills pass it when creating issues.
 
 **Section B — Triage label vocabulary.**
 
@@ -71,14 +73,14 @@ Confirm the layout:
 
 Show the user a draft of:
 
-- The `## Agent skills` block to add to `AGENTS.md`
+- The `## Agent skills` block to add to `AGENTS.sgiath.md` (never `AGENTS.md`)
 - The contents of `docs/agents/issue-tracker.md`, `docs/agents/triage-labels.md`, `docs/agents/domain.md`
 
 Let them edit before writing.
 
 ### 4. Write
 
-If an `## Agent skills` block already exists in the chosen file, update its contents in-place rather than appending a duplicate. Don't overwrite user edits to the surrounding sections.
+Write the `## Agent skills` block into `AGENTS.sgiath.md` at the repo root, creating the file if needed. If the file is not listed in `.gitignore` (or a global ignore), add it — it being git-ignored is expected, since it holds personal instructions not shared with the team. If an `## Agent skills` block already exists in the file, update its contents in-place rather than appending a duplicate. Don't overwrite user edits to the surrounding sections.
 
 The block:
 
@@ -100,13 +102,15 @@ The block:
 
 Then write the three docs files using the seed templates in this skill folder as a starting point:
 
-- [issue-tracker-linear.md](./issue-tracker-linear.md) — Linear issue tracker
-- [issue-tracker-backlog.md](./issue-tracker-backlog.md) — Backlog.md issue tracker
-- [triage-labels.md](./triage-labels.md) — label mapping
-- [domain.md](./domain.md) — domain doc consumer rules + layout
+- [issue-tracker-linear.md](./reference/issue-tracker-linear.md) — Linear issue tracker
+- [issue-tracker-backlog.md](./reference/issue-tracker-backlog.md) — Backlog.md issue tracker
+- [triage-labels.md](./reference/triage-labels.md) — label mapping
+- [domain.md](./reference/domain.md) — domain doc consumer rules + layout
 
 For "other" issue trackers, write `docs/agents/issue-tracker.md` from scratch using the user's description.
 
 ### 5. Done
 
 Tell the user the setup is complete and which engineering skills will now read from these files. Mention they can edit `docs/agents/*.md` directly later — re-running this skill is only necessary if they want to switch issue trackers or restart from scratch.
+
+If Linear was chosen, offer to enrich the chosen Linear project with more info (description, summary of the repo, links to the remote, relevant Shortcut stories, etc.) via `save_project`. Only do so if the user accepts.
