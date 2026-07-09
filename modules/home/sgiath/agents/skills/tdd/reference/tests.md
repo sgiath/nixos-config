@@ -4,15 +4,14 @@
 
 **Integration-style**: Test through real interfaces, not mocks of internal parts.
 
-```elixir
-test "customer can checkout with a valid cart" do
-  customer = customer_fixture()
-  product = product_fixture(price: Money.new(:USD, "12.00"))
-  cart = Shopping.add_to_cart(customer, product, quantity: 1)
-
-  assert {:ok, receipt} = Checkout.complete(cart, payment_method_fixture())
-  assert receipt.status == :confirmed
-end
+```typescript
+// GOOD: Tests observable behavior
+test("user can checkout with valid cart", async () => {
+  const cart = createCart();
+  cart.add(product);
+  const result = await checkout(cart, paymentMethod);
+  expect(result.status).toBe("confirmed");
+});
 ```
 
 Characteristics:
@@ -21,86 +20,58 @@ Characteristics:
 - Uses public API only
 - Survives internal refactors
 - Describes WHAT, not HOW
-- One behavior per test; multiple assertions are fine when they describe the same observable outcome
-
-In Phoenix or Ecto code, prefer the highest useful public boundary:
-
-- Context functions for domain behavior
-- LiveView or controller tests for user-facing flows
-- Sandboxed Repo only as part of exercising the real public path
+- One logical assertion per test
 
 ## Bad Tests
 
 **Implementation-detail tests**: Coupled to internal structure.
 
-```elixir
-# BAD: tests an internal call instead of checkout behavior.
-test "checkout calls the payment service" do
-  expect(MyApp.MockPaymentService, :process, fn amount ->
-    assert amount == Money.new(:USD, "12.00")
-    {:ok, %{id: "pay_123"}}
-  end)
-
-  Checkout.complete(cart_fixture(), payment_method_fixture())
-end
+```typescript
+// BAD: Tests implementation details
+test("checkout calls paymentService.process", async () => {
+  const mockPayment = jest.mock(paymentService);
+  await checkout(cart, payment);
+  expect(mockPayment.process).toHaveBeenCalledWith(cart.total);
+});
 ```
 
 Red flags:
 
-- Mocking internal modules
-- Testing private functions through indirection
+- Mocking internal collaborators
+- Testing private methods
 - Asserting on call counts/order
 - Test breaks when refactoring without behavior change
 - Test name describes HOW not WHAT
 - Verifying through external means instead of interface
 
-```elixir
-# BAD: bypasses the public interface to verify persistence.
-test "create_user inserts a row" do
-  assert {:ok, _user} = Accounts.create_user(%{name: "Alice"})
+```typescript
+// BAD: Bypasses interface to verify
+test("createUser saves to database", async () => {
+  await createUser({ name: "Alice" });
+  const row = await db.query("SELECT * FROM users WHERE name = ?", ["Alice"]);
+  expect(row).toBeDefined();
+});
 
-  assert Repo.exists?(
-           from u in User,
-             where: u.name == "Alice"
-         )
-end
-
-# GOOD: verifies through another public interface.
-test "created user can be fetched by id" do
-  assert {:ok, user} = Accounts.create_user(%{name: "Alice"})
-
-  assert {:ok, fetched} = Accounts.fetch_user(user.id)
-  assert fetched.name == "Alice"
-end
+// GOOD: Verifies through interface
+test("createUser makes user retrievable", async () => {
+  const user = await createUser({ name: "Alice" });
+  const retrieved = await getUser(user.id);
+  expect(retrieved.name).toBe("Alice");
+});
 ```
 
-For LiveView, test user-visible behavior instead of assigned implementation details:
+**Tautological tests**: Expected value restates the implementation, so the test passes by construction.
 
-```elixir
-# BAD: asserts on internal assigns.
-test "filters stores selected status in assigns", %{conn: conn} do
-  {:ok, view, _html} = live(conn, ~p"/orders")
+```typescript
+// BAD: Expected value is recomputed the way the code computes it
+test("calculateTotal sums line items", () => {
+  const items = [{ price: 10 }, { price: 5 }];
+  const expected = items.reduce((sum, i) => sum + i.price, 0);
+  expect(calculateTotal(items)).toBe(expected);
+});
 
-  view
-  |> element("button", "Paid")
-  |> render_click()
-
-  assert :paid == :sys.get_state(view.pid).socket.assigns.status
-end
-
-# GOOD: asserts on observable UI.
-test "filters orders by payment status", %{conn: conn} do
-  paid_order = order_fixture(status: :paid)
-  _draft_order = order_fixture(status: :draft)
-
-  {:ok, view, _html} = live(conn, ~p"/orders")
-
-  html =
-    view
-    |> element("button", "Paid")
-    |> render_click()
-
-  assert html =~ paid_order.number
-  refute html =~ "Draft"
-end
+// GOOD: Expected value is an independent, known literal
+test("calculateTotal sums line items", () => {
+  expect(calculateTotal([{ price: 10 }, { price: 5 }])).toBe(15);
+});
 ```

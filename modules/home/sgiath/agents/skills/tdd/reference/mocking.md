@@ -3,63 +3,57 @@
 Mock at **system boundaries** only:
 
 - External APIs (payment, email, etc.)
-- Databases (sometimes - prefer sandboxed test DB)
+- Databases (sometimes - prefer test DB)
 - Time/randomness
 - File system (sometimes)
-- Background queues or remote services
 
 Don't mock:
 
-- Your own modules
+- Your own classes/modules
 - Internal collaborators
-- Ecto changesets or query builders you control
-- Anything that can run cheaply and deterministically in-process
+- Anything you control
 
 ## Designing for Mockability
 
-At system boundaries, design interfaces that are easy to replace in tests:
+At system boundaries, design interfaces that are easy to mock:
 
-**1. Inject boundary modules or functions**
+**1. Use dependency injection**
 
-Pass external dependencies in rather than hard-coding them internally:
+Pass external dependencies in rather than creating them internally:
 
-```elixir
-# Easy to test with a fake module.
-def process_payment(order, payment_client \\ MyApp.Payments.Stripe) do
-  payment_client.charge(order.total)
-end
+```typescript
+// Easy to mock
+function processPayment(order, paymentClient) {
+  return paymentClient.charge(order.total);
+}
 
-# Hard to test without patching global configuration or using a mocking library.
-def process_payment(order) do
-  client = MyApp.Payments.Stripe.new(System.fetch_env!("STRIPE_KEY"))
-  client.charge(order.total)
-end
+// Hard to mock
+function processPayment(order) {
+  const client = new StripeClient(process.env.STRIPE_KEY);
+  return client.charge(order.total);
+}
 ```
 
-For application code, dependency injection can be simple: a default module argument, an MFA tuple, or a behaviour-backed module from config. Avoid pushing mocks through every internal function just because you can.
-
-**2. Prefer boundary-specific APIs over generic request functions**
+**2. Prefer SDK-style interfaces over generic fetchers**
 
 Create specific functions for each external operation instead of one generic function with conditional logic:
 
-```elixir
-# GOOD: each function has one purpose and one return shape.
-defmodule MyApp.BillingGateway do
-  @callback get_customer(String.t()) :: {:ok, customer()} | {:error, term()}
-  @callback list_invoices(String.t()) :: {:ok, [invoice()]} | {:error, term()}
-  @callback create_invoice(map()) :: {:ok, invoice()} | {:error, term()}
-end
+```typescript
+// GOOD: Each function is independently mockable
+const api = {
+  getUser: (id) => fetch(`/users/${id}`),
+  getOrders: (userId) => fetch(`/users/${userId}/orders`),
+  createOrder: (data) => fetch('/orders', { method: 'POST', body: data }),
+};
 
-# BAD: tests need conditional fake logic for method, path, and body.
-defmodule MyApp.BillingGateway do
-  @callback request(method :: atom(), path :: String.t(), body :: map()) ::
-              {:ok, map()} | {:error, term()}
-end
+// BAD: Mocking requires conditional logic inside the mock
+const api = {
+  fetch: (endpoint, options) => fetch(endpoint, options),
+};
 ```
 
-The boundary-specific approach means:
-
-- Each fake returns one specific shape
+The SDK approach means:
+- Each mock returns one specific shape
 - No conditional logic in test setup
-- Easier to see which external capability a test exercises
-- Dialyzer specs and behaviours describe the contract per operation
+- Easier to see which endpoints a test exercises
+- Type safety per endpoint
