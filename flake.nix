@@ -73,7 +73,7 @@
 
     # https://forgejo.ellis.link/continuwuation/continuwuity/releases
     continuwuity = {
-      url = "git+https://forgejo.ellis.link/continuwuation/continuwuity?rev=051449118911b03960d5d09f630d7d2959c8330c";
+      url = "git+https://forgejo.ellis.link/continuwuation/continuwuity?rev=f6834cbe40eaacc7840421f61fcff488a0910f10";
       inputs.nixpkgs.follows = "nixpkgs";
     };
 
