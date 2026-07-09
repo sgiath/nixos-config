@@ -7,7 +7,7 @@ description: Use when the user pastes a Shortcut ticket or story link, a Shortcu
 
 ## Goal
 
-Load ticket context before answering.
+Load ticket context before answering. Shortcut is the company collaboration hub — a **context source**, not a work tracker for agents. This skill is strictly read-only: never create, update, or comment on Shortcut stories.
 
 ## Steps
 
@@ -15,6 +15,10 @@ Load ticket context before answering.
 2. Prefer `shortcut_stories-get-by-id` with `full: true`.
 3. If needed, read history and comments with read-only Shortcut tools.
 4. Ask the user if he wants to implement the ticket or add more context for the task
+
+## Hand-off
+
+If the work needs granular tracking (breakdown into slices, blocking edges, agent progress), that happens on the configured issue tracker (usually Linear) via `/to-tickets` — with each Linear ticket linking back to the Shortcut story URL. Do not mirror or write the breakdown into Shortcut.
 
 ## Matching Inputs
 

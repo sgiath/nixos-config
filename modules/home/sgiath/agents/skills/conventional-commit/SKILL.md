@@ -81,7 +81,8 @@ Footer rules:
 
 - For breaking changes, use `!` in the header and include a `BREAKING CHANGE:` footer when helpful.
 - If a Shortcut ticket is clearly present in the user request, branch name, task text, or existing context, include `Fixes sc-12345`.
-- Do not invent Shortcut IDs. If no Shortcut ticket is mentioned anywhere, omit the footer.
+- If a Linear issue (`TEAM-123` style) is clearly present instead, include `Fixes TEAM-123`.
+- Do not invent ticket IDs. If no Shortcut or Linear ticket is mentioned anywhere, omit the footer.
 
 ## Final Check
 
@@ -91,4 +92,4 @@ Before running `git commit`, confirm:
 - The message starts with `type(scope): subject` or `type: subject`.
 - The type matches the change.
 - The scope is useful and not overly broad.
-- Any Shortcut or breaking-change footer is real and correctly formatted.
+- Any Shortcut, Linear, or breaking-change footer is real and correctly formatted.

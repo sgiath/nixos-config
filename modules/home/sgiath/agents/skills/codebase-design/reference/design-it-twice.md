@@ -25,7 +25,7 @@ Prompt each sub-agent with a separate technical brief (file paths, coupling deta
 - Agent 1: "Minimize the interface — aim for 1–3 entry points max. Maximise leverage per entry point."
 - Agent 2: "Maximise flexibility — support many use cases and extension."
 - Agent 3: "Optimise for the most common caller — make the default case trivial."
-- Agent 4 (if applicable): "Design around ports & adapters for cross-seam dependencies."
+- Agent 4 (if applicable): "Design around production variation for cross-seam dependencies; avoid test-only adapters."
 
 Include both [SKILL.md](SKILL.md) vocabulary and CONTEXT.md vocabulary in the brief so each sub-agent names things consistently with the architecture language and the project's domain language.
 
@@ -34,7 +34,7 @@ Each sub-agent outputs:
 1. Interface (types, methods, params — plus invariants, ordering, error modes)
 2. Usage example showing how callers use it
 3. What the implementation hides behind the seam
-4. Dependency strategy and adapters (see [deepening.md](./reference/deepening.md))
+4. Dependency strategy, boundary modules, and any production adapters (see [deepening.md](./reference/deepening.md))
 5. Trade-offs — where leverage is high, where it's thin
 
 ### 3. Present and compare

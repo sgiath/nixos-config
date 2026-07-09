@@ -4,14 +4,15 @@
 
 **Integration-style**: Test through real interfaces, not mocks of internal parts.
 
-```typescript
-// GOOD: Tests observable behavior
-test("user can checkout with valid cart", async () => {
-  const cart = createCart();
-  cart.add(product);
-  const result = await checkout(cart, paymentMethod);
-  expect(result.status).toBe("confirmed");
-});
+```elixir
+# GOOD: Tests observable behavior
+test "user can checkout with valid cart" do
+  cart =
+    Cart.new()
+    |> Cart.add(product)
+
+  assert {:ok, %{status: :confirmed}} = Checkout.checkout(cart, payment_method)
+end
 ```
 
 Characteristics:
@@ -26,13 +27,16 @@ Characteristics:
 
 **Implementation-detail tests**: Coupled to internal structure.
 
-```typescript
-// BAD: Tests implementation details
-test("checkout calls paymentService.process", async () => {
-  const mockPayment = jest.mock(paymentService);
-  await checkout(cart, payment);
-  expect(mockPayment.process).toHaveBeenCalledWith(cart.total);
-});
+```elixir
+# BAD: Tests implementation details
+test "checkout calls PaymentService.process/1" do
+  cart_total = Cart.total(cart)
+
+  PaymentServiceMock
+  |> expect(:process, fn ^cart_total -> {:ok, %{id: "pay_123"}} end)
+
+  assert {:ok, _order} = Checkout.checkout(cart, payment_method)
+end
 ```
 
 Red flags:
@@ -44,34 +48,36 @@ Red flags:
 - Test name describes HOW not WHAT
 - Verifying through external means instead of interface
 
-```typescript
-// BAD: Bypasses interface to verify
-test("createUser saves to database", async () => {
-  await createUser({ name: "Alice" });
-  const row = await db.query("SELECT * FROM users WHERE name = ?", ["Alice"]);
-  expect(row).toBeDefined();
-});
+```elixir
+# BAD: Bypasses interface to verify
+test "create_user saves to database" do
+  {:ok, _user} = Accounts.create_user(%{name: "Alice"})
 
-// GOOD: Verifies through interface
-test("createUser makes user retrievable", async () => {
-  const user = await createUser({ name: "Alice" });
-  const retrieved = await getUser(user.id);
-  expect(retrieved.name).toBe("Alice");
-});
+  assert %User{} = Repo.get_by(User, name: "Alice")
+end
+
+# GOOD: Verifies through interface
+test "create_user makes user retrievable" do
+  {:ok, user} = Accounts.create_user(%{name: "Alice"})
+  retrieved = Accounts.get_user!(user.id)
+
+  assert retrieved.name == "Alice"
+end
 ```
 
 **Tautological tests**: Expected value restates the implementation, so the test passes by construction.
 
-```typescript
-// BAD: Expected value is recomputed the way the code computes it
-test("calculateTotal sums line items", () => {
-  const items = [{ price: 10 }, { price: 5 }];
-  const expected = items.reduce((sum, i) => sum + i.price, 0);
-  expect(calculateTotal(items)).toBe(expected);
-});
+```elixir
+# BAD: Expected value is recomputed the way the code computes it
+test "calculate_total sums line items" do
+  items = [%{price: 10}, %{price: 5}]
+  expected = Enum.reduce(items, 0, fn item, sum -> sum + item.price end)
 
-// GOOD: Expected value is an independent, known literal
-test("calculateTotal sums line items", () => {
-  expect(calculateTotal([{ price: 10 }, { price: 5 }])).toBe(15);
-});
+  assert Cart.calculate_total(items) == expected
+end
+
+# GOOD: Expected value is an independent, known literal
+test "calculate_total sums line items" do
+  assert Cart.calculate_total([%{price: 10}, %{price: 5}]) == 15
+end
 ```

@@ -14,6 +14,10 @@ Issues and PRDs for this repo live as Linear issues. Use the Linear MCP tools fo
 
 Linear issue identifiers look like `TEAM-123`. Prefer identifiers over UUIDs in human-facing instructions.
 
+## Relationship to Shortcut
+
+Linear is the personal work tracker (user + agents only) — agents write here freely. Shortcut is the company collaboration hub and is **never** a publish target; it is read-only context. When work originates from a Shortcut story (`sc-XXXXX`), link the story URL from the Linear issue (via `links` or a Parent section in the description). Linear issues with no Shortcut counterpart are normal.
+
 ## Pull requests as a triage surface
 
 **PRs as a request surface: no.** _(Set to `yes` if this repo treats external PRs as feature requests; `/triage` reads this flag.)_

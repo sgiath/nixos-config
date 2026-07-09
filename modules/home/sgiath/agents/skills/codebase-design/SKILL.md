@@ -11,7 +11,7 @@ Design **deep modules**: a lot of behaviour behind a small interface, placed at 
 
 Use these terms exactly — don't substitute "component," "service," "API," or "boundary." Consistent language is the whole point.
 
-**Module** — anything with an interface and an implementation. Deliberately scale-agnostic: a function, class, package, or tier-spanning slice. _Avoid_: unit, component, service.
+**Module** — anything with an interface and an implementation. Deliberately scale-agnostic: a function, Elixir module, package, process, or tier-spanning slice. _Avoid_: unit, component, service.
 
 **Interface** — everything a caller must know to use the module correctly: the type signature, but also invariants, ordering constraints, error modes, required configuration, and performance characteristics. _Avoid_: API, signature (too narrow — they refer only to the type-level surface).
 
@@ -59,40 +59,53 @@ When designing an interface, ask:
 
 ## Principles
 
-- **Depth is a property of the interface, not the implementation.** A deep module can be internally composed of small, mockable, swappable parts — they just aren't part of the interface. A module can have **internal seams** (private to its implementation, used by its own tests) as well as the **external seam** at its interface.
+- **Depth is a property of the interface, not the implementation.** A deep module can be internally composed of small parts — they just aren't part of the interface. A module can have **internal seams** private to its implementation, but don't expose them through the caller-facing interface just for tests.
 - **The deletion test.** Imagine deleting the module. If complexity vanishes, it was a pass-through. If complexity reappears across N callers, it was earning its keep.
 - **The interface is the test surface.** Callers and tests cross the same seam. If you want to test *past* the interface, the module is probably the wrong shape.
-- **One adapter means a hypothetical seam. Two adapters means a real one.** Don't introduce a seam unless something actually varies across it.
+- **One production adapter means a hypothetical seam. Two production adapters means a real one.** Don't introduce a seam unless production behaviour actually varies across it. A test-only fake does not justify widening the interface.
 
 ## Designing for testability
 
 Good interfaces make testing natural:
 
-1. **Accept dependencies, don't create them.**
+1. **Mock boundary modules directly.**
 
-   ```typescript
-   // Testable
-   function processOrder(order, paymentGateway) {}
+   With Mimic, production code can call external boundary modules directly. Do not pass modules around only to make tests mockable.
 
-   // Hard to test
-   function processOrder(order) {
-     const gateway = new StripeGateway();
-   }
+   ```elixir
+   defmodule MyApp.Orders do
+     def process_order(order) do
+       with {:ok, charge} <- MyApp.PaymentGateway.charge(order.total) do
+         {:ok, Map.put(order, :charge_id, charge.id)}
+       end
+     end
+   end
+   ```
+
+   ```elixir
+   test "charges the payment gateway" do
+     MyApp.PaymentGateway
+     |> expect(:charge, fn 5000 -> {:ok, %{id: "ch_123"}} end)
+
+     assert {:ok, %{charge_id: "ch_123"}} = Orders.process_order(%{total: 5000})
+   end
    ```
 
 2. **Return results, don't produce side effects.**
 
-   ```typescript
-   // Testable
-   function calculateDiscount(cart): Discount {}
+   Prefer values that callers can assert on. Use explicit success/error results for operations that can fail.
 
-   // Hard to test
-   function applyDiscount(cart): void {
-     cart.total -= discount;
-   }
+   ```elixir
+   # Easy to test
+   def calculate_discount(cart), do: {:ok, %Discount{amount: 1_000}}
+
+   # Harder to test: observable only through hidden mutation or I/O
+   def apply_discount(cart), do: CartStore.update_total(cart.id, -1_000)
    ```
 
 3. **Small surface area.** Fewer methods = fewer tests needed. Fewer params = simpler test setup.
+
+4. **Use adapters only for real production variation.** Elixir behaviours and injected modules are useful when production has multiple implementations. A test-only fake is not enough reason to widen the interface.
 
 ## Relationships
 
@@ -105,7 +118,7 @@ Good interfaces make testing natural:
 ## Rejected framings
 
 - **Depth as ratio of implementation-lines to interface-lines** (Ousterhout): rewards padding the implementation. We use depth-as-leverage instead.
-- **"Interface" as the TypeScript `interface` keyword or a class's public methods**: too narrow — interface here includes every fact a caller must know.
+- **"Interface" as only an Elixir behaviour callback list or a module's public functions**: too narrow — interface here includes every fact a caller must know.
 - **"Boundary"**: overloaded with DDD's bounded context. Say **seam** or **interface**.
 
 ## Going deeper

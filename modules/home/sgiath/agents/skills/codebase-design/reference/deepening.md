@@ -14,19 +14,21 @@ Pure computation, in-memory state, no I/O. Always deepenable — merge the modul
 
 Dependencies that have local test stand-ins (PGLite for Postgres, in-memory filesystem). Deepenable if the stand-in exists. The deepened module is tested with the stand-in running in the test suite. The seam is internal; no port at the module's external interface.
 
-### 3. Remote but owned (Ports & Adapters)
+### 3. Remote but owned
 
-Your own services across a network boundary (microservices, internal APIs). Define a **port** (interface) at the seam. The deep module owns the logic; the transport is injected as an **adapter**. Tests use an in-memory adapter. Production uses an HTTP/gRPC/queue adapter.
+Your own services across a network seam (microservices, internal APIs). Usually hide the transport behind a named boundary module and call it directly from the deep module. Tests mock that boundary module with Mimic.
 
-Recommendation shape: *"Define a port at the seam, implement an HTTP adapter for production and an in-memory adapter for testing, so the logic sits in one deep module even though it's deployed across a network."*
+Recommendation shape: *"Put the HTTP/gRPC/queue details in `MyApp.InventoryClient`, call that module directly from the deep module, and mock `MyApp.InventoryClient` in tests so the logic stays concentrated behind one interface."*
 
-### 4. True external (Mock)
+Use behaviours or injected adapters only when production genuinely selects between multiple implementations, such as region-specific transports or a customer-specific backend.
 
-Third-party services (Stripe, Twilio, etc.) you don't control. The deepened module takes the external dependency as an injected port; tests provide a mock adapter.
+### 4. True external
+
+Third-party services (Stripe, Twilio, etc.) you don't control. Put the integration behind a boundary module and mock that module with Mimic in tests. Do not introduce a port or injected adapter solely for testing.
 
 ## Seam discipline
 
-- **One adapter means a hypothetical seam. Two adapters means a real one.** Don't introduce a port unless at least two adapters are justified (typically production + test). A single-adapter seam is just indirection.
+- **One production adapter means a hypothetical seam. Two production adapters means a real one.** Don't introduce a port unless real production variation justifies it. A test-only fake does not count; use Mimic at the boundary module instead.
 - **Internal seams vs external seams.** A deep module can have internal seams (private to its implementation, used by its own tests) as well as the external seam at its interface. Don't expose internal seams through the interface just because tests use them.
 
 ## Testing strategy: replace, don't layer
@@ -35,3 +37,4 @@ Third-party services (Stripe, Twilio, etc.) you don't control. The deepened modu
 - Write new tests at the deepened module's interface. The **interface is the test surface**.
 - Tests assert on observable outcomes through the interface, not internal state.
 - Tests should survive internal refactors — they describe behaviour, not implementation. If a test has to change when the implementation changes, it's testing past the interface.
+- For external I/O in Elixir, mock the boundary module with Mimic instead of adding dependency injection only for tests.
