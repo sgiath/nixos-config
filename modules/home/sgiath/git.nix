@@ -170,6 +170,7 @@ in
 
           rebase = {
             autoStash = true;
+            updateRefs = true;
           };
 
           status = {
