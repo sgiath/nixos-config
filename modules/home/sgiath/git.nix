@@ -69,6 +69,7 @@ in
           ".elixir-tools"
           ".omo/"
           "opencode.json*"
+          "AGENTS.sgiath.md"
         ];
 
         signing = {
