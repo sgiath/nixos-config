@@ -48,7 +48,7 @@ pkgs.fetchPnpmDeps {
     hash = "${src_hash}";
   };
   sourceRoot = "source/frontend";
-  fetcherVersion = 3;
+  fetcherVersion = 4;
   hash = "sha256-AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA=";
 }
 EOF
@@ -91,9 +91,9 @@ echo "==> Updating default.nix..."
 VERSION="${version}" SRC_HASH="${src_hash}" PNPM_HASH="${pnpm_hash}" VENDOR_HASH="${vendor_hash}" \
   perl -0pi -e 's|version = "[^"]*";|version = "$ENV{VERSION}";|g;
     s#(src = fetchFromGitHub \{\n    owner = "ilyaux";\n    repo = "Eve-flipper";\n    rev = "v\$\{version\}";\n    hash = ")[^"]+(";\n  \};)#\1$ENV{SRC_HASH}\2#g;
-    s#(fetcherVersion = 3;\n      hash = ")[^"]+(";\n    \};)#\1$ENV{PNPM_HASH}\2#g;
+    s#(fetcherVersion = 4;\n      hash = ")[^"]+(";\n    \};)#\1$ENV{PNPM_HASH}\2#g;
     s|vendorHash = "[^"]*";|vendorHash = "$ENV{VENDOR_HASH}";|g;' \
-    "${DEFAULT_NIX}"
+  "${DEFAULT_NIX}"
 
 echo "==> Done! Updated eve-flipper to version ${version}"
 echo ""

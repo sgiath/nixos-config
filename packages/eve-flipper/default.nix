@@ -30,8 +30,13 @@ let
 
     sourceRoot = "${src.name}/frontend";
     pnpmDeps = fetchPnpmDeps {
-      inherit (finalAttrs) pname version src sourceRoot;
-      fetcherVersion = 3;
+      inherit (finalAttrs)
+        pname
+        version
+        src
+        sourceRoot
+        ;
+      fetcherVersion = 4;
       hash = "sha256-S5R5RHjbpHuc6E5zJZZfbTo44iFdSxcG5xyrLaUCN9g=";
     };
 

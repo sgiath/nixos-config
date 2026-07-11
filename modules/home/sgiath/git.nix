@@ -68,6 +68,7 @@ in
           ".expert"
           ".elixir-tools"
           ".omo/"
+          ".slim/"
           "opencode.json*"
           "AGENTS.sgiath.md"
         ];

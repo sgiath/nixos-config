@@ -24,7 +24,7 @@ stdenv.mkDerivation (finalAttrs: {
   pnpmDeps = fetchPnpmDeps {
     inherit (finalAttrs) pname version src;
     pnpm = pnpm_11;
-    fetcherVersion = 3;
+    fetcherVersion = 4;
     prePnpmInstall = ''
       pnpm config set trust-lockfile true
     '';
