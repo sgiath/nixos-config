@@ -171,6 +171,7 @@ in
 
           rebase = {
             autoStash = true;
+            autosquash = true;
             updateRefs = true;
           };
 
