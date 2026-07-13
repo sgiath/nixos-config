@@ -14,4 +14,5 @@ in
 {
   ksa = pkgs-ksa.ksa;
   factorio-space-age-experimental = pkgs-master.factorio-space-age-experimental;
+  llm-agents = inputs.llm-agents.packages.${prev.stdenv.hostPlatform.system};
 }
