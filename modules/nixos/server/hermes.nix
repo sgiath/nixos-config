@@ -167,7 +167,7 @@ in
           };
 
           dashboard = {
-            theme = "mono";
+            theme = "niamh";
             public_url = "https://niamh.sgiath.dev";
             basic_auth = {
               username = "sgiath";
