@@ -137,6 +137,14 @@
             extract_backend = "firecrawl";
           };
 
+          dashboard = {
+            public_url = "https://niamh.sgiath.dev";
+            basic_auth = {
+              username = "sgiath";
+              session_ttl_seconds = 604800;
+            };
+          };
+
           tts = {
             provider = "xai";
             elevenlabs = {
