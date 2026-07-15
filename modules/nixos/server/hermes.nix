@@ -21,6 +21,7 @@ in
 {
   config = lib.mkIf (config.sgiath.server.enable && config.services.hermes-agent.enable) {
     users.groups.hermes.members = [ "sgiath" ];
+
     systemd.services = {
       hermes-agent.after = [ "continuwuity.service" ];
       hermes-dashboard = {
@@ -44,7 +45,7 @@ in
           HERMES_DASHBOARD_TUI = "1";
         };
       };
-    }
+    };
 
     services = {
       hermes-agent = {
