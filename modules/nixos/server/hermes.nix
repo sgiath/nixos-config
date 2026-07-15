@@ -43,6 +43,7 @@ in
         environment = {
           HERMES_MANAGED = "true";
           HERMES_DASHBOARD_TUI = "1";
+          HERMES_HOME = "/home/sgiath/hermes/.hermes";
         };
       };
     };
