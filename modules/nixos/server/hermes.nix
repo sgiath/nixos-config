@@ -15,6 +15,7 @@
           extraDependencyGroups = [
             "matrix"
             "voice"
+            "anthropic"
             "firecrawl"
             "cli"
             "youtube"
