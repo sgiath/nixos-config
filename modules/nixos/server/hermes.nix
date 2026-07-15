@@ -54,12 +54,12 @@
 
         settings = {
           model = {
-            default = "gpt-5.5";
-            provider = "openai-codex";
+            default = "claude-fable-5";
+            provider = "anthropic";
           };
           fallback_model = {
-            model = "grok-4.3";
-            provider = "xai-oauth";
+            model = "gpt-5.6-sol";
+            provider = "openai-codex";
           };
 
           timezone = "UTC";
@@ -108,7 +108,7 @@
           approvals.mode = "off";
 
           delegation = {
-            model = "gpt-5.4-mini";
+            model = "gpt-5.6-luna";
             provider = "openai-codex";
             max_concurrent_children = 10;
             max_spawn_depth = 2;
