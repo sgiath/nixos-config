@@ -17,7 +17,7 @@
     programs.zsh.shellAliases = {
       oc = "OPENCODE_DISABLE_CLAUDE_CODE=true OPENCODE_ENABLE_EXA=true OPENCODE_EXPERIMENTAL=true OPENCODE_EXPERIMENTAL_FILEWATCHER=true OPENCODE_EXPERIMENTAL_LSP_TOOL=true OPENCODE_EXPERIMENTAL_EXA=true OPENCODE_EXPERIMENTAL_WORKSPACES=true OPENCODE_EXPERIMENTAL_BACKGROUND_SUBAGENTS=true OPENCODE_PORT=24096 ${lib.getExe pkgs.llm-agents.opencode}";
 
-      omo-update = "cd ~/.cache/opencode/packages/oh-my-openagent@latest && bun add  oh-my-openagent@latest";
+      omo-update = "cd ~/.cache/opencode/packages/oh-my-openagent@latest && bun add  oh-my-openagent@latest && cd -";
     };
   };
 }
