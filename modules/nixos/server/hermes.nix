@@ -86,7 +86,7 @@
 
           display = {
             personality = "kawaii";
-            skin = "charizard";
+            skin = "mono";
           };
 
           memory = {
@@ -168,6 +168,40 @@
             provider = "local";
             local = {
               model = "ggml-large-v3-turbo";
+            };
+          };
+
+          x_search.model = "grok-4.5";
+
+          moa = {
+            default_preset = "default";
+            presets = {
+              default = {
+                enabled = true;
+
+                aggregator = {
+                  provider = "openai-codex";
+                  model = "gpt-5.6-sol";
+                  reasoning_effort = "high";
+                };
+
+                reference_models = [
+                  {
+                    provider = "anthropic";
+                    model = "claude-fable-5";
+                    reasoning_effort = "high";
+                  }
+                  {
+                    provider = "openai-codex";
+                    model = "gpt-5.6-sol";
+                    reasoning_effort = "high";
+                  }
+                  {
+                    provider = "xai-oauth";
+                    model = "grok-4.5";
+                  }
+                ];
+              };
             };
           };
         };
