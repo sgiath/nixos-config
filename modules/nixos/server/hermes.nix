@@ -35,7 +35,7 @@ in
           Group = "hermes";
           WorkingDirectory = "/home/sgiath/hermes";
           EnvironmentFile = [ "/home/sgiath/hermes/.hermes/.env" ];
-          ExecStart = "${hermesPackage}/bin/hermes dashboard --host 0.0.0.0 --port 9119 --no-open --insecure";
+          ExecStart = "${hermesPackage}/bin/hermes dashboard --host 0.0.0.0 --port 9119 --no-open";
           Restart = "on-failure";
           RestartSec = 5;
         };
@@ -170,6 +170,7 @@ in
             public_url = "https://niamh.sgiath.dev";
             basic_auth = {
               username = "sgiath";
+              password_hash = "scrypt$16384$8$1$gow0x1oKM9Z1ZfwoIaYXPA==$SevN0dz3ObnQko0fE5XbmsGqEHfS6NZ+K3qsWdLGyQc=";
               session_ttl_seconds = 604800;
             };
           };
