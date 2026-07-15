@@ -5,23 +5,50 @@
   namespace,
   ...
 }:
+let
+  hermesPackage = pkgs.hermes-agent.override {
+    extraDependencyGroups = [
+      "matrix"
+      "voice"
+      "anthropic"
+      "firecrawl"
+      "cli"
+      "youtube"
+      "web"
+    ];
+  };
+in
 {
   config = lib.mkIf (config.sgiath.server.enable && config.services.hermes-agent.enable) {
     users.groups.hermes.members = [ "sgiath" ];
-    systemd.services.hermes-agent.after = [ "continuwuity.service" ];
+    systemd.services = {
+      hermes-agent.after = [ "continuwuity.service" ];
+      hermes-dashboard = {
+        description = "Hermes Agent web dashboard";
+        wantedBy = [ "multi-user.target" ];
+        after = [ "hermes-agent.service" ];
+        wants = [ "hermes-agent.service" ];
+
+        serviceConfig = {
+          User = "sgiath";
+          Group = "hermes";
+          WorkingDirectory = "/home/sgiath/hermes";
+          EnvironmentFile = [ "/home/sgiath/hermes/.hermes/.env" ];
+          ExecStart = "${hermesPackage}/bin/hermes dashboard --host 0.0.0.0 --port 9119 --no-open";
+          Restart = "on-failure";
+          RestartSec = 5;
+        };
+
+        environment = {
+          HERMES_MANAGED = "true";
+          HERMES_DASHBOARD_TUI = "1";
+        };
+      };
+    }
+
     services = {
       hermes-agent = {
-        package = pkgs.hermes-agent.override {
-          extraDependencyGroups = [
-            "matrix"
-            "voice"
-            "anthropic"
-            "firecrawl"
-            "cli"
-            "youtube"
-            "web"
-          ];
-        };
+        package = hermesPackage;
         createUser = false;
         user = "sgiath";
         group = "hermes";
@@ -138,6 +165,7 @@
           };
 
           dashboard = {
+            theme = "mono";
             public_url = "https://niamh.sgiath.dev";
             basic_auth = {
               username = "sgiath";
