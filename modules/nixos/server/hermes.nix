@@ -226,6 +226,8 @@
               proxyWebsockets = true;
               proxyPass = "http://127.0.0.1:9119";
               extraConfig = ''
+                proxy_set_header Host 127.0.0.1;
+
                 allow 127.0.0.1;
                 allow ::1;
                 deny 192.168.1.1;
