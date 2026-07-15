@@ -46,7 +46,7 @@
           MATRIX_USER_ID = "@niamh:sgiath.dev";
           MATRIX_ALLOWED_USERS = "@sgiath:sgiath.dev";
           MATRIX_HOME_CHANNEL = "!exHpssN2dwpo9ufw23:sgiath.dev";
-          MATRIX_HOME_ROOM = "!exHpssN2dwpo9ufw23:sgiath.dev"
+          MATRIX_HOME_ROOM = "!exHpssN2dwpo9ufw23:sgiath.dev";
           MATRIX_ENCRYPTION = "false";
 
           WEBHOOK_ENABLED = "true";
