@@ -35,7 +35,7 @@ in
           Group = "hermes";
           WorkingDirectory = "/home/sgiath/hermes";
           EnvironmentFile = [ "/home/sgiath/hermes/.hermes/.env" ];
-          ExecStart = "${hermesPackage}/bin/hermes dashboard --host 0.0.0.0 --port 9119 --no-open";
+          ExecStart = "${hermesPackage}/bin/hermes dashboard --host 0.0.0.0 --port 9119 --no-open --insecure";
           Restart = "on-failure";
           RestartSec = 5;
         };
