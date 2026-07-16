@@ -17,7 +17,7 @@ If empty, install one of the supported tools. See [LLM commits docs](https://wor
 
 ### Command returns an error
 
-Test the configured command directly by piping a prompt to it. See `reference/llm-commits.md` for the exact command syntax for each tool.
+Test the configured command directly by piping a prompt to it. See `references/llm-commits.md` for the exact command syntax for each tool.
 
 ```bash
 echo "say hello" | <your-configured-command>

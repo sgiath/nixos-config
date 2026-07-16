@@ -102,10 +102,10 @@ The block:
 
 Then write the three docs files using the seed templates in this skill folder as a starting point:
 
-- [issue-tracker-linear.md](./reference/issue-tracker-linear.md) — Linear issue tracker
-- [issue-tracker-backlog.md](./reference/issue-tracker-backlog.md) — Backlog.md issue tracker
-- [triage-labels.md](./reference/triage-labels.md) — label mapping
-- [domain.md](./reference/domain.md) — domain doc consumer rules + layout
+- [issue-tracker-linear.md](./references/issue-tracker-linear.md) — Linear issue tracker
+- [issue-tracker-backlog.md](./references/issue-tracker-backlog.md) — Backlog.md issue tracker
+- [triage-labels.md](./references/triage-labels.md) — label mapping
+- [domain.md](./references/domain.md) — domain doc consumer rules + layout
 
 For "other" issue trackers, write `docs/agents/issue-tracker.md` from scratch using the user's description.
 

@@ -15,7 +15,7 @@ Follow the Conventional Commits format:
 [footer]
 ```
 
-Read the full spec only for edge cases: [specs.md](./reference/specs.md).
+Read the full spec only for edge cases: [specs.md](./references/specs.md).
 
 ## Commit Everything Workflow
 

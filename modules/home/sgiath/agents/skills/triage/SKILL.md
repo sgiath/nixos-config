@@ -18,8 +18,8 @@ Every comment or issue posted to the issue tracker during triage **must** start 
 
 ## Reference docs
 
-- [agent-brief.md](./reference/agent-brief.md) — how to write durable agent briefs
-- [out-of-scope.md](./reference/out-of-scope.md) — how the `.out-of-scope/` knowledge base works
+- [agent-brief.md](./references/agent-brief.md) — how to write durable agent briefs
+- [out-of-scope.md](./references/out-of-scope.md) — how the `.out-of-scope/` knowledge base works
 
 ## Roles
 

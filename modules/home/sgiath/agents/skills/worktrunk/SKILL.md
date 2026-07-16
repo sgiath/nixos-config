@@ -13,13 +13,13 @@ Help users work with Worktrunk, a CLI tool for managing git worktrees.
 
 Reference files are synced from [worktrunk.dev](https://worktrunk.dev) documentation:
 
-- **reference/config.md**: User and project configuration (LLM, hooks, command defaults)
-- **reference/hook.md**: Hook types, timing, and execution order
-- **reference/switch.md**, **merge.md**, **list.md**, etc.: Command documentation
-- **reference/llm-commits.md**: LLM commit message generation
-- **reference/tips-patterns.md**: Language-specific tips and patterns
-- **reference/shell-integration.md**: Shell integration debugging
-- **reference/troubleshooting.md**: Troubleshooting for LLM and hooks (Claude-specific)
+- **references/config.md**: User and project configuration (LLM, hooks, command defaults)
+- **references/hook.md**: Hook types, timing, and execution order
+- **references/switch.md**, **merge.md**, **list.md**, etc.: Command documentation
+- **references/llm-commits.md**: LLM commit message generation
+- **references/tips-patterns.md**: Language-specific tips and patterns
+- **references/shell-integration.md**: Shell integration debugging
+- **references/troubleshooting.md**: Troubleshooting for LLM and hooks (Claude-specific)
 
 For command-specific options, run `wt <command> --help`. For configuration, follow the workflows below.
 
@@ -33,7 +33,7 @@ Worktrunk uses two separate config files with different scopes and behaviors:
 - **Location**: `~/.config/worktrunk/config.toml` (never checked into git)
 - **Contains**: LLM integration, worktree path templates, command settings, user hooks, approved commands
 - **Permission model**: Always propose changes and get consent before editing
-- **See**: `reference/config.md` for detailed guidance
+- **See**: `references/config.md` for detailed guidance
 
 ### Project Config (`.config/wt.toml`)
 
@@ -41,7 +41,7 @@ Worktrunk uses two separate config files with different scopes and behaviors:
 - **Location**: `<repo>/.config/wt.toml` (checked into git)
 - **Contains**: Hooks for worktree lifecycle (pre-start, pre-merge, etc.)
 - **Permission model**: Proactive (create directly, changes are reversible via git)
-- **See**: `reference/hook.md` for detailed guidance
+- **See**: `references/hook.md` for detailed guidance
 
 ## Determining Which Config to Use
 
@@ -67,7 +67,7 @@ When a user asks for configuration help, determine which type based on:
 
 ### Setting Up Commit Message Generation (User Config)
 
-Most common request. See `reference/llm-commits.md` for supported tools and exact command syntax.
+Most common request. See `references/llm-commits.md` for supported tools and exact command syntax.
 
 1. **Detect available tools**
 
@@ -77,7 +77,7 @@ Most common request. See `reference/llm-commits.md` for supported tools and exac
 
 2. **If none installed, recommend Claude Code** (already available in Claude Code sessions)
 
-3. **Propose config change** — Get the exact command from `reference/llm-commits.md`
+3. **Propose config change** — Get the exact command from `references/llm-commits.md`
 
    ```toml
    [commit.generation]
@@ -149,7 +149,7 @@ Common request for workflow automation. Follow discovery process:
    wt switch --create test-hooks
    ```
 
-**See `reference/hook.md` for complete details.**
+**See `references/hook.md` for complete details.**
 
 ### Adding Hooks to Existing Config
 
@@ -224,18 +224,18 @@ bash -n -c "if [ true ]; then echo ok; fi"
 
 ### User Config Tasks
 
-- Set up commit message generation → `reference/llm-commits.md`
-- Customize worktree paths → `reference/config.md#worktree-path-template`
-- Custom commit templates → `reference/llm-commits.md#templates`
-- Configure command defaults → `reference/config.md#command-settings`
-- Set up personal hooks → `reference/config.md#user-hooks`
+- Set up commit message generation → `references/llm-commits.md`
+- Customize worktree paths → `references/config.md#worktree-path-template`
+- Custom commit templates → `references/llm-commits.md#templates`
+- Configure command defaults → `references/config.md#command-settings`
+- Set up personal hooks → `references/config.md#user-hooks`
 
 ### Project Config Tasks
 
-- Set up hooks for new project → `reference/hook.md`
-- Add hook to existing config → `reference/hook.md#configuration`
-- Use template variables → `reference/hook.md#template-variables`
-- Add dev server URL to list → `reference/config.md#dev-server-url`
+- Set up hooks for new project → `references/hook.md`
+- Add hook to existing config → `references/hook.md#configuration`
+- Use template variables → `references/hook.md#template-variables`
+- Add dev server URL to list → `references/config.md#dev-server-url`
 
 ## Key Commands
 
@@ -257,9 +257,9 @@ Load **reference files** for detailed configuration, hook specifications, and tr
 Find specific sections with grep:
 
 ```bash
-grep -A 20 "## Setup" reference/llm-commits.md
-grep -A 30 "### pre-start" reference/hook.md
-grep -A 20 "## Warning Messages" reference/shell-integration.md
+grep -A 20 "## Setup" references/llm-commits.md
+grep -A 30 "### pre-start" references/hook.md
+grep -A 20 "## Warning Messages" references/shell-integration.md
 ```
 
 ## Hook Approvals in Non-Interactive Sessions
