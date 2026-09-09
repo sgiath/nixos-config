@@ -106,7 +106,10 @@ in
             row_gap = 1;
             rows = [
               [
-                "state_icon"
+                {
+                  token = "state_icon";
+                  dim = false;
+                }
                 {
                   token = "workspace";
                   bold = true;

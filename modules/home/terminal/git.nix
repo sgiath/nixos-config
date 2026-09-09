@@ -137,6 +137,10 @@
             template = "${config.xdg.configHome}/git/commit-template";
           };
 
+          switch = {
+            merge = true;
+          };
+
           diff = {
             context = 5;
             interHunkContext = 10;
