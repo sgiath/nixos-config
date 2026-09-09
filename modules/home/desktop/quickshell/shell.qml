@@ -1,6 +1,10 @@
 import Quickshell
-import qs.bar
+import qs.rail
+import qs.usage
+import qs.wallpaper
 
 ShellRoot {
-    Bar {}
+    Wallpaper {}
+    Rail {}
+    UsagePanel {}
 }

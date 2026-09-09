@@ -23,8 +23,15 @@
     remote.enable = true;
   };
 
-  # Login default stays Noctalia; `desktop-shell sgiath` switches at runtime.
-  sgiath.desktop.quickshell.live = true;
+  sgiath.desktop = {
+    # Login default stays Noctalia; `desktop-shell sgiath` switches at runtime.
+    quickshell = {
+      live = true;
+      # DP-2 is Slack's, edge to edge.
+      ignoredOutputs = [ "DP-2" ];
+    };
+    wallpaper = ../../../modules/home/desktop/wallpapers/waifu-lollipop.mp4;
+  };
 
   services = {
     cli-proxy-api.enable = true;

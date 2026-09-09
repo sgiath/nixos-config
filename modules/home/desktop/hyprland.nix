@@ -40,36 +40,38 @@
             workspace = "special:special";
             gaps_out = 30;
           }
+          # DP-1: code (1-2) and universal (6-8); DP-3: browsers (3-5) and email (9); DP-2: comm (10)
           {
             workspace = "1";
             monitor = "DP-1";
             default = true;
             persistent = true;
-            default_name = "terminal";
+            default_name = "code";
           }
           {
             workspace = "2";
+            monitor = "DP-1";
+            persistent = true;
+            default_name = "remote";
+          }
+          {
+            workspace = "3";
             monitor = "DP-3";
             default = true;
             persistent = true;
             default_name = "personal";
           }
           {
-            workspace = "3";
-            monitor = "DP-3";
-            persistent = true;
-            default_name = "CrazyEgg";
-          }
-          {
             workspace = "4";
             monitor = "DP-3";
             persistent = true;
-            default_name = "Remote";
+            default_name = "crazyegg";
           }
           {
             workspace = "5";
             monitor = "DP-3";
             persistent = true;
+            default_name = "remote";
           }
           {
             workspace = "6";
@@ -85,7 +87,6 @@
             workspace = "8";
             monitor = "DP-1";
             persistent = true;
-            default_name = "firefox";
           }
           {
             workspace = "9";

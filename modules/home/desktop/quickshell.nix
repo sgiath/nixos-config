@@ -2,17 +2,19 @@
   config,
   lib,
   pkgs,
+  namespace,
   ...
 }:
-# In-repo Quickshell shell (`qs -c sgiath`). QML lives in ./quickshell; colors
-# and fonts come from Stylix through a generated JSON the shell watches, so the
-# QML side never hardcodes the palette.
+# In-repo Quickshell shell (`qs -c sgiath`). QML lives in ./quickshell; colors,
+# fonts and the wallpaper come from Home Manager through a generated JSON the
+# shell watches, so the QML side never hardcodes the palette.
 let
   cfg = config.sgiath.desktop.quickshell;
   live = cfg.live;
 
   colors = config.lib.stylix.colors.withHashtag;
   fonts = config.stylix.fonts;
+  wallpaper = config.sgiath.desktop.wallpaper;
 
   theme = (pkgs.formats.json { }).generate "sgiath-shell-theme.json" {
     colors = lib.genAttrs (map (i: "base0${i}") (lib.stringToCharacters "0123456789ABCDEF")) (
@@ -22,17 +24,26 @@ let
       family = fonts.monospace.name;
       size = fonts.sizes.desktop;
     };
+    # Store path so the file name (and thus the image/video suffix) survives.
+    wallpaper = if wallpaper == null then "" else "${wallpaper}";
+    ignoredOutputs = cfg.ignoredOutputs;
   };
+
+  # packages/quickshell: nixpkgs quickshell wrapped with QtMultimedia for the
+  # video wallpaper.
+  quickshell = pkgs.${namespace}.quickshell;
 
   qmlTooling = pkgs.kdePackages.qtdeclarative; # qmlls, qmlformat
   qmlImportPath = lib.concatStringsSep ":" [
-    "${config.programs.quickshell.package}/lib/qt-6/qml"
+    "${quickshell}/lib/qt-6/qml"
+    "${quickshell.qtmultimedia}/lib/qt-6/qml"
     "${qmlTooling}/lib/qt-6/qml"
   ];
 in
 {
   config = lib.mkIf config.programs.quickshell.enable {
     programs.quickshell = {
+      package = quickshell;
       systemd.enable = true;
       activeConfig = "sgiath";
       configs.sgiath =
@@ -67,6 +78,14 @@ in
         ignore_alpha = 0.5;
         blur = true;
         blur_popups = true;
+      }
+      # Nothing sits under the background layer; blurring a screen-sized
+      # surface that repaints at video rate is pure GPU waste.
+      {
+        name = "sgiath-wallpaper";
+        match.namespace = "^sgiath-wallpaper$";
+        blur = false;
+        blur_popups = false;
       }
     ];
   };

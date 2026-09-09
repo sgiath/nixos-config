@@ -3,7 +3,7 @@ import QtQuick
 import Quickshell
 import Quickshell.Io
 
-// Palette and fonts come from Home Manager (modules/home/desktop/quickshell.nix
+// Palette, fonts and wallpaper come from Home Manager (modules/home/desktop/quickshell.nix
 // renders themes/sgiath.yaml + Stylix fonts into ~/.config/sgiath-shell/theme.json).
 // Semantic names live here; the JSON only carries raw base16 slots.
 Singleton {
@@ -25,16 +25,43 @@ Singleton {
     readonly property color purple: palette.base0E
     readonly property color brown: palette.base0F
 
-    readonly property color accent: blue
+    readonly property color accent: brown
     readonly property color urgent: red
+
+    // Meter color by consumed fraction: quiet until it matters.
+    function load(fraction) {
+        return fraction >= 1 ? red : fraction >= 0.75 ? accent : text;
+    }
+
+    // Hairlines and frames; panels sit on a near-opaque background so the
+    // blurred wallpaper only bleeds through as depth, never as noise.
+    readonly property color line: overlay
+    readonly property color panel: Qt.alpha(background, 0.9)
 
     readonly property string fontFamily: typeface.family
     readonly property int fontSize: typeface.size
+    readonly property int fontSizeSmall: Math.max(7, typeface.size - 3)
+    readonly property int fontSizeLarge: typeface.size + 6
+    readonly property real letterSpacing: 1.5
 
-    readonly property int barHeight: 36
+    // Absolute path of an image or video; empty when no wallpaper is configured.
+    readonly property string wallpaper: settings.wallpaper
+
+    // Screens the shell draws on; ignored outputs get nothing, not even a
+    // wallpaper, so one fullscreen window can own them edge to edge.
+    readonly property var screens: {
+        const list = [];
+        for (let i = 0; i < Quickshell.screens.length; i++)
+            if (settings.ignoredOutputs.indexOf(Quickshell.screens[i].name) === -1)
+                list.push(Quickshell.screens[i]);
+        return list;
+    }
+
+    // Ultrawide layout: everything lives on the vertical edges.
+    readonly property int railWidth: 96
+    readonly property int panelWidth: 380
     readonly property int padding: 8
     readonly property int spacing: 6
-    readonly property int radius: 6
 
     FileView {
         path: (Quickshell.env("XDG_CONFIG_HOME") || Quickshell.env("HOME") + "/.config") + "/sgiath-shell/theme.json"
@@ -42,6 +69,11 @@ Singleton {
         onFileChanged: reload()
 
         adapter: JsonAdapter {
+            id: settings
+
+            property string wallpaper: ""
+            property list<string> ignoredOutputs: []
+
             property JsonObject colors: JsonObject {
                 id: palette
 

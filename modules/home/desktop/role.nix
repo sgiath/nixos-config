@@ -40,7 +40,8 @@ in
         After = [ "graphical-session.target" ];
       };
       Service = {
-        ExecStart = terminalCommand;
+        # Distinct app id so only this instance is pinned to workspace 1.
+        ExecStart = "${terminalCommand} --class kitty-login";
         Slice = "app.slice";
       };
     };
@@ -56,19 +57,7 @@ in
       ];
       window_rule = [
         {
-          match.class = "alacritty";
-          workspace = "1";
-        }
-        {
-          match.class = "kitty";
-          workspace = "1";
-        }
-        {
-          match.class = "wezterm";
-          workspace = "1";
-        }
-        {
-          match.class = "ghostty";
+          match.class = "kitty-login";
           workspace = "1";
         }
       ];

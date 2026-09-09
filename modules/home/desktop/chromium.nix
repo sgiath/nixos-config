@@ -38,11 +38,11 @@
       run ${lib.getExe' pkgs.xdg-utils "xdg-mime"} default chromium-browser.desktop application/pdf
     '';
 
-    # workspace 2 is dedicated to Chromium
+    # workspace 3 is dedicated to the personal Chromium
     wayland.windowManager.hyprland.settings.window_rule = [
       {
         match.class = "chromium-browser";
-        workspace = "2 silent";
+        workspace = "3 silent";
       }
     ];
   };
