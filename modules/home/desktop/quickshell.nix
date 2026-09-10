@@ -20,9 +20,11 @@ let
     colors = lib.genAttrs (map (i: "base0${i}") (lib.stringToCharacters "0123456789ABCDEF")) (
       name: colors.${name}
     );
+    # Qt renders the shared size visibly smaller than terminal/GTK apps; +2 lands
+    # it at the same apparent size.
     font = {
       family = fonts.monospace.name;
-      size = fonts.sizes.desktop;
+      size = fonts.sizes.desktop + 2;
     };
     # Store path so the file name (and thus the image/video suffix) survives.
     wallpaper = if wallpaper == null then "" else "${wallpaper}";

@@ -39,10 +39,18 @@
     t3code.enable = true;
   };
 
-  stylix.fonts.sizes = {
-    applications = 10;
-    desktop = 10;
-    popups = 10;
-    terminal = 10;
+  stylix = {
+    fonts.sizes = {
+      applications = 10;
+      desktop = 10;
+      popups = 10;
+      terminal = 10;
+    };
+    targets.zed.fonts.override = {
+      sizes = {
+        applications = 12;
+        desktop = 12;
+      };
+    };
   };
 }
