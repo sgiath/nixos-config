@@ -4,6 +4,7 @@
  */
 
 import { getCookies } from '@steipete/sweet-cookie';
+import { extractCookiesFromChromium } from './chromium-cookies.js';
 
 export interface TwitterCookies {
   authToken: string | null;
@@ -17,7 +18,7 @@ export interface CookieExtractionResult {
   warnings: string[];
 }
 
-export type CookieSource = 'safari' | 'chrome' | 'firefox';
+export type CookieSource = 'chromium' | 'safari' | 'chrome' | 'firefox';
 
 const TWITTER_COOKIE_NAMES = ['auth_token', 'ct0'] as const;
 const TWITTER_URL = 'https://x.com/';
@@ -64,7 +65,7 @@ function resolveSources(cookieSource?: CookieSource | CookieSource[]): CookieSou
   if (cookieSource) {
     return [cookieSource];
   }
-  return ['safari', 'chrome', 'firefox'];
+  return process.platform === 'linux' ? ['chromium', 'safari', 'chrome', 'firefox'] : ['safari', 'chrome', 'firefox'];
 }
 
 function labelForSource(source: CookieSource, profile?: string): string {
@@ -105,6 +106,10 @@ async function readTwitterCookiesFromBrowser(options: {
   firefoxProfile?: string;
   cookieTimeoutMs?: number;
 }): Promise<CookieExtractionResult> {
+  if (options.source === 'chromium') {
+    return extractCookiesFromChromium(options.chromeProfile, options.cookieTimeoutMs);
+  }
+
   const warnings: string[] = [];
   const out = buildEmpty();
 
@@ -221,11 +226,11 @@ export async function resolveCredentials(options: {
 
   if (!cookies.authToken) {
     warnings.push(
-      'Missing auth_token - provide via --auth-token, AUTH_TOKEN env var, or login to x.com in Safari/Chrome/Firefox',
+      'Missing auth_token - provide via --auth-token, AUTH_TOKEN env var, or login to x.com in Chromium/Safari/Chrome/Firefox',
     );
   }
   if (!cookies.ct0) {
-    warnings.push('Missing ct0 - provide via --ct0, CT0 env var, or login to x.com in Safari/Chrome/Firefox');
+    warnings.push('Missing ct0 - provide via --ct0, CT0 env var, or login to x.com in Chromium/Safari/Chrome/Firefox');
   }
   if (cookies.authToken && cookies.ct0) {
     cookies.cookieHeader = cookieHeader(cookies.authToken, cookies.ct0);

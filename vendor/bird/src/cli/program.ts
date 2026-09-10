@@ -117,15 +117,19 @@ export function createProgram(ctx: CliContext): Command {
   program
     .option('--auth-token <token>', 'Twitter auth_token cookie')
     .option('--ct0 <token>', 'Twitter ct0 cookie')
-    .option('--chrome-profile <name>', 'Chrome profile name for cookie extraction', ctx.config.chromeProfile)
+    .option('--chrome-profile <name>', 'Chrome/Chromium profile name for cookie extraction', ctx.config.chromeProfile)
     .option(
       '--chrome-profile-dir <path>',
       'Chrome/Chromium profile directory or cookie DB path for cookie extraction',
       ctx.config.chromeProfileDir,
     )
     .option('--firefox-profile <name>', 'Firefox profile name for cookie extraction', ctx.config.firefoxProfile)
-    .option('--cookie-timeout <ms>', 'Cookie extraction timeout in milliseconds (keychain/OS helpers)')
-    .option('--cookie-source <source>', 'Cookie source for browser cookie extraction (repeatable)', collectCookieSource)
+    .option('--cookie-timeout <ms>', 'Cookie extraction timeout in milliseconds (database/keychain/OS helpers)')
+    .option(
+      '--cookie-source <source>',
+      'Cookie source: chromium, safari, chrome, firefox (repeatable, ordered)',
+      collectCookieSource,
+    )
     .option('--media <path>', 'Attach media file (repeatable, up to 4 images or 1 video)', collect)
     .option('--alt <text>', 'Alt text for the corresponding --media (repeatable)', collect)
     .option('--timeout <ms>', 'Request timeout in milliseconds')

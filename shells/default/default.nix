@@ -11,6 +11,7 @@ mkShell {
     nodejs
     shfmt
     prettier
+    pnpm
 
     # encrypted runtime secrets
     sops

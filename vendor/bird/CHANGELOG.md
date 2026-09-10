@@ -1,5 +1,13 @@
 # Changelog
 
+## Unreleased
+
+### Added
+- Native Linux Chromium cookie source, selected first on Linux, with read-only live SQLite/WAL access and validated v10 decryption. Supports profile names, directories, and cookie database paths without the Python wrapper.
+
+### Fixed
+- Nix builds use pnpm 11 and refreshed dependency hashes for the updated lockfile; TypeScript 7 explicitly loads Node types.
+
 ## 0.8.0 — 2026-01-19
 
 ### Added

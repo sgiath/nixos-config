@@ -203,11 +203,11 @@ Bookmarks flags:
 Global options:
 - `--auth-token <token>`: set the `auth_token` cookie manually.
 - `--ct0 <token>`: set the `ct0` cookie manually.
-- `--cookie-source <safari|chrome|firefox>`: choose browser cookie source (repeatable; order matters).
-- `--chrome-profile <name>`: Chrome profile name for cookie extraction (e.g., `Default`, `Profile 2`).
+- `--cookie-source <chromium|safari|chrome|firefox>`: choose browser cookie source (repeatable; order matters).
+- `--chrome-profile <name>`: Chrome/Chromium profile name for cookie extraction (e.g., `Default`, `Profile 2`).
 - `--chrome-profile-dir <path>`: Chrome/Chromium profile directory or cookie DB path for cookie extraction.
 - `--firefox-profile <name>`: Firefox profile for cookie extraction.
-- `--cookie-timeout <ms>`: cookie extraction timeout for keychain/OS helpers (milliseconds).
+- `--cookie-timeout <ms>`: cookie extraction timeout for SQLite locks or keychain/OS helpers (milliseconds).
 - `--timeout <ms>`: abort requests after the given timeout (milliseconds).
 - `--quote-depth <n>`: max quoted tweet depth in JSON output (default: 1; 0 disables).
 - `--plain`: stable output (no emoji, no color).
@@ -229,13 +229,24 @@ Write operations:
 
 1. CLI flags: `--auth-token`, `--ct0`
 2. Environment variables: `AUTH_TOKEN`, `CT0` (fallback: `TWITTER_AUTH_TOKEN`, `TWITTER_CT0`)
-3. Browser cookies via `@steipete/sweet-cookie` (override via `--cookie-source` order)
+3. Browser cookies (override via `--cookie-source` order). Linux tries native Chromium first, then Safari/Chrome/Firefox via `@steipete/sweet-cookie`; other platforms keep Safari/Chrome/Firefox order.
 
 Browser cookie sources:
+- Chromium (Linux): `$XDG_CONFIG_HOME/chromium/Default` (normally `~/.config/chromium/Default`), using `Network/Cookies` when present, otherwise `Cookies`. Reads the live SQLite database read-only, including committed WAL entries, without copying it or requiring Chromium to close.
 - Safari: `~/Library/Cookies/Cookies.binarycookies` (fallback: `~/Library/Containers/com.apple.Safari/Data/Library/Cookies/Cookies.binarycookies`)
 - Chrome: `~/Library/Application Support/Google/Chrome/<Profile>/Cookies`
 - Firefox: `~/Library/Application Support/Firefox/Profiles/<profile>/cookies.sqlite`
   - For Chromium variants (Arc/Brave/etc), pass a profile directory or cookie DB via `--chrome-profile-dir`.
+
+Native Chromium supports Linux v10 encryption and plaintext cookies. It checks expiration, validates the host digest for schema 24+, and rejects invalid cookies or unsupported encryption without exposing cookie values. Keyring-backed v11 cookies are not supported; do not weaken browser encryption settings.
+
+```bash
+bird --cookie-source chromium whoami
+bird --cookie-source chromium --chrome-profile "Profile 2" whoami
+bird --cookie-source chromium --chrome-profile-dir ~/.config/chromium/Default whoami
+```
+
+The native source replaces the Nix `bird-chromium` wrapper; use `--chrome-profile-dir` instead of its `--profile-dir`. Library users can call `resolveCredentials({ cookieSource: "chromium", chromeProfile: "/path/to/profile" })` or `extractCookiesFromChromium(profile)`.
 
 ## Config (JSON5)
 

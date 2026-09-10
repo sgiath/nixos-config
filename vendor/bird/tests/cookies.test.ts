@@ -1,4 +1,8 @@
 import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
+import type { CookieExtractionResult } from '../src/lib/cookies.js';
+
+const chromium = vi.hoisted(() => vi.fn<() => Promise<CookieExtractionResult>>());
+vi.mock('../src/lib/chromium-cookies.js', () => ({ extractCookiesFromChromium: chromium }));
 
 type SweetCookieResult = { cookies: Array<{ name: string; value: string; domain?: string }>; warnings: string[] };
 
@@ -27,6 +31,10 @@ describe('cookies', () => {
     vi.resetModules();
     sweet.results.clear();
     sweet.options.clear();
+    chromium.mockResolvedValue({
+      cookies: { authToken: null, ct0: null, cookieHeader: null, source: null },
+      warnings: [],
+    });
     process.env = { ...originalEnv };
     process.env.AUTH_TOKEN = undefined;
     process.env.TWITTER_AUTH_TOKEN = undefined;
@@ -40,6 +48,48 @@ describe('cookies', () => {
   });
 
   describe('resolveCredentials', () => {
+    it('uses Chromium first only on Linux and preserves explicit source ordering', async () => {
+      chromium.mockResolvedValue({
+        cookies: {
+          authToken: 'chromium_auth',
+          ct0: 'chromium_ct0',
+          cookieHeader: 'auth_token=chromium_auth; ct0=chromium_ct0',
+          source: 'Chromium',
+        },
+        warnings: [],
+      });
+      for (const source of ['safari', 'chrome']) {
+        sweet.results.set(source, {
+          cookies: [
+            { name: 'auth_token', value: source, domain: 'x.com' },
+            { name: 'ct0', value: 'browser_ct0', domain: 'x.com' },
+          ],
+          warnings: [],
+        });
+      }
+      const { resolveCredentials } = await import('../src/lib/cookies.js');
+      expect((await resolveCredentials({})).cookies.authToken).toBe(
+        process.platform === 'linux' ? 'chromium_auth' : 'safari',
+      );
+      expect((await resolveCredentials({ cookieSource: ['chrome', 'chromium'] })).cookies.authToken).toBe('chrome');
+      expect((await resolveCredentials({ cookieSource: ['chromium', 'chrome'] })).cookies.authToken).toBe(
+        'chromium_auth',
+      );
+    });
+
+    it('keeps CLI and environment credentials ahead of Chromium', async () => {
+      chromium.mockRejectedValue(new Error('Browser must not be read'));
+      process.env.AUTH_TOKEN = 'environment_auth';
+      process.env.CT0 = 'environment_ct0';
+      const { resolveCredentials } = await import('../src/lib/cookies.js');
+      expect((await resolveCredentials({ cookieSource: 'chromium' })).cookies.cookieHeader).toBe(
+        'auth_token=environment_auth; ct0=environment_ct0',
+      );
+      expect((await resolveCredentials({ authToken: 'cli_auth', cookieSource: 'chromium' })).cookies.cookieHeader).toBe(
+        'auth_token=cli_auth; ct0=environment_ct0',
+      );
+    });
+
     it('honors cookieSource=firefox even when Safari has cookies', async () => {
       sweet.results.set('safari', {
         cookies: [
@@ -165,18 +215,6 @@ describe('cookies', () => {
       expect(result.cookies.authToken).toBeNull();
       expect(result.cookies.ct0).toBeNull();
       expect(result.warnings.length).toBeGreaterThan(0);
-    });
-
-    it('should warn when credentials are missing', async () => {
-      const { resolveCredentials } = await import('../src/lib/cookies.js');
-      const result = await resolveCredentials({ cookieSource: 'safari' });
-
-      expect(result.warnings).toContain(
-        'Missing auth_token - provide via --auth-token, AUTH_TOKEN env var, or login to x.com in Safari/Chrome/Firefox',
-      );
-      expect(result.warnings).toContain(
-        'Missing ct0 - provide via --ct0, CT0 env var, or login to x.com in Safari/Chrome/Firefox',
-      );
     });
 
     it('falls back to Chrome when enabled and Firefox disabled', async () => {

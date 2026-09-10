@@ -66,14 +66,12 @@ export type CliContext = {
   extractTweetId: (tweetIdOrUrl: string) => string;
 };
 
-const COOKIE_SOURCES: CookieSource[] = ['safari', 'chrome', 'firefox'];
-
 function parseCookieSource(value: string): CookieSource {
   const normalized = value.trim().toLowerCase();
-  if (normalized === 'safari' || normalized === 'chrome' || normalized === 'firefox') {
+  if (normalized === 'chromium' || normalized === 'safari' || normalized === 'chrome' || normalized === 'firefox') {
     return normalized;
   }
-  throw new Error(`Invalid --cookie-source "${value}". Allowed: safari, chrome, firefox.`);
+  throw new Error(`Invalid --cookie-source "${value}". Allowed: chromium, safari, chrome, firefox.`);
 }
 
 export const collectCookieSource = (value: string, previous: CookieSource[] = []): CookieSource[] => {
@@ -279,9 +277,7 @@ export function createCliContext(normalizedArgs: string[], env: NodeJS.ProcessEn
   }
 
   function resolveCredentialsFromOptions(opts: CredentialsOptions): ReturnType<typeof resolveCredentials> {
-    const cookieSource = opts.cookieSource?.length
-      ? opts.cookieSource
-      : (resolveCookieSourceOrder(config.cookieSource) ?? COOKIE_SOURCES);
+    const cookieSource = opts.cookieSource?.length ? opts.cookieSource : resolveCookieSourceOrder(config.cookieSource);
     const chromeProfile =
       opts.chromeProfileDir || opts.chromeProfile || config.chromeProfileDir || config.chromeProfile;
     return resolveCredentials({

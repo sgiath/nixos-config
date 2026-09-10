@@ -1,3 +1,4 @@
+export { extractCookiesFromChromium } from './chromium-cookies.js';
 export {
   type CookieExtractionResult,
   type CookieSource,
