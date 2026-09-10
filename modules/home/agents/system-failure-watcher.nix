@@ -10,6 +10,7 @@ let
   watcher = pkgs.writeShellApplication {
     name = "system-failure-watcher";
     runtimeInputs = [
+      pkgs.herdr
       pkgs.jq
       pkgs.omp
       pkgs.systemd

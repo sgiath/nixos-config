@@ -47,6 +47,12 @@ Singleton {
     // Absolute path of an image or video; empty when no wallpaper is configured.
     readonly property string wallpaper: settings.wallpaper
 
+    // Terminal emulator that hosts Terminal=true desktop entries.
+    readonly property string terminal: settings.terminal
+
+    // Desktop entry ids the launcher keeps on top.
+    readonly property list<string> pinned: settings.pinned
+
     // Screens the shell draws on; ignored outputs get nothing, not even a
     // wallpaper, so one fullscreen window can own them edge to edge.
     readonly property var screens: {
@@ -57,9 +63,19 @@ Singleton {
         return list;
     }
 
+    // Where single-instance surfaces go: the widest screen.
+    readonly property var mainScreen: {
+        let best = null;
+        for (let i = 0; i < screens.length; i++)
+            if (!best || screens[i].width > best.width)
+                best = screens[i];
+        return best;
+    }
+
     // Ultrawide layout: everything lives on the vertical edges.
     readonly property int railWidth: 96
     readonly property int panelWidth: 380
+    readonly property int launcherWidth: 560
     readonly property int padding: 8
     readonly property int spacing: 6
 
@@ -73,6 +89,9 @@ Singleton {
 
             property string wallpaper: ""
             property list<string> ignoredOutputs: []
+
+            property string terminal: "xterm"
+            property list<string> pinned: []
 
             property JsonObject colors: JsonObject {
                 id: palette

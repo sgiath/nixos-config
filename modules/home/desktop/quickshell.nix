@@ -29,6 +29,9 @@ let
     # Store path so the file name (and thus the image/video suffix) survives.
     wallpaper = if wallpaper == null then "" else "${wallpaper}";
     ignoredOutputs = cfg.ignoredOutputs;
+    # Runs desktop entries marked Terminal=true.
+    terminal = lib.getExe pkgs.kitty;
+    pinned = cfg.pinned;
   };
 
   # packages/quickshell: nixpkgs quickshell wrapped with QtMultimedia for the

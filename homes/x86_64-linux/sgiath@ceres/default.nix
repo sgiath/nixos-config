@@ -29,6 +29,12 @@
       live = true;
       # DP-2 is Slack's, edge to edge.
       ignoredOutputs = [ "DP-2" ];
+      pinned = [
+        "chromium-browser"
+        "google-chrome"
+        "firefox"
+        "dev.zed.Zed"
+      ];
     };
     wallpaper = ../../../modules/home/desktop/wallpapers/waifu-lollipop.mp4;
   };

@@ -16,15 +16,7 @@ PanelWindow {
 
     property bool expanded: false
 
-    function widest(screens) {
-        let best = null;
-        for (let i = 0; i < screens.length; i++)
-            if (!best || screens[i].width > best.width)
-                best = screens[i];
-        return best;
-    }
-
-    screen: widest(Theme.screens)
+    screen: Theme.mainScreen
     color: "transparent"
     implicitWidth: Theme.panelWidth
     exclusionMode: ExclusionMode.Normal

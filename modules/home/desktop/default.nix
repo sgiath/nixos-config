@@ -54,6 +54,19 @@
             no rail, no panels. For screens a single fullscreen window owns.
           '';
         };
+
+        pinned = lib.mkOption {
+          type = lib.types.listOf lib.types.str;
+          default = [ ];
+          example = [
+            "firefox"
+            "dev.zed.Zed"
+          ];
+          description = ''
+            Desktop entry ids the launcher keeps on top as large cells,
+            launched with a single digit. The catalog is one search away.
+          '';
+        };
       };
     };
   };
