@@ -1,5 +1,7 @@
 { lib, ... }:
 {
+  disabledModules = [ "programs/worktrunk.nix" ];
+
   xdg.configFile."worktrunk/config.toml".text = ''
     skip-shell-integration-prompt = true
 
