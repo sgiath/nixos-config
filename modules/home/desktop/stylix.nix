@@ -28,7 +28,7 @@ in
         cursor = {
           package = pkgs.volantes-cursors;
           name = "volantes_light_cursors";
-          size = 24;
+          size = 32;
         };
 
         fonts = {

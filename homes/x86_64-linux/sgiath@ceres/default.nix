@@ -46,6 +46,8 @@
       popups = 10;
       terminal = 10;
     };
+
+    # I want my editor to be a bit bigger
     targets.zed.fonts.override = {
       sizes = {
         applications = 12;
