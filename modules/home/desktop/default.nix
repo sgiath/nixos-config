@@ -22,7 +22,7 @@
           "noctalia"
           "sgiath"
         ];
-        default = "noctalia";
+        default = "sgiath";
         description = ''
           Desktop shell started with the graphical session. `desktop-shell`
           switches between them at runtime; this only picks the login default.

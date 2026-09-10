@@ -4,13 +4,15 @@ import Quickshell
 import Quickshell.Io
 import qs.launcher
 
-// Watches the user journal for launcher units that end badly and keeps the
+// Watches the journal for launcher units that end badly and keeps the
 // latest failure together with the unit's log. Detection rides the same
-// two systemd messages system-failure-watcher reacts to, so the drawer
-// shows exactly the failure an agent gets sent to investigate.
+// systemd messages system-failure-watcher reacts to, so the drawer shows
+// exactly the failure an agent gets sent to investigate: the unit verdict
+// for the main process, the core dump for anything the app forked.
 Singleton {
     id: root
 
+    readonly property string coredump: "fc2e22bc6ee647b6b90729ab34a250b1"
     readonly property string processExit: "98e322203f7a4ed290d09fe03c09fe15"
     readonly property string unitFailed: "d9b373ed55a64feb8242e02dbe79a49c"
     readonly property int logLines: 200
@@ -52,45 +54,59 @@ Singleton {
         } catch (e) {
             return;
         }
-        const unit = event.USER_UNIT || "";
+        const unit = event.USER_UNIT || event.COREDUMP_USER_UNIT || "";
         const found = Apps.entryForUnit(unit);
         if (!found)
             return;
-        if (event.MESSAGE_ID === processExit) {
+        const crash = {
+            unit: unit,
+            id: found.id,
+            entry: found.entry,
+            at: Number(event.__REALTIME_TIMESTAMP) / 1000,
+            log: ""
+        };
+        switch (event.MESSAGE_ID) {
+        case processExit:
             exits[unit] = {
                 code: event.EXIT_CODE,
                 status: parseInt(event.EXIT_STATUS)
             };
             return;
-        }
-        const exit = exits[unit] || {
-            code: "",
-            status: 0
-        };
-        delete exits[unit];
-        // SIGKILL is the user's doing (forcekillactive, kill -9); systemd
-        // already counts TERM/INT/HUP/PIPE as clean exits, and an OOM kill
-        // reports its own result so it still gets through.
-        if (event.UNIT_RESULT === "signal" && exit.status === 9)
-            return;
-        fetch.createObject(root, {
-            crash: {
-                unit: unit,
-                id: found.id,
-                entry: found.entry,
-                result: event.UNIT_RESULT,
-                code: exit.code,
-                status: exit.status,
-                at: Number(event.__REALTIME_TIMESTAMP) / 1000,
-                log: ""
+        case coredump:
+            // A main-process dump is followed by the unit verdict, which
+            // then replaces this with the same unit and a fuller log.
+            crash.result = "core-dump";
+            crash.code = "dumped";
+            crash.status = parseInt(event.COREDUMP_SIGNAL);
+            break;
+        default:
+            {
+                const exit = exits[unit] || {
+                    code: "",
+                    status: 0
+                };
+                delete exits[unit];
+                // SIGKILL is the user's doing (forcekillactive, kill -9);
+                // systemd already counts TERM/INT/HUP/PIPE as clean exits, and
+                // an OOM kill reports its own result so it still gets through.
+                if (event.UNIT_RESULT === "signal" && exit.status === 9)
+                    return;
+                crash.result = event.UNIT_RESULT;
+                crash.code = exit.code;
+                crash.status = exit.status;
             }
+        }
+        fetch.createObject(root, {
+            crash: crash
         });
     }
 
     Process {
         id: follow
 
-        command: ["journalctl", "--user", "--follow", "--lines=0", "--output=json", "MESSAGE_ID=" + root.processExit, "MESSAGE_ID=" + root.unitFailed]
+        // Core dumps land in the system journal, so no --user here; the unit
+        // prefix is what scopes this to our own launches.
+        command: ["journalctl", "--follow", "--lines=0", "--output=json", "MESSAGE_ID=" + root.coredump, "MESSAGE_ID=" + root.processExit, "MESSAGE_ID=" + root.unitFailed]
         running: true
 
         stdout: SplitParser {

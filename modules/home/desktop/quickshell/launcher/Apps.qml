@@ -168,7 +168,13 @@ Singleton {
         store.setText(JSON.stringify(next));
 
         const unit = unitPrefix + unitId(entry) + "-" + Date.now();
-        const argv = ["systemd-run", "--user", "--collect", "--quiet", "--slice=app.slice", "--unit=" + unit];
+        // ExitType=cgroup: entries like `delta cli open` fork the real app
+        // and exit at once; by default the unit would end there and take
+        // the fork with it. The verdict still comes from the main process,
+        // so a forked child's non-zero exit is invisible; its core dump
+        // (systemd-coredump tags the unit) still reaches the drawer and
+        // the watcher.
+        const argv = ["systemd-run", "--user", "--collect", "--quiet", "--slice=app.slice", "--property=ExitType=cgroup", "--unit=" + unit];
         if (entry.workingDirectory !== "")
             argv.push("--working-directory=" + entry.workingDirectory);
         argv.push("--");

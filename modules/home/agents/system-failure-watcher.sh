@@ -106,6 +106,13 @@ handle_coredump() {
 
   # A failed service produces its own unit event. Let that event own the
   # diagnosis rather than opening a second window for the same failure.
+  # Launcher apps run with ExitType=cgroup, so a dump of something the app
+  # forked never becomes a unit failure; hand it over under the same key,
+  # which dedupes the case where the main process dumped and both arrive.
+  if [[ $unit == "$APP_UNIT_PREFIX"*.service ]]; then
+    handle_app_failure "$unit" "a core dump of '$comm' on $signal; start with 'coredumpctl info $pid'"
+    return
+  fi
   [[ $unit == *.service ]] && return 0
 
   name=$comm
@@ -134,8 +141,22 @@ handle_process_exit() {
   app_exit[$unit]="$code $status"
 }
 
+# $2 describes the ending; the unit verdict handler builds it from the exit
+# it remembered, the coredump handler from the dump.
 handle_app_failure() {
-  local unit=$1 result=$2 code status id prompt
+  local unit=$1 ending=$2 id prompt
+
+  # app-sgiath-<desktop id>-<launch timestamp>.service
+  id=${unit#"$APP_UNIT_PREFIX"}
+  id=${id%-*}
+
+  prompt="Investigate why the desktop application '$id' died after being launched from the shell launcher on this host. It ran as the transient user unit '$unit' and ended with $ending. The unit is already collected; its output and systemd's verdict are in the journal: 'journalctl --user -u $unit --no-pager'. Find the '$id.desktop' entry through XDG_DATA_DIRS for the exact command line. Establish the root cause and fix it in this NixOS repository when the failure is configuration-owned (missing dependency, environment, wrapper, package option). Do not merely relaunch the application or suppress the error. If the fault is upstream, collect enough evidence for a useful upstream report."
+
+  dispatch "app:$id" "$id" "$prompt"
+}
+
+handle_app_unit_failure() {
+  local unit=$1 result=$2 code status
 
   read -r code status <<<"${app_exit[$unit]:-- -}"
   unset "app_exit[$unit]"
@@ -145,13 +166,7 @@ handle_app_failure() {
   # result so it still gets through.
   [[ $result == signal && $status == 9 ]] && return 0
 
-  # app-sgiath-<desktop id>-<launch timestamp>.service
-  id=${unit#"$APP_UNIT_PREFIX"}
-  id=${id%-*}
-
-  prompt="Investigate why the desktop application '$id' died after being launched from the shell launcher on this host. It ran as the transient user unit '$unit' and ended with result '$result' (main process $code, status $status). The unit is already collected; its output and systemd's verdict are in the journal: 'journalctl --user -u $unit --no-pager'. Find the '$id.desktop' entry through XDG_DATA_DIRS for the exact command line. Establish the root cause and fix it in this NixOS repository when the failure is configuration-owned (missing dependency, environment, wrapper, package option). Do not merely relaunch the application or suppress the error. If the fault is upstream, collect enough evidence for a useful upstream report."
-
-  dispatch "app:$id" "$id" "$prompt"
+  handle_app_failure "$unit" "result '$result' (main process $code, status $status)"
 }
 
 handle_unit_failure() {
@@ -177,7 +192,7 @@ handle_unit_failure() {
   [[ $unit != system-failure-watcher.service ]] || return 0
 
   if [[ $scope == user && $unit == "$APP_UNIT_PREFIX"* ]]; then
-    handle_app_failure "$unit" "$result"
+    handle_app_unit_failure "$unit" "$result"
     return
   fi
 
