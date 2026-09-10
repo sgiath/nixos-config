@@ -59,19 +59,19 @@
             monitor = "DP-3";
             default = true;
             persistent = true;
-            default_name = "personal";
+            default_name = "personal web";
           }
           {
             workspace = "4";
             monitor = "DP-3";
             persistent = true;
-            default_name = "crazyegg";
+            default_name = "crazyegg web";
           }
           {
             workspace = "5";
             monitor = "DP-3";
             persistent = true;
-            default_name = "remote";
+            default_name = "remote web";
           }
           {
             workspace = "6";
