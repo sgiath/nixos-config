@@ -63,7 +63,7 @@ in
 {
   config = lib.mkIf config.sgiath.agents.enable {
     home.packages = [
-      pkgs.opencode-desktop
+      # pkgs.opencode-desktop
       pkgs.llm-agents.opencode2
     ];
 
