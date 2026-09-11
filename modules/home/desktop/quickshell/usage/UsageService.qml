@@ -4,8 +4,8 @@ import Quickshell
 import Quickshell.Io
 
 // Polls `omp usage --json` and flattens its reports into one entry per
-// account: provider, who it belongs to, its limits, and the tightest limit
-// as the account's headline fraction.
+// account: provider, who it belongs to, its limits, and the weekly limit as
+// the account's headline fraction.
 Singleton {
     id: root
 
@@ -37,6 +37,15 @@ Singleton {
         return null;
     }
 
+    // Window length in ms for ranking; monthly windows carry no duration,
+    // only an id, and windowless pools (extra usage) rank below everything.
+    function span(limit) {
+        if (!limit.window)
+            return 0;
+        if (limit.window.id === "monthly")
+            return 30 * 24 * 60 * 60 * 1000;
+        return limit.window.durationMs || 0;
+    }
     function formatAmount(amount) {
         switch (amount.unit) {
         case "percent":
@@ -74,14 +83,18 @@ Singleton {
             const limits = report.limits.filter(limit => hiddenLimits.indexOf(limit.id) === -1).map(limit => ({
                         label: limit.label,
                         window: limit.window ? limit.window.label : "",
+                        span: span(limit),
                         resetsAt: limit.window && limit.window.resetsAt ? limit.window.resetsAt : 0,
                         fraction: fraction(limit.amount),
                         value: formatAmount(limit.amount),
                         exhausted: limit.status === "exhausted"
                     }));
-            // The tightest limit is the account's headline: its fraction
-            // drives the gauge, its window the compact countdown.
-            const headline = limits.reduce((acc, l) => (l.fraction ?? 0) > (acc ? acc.fraction ?? 0 : -1) ? l : acc, null);
+            // The headline drives the gauge and the compact countdown: the
+            // tightest limit in the account's longest window, so 7 days for
+            // most, monthly for OpenCode and Cursor, never a 5-hour or
+            // extra-usage pool while a longer window exists.
+            const longest = limits.reduce((acc, l) => Math.max(acc, l.span), 0);
+            const headline = limits.filter(l => l.span === longest).reduce((acc, l) => (l.fraction ?? 0) > (acc ? acc.fraction ?? 0 : -1) ? l : acc, null);
             return {
                 rank: rank(report.provider) * data.reports.length + index,
                 provider: report.provider.replace(/-/g, " "),

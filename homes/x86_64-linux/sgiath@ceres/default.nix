@@ -27,7 +27,8 @@
     # Login default stays Noctalia; `desktop-shell sgiath` switches at runtime.
     quickshell = {
       live = true;
-      # DP-2 is Slack's, edge to edge.
+      # DP-1 is the main screen; DP-2 is Slack's, edge to edge.
+      mainOutput = "DP-1";
       ignoredOutputs = [ "DP-2" ];
       pinned = [
         "chromium-browser"

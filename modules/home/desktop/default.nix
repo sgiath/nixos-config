@@ -55,6 +55,17 @@
           '';
         };
 
+        mainOutput = lib.mkOption {
+          type = lib.types.nullOr lib.types.str;
+          default = null;
+          example = "DP-1";
+          description = ''
+            Output that hosts the `sgiath` shell's single-instance surfaces:
+            notifications, usage panel, crash drawer. Falls back to the widest
+            non-ignored screen when unset or unplugged.
+          '';
+        };
+
         pinned = lib.mkOption {
           type = lib.types.listOf lib.types.str;
           default = [ ];

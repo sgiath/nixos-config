@@ -63,12 +63,16 @@ Singleton {
         return list;
     }
 
-    // Where single-instance surfaces go: the widest screen.
+    // Where single-instance surfaces go (notifications, usage panel, crash
+    // drawer): the configured output, else the widest screen.
     readonly property var mainScreen: {
         let best = null;
-        for (let i = 0; i < screens.length; i++)
+        for (let i = 0; i < screens.length; i++) {
+            if (screens[i].name === settings.mainOutput)
+                return screens[i];
             if (!best || screens[i].width > best.width)
                 best = screens[i];
+        }
         return best;
     }
 
@@ -89,6 +93,7 @@ Singleton {
 
             property string wallpaper: ""
             property list<string> ignoredOutputs: []
+            property string mainOutput: ""
 
             property string terminal: "xterm"
             property list<string> pinned: []
