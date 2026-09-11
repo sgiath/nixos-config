@@ -43,7 +43,9 @@
       pkgs.llm-agents.hermes-agent
     ]
     ++ (lib.optionals config.sgiath.roles.desktop.enable [
-      pkgs.llm-agents.hermes-desktop
+      (pkgs.llm-agents.hermes-desktop.override {
+        electron_41 = pkgs.electron_44;
+      })
     ]);
 
     programs.mcp = {
