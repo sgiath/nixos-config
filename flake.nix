@@ -57,7 +57,7 @@
       inputs.hyprland.follows = "hyprland";
     };
 
-    noctalia.url = "github:noctalia-dev/noctalia/v5.0.1";
+    noctalia.url = "github:noctalia-dev/noctalia/v5.1.0";
 
     btc-clients = {
       url = "github:emmanuelrosa/btc-clients-nix";
@@ -117,7 +117,7 @@
     };
 
     oh-my-pi = {
-      url = "github:can1357/oh-my-pi/v18.1.16";
+      url = "github:can1357/oh-my-pi/v18.1.17";
       inputs.nixpkgs.follows = "nixpkgs";
     };
 
