@@ -64,19 +64,6 @@ Item {
             }
         }
 
-        Text {
-            text: UsageService.generatedAt ? Qt.formatDateTime(new Date(UsageService.generatedAt), "HH:mm:ss") : "--:--:--"
-            color: Theme.subtext
-            font.family: Theme.fontFamily
-            font.pointSize: Theme.fontSize
-
-            anchors {
-                bottom: parent.bottom
-                right: parent.right
-                margins: Theme.padding * 1.5
-            }
-        }
-
         MouseArea {
             anchors.fill: parent
             cursorShape: Qt.PointingHandCursor

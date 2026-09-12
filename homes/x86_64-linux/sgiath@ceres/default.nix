@@ -1,6 +1,7 @@
 {
   config,
   pkgs,
+  namespace,
   ...
 }:
 {
@@ -10,6 +11,7 @@
       # lmstudio
       # davinci-resolve-studio
       whisper-cpp-vulkan
+      pkgs.${namespace}.katrain
     ];
 
     sessionVariables = {

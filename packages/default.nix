@@ -7,6 +7,7 @@ pkgs: {
   dnd5etools = pkgs.callPackage ./dnd5etools { };
   fix-images = pkgs.callPackage ./fix-images { };
   grok-bot = pkgs.callPackage ./grok-bot { };
+  katrain = pkgs.callPackage ./katrain { };
   live-install = pkgs.callPackage ./live-install { };
   nak = pkgs.callPackage ./nak { };
   omnisearch = pkgs.callPackage ./omnisearch { };

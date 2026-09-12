@@ -121,7 +121,7 @@ Item {
     Label {
         id: foot
 
-        text: UsageService.busy ? "··" : UsageService.error !== "" ? "sync failed" : UsageService.generatedAt ? Qt.formatDateTime(new Date(UsageService.generatedAt), "HH:mm") : "--:--"
+        text: UsageService.busy ? "··" : UsageService.error !== "" ? "sync failed" : "sync"
         color: UsageService.error !== "" && !UsageService.busy ? Theme.urgent : Theme.muted
         width: parent.width - 2 * Theme.padding - 1
         elide: Text.ElideRight
