@@ -25,6 +25,7 @@
 
       # agents
       pkgs.llm-agents.grok
+      pkgs.llm-agents.openclaw
 
       # tools
       inputs.crit.packages.${pkgs.stdenv.hostPlatform.system}.crit
@@ -46,6 +47,7 @@
       (pkgs.llm-agents.hermes-desktop.override {
         electron_41 = pkgs.electron_44;
       })
+      pkgs.${namespace}.openclaw-desktop
     ]);
 
     programs.mcp = {

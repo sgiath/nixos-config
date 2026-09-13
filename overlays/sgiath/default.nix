@@ -31,6 +31,13 @@ in
   });
 
   llm-agents = prev.llm-agents // {
+    openclaw = prev.llm-agents.openclaw.overrideAttrs (old: {
+      # Numtide builds the gateway and UI in separate processes. Share the
+      # reproducible timestamp so both generate the same package build identity.
+      preBuild = (old.preBuild or "") + ''
+        export OPENCLAW_BUILD_TIMESTAMP="$(date -u -d "@$SOURCE_DATE_EPOCH" +%Y-%m-%dT%H:%M:%S.000Z)"
+      '';
+    });
     hermes-one = prev.llm-agents.hermes-one.overrideAttrs (old: {
       patches = (old.patches or [ ]) ++ [ ./hermes-one-compat.patch ];
     });

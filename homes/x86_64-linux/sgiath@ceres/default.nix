@@ -43,6 +43,10 @@
   };
 
   services = {
+    openclaw.node = {
+      enable = true;
+      sshTarget = "sgiath@vesta.local";
+    };
     cli-proxy-api.enable = true;
     system-failure-watcher.enable = true;
     t3code.enable = true;

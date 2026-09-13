@@ -11,6 +11,7 @@ pkgs: {
   live-install = pkgs.callPackage ./live-install { };
   nak = pkgs.callPackage ./nak { };
   omnisearch = pkgs.callPackage ./omnisearch { };
+  openclaw-desktop = pkgs.callPackage ./openclaw-desktop { };
   quickshell = pkgs.callPackage ./quickshell { };
   relay-tester = pkgs.callPackage ./relay-tester { };
   update = pkgs.callPackage ./update { };

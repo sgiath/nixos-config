@@ -8,6 +8,7 @@
     ./cursor.nix
     ./dsh.nix
     ./omp.nix
+    ./openclaw.nix
     ./opencode.nix
     ./pi.nix
     ./system-failure-watcher.nix
