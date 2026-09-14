@@ -44,9 +44,7 @@
       pkgs.llm-agents.hermes-agent
     ]
     ++ (lib.optionals config.sgiath.roles.desktop.enable [
-      (pkgs.llm-agents.hermes-desktop.override {
-        electron_41 = pkgs.electron_44;
-      })
+      pkgs.llm-agents.hermes-desktop
       pkgs.${namespace}.openclaw-desktop
     ]);
 
