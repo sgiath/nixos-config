@@ -4,6 +4,10 @@
   pkgs,
   ...
 }:
+let
+  # GPU telemetry backend: ROCm on the x86 boxes, CUDA on the DGX Sparks (ROCm is x86_64-only).
+  btop = if pkgs.stdenv.hostPlatform.isx86_64 then pkgs.btop-rocm else pkgs.btop-cuda;
+in
 {
   config = lib.mkIf config.programs.zsh.enable {
     home = {
@@ -35,7 +39,7 @@
       };
       btop = {
         enable = true;
-        package = pkgs.btop-rocm;
+        package = btop;
       };
       # command-not-found.enable = true;
       # nix-index.enable = true;
@@ -61,8 +65,8 @@
           ps = "${lib.getExe pkgs.procs}";
           curl = "${lib.getExe pkgs.curlie}";
           man = "${lib.getExe pkgs.tldr}";
-          top = "${lib.getExe pkgs.btop-rocm}";
-          htop = "${lib.getExe pkgs.btop-rocm}";
+          top = "${lib.getExe btop}";
+          htop = "${lib.getExe btop}";
         };
 
         prezto = {

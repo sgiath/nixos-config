@@ -1,6 +1,7 @@
 { lib, ... }:
 {
   imports = [
+    ./dgx-spark.nix
     ./gpu.nix
     ./gpu-amd.nix
     ./gpu-nvidia.nix
@@ -20,16 +21,6 @@
       description = "What GPU configuration to use";
     };
 
-    kernel = lib.mkOption {
-      type = lib.types.enum [
-        "zen"
-        "xanmod"
-      ];
-      default = "zen";
-      example = "xanmod";
-      description = "Which kernel package set to boot";
-    };
-
     boot = lib.mkOption {
       type = lib.types.enum [
         "uefi"
@@ -40,5 +31,6 @@
     };
 
     razer.enable = lib.mkEnableOption "Razer notebook";
+    dgx-spark.enable = lib.mkEnableOption "NVIDIA DGX Spark (GB10) platform";
   };
 }

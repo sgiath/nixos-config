@@ -16,7 +16,7 @@ Per-host NixOS entry points. Host directory name should match `networking.hostNa
 
 ## CONVENTIONS
 
-- `ceres`: AMD desktop; `roles.desktop` + `roles.gaming`, `hardware.gpu = "amd"`, `hardware.kernel = "xanmod"`. Carries the build-signing key (`nix-signing-key` sops secret + `nix.settings.secret-key-files`), `openclaw-token`, and the LAN yggdrasil peers.
+- `ceres`: AMD desktop; `roles.desktop` + `roles.gaming`, `hardware.gpu = "amd"`, xanmod kernel in `hardware.nix`. Carries the build-signing key (`nix-signing-key` sops secret + `nix.settings.secret-key-files`), `openclaw-token`, and the LAN yggdrasil peers.
 - `pallas`: Nvidia notebook; `roles.desktop` + `roles.laptop`, `hardware.gpu = "nvidia"`, `hardware.razer.enable`. No gaming role (dual-boot disk space).
 - `vesta`: headless home server; `roles.server`, `disko.nix`, `networking.wireguard.enable = false`; every service/site toggle lives in `services.nix`.
 - Every host sets `sgiath.enable = true` and `virtualisation.docker.enable = true`.

@@ -2,6 +2,7 @@
   config,
   lib,
   modulesPath,
+  pkgs,
   ...
 }:
 
@@ -26,7 +27,9 @@
         "sd_mod"
       ];
     };
-    extraModulePackages = [ ];
+    kernelPackages = pkgs.linuxPackages_xanmod_latest;
+    # AMD Zen sensors
+    extraModulePackages = [ config.boot.kernelPackages.zenpower ];
     kernelParams = [ "amd_pstate=active" ];
 
     # Windows 11 boot

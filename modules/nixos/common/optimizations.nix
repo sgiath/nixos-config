@@ -2,7 +2,6 @@
 {
   config = lib.mkIf config.sgiath.enable {
     boot = {
-      extraModulePackages = with config.boot.kernelPackages; [ zenpower ];
       kernel.sysctl = {
         "fs.file-max" = 524288;
         "fs.inotify.max_user_watches" = 524288;

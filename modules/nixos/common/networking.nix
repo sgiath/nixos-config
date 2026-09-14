@@ -18,6 +18,7 @@
             ];
             "192.168.1.4" = [ "nas.sgiath" ];
             "192.168.1.5" = [ "nas.sgiath" ];
+            "192.168.1.11" = [ "juno1.sgiath" ];
           };
           firewall.enable = false;
           resolvconf.enable = lib.mkForce false;

@@ -5,6 +5,17 @@
   llm-agents,
 }:
 let
+  # aarch64 hosts are built on the target itself; --no-reexec keeps the local
+  # x86_64 nixos-rebuild instead of re-executing the target's aarch64 one.
+  deployJuno = writeShellScript "deploy-juno" ''
+    set -euo pipefail
+    host=$1
+    shift
+    NIX_SSHOPTS="''${NIX_SSHOPTS:+$NIX_SSHOPTS }-o IdentityAgent=$SSH_AUTH_SOCK" \
+      nixos-rebuild switch --sudo --no-reexec --flake ".#$host" "$@" \
+      --build-host "sgiath@$host.sgiath" --target-host "sgiath@$host.sgiath"
+  '';
+
   deployVesta = writeShellScript "deploy-vesta" ''
     set -euo pipefail
 
@@ -44,7 +55,7 @@ writeShellScriptBin "update" ''
   done
   set -- "''${update_args[@]}"
   case "''${1:-}" in
-    ""|--ceres|--vesta|--iso) ;;
+    ""|--ceres|--vesta|--juno[1-9]|--iso) ;;
     *) echo "Unknown update target: $1" >&2; exit 2 ;;
   esac
 
@@ -84,6 +95,12 @@ writeShellScriptBin "update" ''
     --vesta)
       shift
       ${deployVesta} "$@" || exit $?
+      ;;
+
+    --juno[1-9])
+      host=''${1#--}
+      shift
+      ${deployJuno} "$host" "$@" || exit $?
       ;;
 
     --iso)

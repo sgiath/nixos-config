@@ -7,12 +7,6 @@
 {
   config = lib.mkIf config.sgiath.enable {
     boot = {
-      kernelPackages =
-        if config.sgiath.hardware.kernel == "xanmod" then
-          pkgs.linuxPackages_xanmod_latest
-        else
-          pkgs.linuxPackages_zen;
-
       loader =
         if config.sgiath.hardware.boot == "uefi" then
           {

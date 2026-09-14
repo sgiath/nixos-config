@@ -104,6 +104,13 @@
     voxtype.url = "github:peteonrails/voxtype/v1.0.1";
     comfyui.url = "github:utensils/comfyui-nix/v0.34.0";
 
+    # NVIDIA DGX Spark (GB10, aarch64): NVIDIA 6.17 kernel, open driver, CUDA, ConnectX-7.
+    dgx-spark = {
+      url = "github:graham33/nixos-dgx-spark";
+      inputs.nixpkgs.follows = "nixpkgs";
+      inputs.disko.follows = "disko";
+    };
+
     # LLM tools
 
     llm-agents = {
@@ -219,6 +226,7 @@
         nix-gaming.nixosModules.wine
         # comfyui.nixosModules.default
         oh-my-pi.nixosModules.default
+        dgx-spark.nixosModules.dgx-spark
       ];
 
       homes.modules = with inputs; [

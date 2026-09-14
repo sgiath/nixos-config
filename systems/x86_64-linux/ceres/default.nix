@@ -7,10 +7,7 @@
   sgiath = {
     enable = true;
 
-    hardware = {
-      gpu = "amd";
-      kernel = "xanmod";
-    };
+    hardware.gpu = "amd";
 
     roles = {
       desktop.enable = true;

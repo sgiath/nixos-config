@@ -6,16 +6,16 @@
 
 ## OVERVIEW
 
-Personal NixOS/Home Manager configuration built with Snowfall Lib namespace `sgiath`. Hosts: `ceres` daily AMD desktop, `pallas` notebook, `vesta` home server.
+Personal NixOS/Home Manager configuration built with Snowfall Lib namespace `sgiath`. Hosts: `ceres` daily AMD desktop, `pallas` notebook, `vesta` home server, `juno<N>` NVIDIA DGX Spark compute nodes (aarch64, headless; `juno1` first).
 
 ## STRUCTURE
 
 ```text
 flake.nix                         # Snowfall Lib entry; overlays/modules wired here
-systems/x86_64-linux/<host>/      # host NixOS configs; default/hardware/disko split, services.nix on servers
-homes/x86_64-linux/sgiath@<host>/ # host Home Manager configs (host-only extras; roles come from NixOS)
+systems/<arch>/<host>/            # host NixOS configs; default/hardware/disko split, services.nix on servers (x86_64-linux, aarch64-linux)
+homes/<arch>/sgiath@<host>/       # host Home Manager configs (host-only extras; roles come from NixOS)
 modules/nixos/common/             # baseline under sgiath.enable: users, nix, boot, secrets, networking
-modules/nixos/hardware/           # one-of hardware: sgiath.hardware.{gpu,kernel,boot,razer}
+modules/nixos/hardware/           # one-of hardware: sgiath.hardware.{gpu,boot,razer,dgx-spark}
 modules/nixos/{desktop,laptop,server,gaming}/ # additive roles: sgiath.roles.<role>.enable
 modules/nixos/services/           # one file per service, hooked on services.<name>.enable
 modules/nixos/sites/              # nginx vhosts, sgiath.sites.<name>.enable
@@ -36,11 +36,11 @@ shells/default/default.nix        # dev/update toolchain
 
 | Task | Location | Notes |
 | --- | --- | --- |
-| Add/change host config | `systems/x86_64-linux/<host>/default.nix` | Role/hardware toggles and host-only secrets; keep hardware/disk layout separate. |
+| Add/change host config | `systems/<arch>/<host>/default.nix` | Role/hardware toggles and host-only secrets; keep hardware/disk layout separate. |
 | Server service list | `systems/x86_64-linux/vesta/services.nix` | `services.<name>.enable` and `sgiath.sites.<name>.enable`. |
-| Add/change user config | `homes/x86_64-linux/sgiath@<host>/default.nix` | Host-only packages, work toggles, font sizes; HM roles are pushed from NixOS. |
+| Add/change user config | `homes/<arch>/sgiath@<host>/default.nix` | Host-only packages, work toggles, font sizes; HM roles are pushed from NixOS. |
 | Shared NixOS baseline | `modules/nixos/common/` | Everything every host gets under `sgiath.enable`. |
-| Hardware variant | `modules/nixos/hardware/` | GPU vendor, kernel, boot mode, Razer. |
+| Hardware variant | `modules/nixos/hardware/` | GPU vendor, kernel, boot mode, Razer, DGX Spark platform. |
 | Machine role | `modules/nixos/<role>/` | `desktop`, `laptop`, `server`, `gaming`; each pushes its HM role. |
 | Server service | `modules/nixos/services/<name>.nix` | `/data`, ports, secrets; file named after the option. |
 | Reverse-proxied site | `modules/nixos/sites/<name>.nix` | nginx vhost behind `sgiath.sites.<name>.enable`. |
@@ -59,7 +59,7 @@ shells/default/default.nix        # dev/update toolchain
 | `systems.modules.nixos` | `flake.nix` | External NixOS modules exposed to all hosts. |
 | `homes.modules` | `flake.nix` | External Home Manager modules exposed to all homes. |
 | `sgiath.enable` | `modules/nixos/common/default.nix` | Main shared system gate; pushes HM `sgiath.enable` + `roles.terminal`. |
-| `sgiath.hardware.*` | `modules/nixos/hardware/default.nix` | `gpu` (`null`/`amd`/`nvidia`), `kernel` (`zen`/`xanmod`), `boot` (`uefi`/`legacy`), `razer.enable`. |
+| `sgiath.hardware.*` | `modules/nixos/hardware/default.nix` | `gpu` (`null`/`amd`/`nvidia`), `boot` (`uefi`/`legacy`), `razer.enable`, `dgx-spark.enable` (wraps `inputs.dgx-spark` module: NVIDIA 6.17 kernel, open driver, CUDA, podman, ConnectX-7). |
 | `sgiath.roles.desktop.enable` | `modules/nixos/desktop/default.nix` | Wayland, audio, bluetooth, printing, Stylix; pushes HM `roles.desktop`. |
 | `sgiath.roles.laptop.enable` | `modules/nixos/laptop/default.nix` | NetworkManager + public DNS `resolv.conf`. |
 | `sgiath.roles.server.enable` | `modules/nixos/server/default.nix` | Main server-module gate; nginx, minecraft, trusts `secrets/ceres-cache.pub`. |
@@ -75,7 +75,8 @@ shells/default/default.nix        # dev/update toolchain
 ## LAYOUT RULES
 
 - One baseline: `common` (NixOS and HM) holds everything every machine gets, gated on `sgiath.enable`.
-- Hardware is one-of: `sgiath.hardware.gpu`/`kernel`/`boot` are enums, `razer` a toggle; pick values, never stack modules.
+- Hardware is one-of: `sgiath.hardware.gpu`/`boot` are enums, `razer` and `dgx-spark` toggles; pick values, never stack modules. `boot.kernelPackages` is set per host in `systems/<arch>/<host>/hardware.nix` (the DGX Spark module sets it for `juno<N>`); `common/` never picks a kernel.
+- Shared modules must evaluate on `aarch64-linux` too: CPU/GPU-vendor modules (`zenpower`) belong in the host's `hardware.nix`; x86-only variants (ROCm, x86 binary blobs) are gated on `pkgs.stdenv.hostPlatform.isx86_64` or the desktop role.
 - Roles are additive: `desktop`, `laptop`, `server`, `gaming` under `sgiath.roles.<role>.enable`; a host enables any combination.
 - Services hook `services.<name>.enable` uniformly, whether the option is upstream or declared locally in `modules/nixos/services/<name>.nix`.
 - Sites are nginx vhosts under `sgiath.sites.<name>.enable`, one file per site in `modules/nixos/sites/`.
@@ -115,6 +116,7 @@ nix build '.#install-isoConfigurations.live'
 nixos-rebuild switch --sudo --flake .
 nixos-rebuild switch --sudo --flake '.#ceres'
 update --vesta
+update --juno1
 ```
 
 ## INSTALLER
@@ -124,11 +126,12 @@ update --vesta
 - Boot auto-logs in as `sgiath`; run `live-install <host>` for `ceres`, `pallas`, or `vesta`. It imports the USB keys, copies the baked repository to `~/nixos`, and wipes the host's configured disks through disko after confirmation. `--keep-disks` skips disko and requires target filesystems already mounted under `/mnt`.
 - Inspect the host disk/filesystem configuration before installation. A whole-disk disko wipe on Pallas destroys Windows dual boot; preserve it by adapting the configuration and using existing Linux/boot mounts with `live-install --keep-disks pallas`.
 - For a new host SSH recipient, update `.sops.yaml` and applicable creation rules, run `sops updatekeys` on each applicable secrets file, then rerun `sudo nixos-install --flake "$HOME/nixos#<host>" --no-root-passwd` before reboot. Copy the updated checkout to `/mnt/home/sgiath/nixos` and preserve `sgiath:users` ownership. Merely copying ciphertext does not update the installed system; never rerun destructive disko for this step.
+- DGX Spark (`juno<N>`): the x86 live ISO cannot boot it; full procedure, unverified assumptions (RJ45 name `enP7s7`, `/dev/nvme0n1`) and post-boot checklist are in `systems/aarch64-linux/juno1/HANDOFF.md`. Adding `juno2`+ means copying `systems/aarch64-linux/juno1/` and `homes/aarch64-linux/sgiath@juno1/`, changing hostname, `192.168.1.1<N>`/`fd39:f21:ea9::1<N>`, and the `common/networking.nix` hosts entry.
 
 ## NOTES
 
 - No in-repo CI or NixOS VM test suite. Validate homes through full NixOS builds.
-- Custom user commands `update` and `clear-cache` are packages in `packages/`; `update` commits and pushes before rebuilding (`--no-commit` skips that) and `update --vesta` builds/signs on Ceres and pushes over SSH.
+- Custom user commands `update` and `clear-cache` are packages in `packages/`; `update` commits and pushes before rebuilding (`--no-commit` skips that), `update --vesta` builds/signs on Ceres and pushes over SSH, and `update --juno<N>` evaluates locally but builds and switches on the Spark itself (`--build-host`/`--target-host sgiath@juno<N>.sgiath`, `--no-reexec`).
 - `clear-cache` runs Nix GC, Docker prune, and journal vacuum; treat as destructive maintenance.
 - `scripts/update-inputs.sh` bumps release-pinned flake inputs and runs `packages/*/update.sh`.
 - `dnd5etools` has a separate image hash updater; package `update.sh` alone is incomplete if image assets changed.

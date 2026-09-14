@@ -38,12 +38,13 @@
       pkgs.llm-agents.plannotator
       pkgs.${namespace}.clawpatch
       pkgs.${namespace}.xurl
-      pkgs.${namespace}.delta
 
       # Hermes
       pkgs.llm-agents.hermes-agent
     ]
     ++ (lib.optionals config.sgiath.roles.desktop.enable [
+      # x86_64-linux binary GUI editor; absent from pkgs.${namespace} on aarch64.
+      pkgs.${namespace}.delta
       pkgs.llm-agents.hermes-desktop
       pkgs.${namespace}.openclaw-desktop
     ]);

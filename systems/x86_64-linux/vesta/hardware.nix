@@ -19,9 +19,10 @@
     "sd_mod"
   ];
   boot.initrd.kernelModules = [ ];
-  boot.kernelPackages = lib.mkForce pkgs.linuxPackages;
+  boot.kernelPackages = pkgs.linuxPackages;
   boot.kernelModules = [ "kvm-amd" ];
-  boot.extraModulePackages = [ ];
+  # AMD Zen sensors
+  boot.extraModulePackages = [ config.boot.kernelPackages.zenpower ];
 
   services = {
     nfs.server.enable = false;

@@ -8,10 +8,11 @@ Role-based NixOS modules. Snowfall imports every `<dir>/default.nix` into every 
 
 | Task | Location | Notes |
 | --- | --- | --- |
-| Baseline user/nix/boot | `common/users.nix`, `common/nix.nix`, `common/boot.nix` | `boot.nix` reads `sgiath.hardware.{kernel,boot}`. |
+| Baseline user/nix/boot | `common/users.nix`, `common/nix.nix`, `common/boot.nix` | `boot.nix` reads `sgiath.hardware.boot`; the kernel is chosen in each host's `hardware.nix`. |
 | Shared secrets | `common/secrets.nix` | SOPS defaults, user API keys, `apiKeyWrapper`, nix access-tokens template. |
 | Network quirks | `common/networking.nix`, `common/yggdrasil.nix`, `laptop/default.nix` | Static branch is `mkIf (!networkmanager.enable)`; laptop forces NetworkManager + public DNS. |
 | GPU choice | `hardware/gpu.nix`, `hardware/gpu-amd.nix`, `hardware/gpu-nvidia.nix` | Nullable `sgiath.hardware.gpu`. |
+| DGX Spark platform | `hardware/dgx-spark.nix` | Enables `inputs.dgx-spark` module (`hardware.dgx-spark.enable`), Spark initrd modules, larger nix-daemon memory cap. |
 | Desktop session | `desktop/wayland.nix`, `desktop/audio.nix`, `desktop/stylix.nix` | Greetd/Hyprland, pipewire, theme from `themes/sgiath.yaml`. |
 | Gaming stack | `gaming/role.nix` | Steam/wine/gamescope/gamemode + `factorio-token` secret. |
 | Server root | `server/default.nix`, `server/nginx.nix` | Ceres cache-key trust; ACME Cloudflare, QUIC, shared nginx tuning. |
@@ -25,7 +26,7 @@ Role-based NixOS modules. Snowfall imports every `<dir>/default.nix` into every 
 | Option | Declared in |
 | --- | --- |
 | `sgiath.enable` | `common/default.nix` |
-| `sgiath.hardware.{gpu,kernel,boot,razer.enable}` | `hardware/default.nix` |
+| `sgiath.hardware.{gpu,boot,razer.enable,dgx-spark.enable}` | `hardware/default.nix` |
 | `sgiath.roles.{desktop,laptop,server,gaming}.enable` | `<role>/default.nix` |
 | `sgiath.sites.<name>.enable` | `sites/default.nix` |
 | `services.<name>.enable` | upstream, or `services/<name>.nix` when project-owned |
@@ -48,7 +49,8 @@ Role-based NixOS modules. Snowfall imports every `<dir>/default.nix` into every 
 - Do not branch on `networking.hostName`; add a role or host-level setting instead.
 - Do not install Wayland or graphical applications outside the desktop role; servers are headless.
 - Do not put user-facing Home Manager config here; use `modules/home`.
-- Do not broaden GPU logic beyond `amd`/`nvidia`/unset without checking hosts.
+- Do not broaden GPU logic beyond `amd`/`nvidia`/unset without checking hosts; DGX Spark GPU/kernel comes from the upstream module behind `sgiath.hardware.dgx-spark.enable`.
+- Do not add x86_64-only packages to `common/` unconditionally; `juno<N>` is `aarch64-linux`.
 - Do not change hardcoded ports/IPs/working dirs without checking vhost and firewall references.
 
 ## VALIDATION

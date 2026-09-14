@@ -2,6 +2,7 @@
   config,
   lib,
   modulesPath,
+  pkgs,
   ...
 }:
 
@@ -23,7 +24,9 @@
       "usb_storage"
       "sd_mod"
     ];
-    extraModulePackages = [ ];
+    kernelPackages = pkgs.linuxPackages_zen;
+    # AMD Zen sensors
+    extraModulePackages = [ config.boot.kernelPackages.zenpower ];
     kernelModules = [ "kvm-amd" ];
     blacklistedKernelModules = [ "amdgpu" ];
     # kernelParams = [ ];
