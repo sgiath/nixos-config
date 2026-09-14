@@ -119,11 +119,11 @@ in
 
         settings = {
           model = {
-            default = "grok-4.6";
-            provider = "xai-oauth";
+            default = "claude-fable-5-1";
+            provider = "anthropic";
           };
           fallback_model = {
-            model = "gpt-5.6-sol";
+            model = "gpt-6-astra";
             provider = "openai-codex";
           };
 
@@ -202,7 +202,7 @@ in
           approvals.mode = "off";
 
           delegation = {
-            model = "gpt-5.6-luna";
+            model = "gpt-5.6-sol";
             provider = "openai-codex";
             max_concurrent_children = 10;
             max_spawn_depth = 2;
@@ -226,7 +226,7 @@ in
           };
 
           web = {
-            search_backend = "searxng";
+            search_backend = "exa";
             extract_backend = "firecrawl";
           };
 
@@ -276,24 +276,24 @@ in
 
                 aggregator = {
                   provider = "openai-codex";
-                  model = "gpt-5.6-sol";
+                  model = "gpt-6-astra";
                   reasoning_effort = "high";
                 };
 
                 reference_models = [
                   {
                     provider = "anthropic";
-                    model = "claude-fable-5";
+                    model = "claude-fable-5-1";
                     reasoning_effort = "high";
                   }
                   {
                     provider = "openai-codex";
-                    model = "gpt-5.6-sol";
+                    model = "gpt-6-astra";
                     reasoning_effort = "high";
                   }
                   {
                     provider = "xai-oauth";
-                    model = "grok-4.5";
+                    model = "grok-4.6";
                   }
                 ];
               };
