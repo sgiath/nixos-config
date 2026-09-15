@@ -21,6 +21,21 @@ let
       cp ${./registration_lifecycle.py} $out/${prev.python312.sitePackages}/registration_lifecycle.py
     ''
   );
+
+  # Blackmagic re-published the 21.1 archives without bumping the version, so
+  # nixpkgs' fixed-output hash no longer matches. Drop this once
+  # https://github.com/NixOS/nixpkgs/pull/562336 lands in nixos-unstable.
+  davinci-resolve-dir = prev.applyPatches {
+    name = "davinci-resolve-pkg";
+    src = "${inputs.nixpkgs}/pkgs/by-name/da/davinci-resolve";
+    patches = [
+      (prev.fetchurl {
+        url = "https://github.com/NixOS/nixpkgs/pull/562336.patch";
+        hash = "sha256-udJQb7sjGBq2tEfmMwD9hQsf8VB1U/QMZvU79iLyxNI=";
+      })
+    ];
+    patchFlags = [ "-p5" ];
+  };
 in
 {
   ksa = pkgs-ksa.ksa;
@@ -29,4 +44,8 @@ in
   hermes-agent = prev.hermes-agent.override (old: {
     extraPythonPackages = (old.extraPythonPackages or [ ]) ++ [ registrationLifecycle ];
   });
+
+  davinci-resolve-studio = prev.callPackage "${davinci-resolve-dir}/package.nix" {
+    studioVariant = true;
+  };
 }

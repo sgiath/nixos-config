@@ -119,7 +119,7 @@
     };
 
     hermes-agent = {
-      url = "github:NousResearch/hermes-agent/v2026.9.11";
+      url = "github:NousResearch/hermes-agent/v2026.9.14";
       inputs.nixpkgs.follows = "nixpkgs";
     };
 
@@ -133,6 +133,7 @@
       inputs.nixpkgs.follows = "nixpkgs";
     };
 
+    # pin to v1.18.30
     opencode = {
       url = "github:anomalyco/opencode/v1.18.30";
       inputs.nixpkgs.follows = "nixpkgs";
