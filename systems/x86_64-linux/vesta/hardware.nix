@@ -29,6 +29,7 @@
     fstrim.enable = true;
   };
 
+  sgiath.nas.enable = true;
   fileSystems = {
     "/data" = {
       device = "/dev/disk/by-uuid/f87c6afb-7e94-452a-a6d7-8e5fc2cf43fb";
@@ -41,46 +42,6 @@
     "/data3" = {
       device = "/dev/sdb1";
       fsType = "ext4";
-    };
-    "/nas/downloads" = {
-      device = "192.168.1.4:/volume1/Downloads";
-      fsType = "nfs";
-      options = [
-        "x-systemd.automount"
-        "noauto"
-      ];
-    };
-    "/nas/homes" = {
-      device = "192.168.1.4:/volume1/homes";
-      fsType = "nfs";
-      options = [
-        "x-systemd.automount"
-        "noauto"
-      ];
-    };
-    "/nas/movies" = {
-      device = "192.168.1.4:/volume1/Movies";
-      fsType = "nfs";
-      options = [
-        "x-systemd.automount"
-        "noauto"
-      ];
-    };
-    "/nas/music" = {
-      device = "192.168.1.4:/volume1/Music";
-      fsType = "nfs";
-      options = [
-        "x-systemd.automount"
-        "noauto"
-      ];
-    };
-    "/nas/series" = {
-      device = "192.168.1.4:/volume1/Series";
-      fsType = "nfs";
-      options = [
-        "x-systemd.automount"
-        "noauto"
-      ];
     };
   };
 

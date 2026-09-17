@@ -13,6 +13,7 @@
               "matrix.sgiath.dev"
               "matrix-rtc.sgiath.dev"
               "turn.sgiath.dev"
+              "nebula.sgiath.dev"
 
               "dns.sgiath"
             ];

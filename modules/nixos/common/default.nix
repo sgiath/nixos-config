@@ -3,7 +3,9 @@
   imports = [
     ./boot.nix
     ./locale.nix
+    ./nas.nix
     ./networking.nix
+    ./nebula.nix
     ./nix.nix
     ./optimizations.nix
     ./secrets.nix
@@ -15,6 +17,7 @@
   ];
 
   options.sgiath.enable = lib.mkEnableOption "sgiath config";
+  options.sgiath.nas.enable = lib.mkEnableOption "Synology SMB mounts";
 
   config = lib.mkIf config.sgiath.enable {
     system = {

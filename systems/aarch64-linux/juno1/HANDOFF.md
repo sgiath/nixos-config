@@ -86,7 +86,8 @@ sudo cat /mnt/etc/ssh/ssh_host_ed25519_key.pub | nix run nixpkgs#ssh-to-age
 On Ceres (needs the GPG key): add `- &juno1 age1...` to `.sops.yaml` `keys`,
 add `*juno1` to the age list of the catch-all rule
 `secrets/[^/]+\.(yaml|json|env|ini)$` (not to `ceres-signing.yaml` or
-`vesta.yaml`), then `sops updatekeys -y secrets/secrets.yaml`, commit, push.
+`vesta.yaml`), then `sops updatekeys -y secrets/secrets.yaml secrets/nebula.yaml`,
+commit, push.
 Back on the Spark: `git pull`, rerun `nixos-install` (fast, only the secrets
 changed), then:
 
@@ -104,7 +105,8 @@ uname -r                           # 6.17.13-nvidia
 nvidia-smi && nvtop                # GB10 visible, driver loaded
 ip -br a                           # enP7s7 192.168.1.11/24 + fd39:f21:ea9::11
 systemctl --failed                 # expect nothing; sops-install-secrets if the recipient step was skipped
-ls /run/secrets                    # github_token, cliproxy_api_key
+ls /run/secrets                    # github_token, cliproxy_api_key, nebula-{ca,cert,key}
+ping -c1 vesta.nebula.sgiath.dev   # 10.42.0.2 / fd51:da00:4788::2 over nebula.sgiath; lighthouse is nebula.sgiath.dev:4242
 podman run --rm --device nvidia.com/gpu=all nvcr.io/nvidia/cuda:13.0.0-base-ubuntu24.04 nvidia-smi
 curl -s localhost:11000 | head     # DGX Dashboard
 update                             # local rebuild path
@@ -117,7 +119,9 @@ Spark over SSH with `--no-reexec`).
 
 Copy `systems/aarch64-linux/juno1/` and `homes/aarch64-linux/sgiath@juno1/`,
 change hostname, `192.168.1.1<N>` / `fd39:f21:ea9::1<N>`, add the hosts entry
-in `common/networking.nix`, and repeat the SOPS recipient step. `update --juno<N>`
+in `common/networking.nix`, sign a Nebula cert (`scripts/nebula-sign.sh juno<N>
+10.42.0.1<N> fd51:da00:4788::1<N> compute` and add the peer in `common/nebula.nix`), and repeat the
+SOPS recipient step. `update --juno<N>`
 already accepts any single digit. The ConnectX-7 QSFP ports (`enp1s0f0np0`,
 `enp1s0f1np1`; ignore the `enP2p…` twins) are unconfigured — wire them with
 static `192.168.100.x/24` addresses when the second Spark arrives (see

@@ -25,8 +25,8 @@ modules/home/programs/            # opt-in program groups: sgiath.programs.<grou
 modules/home/agents/              # agent tooling and services (cli-proxy-api, t3code, ...)
 modules/home/work/                # sgiath.work.{crazyegg,remote}.enable
 themes/                           # base16 schemes shared by NixOS and HM stylix
-secrets/                          # SOPS files plus the public ceres-cache.pub signing key
-scripts/                          # update-inputs.sh
+secrets/                          # SOPS files plus the public ceres-cache.pub signing key; nebula.yaml (host certs), nebula-ca.yaml (CA key, PGP-only)
+scripts/                          # update-inputs.sh, nebula-sign.sh, nebula-mobile.sh
 packages/                         # custom packages, update/clear-cache commands, updater scripts
 overlays/sgiath/default.nix       # selected packages from alternate nixpkgs channels
 shells/default/default.nix        # dev/update toolchain
@@ -59,6 +59,7 @@ shells/default/default.nix        # dev/update toolchain
 | `systems.modules.nixos` | `flake.nix` | External NixOS modules exposed to all hosts. |
 | `homes.modules` | `flake.nix` | External Home Manager modules exposed to all homes. |
 | `sgiath.enable` | `modules/nixos/common/default.nix` | Main shared system gate; pushes HM `sgiath.enable` + `roles.terminal`. |
+| `sgiath.nebula.{domain,peers}` / `services.nebula.networks.sgiath` | `modules/nixos/common/nebula.nix` | Dual-stack overlay `10.42.0.0/24` + `fd51:da00:4788::/64` on every host (v2 certs). Read-only `peers` table (hostname → `ip4`/`ip6`) picks `<host>_cert`/`<host>_key` from `secrets/nebula.yaml` and feeds `<host>.nebula.sgiath.dev` A/AAAA into `networking.hosts` and Pi-hole (`services/pi-hole.nix`, `services.pihole-ftl.settings.dns.hosts`). Vesta sets `isLighthouse`/`isRelay` in its host config; lighthouse address is `nebula.sgiath.dev:4242` (DNS-only record; LAN via hosts entry). |
 | `sgiath.hardware.*` | `modules/nixos/hardware/default.nix` | `gpu` (`null`/`amd`/`nvidia`), `boot` (`uefi`/`legacy`), `razer.enable`, `dgx-spark.enable` (wraps `inputs.dgx-spark` module: NVIDIA 6.17 kernel, open driver, CUDA, podman, ConnectX-7). |
 | `sgiath.roles.desktop.enable` | `modules/nixos/desktop/default.nix` | Wayland, audio, bluetooth, printing, Stylix; pushes HM `roles.desktop`. |
 | `sgiath.roles.laptop.enable` | `modules/nixos/laptop/default.nix` | NetworkManager + public DNS `resolv.conf`. |
@@ -134,4 +135,6 @@ update --juno1
 - Custom user commands `update` and `clear-cache` are packages in `packages/`; `update` commits and pushes before rebuilding (`--no-commit` skips that), `update --vesta` builds/signs on Ceres and pushes over SSH, and `update --juno<N>` evaluates locally but builds and switches on the Spark itself (`--build-host`/`--target-host sgiath@juno<N>.sgiath`, `--no-reexec`).
 - `clear-cache` runs Nix GC, Docker prune, and journal vacuum; treat as destructive maintenance.
 - `scripts/update-inputs.sh` bumps release-pinned flake inputs and runs `packages/*/update.sh`.
+- `scripts/nebula-sign.sh <host> <ipv4> <ipv6> [groups]` signs a v2 Nebula host cert with the CA in `secrets/nebula-ca.yaml` and stores it in `secrets/nebula.yaml`; then add the peer to `modules/nixos/common/nebula.nix`. The CA (`nebula-cert ca -name sgiath -duration 87600h`) expires 2036-09; host certs inherit that expiry. Nebula's firewall allows everything between certificate holders, so services bound to `nebula.sgiath` need no auth of their own; the router forwards UDP 4242 to vesta.
+- `scripts/nebula-mobile.sh <peer> [out]` renders a self-contained Mobile Nebula site YAML (inline CA/cert/key, lighthouse, relay, Pi-hole over the tunnel as DNS) for a non-NixOS peer in the `peers` table (`phone` = `10.42.0.20`; devices start at `.20`), signing it with group `mobile` on first use. Output defaults to `$XDG_RUNTIME_DIR`; it holds the private key, so import via "Add site > From file" and delete it.
 - `dnd5etools` has a separate image hash updater; package `update.sh` alone is incomplete if image assets changed.

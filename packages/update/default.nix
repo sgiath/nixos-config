@@ -62,7 +62,7 @@ writeShellScriptBin "update" ''
   git add --all
   if [[ "$no_commit" == false ]]; then
     if ! commit_message="$(${lib.getExe llm-agents.pi} \
-      --model opencode-go/glm-5.3-flash:low \
+      --model opencode-go/glm-5.3-flash:high \
       --print \
       --no-session \
       --no-tools \

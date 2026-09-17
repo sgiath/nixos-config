@@ -8,6 +8,13 @@
   networking.hostName = "vesta";
   networking.wireguard.enable = false;
 
+  # Nebula lighthouse/relay for every other host; needs UDP 4242 forwarded
+  # from the router so roaming peers reach it via nebula.sgiath.dev.
+  services.nebula.networks.sgiath = {
+    isLighthouse = true;
+    isRelay = true;
+  };
+
   sgiath = {
     enable = true;
     roles.server.enable = true;

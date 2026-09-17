@@ -17,6 +17,7 @@ mkShell {
     sops
     age
     ssh-to-age
+    nebula # nebula-cert for scripts/nebula-sign.sh
 
     # isolated security checks
     bubblewrap

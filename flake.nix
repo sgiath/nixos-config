@@ -65,7 +65,8 @@
     };
 
     sops-nix = {
-      url = "github:Mic92/sops-nix";
+      # url = "github:Mic92/sops-nix";
+      url = "github:c2fc2f/sops-nix/buildGo126Module";
       inputs.nixpkgs.follows = "nixpkgs";
     };
 
@@ -97,7 +98,7 @@
     };
 
     worktrunk = {
-      url = "github:max-sixty/worktrunk/v0.77.0";
+      url = "github:max-sixty/worktrunk/v0.78.0";
       inputs.nixpkgs.follows = "nixpkgs";
     };
 
@@ -124,12 +125,12 @@
     };
 
     oh-my-pi = {
-      url = "github:can1357/oh-my-pi/v18.1.19";
+      url = "github:can1357/oh-my-pi/v18.2.4";
       inputs.nixpkgs.follows = "nixpkgs";
     };
 
     herdr = {
-      url = "github:herdrdev/herdr/v0.9.0";
+      url = "github:herdrdev/herdr/v0.9.1";
       inputs.nixpkgs.follows = "nixpkgs";
     };
 

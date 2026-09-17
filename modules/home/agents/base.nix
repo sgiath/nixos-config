@@ -24,6 +24,7 @@
       pkgs.hyperfine
 
       # agents
+      pkgs.llm-agents.cline
       pkgs.llm-agents.grok
       pkgs.llm-agents.openclaw
 
@@ -38,6 +39,7 @@
       pkgs.llm-agents.plannotator
       pkgs.${namespace}.clawpatch
       pkgs.${namespace}.xurl
+      pkgs.llm-agents.workmux
 
       # Hermes
       pkgs.llm-agents.hermes-agent

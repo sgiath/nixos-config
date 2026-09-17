@@ -42,52 +42,7 @@
     fstrim.enable = true;
   };
 
-  fileSystems = {
-    "/nas/homes" = {
-      device = "192.168.1.4:/volume1/homes";
-      fsType = "nfs";
-      options = [
-        "x-systemd.automount"
-        "noauto"
-      ];
-    };
-
-    "/nas/movies" = {
-      device = "192.168.1.4:/volume1/Movies";
-      fsType = "nfs";
-      options = [
-        "x-systemd.automount"
-        "noauto"
-      ];
-    };
-
-    "/nas/music" = {
-      device = "192.168.1.4:/volume1/Music";
-      fsType = "nfs";
-      options = [
-        "x-systemd.automount"
-        "noauto"
-      ];
-    };
-
-    "/nas/series" = {
-      device = "192.168.1.4:/volume1/Series";
-      fsType = "nfs";
-      options = [
-        "x-systemd.automount"
-        "noauto"
-      ];
-    };
-
-    "/nas/downloads" = {
-      device = "192.168.1.4:/volume1/Downloads";
-      fsType = "nfs";
-      options = [
-        "x-systemd.automount"
-        "noauto"
-      ];
-    };
-  };
+  sgiath.nas.enable = true;
 
   networking = {
     useDHCP = false;

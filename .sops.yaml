@@ -15,6 +15,11 @@ creation_rules:
           - *sgiath
         age:
           - *vesta
+  # Nebula CA private key: only needed to sign new host certs, never on a host.
+  - path_regex: secrets/nebula-ca\.yaml$
+    key_groups:
+      - pgp:
+          - *sgiath
   - path_regex: secrets/[^/]+\.(yaml|json|env|ini)$
     key_groups:
       - pgp:
