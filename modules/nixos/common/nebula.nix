@@ -50,6 +50,29 @@ in
       readOnly = true;
       description = "Overlay addresses of every Nebula host, keyed by hostname.";
     };
+    cidr4 = lib.mkOption {
+      type = lib.types.str;
+      default = "10.42.0.0/24";
+      readOnly = true;
+      description = "Overlay IPv4 range; nginx `allow` for overlay-only services.";
+    };
+    cidr6 = lib.mkOption {
+      type = lib.types.str;
+      default = "fd51:da00:4788::/64";
+      readOnly = true;
+      description = "Overlay IPv6 range; nginx `allow` for overlay-only services.";
+    };
+    services = lib.mkOption {
+      type = lib.types.listOf lib.types.str;
+      default = [ ];
+      description = ''
+        Services Vesta exposes only on the overlay. Each name resolves as
+        <name>.sgiath.dev to Vesta's overlay addresses on every host and in
+        Pi-hole (no public record exists); the service module restricts its
+        nginx vhost to the CIDRs. Certificates still come from Let's Encrypt
+        via DNS-01, which is why the names stay under the public zone.
+      '';
+    };
   };
 
   config = lib.mkIf config.sgiath.enable {
@@ -119,13 +142,19 @@ in
         nebula-key = secret "${hostName}_key";
       };
 
-    # <host>.nebula.sgiath.dev resolves to the overlay addresses everywhere,
-    # independent of which resolver the machine is currently using.
+    # <host>.nebula.sgiath.dev and <service>.sgiath.dev resolve to the overlay
+    # addresses everywhere, independent of the current resolver.
     networking.hosts = lib.mkMerge (
       lib.mapAttrsToList (name: peer: {
         ${peer.ip4} = [ "${name}.${cfg.domain}" ];
         ${peer.ip6} = [ "${name}.${cfg.domain}" ];
       }) cfg.peers
+      ++ [
+        {
+          ${lighthouse.ip4} = map (name: "${name}.sgiath.dev") cfg.services;
+          ${lighthouse.ip6} = map (name: "${name}.sgiath.dev") cfg.services;
+        }
+      ]
     );
   };
 }

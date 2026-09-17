@@ -4,6 +4,7 @@ let
   # Local records so phones and other non-Nix LAN clients resolve overlay
   # names the same way Nix hosts do via networking.hosts. The lighthouse name
   # gets the LAN address so Mobile Nebula at home does not hairpin the router.
+  vesta = nebula.peers.vesta;
   nebulaRecords = [
     "192.168.1.2 ${nebula.domain}"
   ]
@@ -12,7 +13,11 @@ let
       "${peer.ip4} ${name}.${nebula.domain}"
       "${peer.ip6} ${name}.${nebula.domain}"
     ]) nebula.peers
-  );
+  )
+  ++ lib.concatMap (name: [
+    "${vesta.ip4} ${name}.sgiath.dev"
+    "${vesta.ip6} ${name}.sgiath.dev"
+  ]) nebula.services;
 in
 {
   options.services.pi-hole.enable = lib.mkEnableOption "pi-hole";
@@ -55,9 +60,8 @@ in
           hosts = nebulaRecords;
         };
         # Keep public AAAA and HTTPS records from routing LAN clients through
-        # Cloudflare, and never forward overlay names upstream. search.sgiath.dev
-        # itself resolves from /etc/hosts (common/networking.nix).
-        misc.dnsmasq_lines = lib.optional config.services.searx.enable "local=/search.sgiath.dev/" ++ [
+        # Cloudflare, and never forward overlay names upstream.
+        misc.dnsmasq_lines = map (name: "local=/${name}.sgiath.dev/") nebula.services ++ [
           "local=/${nebula.domain}/"
         ];
       };

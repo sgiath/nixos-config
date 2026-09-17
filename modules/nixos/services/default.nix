@@ -4,6 +4,7 @@
     ./comfyui.nix
     ./dnd5etools.nix
     ./docker.nix
+    ./executor.nix
     ./factorio.nix
     ./foundryvtt.nix
     ./hermes-agent.nix
@@ -15,7 +16,6 @@
     ./nostr-rs-relay.nix
     ./ntfy-sh.nix
     ./ollama.nix
-    ./open-webui.nix
     ./pi-hole.nix
     ./searx.nix
     ./transmission.nix

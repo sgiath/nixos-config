@@ -50,30 +50,5 @@
       pkgs.llm-agents.hermes-desktop
       pkgs.${namespace}.openclaw-desktop
     ]);
-
-    programs.mcp = {
-      enable = true;
-
-      servers = {
-        github = {
-          url = "https://api.githubcopilot.com/mcp/x/all";
-          oauth = false;
-          headers = {
-            Authorization = "Bearer {env:GITHUB_PERSONAL_ACCESS_TOKEN}";
-            X-MCP-Insiders = "true";
-          };
-        };
-        gitlab.url = "https://gitlab.com/api/v4/mcp";
-        linear.url = "https://mcp.linear.app/mcp";
-        linear-remote.url = "https://mcp.linear.app/mcp";
-        shortcut.url = "https://mcp.shortcut.com/mcp";
-        notion-crazyegg.url = "https://mcp.notion.com/mcp";
-        notion-remote.url = "https://mcp.notion.com/mcp";
-        agent-skills = {
-          enabled = false;
-          url = "https://agentskills.io/mcp";
-        };
-      };
-    };
   };
 }

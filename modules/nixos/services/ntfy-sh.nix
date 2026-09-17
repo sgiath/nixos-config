@@ -1,33 +1,44 @@
+{ config, lib, ... }:
+let
+  nebula = config.sgiath.nebula;
+  host = "ntfy.sgiath.dev";
+in
 {
-  config,
-  lib,
-  ...
-}:
-{
-  config = lib.mkIf (config.sgiath.roles.server.enable && config.services.ntfy-sh.enable) {
-    services = {
-      ntfy-sh = {
-        settings = {
-          base-url = "https://ntfy.sgiath.dev";
-          listen-http = ":5689";
-          behind-proxy = true;
+  config = lib.mkMerge [
+    { sgiath.nebula.services = [ "ntfy" ]; }
+
+    (lib.mkIf (config.sgiath.roles.server.enable && config.services.ntfy-sh.enable) {
+      services = {
+        ntfy-sh = {
+          settings = {
+            base-url = "https://${host}";
+            listen-http = ":5689";
+            behind-proxy = true;
+          };
+        };
+
+        nginx.virtualHosts.${host} = {
+          # SSL
+          onlySSL = true;
+          kTLS = true;
+
+          # ACME
+          enableACME = true;
+          acmeRoot = null;
+
+          # Overlay only
+          extraConfig = ''
+            allow ${nebula.cidr4};
+            allow ${nebula.cidr6};
+            deny all;
+          '';
+
+          locations."/" = {
+            proxyWebsockets = true;
+            proxyPass = "http://127.0.0.1:5689";
+          };
         };
       };
-
-      nginx.virtualHosts."ntfy.sgiath.dev" = {
-        # SSL
-        onlySSL = true;
-        kTLS = true;
-
-        # ACME
-        enableACME = true;
-        acmeRoot = null;
-
-        locations."/" = {
-          proxyWebsockets = true;
-          proxyPass = "http://127.0.0.1:5689";
-        };
-      };
-    };
-  };
+    })
+  ];
 }
