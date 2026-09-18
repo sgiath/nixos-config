@@ -28,7 +28,7 @@ Themes referenced by `desktop/stylix.nix` live in `themes/` at the repo root.
 - Group options are declared in the group's `default.nix` (`programs/default.nix`, `work/default.nix`); each feature keeps its `config = mkIf ...` in its own file.
 - The desktop role enables `sgiath.programs.*`; Hyprland-adjacent files gate on `sgiath.roles.desktop.enable`, upstream-style files on `programs.<name>.enable`.
 - Agent tooling intentionally writes some tool-local config/memory files; do not over-normalize it into pure Nix state.
-- `agents/t3code.nix` owns the T3 Code CLI, optional desktop package, and user service.
+- `agents/t3code.nix` owns the T3 Code CLI, optional desktop package, and user service; on Vesta the NixOS `services.t3code` module enables it and exposes it as `t3.sgiath.dev`.
 
 ## ANTI-PATTERNS
 

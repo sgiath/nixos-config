@@ -16,8 +16,10 @@
     ./nostr-rs-relay.nix
     ./ntfy-sh.nix
     ./ollama.nix
+    ./opencode.nix
     ./pi-hole.nix
     ./searx.nix
+    ./t3code.nix
     ./transmission.nix
     ./xmpp.nix
   ];

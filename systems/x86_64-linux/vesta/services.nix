@@ -21,6 +21,8 @@
 
     hermes-agent.enable = true;
     executor.enable = true;
+    opencode.enable = true;
+    t3code.enable = true;
   };
 
   # proxies

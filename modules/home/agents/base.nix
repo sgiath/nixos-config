@@ -50,5 +50,12 @@
       pkgs.llm-agents.hermes-desktop
       pkgs.${namespace}.openclaw-desktop
     ]);
+
+    programs.mcp = {
+      enable = true;
+      servers = {
+        executor.url = "https://executor.sgiath.dev/mcp";
+      };
+    };
   };
 }

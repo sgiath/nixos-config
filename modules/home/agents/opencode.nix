@@ -104,11 +104,6 @@ in
 
     programs.zsh.shellAliases = {
       oc = lib.getExe pkgs.opencode;
-      omo-update = ''
-        pushd ~/.cache/opencode && bun update && popd \
-        && pushd ~/.cache/opencode/packages/oh-my-openagent@latest && bun add  oh-my-openagent@latest && popd \
-        && pushd ~/.config/opencode && bun add @opencode-ai/plugin@latest && popd
-      '';
     };
   };
 }
