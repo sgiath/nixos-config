@@ -24,6 +24,9 @@
   # AMD Zen sensors
   boot.extraModulePackages = [ config.boot.kernelPackages.zenpower ];
 
+  # Headless Mesa/VA-API support for Jellyfin on the Ryzen 5700G iGPU.
+  hardware.graphics.enable = true;
+
   services = {
     nfs.server.enable = false;
     fstrim.enable = true;

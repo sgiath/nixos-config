@@ -21,6 +21,7 @@
       "sgiath"
     ]
     ++ lib.optional config.services.audiobookshelf.enable config.services.audiobookshelf.user
+    ++ lib.optional config.services.jellyfin.enable config.services.jellyfin.user
     ++ lib.optional config.services.transmission.enable config.services.transmission.user;
 
     fileSystems =

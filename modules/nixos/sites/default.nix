@@ -4,6 +4,7 @@
     ./nas.nix
     ./sgiath-dev.nix
     ./sinai-camp.nix
+    ./wkd.nix
   ];
 
   options.sgiath.sites = {

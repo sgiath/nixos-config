@@ -1,4 +1,5 @@
 pkgs: {
+  agent-orchestrator = pkgs.callPackage ./agent-orchestrator { };
   bird = pkgs.callPackage ./bird { };
   burn-iso = pkgs.callPackage ./burn-iso { };
   clawpatch = pkgs.callPackage ./clawpatch { };

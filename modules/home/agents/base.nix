@@ -49,6 +49,7 @@
       pkgs.${namespace}.delta
       pkgs.llm-agents.hermes-desktop
       pkgs.${namespace}.openclaw-desktop
+      pkgs.${namespace}.agent-orchestrator
     ]);
 
     programs.mcp = {
