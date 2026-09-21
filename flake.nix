@@ -98,7 +98,7 @@
     };
 
     worktrunk = {
-      url = "github:max-sixty/worktrunk/v0.78.0";
+      url = "github:max-sixty/worktrunk/v0.79.0";
       inputs.nixpkgs.follows = "nixpkgs";
     };
 
@@ -125,7 +125,7 @@
     };
 
     oh-my-pi = {
-      url = "github:can1357/oh-my-pi/v18.2.6";
+      url = "github:can1357/oh-my-pi/v18.2.7";
       inputs.nixpkgs.follows = "nixpkgs";
     };
 
