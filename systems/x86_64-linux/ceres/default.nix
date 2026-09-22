@@ -1,6 +1,9 @@
 { config, ... }:
 {
-  imports = [ ./hardware.nix ];
+  imports = [
+    ./hardware.nix
+    ./qwen-image.nix
+  ];
 
   networking.hostName = "ceres";
 
@@ -19,7 +22,6 @@
 
   services = {
     ollama.enable = false;
-    comfyui.enable = false;
 
     yggdrasil.settings.Peers = [
       "quic://192.168.1.2:56088"

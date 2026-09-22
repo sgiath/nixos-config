@@ -1,0 +1,37 @@
+--- a/comfy/model_management.py	2026-09-21 19:33:51.416224575 +0000
++++ b/comfy/model_management.py	2026-09-21 19:33:51.494996133 +0000
+@@ -2068,8 +2068,34 @@
+     if is_ixuca():
+         return False
+ 
++    if is_amd() and (device is None or is_device_cuda(device)) and not _rocm_int8_mm_works(device):
++        return False
++
+     return True
+ 
++_ROCM_INT8_MM_WORKS = {}
++
++def _rocm_int8_mm_works(device=None):
++    # torch._int_mm on ROCm dispatches to hipBLASLt only; the wheel does not ship
++    # hipBLASLt kernels for every arch (e.g. RDNA2 gfx103x) and PyTorch has no
++    # rocBLAS fallback, so the op raises instead of running. Probe it once per device.
++    if device is None:
++        device = get_torch_device()
++    key = str(device)
++    ok = _ROCM_INT8_MM_WORKS.get(key)
++    if ok is None:
++        try:
++            a = torch.zeros((32, 32), dtype=torch.int8, device=device)
++            torch._int_mm(a, a)
++            synchronize()
++            ok = True
++        except RuntimeError as e:
++            logging.warning("torch._int_mm is unavailable on {} ({}); INT8 layers will dequantize per layer instead.".format(
++                torch.cuda.get_device_properties(device).gcnArchName.split(':')[0], str(e).split(" when calling")[0].strip()))
++            ok = False
++        _ROCM_INT8_MM_WORKS[key] = ok
++    return ok
++
+ def extended_fp16_support():
+     # TODO: check why some models work with fp16 on newer torch versions but not on older
+     if torch_version_numeric < (2, 7):

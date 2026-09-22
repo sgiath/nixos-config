@@ -120,12 +120,12 @@
     };
 
     hermes-agent = {
-      url = "github:NousResearch/hermes-agent/v2026.9.14";
+      url = "github:NousResearch/hermes-agent/v2026.9.21";
       inputs.nixpkgs.follows = "nixpkgs";
     };
 
     oh-my-pi = {
-      url = "github:can1357/oh-my-pi/v18.2.7";
+      url = "github:can1357/oh-my-pi/v18.2.8";
       inputs.nixpkgs.follows = "nixpkgs";
     };
 
@@ -226,7 +226,7 @@
         nix-gaming.nixosModules.pipewireLowLatency
         nix-gaming.nixosModules.platformOptimizations
         nix-gaming.nixosModules.wine
-        # comfyui.nixosModules.default
+        comfyui.nixosModules.default
         oh-my-pi.nixosModules.default
         dgx-spark.nixosModules.dgx-spark
       ];

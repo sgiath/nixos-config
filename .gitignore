@@ -4,7 +4,6 @@
 .fusion
 .pi
 .env
-imgHashes.nix
 .omo/
 .opencode/
 __pycache__/

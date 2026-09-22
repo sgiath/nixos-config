@@ -1,0 +1,716 @@
+{
+  "id": "15736ea0-d2a1-4ad7-9f80-2c9db3765bbc",
+  "revision": 0,
+  "last_node_id": 13,
+  "last_link_id": 12,
+  "nodes": [
+    {
+      "id": 1,
+      "type": "UNETLoader",
+      "pos": [
+        900,
+        340
+      ],
+      "size": [
+        420,
+        82
+      ],
+      "flags": {},
+      "order": 0,
+      "mode": 0,
+      "inputs": [],
+      "outputs": [
+        {
+          "name": "MODEL",
+          "type": "MODEL",
+          "links": [
+            1
+          ],
+          "slot_index": 0
+        }
+      ],
+      "properties": {
+        "Node name for S&R": "UNETLoader",
+        "models": [
+          {
+            "name": "qwen_image_2.1_int8_convrot.safetensors",
+            "url": "https://huggingface.co/Comfy-Org/Qwen-Image-2.1/resolve/ace0edeb3791a594ddfa36ed5f41a178a394e921/diffusion_models/qwen_image_2.1_int8_convrot.safetensors",
+            "directory": "diffusion_models"
+          }
+        ]
+      },
+      "widgets_values": [
+        "qwen_image_2.1_int8_convrot.safetensors",
+        "default"
+      ]
+    },
+    {
+      "id": 2,
+      "type": "CLIPLoader",
+      "pos": [
+        900,
+        460
+      ],
+      "size": [
+        420,
+        110
+      ],
+      "flags": {},
+      "order": 1,
+      "mode": 0,
+      "inputs": [],
+      "outputs": [
+        {
+          "name": "CLIP",
+          "type": "CLIP",
+          "links": [
+            2
+          ],
+          "slot_index": 0
+        }
+      ],
+      "title": "CLIPLoader — normal text encoder (CPU)",
+      "properties": {
+        "Node name for S&R": "CLIPLoader",
+        "models": [
+          {
+            "name": "qwen3vl_8b_int8_convrot.safetensors",
+            "url": "https://huggingface.co/Comfy-Org/Qwen-Image-2.1/resolve/ace0edeb3791a594ddfa36ed5f41a178a394e921/text_encoders/qwen3vl_8b_int8_convrot.safetensors",
+            "directory": "text_encoders"
+          }
+        ]
+      },
+      "widgets_values": [
+        "qwen3vl_8b_int8_convrot.safetensors",
+        "qwen_image",
+        "cpu"
+      ]
+    },
+    {
+      "id": 3,
+      "type": "VAELoader",
+      "pos": [
+        900,
+        620
+      ],
+      "size": [
+        420,
+        60
+      ],
+      "flags": {},
+      "order": 2,
+      "mode": 0,
+      "inputs": [],
+      "outputs": [
+        {
+          "name": "VAE",
+          "type": "VAE",
+          "links": [
+            3
+          ],
+          "slot_index": 0
+        }
+      ],
+      "properties": {
+        "Node name for S&R": "VAELoader",
+        "models": [
+          {
+            "name": "qwen_image_2.1_vae_bf16.safetensors",
+            "url": "https://huggingface.co/Comfy-Org/Qwen-Image-2.1/resolve/ace0edeb3791a594ddfa36ed5f41a178a394e921/vae/qwen_image_2.1_vae_bf16.safetensors",
+            "directory": "vae"
+          }
+        ]
+      },
+      "widgets_values": [
+        "qwen_image_2.1_vae_bf16.safetensors"
+      ]
+    },
+    {
+      "id": 4,
+      "type": "TextEncodeQwenImage21",
+      "pos": [
+        1400,
+        340
+      ],
+      "size": [
+        520,
+        420
+      ],
+      "flags": {},
+      "order": 5,
+      "mode": 0,
+      "inputs": [
+        {
+          "name": "clip",
+          "type": "CLIP",
+          "link": 2
+        },
+        {
+          "name": "vae",
+          "type": "VAE",
+          "link": null,
+          "shape": 7
+        },
+        {
+          "name": "images.image_1",
+          "type": "IMAGE",
+          "link": null,
+          "shape": 7,
+          "localized_name": "image_1"
+        },
+        {
+          "name": "prompt",
+          "type": "STRING",
+          "link": 9,
+          "widget": {
+            "name": "prompt"
+          }
+        },
+        {
+          "name": "negative_prompt",
+          "type": "STRING",
+          "link": null,
+          "widget": {
+            "name": "negative_prompt"
+          }
+        }
+      ],
+      "outputs": [
+        {
+          "name": "positive",
+          "type": "CONDITIONING",
+          "links": [
+            4
+          ],
+          "slot_index": 0
+        },
+        {
+          "name": "negative",
+          "type": "CONDITIONING",
+          "links": [
+            5
+          ],
+          "slot_index": 0
+        },
+        {
+          "name": "latent",
+          "type": "LATENT",
+          "links": [],
+          "slot_index": 0
+        }
+      ],
+      "title": "TextEncodeQwenImage21 — prompt driven by enhancer",
+      "properties": {
+        "Node name for S&R": "TextEncodeQwenImage21"
+      },
+      "widgets_values": [
+        "A cozy wooden cabin on a snowy mountainside at dusk, warm light glowing from the windows, pine trees dusted with snow, soft film grain, photorealistic.",
+        "",
+        1024
+      ]
+    },
+    {
+      "id": 5,
+      "type": "EmptyLatentImage",
+      "pos": [
+        1400,
+        820
+      ],
+      "size": [
+        320,
+        110
+      ],
+      "flags": {},
+      "order": 6,
+      "mode": 0,
+      "inputs": [],
+      "outputs": [
+        {
+          "name": "LATENT",
+          "type": "LATENT",
+          "links": [
+            6
+          ],
+          "slot_index": 0
+        }
+      ],
+      "properties": {
+        "Node name for S&R": "EmptyLatentImage"
+      },
+      "widgets_values": [
+        1024,
+        1024,
+        1
+      ]
+    },
+    {
+      "id": 6,
+      "type": "KSampler",
+      "pos": [
+        2000,
+        340
+      ],
+      "size": [
+        300,
+        270
+      ],
+      "flags": {},
+      "order": 7,
+      "mode": 0,
+      "inputs": [
+        {
+          "name": "model",
+          "type": "MODEL",
+          "link": 1
+        },
+        {
+          "name": "positive",
+          "type": "CONDITIONING",
+          "link": 4
+        },
+        {
+          "name": "negative",
+          "type": "CONDITIONING",
+          "link": 5
+        },
+        {
+          "name": "latent_image",
+          "type": "LATENT",
+          "link": 6
+        }
+      ],
+      "outputs": [
+        {
+          "name": "LATENT",
+          "type": "LATENT",
+          "links": [
+            7
+          ],
+          "slot_index": 0
+        }
+      ],
+      "properties": {
+        "Node name for S&R": "KSampler"
+      },
+      "widgets_values": [
+        42,
+        "fixed",
+        25,
+        1,
+        "euler",
+        "simple",
+        1
+      ]
+    },
+    {
+      "id": 7,
+      "type": "VAEDecode",
+      "pos": [
+        2360,
+        340
+      ],
+      "size": [
+        220,
+        50
+      ],
+      "flags": {},
+      "order": 8,
+      "mode": 0,
+      "inputs": [
+        {
+          "name": "samples",
+          "type": "LATENT",
+          "link": 7
+        },
+        {
+          "name": "vae",
+          "type": "VAE",
+          "link": 3
+        }
+      ],
+      "outputs": [
+        {
+          "name": "IMAGE",
+          "type": "IMAGE",
+          "links": [
+            8
+          ],
+          "slot_index": 0
+        }
+      ],
+      "properties": {
+        "Node name for S&R": "VAEDecode"
+      },
+      "widgets_values": []
+    },
+    {
+      "id": 8,
+      "type": "SaveImage",
+      "pos": [
+        2640,
+        340
+      ],
+      "size": [
+        500,
+        500
+      ],
+      "flags": {},
+      "order": 9,
+      "mode": 0,
+      "inputs": [
+        {
+          "name": "images",
+          "type": "IMAGE",
+          "link": 8
+        }
+      ],
+      "outputs": [],
+      "properties": {
+        "Node name for S&R": "SaveImage"
+      },
+      "widgets_values": [
+        "Qwen_image_2.1_int8_enhanced"
+      ]
+    },
+    {
+      "id": 9,
+      "type": "MarkdownNote",
+      "pos": [
+        -200,
+        20
+      ],
+      "size": [
+        1900,
+        240
+      ],
+      "flags": {},
+      "order": 12,
+      "mode": 0,
+      "inputs": [],
+      "outputs": [],
+      "title": "Qwen Image 2.1 INT8 (convrot) + prompt enhancer — notes",
+      "properties": {},
+      "widgets_values": [
+        "# Qwen Image 2.1 INT8 (convrot) + prompt enhancer\n\nSame image pipeline as `qwen-image-2.1-int8.json`: UNET `qwen_image_2.1_int8_convrot`, regular text encoder `qwen3vl_8b_int8_convrot` on **CPU**, VAE BF16, 1024x1024, seed 42 fixed, 25 steps, cfg 1, euler/simple, prefix `Qwen_image_2.1_int8_enhanced`.\n\n**How to use.** Type a short prompt (any language) into *T2I Prompt Rewrite*. Its `positive_prompt` output feeds the `prompt` input of the regular encoder, so the image is generated from the expanded description. The two *Preview as Text* nodes show the rewritten prompt and `parse_ok`: `True` means the enhancer returned valid JSON and the shown text is the extracted `rewritten_prompt`; `False` means the raw model answer was passed through unparsed - re-run with another seed or shorten the prompt. Sampling defaults are upstream's (temperature 1.0, top_p 0.95, top_k 20, presence_penalty 1.5, max_new_tokens 16256, seed 42 fixed); changing any of them re-runs the enhancer. To bypass the enhancer, disconnect `positive_prompt -> prompt` and type into the encoder directly, as in the plain INT8 workflow.\n\n**Cost.** The brown CLIPLoader loads a *second*, separate model: the Comfy-Org prompt-enhancer checkpoint `qwen3.5_9b_qwen_image_2.1_pe_t2i.int8_convrot.safetensors` (Qwen3.5 9B, INT8, ~9.5 GB extra download) with type `qwen_image`, device `default`. `default` lets ComfyUI's model manager place it on the GPU and offload to the CPU as needed alongside the INT8 transformer within the 16 GiB RX 6950 XT and its 5 GiB reserve. Prompt rewriting is autoregressive generation of up to 16256 tokens, so it takes considerably longer than the image itself. The PE loader is *not* the encoder: do not swap the two CLIPLoaders, and leave the regular encoder on `cpu`."
+      ]
+    },
+    {
+      "id": 10,
+      "type": "CLIPLoader",
+      "pos": [
+        -200,
+        340
+      ],
+      "size": [
+        420,
+        110
+      ],
+      "flags": {},
+      "order": 3,
+      "mode": 0,
+      "inputs": [],
+      "outputs": [
+        {
+          "name": "CLIP",
+          "type": "CLIP",
+          "links": [
+            10
+          ],
+          "slot_index": 0
+        }
+      ],
+      "title": "CLIPLoader — PE model (device default = GPU managed, +9.5 GB, NOT the encoder)",
+      "properties": {
+        "Node name for S&R": "CLIPLoader",
+        "models": [
+          {
+            "name": "qwen3.5_9b_qwen_image_2.1_pe_t2i.int8_convrot.safetensors",
+            "url": "https://huggingface.co/Comfy-Org/Qwen-Image-2.1/resolve/ace0edeb3791a594ddfa36ed5f41a178a394e921/text_encoders/qwen3.5_9b_qwen_image_2.1_pe_t2i.int8_convrot.safetensors",
+            "directory": "text_encoders"
+          }
+        ]
+      },
+      "widgets_values": [
+        "qwen3.5_9b_qwen_image_2.1_pe_t2i.int8_convrot.safetensors",
+        "qwen_image",
+        "default"
+      ],
+      "color": "#432",
+      "bgcolor": "#653"
+    },
+    {
+      "id": 11,
+      "type": "QwenImage21_T2IPromptRewrite",
+      "pos": [
+        300,
+        340
+      ],
+      "size": [
+        520,
+        380
+      ],
+      "flags": {},
+      "order": 4,
+      "mode": 0,
+      "inputs": [
+        {
+          "name": "clip",
+          "type": "CLIP",
+          "link": 10
+        },
+        {
+          "name": "prompt",
+          "type": "STRING",
+          "link": null,
+          "widget": {
+            "name": "prompt"
+          }
+        }
+      ],
+      "outputs": [
+        {
+          "name": "positive_prompt",
+          "type": "STRING",
+          "links": [
+            9,
+            11
+          ],
+          "slot_index": 0
+        },
+        {
+          "name": "negative_prompt",
+          "type": "STRING",
+          "links": [],
+          "slot_index": 0
+        },
+        {
+          "name": "wh_ratio",
+          "type": "STRING",
+          "links": [],
+          "slot_index": 0
+        },
+        {
+          "name": "thinking",
+          "type": "STRING",
+          "links": [],
+          "slot_index": 0
+        },
+        {
+          "name": "parse_ok",
+          "type": "BOOLEAN",
+          "links": [
+            12
+          ],
+          "slot_index": 0
+        }
+      ],
+      "title": "Qwen Image 2.1 — T2I Prompt Rewrite",
+      "properties": {
+        "Node name for S&R": "QwenImage21_T2IPromptRewrite"
+      },
+      "widgets_values": [
+        "A cozy wooden cabin on a snowy mountainside at dusk.",
+        1.0,
+        0.95,
+        20,
+        1.5,
+        16256,
+        42,
+        "fixed"
+      ],
+      "color": "#432",
+      "bgcolor": "#653"
+    },
+    {
+      "id": 12,
+      "type": "PreviewAny",
+      "pos": [
+        300,
+        760
+      ],
+      "size": [
+        520,
+        220
+      ],
+      "flags": {},
+      "order": 10,
+      "mode": 0,
+      "inputs": [
+        {
+          "name": "source",
+          "type": "*",
+          "link": 11
+        }
+      ],
+      "outputs": [],
+      "title": "Preview — rewritten prompt",
+      "properties": {
+        "Node name for S&R": "PreviewAny"
+      },
+      "widgets_values": [],
+      "color": "#432",
+      "bgcolor": "#653"
+    },
+    {
+      "id": 13,
+      "type": "PreviewAny",
+      "pos": [
+        300,
+        1020
+      ],
+      "size": [
+        520,
+        100
+      ],
+      "flags": {},
+      "order": 11,
+      "mode": 0,
+      "inputs": [
+        {
+          "name": "source",
+          "type": "*",
+          "link": 12
+        }
+      ],
+      "outputs": [],
+      "title": "Preview — parse_ok (JSON parsed?)",
+      "properties": {
+        "Node name for S&R": "PreviewAny"
+      },
+      "widgets_values": [],
+      "color": "#432",
+      "bgcolor": "#653"
+    }
+  ],
+  "links": [
+    [
+      1,
+      1,
+      0,
+      6,
+      0,
+      "MODEL"
+    ],
+    [
+      2,
+      2,
+      0,
+      4,
+      0,
+      "CLIP"
+    ],
+    [
+      3,
+      3,
+      0,
+      7,
+      1,
+      "VAE"
+    ],
+    [
+      4,
+      4,
+      0,
+      6,
+      1,
+      "CONDITIONING"
+    ],
+    [
+      5,
+      4,
+      1,
+      6,
+      2,
+      "CONDITIONING"
+    ],
+    [
+      6,
+      5,
+      0,
+      6,
+      3,
+      "LATENT"
+    ],
+    [
+      7,
+      6,
+      0,
+      7,
+      0,
+      "LATENT"
+    ],
+    [
+      8,
+      7,
+      0,
+      8,
+      0,
+      "IMAGE"
+    ],
+    [
+      9,
+      11,
+      0,
+      4,
+      3,
+      "STRING"
+    ],
+    [
+      10,
+      10,
+      0,
+      11,
+      0,
+      "CLIP"
+    ],
+    [
+      11,
+      11,
+      0,
+      12,
+      0,
+      "STRING"
+    ],
+    [
+      12,
+      11,
+      4,
+      13,
+      0,
+      "BOOLEAN"
+    ]
+  ],
+  "groups": [
+    {
+      "id": 1,
+      "title": "1 · Prompt enhancer — PE model on GPU (managed, offloads), autoregressive",
+      "bounding": [
+        -230,
+        280,
+        1080,
+        900
+      ],
+      "color": "#a1309b",
+      "font_size": 24,
+      "flags": {}
+    },
+    {
+      "id": 2,
+      "title": "2 · Image generation — unchanged INT8 pipeline (1024x1024, 25 steps, seed 42)",
+      "bounding": [
+        870,
+        280,
+        2300,
+        900
+      ],
+      "color": "#3f789e",
+      "font_size": 24,
+      "flags": {}
+    }
+  ],
+  "config": {},
+  "extra": {
+    "frontendVersion": "1.52.7"
+  },
+  "version": 0.4
+}
