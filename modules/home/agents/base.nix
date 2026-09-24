@@ -27,6 +27,7 @@
       pkgs.llm-agents.cline
       pkgs.llm-agents.grok
       pkgs.llm-agents.openclaw
+      pkgs.llm-agents.omo-ai
 
       # tools
       inputs.crit.packages.${pkgs.stdenv.hostPlatform.system}.crit

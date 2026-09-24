@@ -3,8 +3,9 @@ import Quickshell
 import qs.config
 import qs.components
 
-// Compact catalog row: ordinal, icon, name with the matched characters lit,
+// Compact catalog row: ordinal, name with the matched characters lit,
 // generic name trailing. The first nine rows carry live digit shortcuts.
+// No icons: theme lookups cost ~20 ms each and the drawer must be instant.
 Rectangle {
     id: root
 
@@ -52,21 +53,6 @@ Rectangle {
         }
     }
 
-    AppIcon {
-        id: icon
-
-        entry: root.entry
-        ink: root.ink
-        width: 22
-        height: 22
-
-        anchors {
-            left: parent.left
-            leftMargin: 52
-            verticalCenter: parent.verticalCenter
-        }
-    }
-
     Text {
         id: name
 
@@ -78,8 +64,8 @@ Rectangle {
         font.pointSize: Theme.fontSize
 
         anchors {
-            left: icon.right
-            leftMargin: Theme.padding * 2
+            left: parent.left
+            leftMargin: 52
             right: generic.left
             rightMargin: Theme.padding * 2
             verticalCenter: parent.verticalCenter

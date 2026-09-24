@@ -12,12 +12,12 @@ Singleton {
     readonly property int intervalMs: 5 * 60 * 1000
 
     // Cards appear in this order; providers not listed follow in report order.
-    readonly property var providerOrder: ["openai-codex", "anthropic", "xai-oauth", "cursor", "opencode-go"]
+    readonly property var providerOrder: ["openai-codex", "anthropic", "xai-oauth"]
 
     // Limits that add nothing next to their siblings: the Claude 7-day pool
     // is only interesting through its Fable tier, Spark and the Grok chat and
     // voice products are unused.
-    readonly property var hiddenLimits: ["anthropic:7d", "openai-codex:spark:primary", "openai-codex:spark:secondary", "xai-oauth:product:grokchat:1w", "xai-oauth:product:grokvoice:1w"]
+    readonly property var hiddenLimits: ["openai-codex:base-model-inference:primary", "xai-oauth:product:grokchat:1w", "xai-oauth:product:grokvoice:1w"]
 
     property var accounts: []
     property double generatedAt: 0

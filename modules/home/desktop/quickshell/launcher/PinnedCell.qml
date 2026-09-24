@@ -35,27 +35,12 @@ Rectangle {
         }
     }
 
-    AppIcon {
-        id: icon
-
-        entry: root.entry
-        ink: root.ink
-        width: 40
-        height: 40
-
-        anchors {
-            left: parent.left
-            leftMargin: 52
-            verticalCenter: parent.verticalCenter
-        }
-    }
-
     Column {
         spacing: 2
 
         anchors {
-            left: icon.right
-            leftMargin: Theme.padding * 2.5
+            left: parent.left
+            leftMargin: 52
             right: parent.right
             rightMargin: Theme.padding * 2
             verticalCenter: parent.verticalCenter
