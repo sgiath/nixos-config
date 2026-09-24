@@ -15,7 +15,7 @@
     };
 
     programs.zsh.shellAliases = {
-      cc = "${lib.getExe pkgs.llm-agents.claude-code} --dangerously-skip-permissions --model fable";
+      cc = "${lib.getExe pkgs.llm-agents.claude-code} --dangerously-skip-permissions";
     };
   };
 }

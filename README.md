@@ -123,10 +123,14 @@ Vesta trusts Ceres's public key; it never receives the private key. Signature
 checks remain enabled, including for downloaded packages. Existing flake
 caches remain explicitly allowed for ordinary, non-trusted Nix users.
 
-The paid Factorio archive must already be imported into the Nix store for the
-first Ceres build; the package error provides the exact filename/hash/import
-command. After activation, `fetch-factorio-archive` downloads and verifies the
-pinned archive using the runtime credential, without embedding it in a build.
+Factorio uses nixpkgs' standard authenticated downloader. On gaming hosts, SOPS
+renders a root-only environment file containing `NIX_FACTORIO_USERNAME` and
+`NIX_FACTORIO_TOKEN` for `nix-daemon`; token changes restart the daemon. Once
+activated, normal rebuilds download and verify the pinned Space Age archive
+automatically, without a separate fetch command or credentials in the store.
+For the initial switch from the manual-fetch configuration, the target archive
+must already be in the store because the running daemon does not yet have this
+environment.
 
 Removing plaintext from the current configuration does not remove it from
 old store paths, generations, backups, or previously copied sources. Rotate

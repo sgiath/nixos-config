@@ -45,8 +45,17 @@
 
     sops.secrets.factorio-token = {
       key = "factorio_token";
-      owner = "sgiath";
       mode = "0400";
     };
+    sops.templates.factorio-env = {
+      content = ''
+        NIX_FACTORIO_USERNAME=Sgiath
+        NIX_FACTORIO_TOKEN=${config.sops.placeholder.factorio-token}
+      '';
+      mode = "0400";
+      restartUnits = [ "nix-daemon.service" ];
+    };
+    # The upstream fetcher reads these from the daemon via impureEnvVars.
+    systemd.services.nix-daemon.serviceConfig.EnvironmentFile = config.sops.templates.factorio-env.path;
   };
 }

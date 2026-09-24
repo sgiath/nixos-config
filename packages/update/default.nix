@@ -62,7 +62,7 @@ writeShellScriptBin "update" ''
   git add --all
   if [[ "$no_commit" == false ]]; then
     if ! commit_message="$(${lib.getExe llm-agents.pi} \
-      --model xai/grok-4.5:low \
+      --model openai-codex/gpt-6-luna:low \
       --print \
       --no-session \
       --no-tools \

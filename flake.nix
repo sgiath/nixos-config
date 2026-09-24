@@ -102,7 +102,7 @@
       inputs.nixpkgs.follows = "nixpkgs";
     };
 
-    voxtype.url = "github:peteonrails/voxtype/v1.0.1";
+    voxtype.url = "github:peteonrails/voxtype/v1.1.0";
     comfyui.url = "github:utensils/comfyui-nix/v0.34.0";
 
     # NVIDIA DGX Spark (GB10, aarch64): NVIDIA 6.17 kernel, open driver, CUDA, ConnectX-7.
@@ -125,7 +125,7 @@
     };
 
     oh-my-pi = {
-      url = "github:can1357/oh-my-pi/v18.2.8";
+      url = "github:can1357/oh-my-pi/v18.3.0";
       inputs.nixpkgs.follows = "nixpkgs";
     };
 

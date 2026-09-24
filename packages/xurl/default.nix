@@ -6,13 +6,13 @@
 
 buildGoModule rec {
   pname = "xurl";
-  version = "1.3.1";
+  version = "1.3.2";
 
   src = fetchFromGitHub {
     owner = "xdevplatform";
     repo = "xurl";
     rev = "v${version}";
-    hash = "sha256-dwVBzuUhQpfRWFOZOf1DCGNKoetdZlcretnyv9AShbw=";
+    hash = "sha256-A+vvHcXp5CYjO/DCENqK1yAF+TbFjRcqHkW3LYhQwhk=";
   };
 
   vendorHash = "sha256-b38O+w1E236YNH0Ut0c01ymuwIHBe3wts6UhCO6ViOo=";
