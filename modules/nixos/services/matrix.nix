@@ -177,51 +177,8 @@
       };
 
       nginx.virtualHosts = {
-        "sgiath.dev".locations = {
-          # server <-> server
-          "/.well-known/matrix/server" = {
-            extraConfig = ''
-              add_header Access-Control-Allow-Origin '*';
-              add_header Access-Control-Allow-Methods 'GET, POST, PUT, DELETE, OPTIONS';
-              add_header Access-Control-Allow-Headers 'X-Requested-With, Content-Type, Authorization';
-              add_header Cross-Origin-Resource-Policy 'cross-origin';
-
-              default_type application/json;
-            '';
-            return = "200 '{\"m.server\":\"matrix.sgiath.dev:443\"}'";
-          };
-
-          # client <-> server
-          "/.well-known/matrix/client" = {
-            extraConfig = ''
-              add_header Access-Control-Allow-Origin '*';
-              add_header Access-Control-Allow-Methods 'GET, POST, PUT, DELETE, OPTIONS';
-              add_header Access-Control-Allow-Headers 'X-Requested-With, Content-Type, Authorization';
-              add_header Cross-Origin-Resource-Policy 'cross-origin';
-
-              default_type application/json;
-            '';
-            return = "200 '{\"m.homeserver\":{\"base_url\":\"https://matrix.sgiath.dev\"},\"org.matrix.msc4143.rtc_foci\":[{\"type\":\"livekit\",\"livekit_service_url\":\"https://matrix-rtc.sgiath.dev\"}]}'";
-          };
-
-          # server support
-          "/.well-known/matrix/support" = {
-            extraConfig = ''
-              add_header Access-Control-Allow-Origin '*';
-              add_header Access-Control-Allow-Methods 'GET, POST, PUT, DELETE, OPTIONS';
-              add_header Access-Control-Allow-Headers 'X-Requested-With, Content-Type, Authorization';
-              add_header Cross-Origin-Resource-Policy 'cross-origin';
-
-              default_type application/json;
-            '';
-            return = "200 '{\"contacts\":[{\"email_address\":\"matrix@sgiath.dev\",\"matrix_id\":\"@sgiath:sgiath.dev\",\"role\":\"m.role.admin\"}]}'";
-          };
-
-          "/_matrix/" = {
-            proxyPass = "http://127.0.0.1:6167$request_uri";
-          };
-        };
-
+        # sgiath.dev itself (incl. /.well-known/matrix/*) is served by Cloudflare
+        # Workers from the sgiath.dev site repo.
         "matrix.sgiath.dev" = {
           # SSL
           onlySSL = true;

@@ -17,7 +17,7 @@ Role-based NixOS modules. Snowfall imports every `<dir>/default.nix` into every 
 | Gaming stack | `gaming/role.nix` | Steam/wine/gamescope/gamemode + `factorio-token` secret. |
 | Server root | `server/default.nix`, `server/nginx.nix` | Ceres cache-key trust; ACME Cloudflare, QUIC, shared nginx tuning. |
 | Large integrated service | `services/matrix.nix`, `services/hermes-agent.nix` | Secrets, TURN/LiveKit, vhosts, ordering. |
-| Reverse proxy template | `sites/nas.nix`, `sites/sinai-camp.nix`, `sites/sgiath-dev.nix` | Static/proxy patterns and rewrites. |
+| Reverse proxy template | `sites/nas.nix`, `sites/sinai-camp.nix` | Static/proxy patterns and rewrites. |
 | Game/app services | `services/foundryvtt.nix`, `server/minecraft.nix`, `services/factorio.nix` | Hardcoded ports/working dirs. |
 | Local runtime stacks | `services/docker.nix`, `services/ollama.nix`, `services/comfyui.nix` | Hook upstream `enable`; may add groups/services. |
 | Overlay-only agent servers | `services/opencode.nix`, `services/t3code.nix` | Nebula is the auth: nginx injects the upstream credential from a sops secret via `LoadCredential` at start. T3 Code also proxies peer servers as `t3-<peer>.sgiath.dev`. |

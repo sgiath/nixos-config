@@ -51,10 +51,12 @@
       };
     };
 
-    users.users.prosody.extraGroups = [ "nginx" ];
+    # The site itself moved to Cloudflare Workers, so no nginx vhost owns this
+    # cert anymore; it is issued via the default Cloudflare DNS-01 challenge.
     security.acme.certs = {
       "sgiath.dev" = {
-        postRun = "systemctl reload nginx.service; systemctl restart prosody.service";
+        group = "prosody";
+        postRun = "systemctl restart prosody.service";
       };
     };
   };

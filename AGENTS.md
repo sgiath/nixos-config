@@ -65,7 +65,7 @@ shells/default/default.nix        # dev/update toolchain
 | `sgiath.roles.laptop.enable` | `modules/nixos/laptop/default.nix` | NetworkManager + public DNS `resolv.conf`. |
 | `sgiath.roles.server.enable` | `modules/nixos/server/default.nix` | Main server-module gate; nginx, minecraft, trusts `secrets/ceres-cache.pub`. |
 | `sgiath.roles.gaming.enable` | `modules/nixos/gaming/default.nix` (body in `role.nix`) | Steam/wine/gamescope/gamemode, factorio token; pushes HM `roles.gaming`. |
-| `sgiath.sites.<name>.enable` | `modules/nixos/sites/default.nix` | nginx vhosts: `sgiath-dev`, `sinai-camp`, `nas`, `eve`, `ai`. |
+| `sgiath.sites.<name>.enable` | `modules/nixos/sites/default.nix` | nginx vhosts: `sinai-camp`, `nas`, `eve`, `ai`. `sgiath.dev` itself (site, Matrix/Nostr well-known, WKD) is Cloudflare Workers static assets deployed from the `sgiath.dev` repo, not Vesta. |
 | `services.<name>.enable` | `modules/nixos/services/<name>.nix` | Local services (upstream option or declared there). |
 | HM `sgiath.roles.*` | `modules/home/{terminal,desktop,gaming}/default.nix` | User-side role bodies; set from NixOS, not from homes. |
 | HM `sgiath.programs.*` | `modules/home/programs/default.nix` | `audio`, `bitcoin`, `chat`, `editors`, `email`, `browsers`. |

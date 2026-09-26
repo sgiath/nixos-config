@@ -56,23 +56,8 @@
             };
           };
         };
-
-        "sgiath.dev" = {
-          locations = {
-            "/.well-known/nostr.json" = {
-              extraConfig = ''
-                add_header Access-Control-Allow-Origin '*';
-                add_header Access-Control-Allow-Methods 'GET, POST, PUT, DELETE, OPTIONS';
-                add_header Access-Control-Allow-Headers 'X-Requested-With, Content-Type, Authorization';
-                add_header Cross-Origin-Resource-Policy 'cross-origin';
-
-                default_type application/json;
-
-                return 200 '{"names":{"_":"0000002855ad7906a7568bf4d971d82056994aa67af3cf0048a825415ac90672","niamh":"000000923dde9c287d0ac418785da8f66603225362bc59025fdb3c5cc5b93ce8"}}';
-              '';
-            };
-          };
-        };
+        # /.well-known/nostr.json on sgiath.dev is served by Cloudflare Workers
+        # from the sgiath.dev site repo.
       };
     };
   };
