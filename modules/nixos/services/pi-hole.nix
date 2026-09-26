@@ -5,8 +5,12 @@ let
   # names the same way Nix hosts do via networking.hosts. The lighthouse name
   # gets the LAN address so Mobile Nebula at home does not hairpin the router.
   vesta = nebula.peers.vesta;
+  lan = {
+    ip4 = "192.168.1.2";
+    ip6 = "fd39:f21:ea9::2";
+  };
   nebulaRecords = [
-    "192.168.1.2 ${nebula.domain}"
+    "${lan.ip4} ${nebula.domain}"
   ]
   ++ lib.concatLists (
     lib.mapAttrsToList (name: peer: [
@@ -18,6 +22,35 @@ let
     "${vesta.ip4} ${name}.sgiath.dev"
     "${vesta.ip6} ${name}.sgiath.dev"
   ]) nebula.services;
+  # Public HTTPS names served by this nginx, minus the overlay-only services
+  # above, resolve to Vesta directly instead of through Cloudflare or the
+  # router's NAT hairpin. localise-queries returns the IPv4 address on the
+  # interface the query arrived on: LAN clients get the LAN address, Mobile
+  # Nebula gets the overlay one from anywhere. dnsmasq localises only IPv4, so
+  # AAAA is the LAN ULA alone; RFC 6724 ranks ULA below IPv4, so off-LAN
+  # Nebula clients keep using IPv4. Omitting AAAA would forward it to Cloudflare.
+  publicNames = lib.subtractLists (map (name: "${name}.sgiath.dev") nebula.services) (
+    lib.concatLists (
+      lib.mapAttrsToList (
+        name: vhost:
+        lib.optionals (vhost.onlySSL || vhost.addSSL || vhost.forceSSL) ([ name ] ++ vhost.serverAliases)
+      ) config.services.nginx.virtualHosts
+    )
+  );
+  publicRecords = lib.concatMap (
+    name:
+    map (ip: "${ip} ${name}") [
+      lan.ip4
+      lan.ip6
+      vesta.ip4
+    ]
+  ) publicNames;
+  # Cloudflare's HTTPS records carry edge IP hints and an ECH config that nginx
+  # cannot accept, so answer "1 . alpn=h2,http/1.1" locally. Unlike local=,
+  # this keeps MX, TXT, SRV and subdomains of apex names resolving upstream.
+  publicHttpsRecords = map (
+    name: "dns-rr=${name},65,0001000001000c02683208687474702f312e31"
+  ) publicNames;
 in
 {
   options.services.pi-hole.enable = lib.mkEnableOption "pi-hole";
@@ -57,13 +90,20 @@ in
             "1.1.1.1"
             "1.0.0.1"
           ];
-          hosts = nebulaRecords;
+          hosts = nebulaRecords ++ publicRecords;
+          # The Turris resolver forwards every LAN query here without validating,
+          # because it would reject the local sgiath.dev and blocked answers as
+          # bogus. Validate here instead; all LAN traffic arrives from the router,
+          # so a per-client rate limit would throttle the whole network.
+          dnssec = true;
+          rateLimit.count = 0;
         };
         # Keep public AAAA and HTTPS records from routing LAN clients through
         # Cloudflare, and never forward overlay names upstream.
-        misc.dnsmasq_lines = map (name: "local=/${name}.sgiath.dev/") nebula.services ++ [
-          "local=/${nebula.domain}/"
-        ];
+        misc.dnsmasq_lines =
+          map (name: "local=/${name}.sgiath.dev/") nebula.services
+          ++ [ "local=/${nebula.domain}/" ]
+          ++ publicHttpsRecords;
       };
     };
 

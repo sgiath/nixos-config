@@ -27,11 +27,6 @@
       inputs.nixpkgs.follows = "nixpkgs";
     };
 
-    snowfall-flake = {
-      url = "github:snowfallorg/flake";
-      inputs.nixpkgs.follows = "nixpkgs";
-    };
-
     flake-utils-plus-fixed.url = "path:./vendor/flake-utils-plus-fixed";
 
     snowfall-lib = {
@@ -125,7 +120,7 @@
     };
 
     oh-my-pi = {
-      url = "github:can1357/oh-my-pi/v18.3.1";
+      url = "github:can1357/oh-my-pi/v18.3.2";
       inputs.nixpkgs.follows = "nixpkgs";
     };
 

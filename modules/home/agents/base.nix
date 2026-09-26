@@ -49,6 +49,7 @@
       # x86_64-linux binary GUI editor; absent from pkgs.${namespace} on aarch64.
       pkgs.${namespace}.delta
       pkgs.llm-agents.hermes-desktop
+      pkgs.llm-agents.grok-bot
       pkgs.${namespace}.openclaw-desktop
       pkgs.${namespace}.agent-orchestrator
     ]);

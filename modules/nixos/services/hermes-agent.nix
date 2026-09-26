@@ -124,22 +124,22 @@ in
 
           settings = {
             model = {
-              default = "claude-fable-5-1";
+              default = "claude-opus-5-5";
               provider = "anthropic";
             };
             fallback_model = {
-              model = "gpt-6-astra";
+              model = "gpt-6-sol";
               provider = "openai-codex";
             };
 
             auxiliary = {
               web_extract = {
                 provider = "openai-codex";
-                model = "gpt-5.6-luna";
+                model = "gpt-6-luna";
               };
               title_generation = {
                 provider = "openai-codex";
-                model = "gpt-5.6-luna";
+                model = "gpt-6-luna";
               };
               # vision = {};
               # compression = {};
@@ -214,8 +214,8 @@ in
             approvals.mode = "off";
 
             delegation = {
-              model = "gpt-5.6-sol";
-              provider = "openai-codex";
+              model = "claude-opus-5-5";
+              provider = "anthropic";
               max_concurrent_children = 10;
               max_spawn_depth = 2;
             };
@@ -237,11 +237,6 @@ in
               at_hour = 4;
             };
 
-            web = {
-              search_backend = "exa";
-              extract_backend = "firecrawl";
-            };
-
             dashboard = {
               theme = "niamh";
               public_url = "https://${host}";
@@ -254,14 +249,11 @@ in
 
             tts = {
               provider = "xai";
+              speed = 1.2;
+
               elevenlabs = {
                 model_id = "eleven_multilingual_v2";
                 voice_id = "XHqlxleHbYnK8xmft8Vq";
-              };
-
-              openai = {
-                model = "gpt-4o-mini-tts";
-                voice = "maple";
               };
 
               xai = {
@@ -278,7 +270,7 @@ in
               };
             };
 
-            x_search.model = "grok-4.6";
+            x_search.model = "grok-4.5";
 
             moa = {
               default_preset = "default";
@@ -287,8 +279,8 @@ in
                   enabled = true;
 
                   aggregator = {
-                    provider = "openai-codex";
-                    model = "gpt-6-astra";
+                    provider = "anthropic";
+                    model = "claude-opus-5-5";
                     reasoning_effort = "high";
                   };
 
@@ -305,7 +297,7 @@ in
                     }
                     {
                       provider = "xai-oauth";
-                      model = "grok-4.6";
+                      model = "grok-4.7";
                     }
                   ];
                 };

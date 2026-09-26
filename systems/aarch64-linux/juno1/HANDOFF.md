@@ -27,7 +27,7 @@ Design decisions already made (don't re-litigate without reason):
 
 ## Assumptions to verify on the real machine
 
-1. **RJ45 interface name `enP7s7`** (Realtek RTL8127, driver `r8127`). Taken from a forum `lshw` of a DGX Spark; the NVIDIA kernel should name it the same. Check with `ip -br link` / `lshw -class network -short` from the live USB. If it differs, fix `hardware.nix` (`defaultGateway6.interface` and the `interfaces` key). DHCP stays on as a fallback so a wrong name is not a brick.
+1. **RJ45 interface name `enP7s7`** (Realtek RTL8127, driver `r8127`). Taken from a forum `lshw` of a DGX Spark; the NVIDIA kernel should name it the same. Check with `ip -br link` / `lshw -class network -short` from the live USB. If it differs, fix the `interfaces` key in `hardware.nix`. DHCP stays on as a fallback so a wrong name is not a brick.
 2. **NVMe is `/dev/nvme0n1`** (`disko.nix`). `lsblk` before running disko.
 3. **Upstream input still evaluates against our nixpkgs**: run `nix flake update dgx-spark` and `nix eval --raw .#nixosConfigurations.juno1.config.system.build.toplevel.drvPath` from Ceres before installing. Their CI tracks nixos-unstable weekly, so the driver/kernel pairing (595.x on 6.17.13 as of writing) may have moved.
 4. **aarch64 builds of the HM closure** were never run: oh-my-pi, hermes-agent, opencode, herdr, crit, zed remote server, llm-agents.* all evaluate but may fail to build. Expect to gate a few more things on `isx86_64` in `modules/home/`.

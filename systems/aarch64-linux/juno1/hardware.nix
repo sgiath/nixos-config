@@ -10,7 +10,6 @@
   networking = {
     # DHCP stays on for the other ports so the box is reachable even if the
     # RJ45 name below turns out different on this unit.
-    defaultGateway6.interface = "enP7s7";
     interfaces = {
       # 10 GbE Realtek RTL8127 (r8127). The ConnectX-7 QSFP ports
       # (enp1s0f*np*, enP2p1s0f*np*) stay unconfigured until a second Spark exists.

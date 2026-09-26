@@ -49,7 +49,6 @@
   };
 
   networking = {
-    defaultGateway6.interface = "enp1s0";
     interfaces = {
       # 10 Gbps
       enp1s0 = {

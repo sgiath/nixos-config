@@ -28,16 +28,19 @@ let
 in
 {
   config = lib.mkIf config.sgiath.agents.enable {
-    home.packages = [
-      pkgs.llm-agents.opencode-desktop
-      pkgs.llm-agents.opencode2
+    home.packages = with pkgs.llm-agents; [
+      opencode
+      opencode-desktop
+
+      opencode2
+      opencode2-desktop
     ];
 
     programs.opencode = {
       enable = true;
       enableMcpIntegration = true;
       context = ./AGENTS.md;
-      package = pkgs.opencode;
+      package = pkgs.llm-agents.opencode;
 
       tui = {
         scroll_acceleration.enabled = true;
@@ -51,7 +54,7 @@ in
       settings = {
         autoupdate = false;
         model = "openai-codex/gpt-6-astra";
-        small_model = "xai-oauth/grok-4.6";
+        small_model = "openai-codex/gpt-6-luna";
         plugin = [ "opencode-claude-auth@latest" ];
         permission = {
           bash = {
@@ -103,7 +106,7 @@ in
     };
 
     programs.zsh.shellAliases = {
-      oc = lib.getExe pkgs.opencode;
+      oc = lib.getExe pkgs.llm-agents.opencode2;
     };
   };
 }

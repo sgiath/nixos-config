@@ -46,7 +46,6 @@
 
   networking = {
     useDHCP = false;
-    defaultGateway6.interface = "enp57s0";
     interfaces = {
       # 10G Aquantia, atlantic
       enp57s0 = {

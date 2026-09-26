@@ -34,7 +34,6 @@
       (lib.mkIf (!config.networking.networkmanager.enable) {
         networking = {
           defaultGateway = "192.168.1.1";
-          defaultGateway6.address = "fe80::1";
           dhcpcd = {
             denyInterfaces = [
               "veth*"
