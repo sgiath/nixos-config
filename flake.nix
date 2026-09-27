@@ -98,7 +98,7 @@
     };
 
     voxtype.url = "github:peteonrails/voxtype/v1.1.0";
-    comfyui.url = "github:utensils/comfyui-nix/v0.34.0";
+    comfyui.url = "github:utensils/comfyui-nix/v0.37.0";
 
     # NVIDIA DGX Spark (GB10, aarch64): NVIDIA 6.17 kernel, open driver, CUDA, ConnectX-7.
     dgx-spark = {

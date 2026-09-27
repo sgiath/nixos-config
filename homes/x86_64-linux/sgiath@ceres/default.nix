@@ -39,7 +39,7 @@
         "dev.zed.Zed"
       ];
     };
-    wallpaper = ../../../modules/home/desktop/wallpapers/waifu-lollipop.mp4;
+    wallpaper = ../../../modules/home/desktop/wallpapers/massier.jpg;
   };
 
   services = {

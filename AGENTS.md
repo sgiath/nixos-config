@@ -48,6 +48,7 @@ shells/default/default.nix        # dev/update toolchain
 | Custom package | `packages/<name>/` and `packages/default.nix` | Add/update package plus registry entry. |
 | Package updater tooling | `shells/default/default.nix` | Add updater dependencies here, not via `nix-shell` shebangs. |
 | Alternate nixpkgs package | `overlays/sgiath/default.nix` | Imports master/stable/ksa with repo channel config. |
+| Agent notes | `.agents/notes/` | Proposals and decision rationale; lifecycle and format in its `README.md`. |
 
 ## CODE MAP
 
@@ -141,3 +142,11 @@ update --juno1
 - Pi-hole (`services/pi-hole.nix`) resolves every SSL nginx vhost on Vesta (except the overlay-only `sgiath.nebula.services`) to Vesta directly. `localise-queries` answers `192.168.1.2` to LAN queries and `10.42.0.2` to queries over Nebula; AAAA is the LAN ULA `fd39:f21:ea9::2` only, because dnsmasq localises IPv4 only and A-only names forward AAAA upstream. A local `dns-rr` HTTPS record replaces Cloudflare's, whose edge hints and ECH config nginx cannot serve; MX/TXT/SRV and apex subdomains still resolve upstream. Public DNS still goes through Cloudflare/the public IP; Pallas uses public DNS and bypasses this.
 - LAN clients get the Turris (`192.168.1.1` via DHCPv4, its ULA via RA/DHCPv6) as DNS; its kresd forwards everything to Pi-hole (`resolver.common.forward_custom='pihole_…'`) with `ignore_root_key=1`, because kresd DNSSEC validation turns Pi-hole's local `sgiath.dev` records and block answers into SERVFAIL. Pi-hole does the DNSSEC validation and has no rate limit, since every LAN query reaches it from `192.168.1.1`.
 - `dnd5etools` has a separate image hash updater; package `update.sh` alone is incomplete if image assets changed.
+
+## Agent notes
+
+`.agents/notes/` contains durable proposals and decision records. Notes preserve rationale, alternatives, consequences, and required verification; they are not canonical product reference. Follow `.agents/notes/README.md` for lifecycle, classification, format, supersession, and archive rules.
+
+Before implementing anything, search `.agents/notes/proposed/` for a note that covers the work. The commit that implements it also moves the note to `implemented/`, rewritten in the implemented format, with links to it repaired; a partial implementation moves the shipped part and leaves the rest proposed. Never record progress inside a proposed note, and never move a note in a separate follow-up commit.
+
+Before writing or changing canonical docs (`README.md`), read the relevant active Agent Notes and implementation code. If implementation and notes diverge, report the divergence and clarify before documenting behavior.

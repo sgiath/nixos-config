@@ -47,8 +47,10 @@ mean. When a literal phrase is available, use it.
 
 If, while working or testing, you find a pre-existing bug, a performance concern, 
 or behavior the task doesn't mention, don't fix, optimize or extend it in this change 
-unless the requested behavior cannot work without it; report it as agent note in the 
-`.agents/notes/` directory. Where the task is ambiguous, implement the reading its wording and the 
+unless the requested behavior cannot work without it. Record it instead: a small or 
+routine finding gets a `FIXME:` comment at the affected code naming the problem; a finding 
+whose fix would touch multiple files or change architecture gets a proposed note in 
+`.agents/notes/`. Where the task is ambiguous, implement the reading its wording and the 
 surrounding code most directly support, state that assumption in your summary, and don't 
 build for the other readings as well. Verify your work however you like; scratch scripts 
 and quick checks need not be kept. Commit tests only where the task asks for them or this 
@@ -56,3 +58,11 @@ repository already keeps tests for this kind of change, sized like the neighbori
 files - roughly one focused test per stated behavior - and don't turn scratch checks into 
 additional permanent test files. This is about extras only: implement every behavior the 
 task asks for, completely.
+
+## Agent notes
+
+Before implementing, search `.agents/notes/proposed/` for a note that covers the work. The 
+commit or PR that implements it also moves the note to `implemented/`, rewritten in the 
+implemented format, with links to it repaired. Never move a note in a separate follow-up 
+commit, and never record progress inside a proposed note; split a partly implemented note 
+instead.
