@@ -52,7 +52,7 @@
       inputs.hyprland.follows = "hyprland";
     };
 
-    noctalia.url = "github:noctalia-dev/noctalia/v5.1.0";
+    noctalia.url = "github:noctalia-dev/noctalia/v5.2.0";
 
     btc-clients = {
       url = "github:emmanuelrosa/btc-clients-nix";
@@ -93,12 +93,12 @@
     };
 
     worktrunk = {
-      url = "github:max-sixty/worktrunk/v0.79.0";
+      url = "github:max-sixty/worktrunk/v0.80.0";
       inputs.nixpkgs.follows = "nixpkgs";
     };
 
     voxtype.url = "github:peteonrails/voxtype/v1.1.0";
-    comfyui.url = "github:utensils/comfyui-nix/v0.37.0";
+    comfyui.url = "github:utensils/comfyui-nix/v0.37.0-r1";
 
     # NVIDIA DGX Spark (GB10, aarch64): NVIDIA 6.17 kernel, open driver, CUDA, ConnectX-7.
     dgx-spark = {
@@ -120,7 +120,7 @@
     };
 
     oh-my-pi = {
-      url = "github:can1357/oh-my-pi/v18.3.2";
+      url = "github:can1357/oh-my-pi/v18.4.3";
       inputs.nixpkgs.follows = "nixpkgs";
     };
 
@@ -129,14 +129,19 @@
       inputs.nixpkgs.follows = "nixpkgs";
     };
 
-    # pin to v1.18.30
+    tuios = {
+      url = "github:Gaurav-Gosain/tuios/v0.8.0";
+      inputs.nixpkgs.follows = "nixpkgs";
+      inputs.treefmt-nix.follows = "treefmt-nix";
+    };
+
     opencode = {
-      url = "github:anomalyco/opencode/v1.18.30";
+      url = "github:anomalyco/opencode/v1.18.33";
       inputs.nixpkgs.follows = "nixpkgs";
     };
 
     crit = {
-      url = "github:tomasz-tomczyk/crit/v0.20.3";
+      url = "github:tomasz-tomczyk/crit/v0.21.0";
       inputs.nixpkgs.follows = "nixpkgs";
     };
   };

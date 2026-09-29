@@ -12,6 +12,7 @@
       iputils
       lsof
       mprocs
+      tuios
       presenterm
       rclone
       jq
