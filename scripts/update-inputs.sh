@@ -15,7 +15,8 @@ Usage: $(basename "$0") [--dry-run] [--no-lock] [--no-packages]
 
 Updates GitHub flake inputs in flake.nix whose refs look like release tags
 to each repository's latest GitHub release tag, then runs package update scripts
-from packages/*/update.sh.
+from packages/*/update.sh and bumps the Executor container image
+(scripts/update-executor.sh).
 
 Put one of these comments immediately above an input to pin it instead:
   # pin to v1.2.3
@@ -170,6 +171,17 @@ run_package_updaters() {
   fi
 }
 
+finish() {
+  run_package_updaters
+  echo "==> Updating Executor image"
+  if [[ "${DRY_RUN}" -eq 1 ]]; then
+    "${SCRIPT_DIR}/update-executor.sh" --dry-run
+  else
+    "${SCRIPT_DIR}/update-executor.sh"
+  fi
+  echo "==> Done"
+}
+
 declare -a INPUTS=()
 declare -a REPOS=()
 declare -a CURRENT_REFS=()
@@ -232,8 +244,7 @@ done <"${FLAKE_NIX}"
 
 if [[ "${#INPUTS[@]}" -eq 0 ]]; then
   echo "==> No GitHub flake inputs with release-like refs found"
-  run_package_updaters
-  echo "==> Done"
+  finish
   exit 0
 fi
 
@@ -287,8 +298,7 @@ done
 
 if [[ "${#CHANGED_INPUTS[@]}" -eq 0 ]]; then
   echo "==> No flake input refs need updating"
-  run_package_updaters
-  echo "==> Done"
+  finish
   exit 0
 fi
 
@@ -297,8 +307,7 @@ if [[ "${DRY_RUN}" -eq 1 ]]; then
   for input in "${CHANGED_INPUTS[@]}"; do
     echo "    ${input}"
   done
-  run_package_updaters
-  echo "==> Done"
+  finish
   exit 0
 fi
 
@@ -321,6 +330,4 @@ done
 mv "${tmp_file}" "${FLAKE_NIX}"
 trap - EXIT
 
-run_package_updaters
-
-echo "==> Done"
+finish

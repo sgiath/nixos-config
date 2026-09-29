@@ -62,7 +62,7 @@ rerun the default destructive `live-install` to apply the recipient change.
 ## Usage
 
 ```bash
-# update release pinned flake inputs and packages
+# update release pinned flake inputs, packages and the Executor image
 ./scripts/update-inputs.sh
 
 # update branch inputs

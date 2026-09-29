@@ -3,30 +3,13 @@ let
   cfg = config.services.executor;
   nebula = config.sgiath.nebula;
   # Upstream ships only a Docker image (Bun workspace monorepo, no Nix packaging).
-  # Bump the tag manually; `latest` would silently change the deployed version.
-  version = "1.6.8";
+  # Pinned rather than `latest` so every deploy is recorded and a bump restarts
+  # the container; scripts/update-executor.sh (run by update-inputs.sh) bumps it.
+  version = "1.6.10";
   # The distroless image runs as this fixed uid; it must own the data volume.
   uid = 65532;
   port = 4788;
   host = "executor.sgiath.dev";
-  # FIXME: 1.6.8 declares only the authorization_code grant in its Client ID
-  # Metadata Document; Shortcut rejects the consent because it issues refresh
-  # tokens. Fixed upstream after 1.6.8 (UsefulSoftwareCo/executor#1974). Drop
-  # this override and the location serving it once `version` includes it.
-  cimdPath = "/api/oauth/client-id-metadata/default.json";
-  cimdDocument = builtins.toJSON {
-    client_id = "https://${host}${cimdPath}";
-    client_name = "Executor";
-    client_uri = "https://${host}";
-    redirect_uris = [ "https://${host}/api/oauth/callback" ];
-    grant_types = [
-      "authorization_code"
-      "refresh_token"
-    ];
-    response_types = [ "code" ];
-    token_endpoint_auth_method = "none";
-    application_type = "web";
-  };
 in
 {
   options.services.executor = {
@@ -80,12 +63,6 @@ in
             proxyPass = "http://127.0.0.1:${toString port}";
             extraConfig = "allow all;";
           };
-
-          "= ${cimdPath}".extraConfig = ''
-            allow all;
-            default_type application/json;
-            return 200 '${cimdDocument}';
-          '';
 
           "/" = {
             proxyPass = "http://127.0.0.1:${toString port}";
