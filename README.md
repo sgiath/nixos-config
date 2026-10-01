@@ -75,6 +75,14 @@ update
 update --vesta
 ```
 
+Pi-hole FTL carries a local backport of [FTL #2939](https://github.com/pi-hole/FTL/pull/2939)
+to build with GCC 16 while retaining upstream's `-Werror`. Build just that package
+without switching Vesta:
+
+```bash
+nix build --no-update-lock-file --no-link '.#nixosConfigurations.vesta.config.services.pihole-ftl.package'
+```
+
 ## Desktop graphics
 
 Desktop hosts use 64-bit Mesa, and 32-bit Mesa on x86_64, from Hyprland's
