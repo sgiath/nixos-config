@@ -75,6 +75,13 @@ update
 update --vesta
 ```
 
+## Desktop graphics
+
+Desktop hosts use 64-bit Mesa, and 32-bit Mesa on x86_64, from Hyprland's
+pinned nixpkgs input. Keep these drivers aligned with the upstream compositor:
+newer system Mesa can require glibc symbols its pinned Hyprland cannot load,
+causing startup to fail with `Cannot open backend: no allocator available`.
+
 ## Secrets
 
 Secrets are SOPS-encrypted under `secrets/`. Nix evaluation and builds need only

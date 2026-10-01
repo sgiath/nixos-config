@@ -45,6 +45,10 @@
       # Hermes
       pkgs.llm-agents.hermes-agent
     ]
+    # Upstream ships only an amd64 Linux build; absent from pkgs.${namespace} on aarch64.
+    ++ (lib.optionals pkgs.stdenv.hostPlatform.isx86_64 [
+      pkgs.${namespace}.whiteboard
+    ])
     ++ (lib.optionals config.sgiath.roles.desktop.enable [
       # x86_64-linux binary GUI editor; absent from pkgs.${namespace} on aarch64.
       pkgs.${namespace}.delta

@@ -120,23 +120,23 @@
     };
 
     oh-my-pi = {
-      url = "github:can1357/oh-my-pi/v18.4.3";
+      url = "github:can1357/oh-my-pi/v18.4.8";
       inputs.nixpkgs.follows = "nixpkgs";
     };
 
     herdr = {
-      url = "github:herdrdev/herdr/v0.9.1";
+      url = "github:herdrdev/herdr/v0.9.2";
       inputs.nixpkgs.follows = "nixpkgs";
     };
 
     tuios = {
-      url = "github:Gaurav-Gosain/tuios/v0.8.0";
+      url = "github:Gaurav-Gosain/tuios/v0.8.3";
       inputs.nixpkgs.follows = "nixpkgs";
       inputs.treefmt-nix.follows = "treefmt-nix";
     };
 
     opencode = {
-      url = "github:anomalyco/opencode/v1.18.33";
+      url = "github:anomalyco/opencode/v1.18.34";
       inputs.nixpkgs.follows = "nixpkgs";
     };
 
@@ -233,7 +233,7 @@
 
       homes.modules = with inputs; [
         hyprland.homeManagerModules.default
-        noctalia.homeModules.default
+        # noctalia.homeModules.default
         sops-nix.homeManagerModules.sops
         nix-index-database.homeModules.nix-index
         stylix.homeModules.stylix

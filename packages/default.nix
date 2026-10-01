@@ -14,5 +14,6 @@ pkgs: {
   quickshell = pkgs.callPackage ./quickshell { };
   relay-tester = pkgs.callPackage ./relay-tester { };
   update = pkgs.callPackage ./update { };
+  whiteboard = pkgs.callPackage ./whiteboard { };
   xurl = pkgs.callPackage ./xurl { };
 }

@@ -34,8 +34,11 @@ in
         };
       };
 
+      # `Z` re-owns existing files too: images before 1.6.10 ran as root and left
+      # root-owned secrets/database behind, which the uid-65532 image cannot read.
       systemd.tmpfiles.rules = [
         "d /data/executor 0750 ${toString uid} ${toString uid} -"
+        "Z /data/executor - ${toString uid} ${toString uid} -"
       ];
 
       services.nginx.virtualHosts.${host} = {

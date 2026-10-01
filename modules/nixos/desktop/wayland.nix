@@ -1,11 +1,21 @@
 {
   config,
+  inputs,
   lib,
   pkgs,
   ...
 }:
+let
+  hyprlandPkgs = inputs.hyprland.inputs.nixpkgs.legacyPackages.${pkgs.stdenv.hostPlatform.system};
+in
 {
   config = lib.mkIf config.sgiath.roles.desktop.enable {
+    # The upstream compositor uses its own nixpkgs; newer Mesa can require a newer glibc.
+    hardware.graphics = {
+      package = hyprlandPkgs.mesa;
+      package32 = lib.mkIf pkgs.stdenv.hostPlatform.isx86_64 hyprlandPkgs.pkgsi686Linux.mesa;
+    };
+
     environment.sessionVariables = {
       NIXOS_OZONE_WL = "1"; # hint electron apps to use wayland
       MOZ_ENABLE_WAYLAND = "1"; # ensure enable wayland for Firefox

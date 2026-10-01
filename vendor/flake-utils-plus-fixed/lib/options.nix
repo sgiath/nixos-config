@@ -55,6 +55,6 @@ in
       }) inputs
     );
 
-    nix.nixPath = mkIf cfg.generateNixPathFromInputs [ "/etc/nix/inputs" ];
+    nix.settings.nix-path = mkIf cfg.generateNixPathFromInputs [ "/etc/nix/inputs" ];
   };
 }

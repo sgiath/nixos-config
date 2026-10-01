@@ -35,11 +35,11 @@
 
 stdenv.mkDerivation (finalAttrs: {
   pname = "agent-orchestrator";
-  version = "0.13.1";
+  version = "0.13.2";
 
   src = fetchurl {
     url = "https://github.com/Untrivial-ai/agent-orchestrator/releases/download/v${finalAttrs.version}/agent-orchestrator-linux-x64.deb";
-    hash = "sha256-Gj9OQ9VAc9DP2TSwhOIlqd1T/mAwLNS41OHQhTLDH88=";
+    hash = "sha256-CdltN19zyyE1hTv2/83936nQUF/t+MH7nJONx4ABmak=";
   };
 
   sourceRoot = "root";

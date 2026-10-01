@@ -11,9 +11,9 @@ in
 {
   config = lib.mkIf config.sgiath.enable {
     nix = {
-      nixPath = [ "nixpkgs=${inputs.nixpkgs}" ];
       package = pkgs.nixVersions.latest;
       settings = {
+        nix-path = [ "nixpkgs=${inputs.nixpkgs}" ];
         auto-optimise-store = true;
         require-sigs = true;
         trusted-users = [

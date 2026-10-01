@@ -15,10 +15,7 @@ in
         aspellEnv
         claws-mail
         w3m
-
-        protonmail-bridge-gui
         protonmail-desktop
-
         proton-vpn
         proton-pass
         proton-pass-cli
@@ -120,16 +117,6 @@ in
     };
 
     xdg = {
-      configFile."autostart/ProtonMailBridge.desktop".text = ''
-        [Desktop Entry]
-        Type=Application
-        Name=Proton Mail Bridge
-        Exec=${lib.getExe pkgs.protonmail-bridge-gui} --no-window
-        Icon=protonmail-bridge-gui
-        Terminal=false
-        X-GNOME-Autostart-enabled=true
-      '';
-
       desktopEntries.aerc = {
         name = "aerc";
         genericName = "Mail Client";
@@ -190,7 +177,5 @@ in
         }
       ];
     };
-
-    services.protonmail-bridge.enable = false;
   };
 }
