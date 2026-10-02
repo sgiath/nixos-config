@@ -1,6 +1,7 @@
 pkgs: {
   agent-orchestrator = pkgs.callPackage ./agent-orchestrator { };
   bird = pkgs.callPackage ./bird { };
+  blender-mcp = pkgs.callPackage ./blender-mcp { };
   burn-iso = pkgs.callPackage ./burn-iso { };
   clawpatch = pkgs.callPackage ./clawpatch { };
   clear-cache = pkgs.callPackage ./clear-cache { };

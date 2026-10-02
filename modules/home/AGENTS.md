@@ -15,7 +15,7 @@ Home Manager modules for user `sgiath`, split by role. Snowfall imports every `<
 | Own Quickshell config (QML in `desktop/quickshell/`, Stylix theme JSON, qmlls) | `desktop/quickshell.nix` | `programs.quickshell.enable`; `sgiath.desktop.quickshell.live` symlinks `~/nixos/.../quickshell` for hot reload |
 | Noctalia settings and layer rules | `desktop/noctalia.nix` | `programs.noctalia.enable` |
 | Hyprland shards and monitor/workspace rules | `desktop/hyprland/` | Has its own `AGENTS.md`. |
-| Desktop app groups | `programs/` | `sgiath.programs.{audio,bitcoin,browsers,chat,editors,email}.enable` |
+| Desktop app groups | `programs/` | `sgiath.programs.{audio,bitcoin,blender,browsers,chat,editors,email}.enable` |
 | Games (lutris, prismlauncher, factorio) | `gaming/` | `sgiath.roles.gaming.enable` |
 | Agent tooling | `agents/` | `sgiath.agents.enable`; has its own `AGENTS.md`. |
 | CrazyEgg / Remote work setups | `work/` | `sgiath.work.{crazyegg,remote}.enable` |
@@ -28,6 +28,8 @@ Themes referenced by `desktop/stylix.nix` live in `themes/` at the repo root.
 - Group options are declared in the group's `default.nix` (`programs/default.nix`, `work/default.nix`); each feature keeps its `config = mkIf ...` in its own file.
 - The desktop role enables `sgiath.programs.*`; Hyprland-adjacent files gate on `sgiath.roles.desktop.enable`, upstream-style files on `programs.<name>.enable`.
 - Agent tooling intentionally writes some tool-local config/memory files; do not over-normalize it into pure Nix state.
+- Shared MCP servers go in `programs.mcp.servers`; Claude Code and OpenCode read them through `enableMcpIntegration`, and `agents/omp.nix` renders them into `~/.omp/agent/mcp.json`, so OMP's `/mcp add` at user level does not persist. Codex's `~/.codex/config.toml` is unmanaged.
+- `programs/blender.nix` is enabled per host (Ceres), not by the desktop role, because of its closure size. With agents enabled it wraps Blender to load the Blender Lab MCP add-on (`bl_ext.system.mcp`, localhost:9876, `--online-mode`) and registers the `blender` MCP server.
 - `agents/t3code.nix` owns the T3 Code CLI, optional desktop package, and user service. The server binds the host's Nebula address (never a wildcard); on Vesta the NixOS `services.t3code` module enables it on loopback and exposes it as `t3.sgiath.dev`.
 - `agents/herdr-web.nix` owns the `herdr-server` (headless herdr, `X-SwitchMethod = keep-old` so a switch never kills agent panes) and `herdr-web` user services; on Vesta the NixOS `services.herdr-web` module enables them and exposes the UI as `herdr.sgiath.dev`. `agents/herdr-thread.nix` provides `herdr-thread <branch> <prompt>` (worktree + herdr workspace + OMP).
 

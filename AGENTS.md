@@ -69,7 +69,7 @@ shells/default/default.nix        # dev/update toolchain
 | `sgiath.sites.<name>.enable` | `modules/nixos/sites/default.nix` | nginx vhosts: `sinai-camp`, `nas`, `eve`, `ai`. `sgiath.dev` itself (site, Matrix/Nostr well-known, WKD) is Cloudflare Workers static assets deployed from the `sgiath.dev` repo, not Vesta. |
 | `services.<name>.enable` | `modules/nixos/services/<name>.nix` | Local services (upstream option or declared there). |
 | HM `sgiath.roles.*` | `modules/home/{terminal,desktop,gaming}/default.nix` | User-side role bodies; set from NixOS, not from homes. |
-| HM `sgiath.programs.*` | `modules/home/programs/default.nix` | `audio`, `bitcoin`, `chat`, `editors`, `email`, `browsers`. |
+| HM `sgiath.programs.*` | `modules/home/programs/default.nix` | `audio`, `bitcoin`, `chat`, `editors`, `email`, `browsers` (desktop role); `blender` (per host, Blender Lab MCP for agents). |
 | HM `sgiath.work.*` | `modules/home/work/default.nix` | `crazyegg`, `remote`. |
 | HM `sgiath.desktop.*` | `modules/home/desktop/default.nix` | `shell` (`noctalia`/`sgiath`, login default; `desktop-shell` switches live), `quickshell.live` (QML from `~/nixos` checkout with hot reload). |
 | `packages/default.nix` attrs | `packages/default.nix` | Hand-maintained local package registry. |

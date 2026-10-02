@@ -33,6 +33,10 @@ All MCP and their tools are exposed through the `executor` app - do not assume t
 because you don't have direct integration, that it is not available to you. Search the 
 `executor` tools first.
 
+Exception: Blender is a local `blender` MCP server, present only on hosts with Blender. Its
+`*_for_cli` tools open a `.blend` file in background Blender; the other tools act on the
+user's running Blender GUI and fail when it is closed.
+
 ## Writing density
 
 Mannered prose substitutes metaphor and flourish for direct statement. Instead of "a parameter 

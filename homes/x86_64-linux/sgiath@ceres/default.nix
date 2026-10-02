@@ -20,6 +20,8 @@
     };
   };
 
+  sgiath.programs.blender.enable = true;
+
   sgiath.work = {
     crazyegg.enable = true;
     remote.enable = true;
