@@ -2,6 +2,7 @@
   config,
   lib,
   pkgs,
+  osConfig,
   apiKeyWrapper,
   ...
 }:
@@ -21,8 +22,11 @@ in
 
     host = lib.mkOption {
       type = lib.types.str;
-      default = "0.0.0.0";
-      description = "Interface to bind. `0.0.0.0` is reachable on the LAN from other machines and phones.";
+      # Never a wildcard: the server must not answer outside the overlay.
+      # Vesta's NixOS `services.t3code` sets loopback behind nginx.
+      default = osConfig.sgiath.nebula.peers.${osConfig.networking.hostName}.ip4;
+      defaultText = lib.literalExpression "osConfig.sgiath.nebula.peers.\${hostName}.ip4";
+      description = "Interface to bind; this host's Nebula address by default, so Vesta can proxy it as `t3-<host>.sgiath.dev`.";
     };
 
     port = lib.mkOption {
@@ -60,12 +64,15 @@ in
 
         Service = {
           # `start --no-browser` rather than `serve`: serve prints a pairing
-          # token on every launch, which would land in the journal.
+          # token on every launch. `start` still logs a one-time pairing URL
+          # at info level, so cap the log level to keep it out of the journal.
           ExecStart = "${lib.getExe apiKeyWrapper} ${lib.getExe cfg.package} ${
             lib.escapeShellArgs (
               [
                 "start"
                 "--no-browser"
+                "--log-level"
+                "warn"
                 "--host"
                 cfg.host
                 "--port"
@@ -80,6 +87,8 @@ in
             "PATH=/run/wrappers/bin:${config.home.profileDirectory}/bin:/run/current-system/sw/bin"
           ];
           KillMode = "mixed";
+          # Also covers boot: a user unit cannot order after nebula, so the
+          # listen on the overlay address fails until the interface is up.
           Restart = "always";
           RestartSec = 5;
           UMask = "0077";

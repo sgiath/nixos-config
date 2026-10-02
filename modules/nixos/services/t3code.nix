@@ -43,7 +43,11 @@ in
     { sgiath.nebula.services = lib.attrNames environments; }
 
     (lib.mkIf (config.sgiath.roles.server.enable && cfg.enable) {
-      home-manager.users.sgiath.services.t3code.enable = true;
+      # nginx is the only way in; peers bind their overlay address instead.
+      home-manager.users.sgiath.services.t3code = {
+        enable = true;
+        host = "127.0.0.1";
+      };
 
       sops.secrets = lib.mapAttrs' (
         _: env:
