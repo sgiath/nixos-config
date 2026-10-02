@@ -1,34 +1,18 @@
 { config, lib, ... }:
 let
   nebula = config.sgiath.nebula;
-  # Local records so phones and other non-Nix LAN clients resolve overlay
-  # names the same way Nix hosts do via networking.hosts. The lighthouse name
-  # gets the LAN address so Mobile Nebula at home does not hairpin the router.
+  # Local records so phones and other non-Nix clients resolve overlay names the
+  # same way Nix hosts do via networking.hosts. Records are Nebula IPv4 only;
+  # the lighthouse name itself has no local record and resolves upstream.
   vesta = nebula.peers.vesta;
-  lan = {
-    ip4 = "192.168.1.2";
-    ip6 = "fd39:f21:ea9::2";
-  };
-  nebulaRecords = [
-    "${lan.ip4} ${nebula.domain}"
-  ]
-  ++ lib.concatLists (
-    lib.mapAttrsToList (name: peer: [
-      "${peer.ip4} ${name}.${nebula.domain}"
-      "${peer.ip6} ${name}.${nebula.domain}"
-    ]) nebula.peers
-  )
-  ++ lib.concatMap (name: [
-    "${vesta.ip4} ${name}.sgiath.dev"
-    "${vesta.ip6} ${name}.sgiath.dev"
-  ]) nebula.services;
+  peerNames = lib.mapAttrsToList (name: _: "${name}.${nebula.domain}") nebula.peers;
+  nebulaRecords =
+    lib.mapAttrsToList (name: peer: "${peer.ip4} ${name}.${nebula.domain}") nebula.peers
+    ++ map (name: "${vesta.ip4} ${name}.sgiath.dev") nebula.services;
   # Public HTTPS names served by this nginx, minus the overlay-only services
-  # above, resolve to Vesta directly instead of through Cloudflare or the
-  # router's NAT hairpin. localise-queries returns the IPv4 address on the
-  # interface the query arrived on: LAN clients get the LAN address, Mobile
-  # Nebula gets the overlay one from anywhere. dnsmasq localises only IPv4, so
-  # AAAA is the LAN ULA alone; RFC 6724 ranks ULA below IPv4, so off-LAN
-  # Nebula clients keep using IPv4. Omitting AAAA would forward it to Cloudflare.
+  # above, resolve to Vesta's Nebula address instead of through Cloudflare or
+  # the router's NAT hairpin. They have no local AAAA, so AAAA queries go
+  # upstream and IPv6 clients get Cloudflare where the name is proxied.
   publicNames = lib.subtractLists (map (name: "${name}.sgiath.dev") nebula.services) (
     lib.concatLists (
       lib.mapAttrsToList (
@@ -37,14 +21,7 @@ let
       ) config.services.nginx.virtualHosts
     )
   );
-  publicRecords = lib.concatMap (
-    name:
-    map (ip: "${ip} ${name}") [
-      lan.ip4
-      lan.ip6
-      vesta.ip4
-    ]
-  ) publicNames;
+  publicRecords = map (name: "${vesta.ip4} ${name}") publicNames;
   # Cloudflare's HTTPS records carry edge IP hints and an ECH config that nginx
   # cannot accept, so answer "1 . alpn=h2,http/1.1" locally. Unlike local=,
   # this keeps MX, TXT, SRV and subdomains of apex names resolving upstream.
@@ -98,11 +75,11 @@ in
           dnssec = true;
           rateLimit.count = 0;
         };
-        # Keep public AAAA and HTTPS records from routing LAN clients through
-        # Cloudflare, and never forward overlay names upstream.
+        # Keep public HTTPS records from routing clients through Cloudflare,
+        # and never forward overlay names upstream.
         misc.dnsmasq_lines =
           map (name: "local=/${name}.sgiath.dev/") nebula.services
-          ++ [ "local=/${nebula.domain}/" ]
+          ++ map (name: "local=/${name}/") peerNames
           ++ publicHttpsRecords;
       };
     };

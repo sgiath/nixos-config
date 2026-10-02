@@ -45,3 +45,4 @@ nix build '.#<package>'
 - Some packages disable checks because upstream tests need network or external services (`nak`, `relay-tester`, `eve-flipper`).
 - `kimi-webbridge` versions from HTTP `Last-Modified`, not release tags.
 - `linear-cli` uses fixed-output hashing rather than a normal source build.
+- `herdr-web-ui` hashes its `bun install` output as a fixed-output `node_modules` derivation (`.#herdr-web-ui.node_modules`); bun fetches only the build platform's prebuilts, so the package is x86_64-linux only. Its `update.sh` ignores the upstream `remote-v*` bridge-bundle tags.

@@ -1,4 +1,7 @@
-{ config, ... }:
+{ config, lib, ... }:
+let
+  vesta = config.sgiath.nebula.peers.vesta;
+in
 {
   imports = [
     ./hardware.nix
@@ -44,6 +47,14 @@
       mode = "0400";
     };
   };
+
+  # herdr.sgiath.dev on Vesta drives this PC's herdr as a remote PC: it logs
+  # in with its own key (secrets/vesta.yaml), installs its bridge runtime and
+  # forwards the bridge's loopback port. Only from Vesta's overlay addresses,
+  # and only forwarding to loopback.
+  users.users.sgiath.openssh.authorizedKeys.keys = [
+    ''from="${vesta.ip4},${vesta.ip6}",restrict,port-forwarding,permitopen="127.0.0.1:*" ${lib.fileContents ../../../secrets/herdr-web-ceres.pub}''
+  ];
 
   nix.settings.secret-key-files = [ config.sops.secrets.nix-signing-key.path ];
 }

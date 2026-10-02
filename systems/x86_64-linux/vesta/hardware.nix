@@ -49,6 +49,16 @@
   };
 
   networking = {
+    # Both NICs sit on 192.168.1.0/24 and every Turris port forward targets .2.
+    # Wildcard UDP sockets (Nebula, TURN, LiveKit) reply from the source of the
+    # default route; replies from .3 miss the router's DNAT conntrack entry and
+    # never reach clients behind NAT (mobile networks).
+    defaultGateway = {
+      address = "192.168.1.1";
+      interface = "enp1s0";
+      source = "192.168.1.2";
+    };
+
     interfaces = {
       # 10 Gbps
       enp1s0 = {

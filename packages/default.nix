@@ -7,6 +7,7 @@ pkgs: {
   delta = pkgs.callPackage ./delta { };
   dnd5etools = pkgs.callPackage ./dnd5etools { };
   fix-images = pkgs.callPackage ./fix-images { };
+  herdr-web-ui = pkgs.callPackage ./herdr-web-ui { };
   katrain = pkgs.callPackage ./katrain { };
   live-install = pkgs.callPackage ./live-install { };
   nak = pkgs.callPackage ./nak { };

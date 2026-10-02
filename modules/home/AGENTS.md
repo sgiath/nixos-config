@@ -29,6 +29,7 @@ Themes referenced by `desktop/stylix.nix` live in `themes/` at the repo root.
 - The desktop role enables `sgiath.programs.*`; Hyprland-adjacent files gate on `sgiath.roles.desktop.enable`, upstream-style files on `programs.<name>.enable`.
 - Agent tooling intentionally writes some tool-local config/memory files; do not over-normalize it into pure Nix state.
 - `agents/t3code.nix` owns the T3 Code CLI, optional desktop package, and user service. The server binds the host's Nebula address (never a wildcard); on Vesta the NixOS `services.t3code` module enables it on loopback and exposes it as `t3.sgiath.dev`.
+- `agents/herdr-web.nix` owns the `herdr-server` (headless herdr, `X-SwitchMethod = keep-old` so a switch never kills agent panes) and `herdr-web` user services; on Vesta the NixOS `services.herdr-web` module enables them and exposes the UI as `herdr.sgiath.dev`. `agents/herdr-thread.nix` provides `herdr-thread <branch> <prompt>` (worktree + herdr workspace + OMP).
 
 ## ANTI-PATTERNS
 

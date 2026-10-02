@@ -35,6 +35,8 @@
     [[pre-start]]
     invalidate-mix-format-cache = "if [ -f .formatter.exs ]; then touch .formatter.exs; fi"
 
+    # FIXME: `direnv allow` exits 1 in repositories without an .envrc, which
+    # fails `wt switch --create` there; guard it with `[ -f .envrc ]`.
     [[pre-start]]
     direnv = "direnv allow"
 
