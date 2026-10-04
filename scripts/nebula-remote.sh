@@ -7,10 +7,10 @@
 # Usage: scripts/nebula-remote.sh <peer> [out-file]
 # Example: scripts/nebula-remote.sh mac
 #
-# The peer accepts only SSH from vesta (herdr.sgiath.dev drives it as a remote
-# PC); the NixOS hosts in turn accept nothing from it. The output embeds the
-# private key; it defaults to $XDG_RUNTIME_DIR (tmpfs). Move it to the peer,
-# install it, then delete it.
+# The peer accepts only vesta: SSH (herdr.sgiath.dev drives it as a remote PC)
+# and T3 Code (proxied as t3-<peer>.sgiath.dev); the NixOS hosts in turn
+# accept nothing from it. The output embeds the private key; it defaults to
+# $XDG_RUNTIME_DIR (tmpfs). Move it to the peer, install it, then delete it.
 set -euo pipefail
 
 SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
@@ -95,7 +95,7 @@ punchy:
   respond: true
 
 # Outbound is open, but every NixOS host drops what this peer starts; inbound
-# is SSH from vesta and nothing else.
+# is SSH and T3 Code from vesta and nothing else.
 firewall:
   outbound:
     - port: any
@@ -103,6 +103,9 @@ firewall:
       host: any
   inbound:
     - port: 22
+      proto: tcp
+      host: vesta
+    - port: 3773
       proto: tcp
       host: vesta
 EOF

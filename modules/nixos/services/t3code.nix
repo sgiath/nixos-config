@@ -18,7 +18,10 @@ let
   # t3-<peer>.sgiath.dev proxied to their overlay address so the HTTPS web
   # app can add them ("Add environment" with a `t3 pair` code from that
   # peer, once per browser).
-  remotes = [ "ceres" ];
+  remotes = [
+    "ceres"
+    "mac"
+  ];
   environments = {
     t3 = {
       upstream = "http://127.0.0.1:${toString port}";
