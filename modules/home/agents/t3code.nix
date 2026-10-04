@@ -101,7 +101,7 @@ in
       wayland.windowManager.hyprland.settings.bind = [
         {
           _args = [
-            "CTRL + SHIFT + 2"
+            "SUPER + D"
             (lib.generators.mkLuaInline ''hl.dsp.global("com.t3tools.T3Code:capture-window")'')
           ];
         }
