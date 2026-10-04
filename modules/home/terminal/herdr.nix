@@ -33,7 +33,7 @@ in
 {
   programs.herdr = lib.mkIf config.sgiath.roles.terminal.enable {
     enable = true;
-    package = pkgs.herdr;
+    package = lib.mkDefault pkgs.herdr;
     settings = {
       onboarding = false;
 

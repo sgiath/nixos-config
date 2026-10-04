@@ -165,9 +165,19 @@ remote PCs in the same sidebar, and web push alerts. On Vesta,
 `127.0.0.1:7317`; nginx adds the shared token to every overlay request, so
 Nebula membership is the login.
 
+- Ceres also runs `herdr-server.service`, after the graphical session imports
+  its display environment. The installed `herdr` launcher routes both local
+  startup and the remote bridge's `herdr server` through that unit; an SSH
+  connection cannot start the default daemon with a headless environment.
+  The login terminal waits for Herdr's API and client sockets to be ready.
+  Remote access requires an active graphical login on Ceres. Logging out
+  stops its daemon and panes, so finish agents before ending that session.
+  Initial deployment refuses to replace an existing unmanaged daemon;
+  install for the next reboot or retire it after its agents finish.
 - A switch never restarts `herdr-server.service`, because stopping it kills
   every agent. After a herdr bump, run
-  `systemctl --user restart herdr-server` on Vesta when no thread is running.
+  `systemctl --user restart herdr-server` on the affected host when no thread
+  is running.
 - `herdr-web.service` reads `herdr-web-token` from `secrets/vesta.yaml` when it
   starts; restart it after rotating the token.
 - `~/.config/herdr-web-ui` on Vesta holds paired devices, the remote PC roster

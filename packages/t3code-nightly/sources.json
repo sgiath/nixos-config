@@ -1,0 +1,11 @@
+{
+  "version": "0.0.46-nightly.20261004.2644",
+  "x86_64-linux": {
+    "cli": "sha256-X54pzycSyHc2VWyZ6lgGBrOZiXy4RsJAGkNKDQXE7so=",
+    "appimage": "sha512-811xh8ZxLNMqi6UpzMAVgdsoaWfsk4yAwzZAsvasRTfUD8lhktVVkxIP8yPvVBPzW9iCEIl3K7/aTrwAr/8Ufw=="
+  },
+  "aarch64-linux": {
+    "cli": "sha256-c/A+QfIXOpaVu2Dihn8UEzzzluA0CvbMjgzuzU7819Q=",
+    "appimage": "sha512-Y9v/3kiSdU7/9bwBboeJVYDBd4il7pbMpO78BpacO7RKQ2XyczEsofCYxPin2JpNatNZDfsB/KZAX396UbiGPw=="
+  }
+}

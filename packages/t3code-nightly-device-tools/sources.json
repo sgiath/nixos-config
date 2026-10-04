@@ -1,0 +1,7 @@
+{
+  "node-datachannel": {
+    "version": "0.32.3",
+    "x86_64-linux": "sha256-QJKvyc1ZSjMm6xvYI9pFKyJ7dC6oIiaJss6m9zRM9no=",
+    "aarch64-linux": "sha256-S9vYCusR+wqQMxje/mY6gzofCvJhVFD+ENq3XIFyNEU="
+  }
+}

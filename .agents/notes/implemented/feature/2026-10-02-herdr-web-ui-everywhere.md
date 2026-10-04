@@ -42,7 +42,8 @@ origin, one PWA, one push subscription and one "Needs you" list.
 3. **User services on vesta.** NixOS `services.herdr-web.enable`
    (`modules/nixos/services/herdr-web.nix`, enabled in vesta's
    `services.nix`) sets HM `services.herdr-web`
-   (`modules/home/agents/herdr-web.nix`):
+   (`modules/home/agents/herdr-web.nix`), which enables the independently
+   defined `services.herdr-server` (`modules/home/agents/herdr-server.nix`):
    - `herdr-server.service` runs `herdr server` on the default socket under
      `with-api-keys`, with `HOME`, the profile `PATH`, `SHELL` (zsh) and the
      gpg-agent `SSH_AUTH_SOCK`; panes inherit that environment. `herdr` over
@@ -69,6 +70,9 @@ origin, one PWA, one push subscription and one "Needs you" list.
    upstream prebuilt, checksum-verified bridge bundle on the PC (version fixed
    by the pinned release's `REMOTE_BUNDLE_VERSION`), which runs on NixOS via
    `programs.nix-ld`, and forwards its loopback port.
+   Ceres's default daemon is now managed independently of the web service;
+   [desktop daemon startup](../bug-fix/2026-10-03-herdr-desktop-environment.md)
+   prevents the SSH bridge from supplying a headless environment to local panes.
 6. **One worktree per thread.** `herdr-thread <branch> <prompt>`
    (`modules/home/agents/herdr-thread.{nix,sh}`) creates the branch and
    worktree with `wt switch --create` (pre-start hooks run, the herdr

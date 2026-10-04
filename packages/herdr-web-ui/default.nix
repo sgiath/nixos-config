@@ -57,20 +57,20 @@ let
       # A fixed-output derivation must not reference store paths.
       dontFixup = true;
 
-      outputHash = "sha256-xG7O8gpZj4PmE76Q0i0yOfpW2br23m+ula7fUivT52w=";
+      outputHash = "sha256-DzYjHIJmBdeFAcSgidBVPPBM2ZoW75pOqDnErUfD8KE=";
       outputHashAlgo = "sha256";
       outputHashMode = "recursive";
     };
 in
 stdenv.mkDerivation (finalAttrs: {
   pname = "herdr-web-ui";
-  version = "0.3.41";
+  version = "0.3.49";
 
   src = fetchFromGitHub {
     owner = "devswha";
     repo = "herdr-web-ui";
     tag = "v${finalAttrs.version}";
-    hash = "sha256-zETHXlUsQ1GFmM34DcYuM7PrFRL6xs5VmgcxRLM6VSY=";
+    hash = "sha256-+HoZzLCgUxpakyVI7NbEYfhagESyxJK8HdUmpYE7DUw=";
   };
 
   nativeBuildInputs = [

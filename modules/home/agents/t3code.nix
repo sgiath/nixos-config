@@ -4,6 +4,7 @@
   pkgs,
   osConfig,
   apiKeyWrapper,
+  namespace,
   ...
 }:
 let
@@ -13,11 +14,32 @@ in
   options.services.t3code = {
     enable = lib.mkEnableOption "T3 Code background server";
 
+    channel = lib.mkOption {
+      type = lib.types.enum [
+        "stable"
+        "nightly"
+      ];
+      default = "stable";
+      description = "Release channel for the T3 Code CLI and desktop app: llm-agents source builds, or the prebuilt upstream nightlies pinned in `packages/t3code-nightly`.";
+    };
+
     package = lib.mkOption {
       type = lib.types.package;
-      default = pkgs.llm-agents.t3code;
-      defaultText = lib.literalExpression "pkgs.llm-agents.t3code";
+      default =
+        if cfg.channel == "nightly" then pkgs.${namespace}.t3code-nightly else pkgs.llm-agents.t3code;
+      defaultText = lib.literalExpression "pkgs.llm-agents.t3code, or pkgs.${namespace}.t3code-nightly on the nightly channel";
       description = "T3 Code CLI package providing the `t3` binary.";
+    };
+
+    desktopPackage = lib.mkOption {
+      type = lib.types.package;
+      default =
+        if cfg.channel == "nightly" then
+          pkgs.${namespace}.t3code-nightly-desktop
+        else
+          pkgs.llm-agents.t3code-desktop;
+      defaultText = lib.literalExpression "pkgs.llm-agents.t3code-desktop, or pkgs.${namespace}.t3code-nightly-desktop on the nightly channel";
+      description = "T3 Code desktop app, installed with the desktop role.";
     };
 
     host = lib.mkOption {
@@ -45,10 +67,44 @@ in
   config = lib.mkMerge [
     (lib.mkIf config.sgiath.agents.enable {
       home.packages = [
-        pkgs.llm-agents.t3code
+        cfg.package
       ]
       ++ lib.optionals config.sgiath.roles.desktop.enable [
-        pkgs.llm-agents.t3code-desktop
+        cfg.desktopPackage
+      ];
+    })
+
+    # Device hub and agent device access otherwise `npm install` these into
+    # ~/.t3/tools on first use; the nightly pins their versions.
+    (lib.mkIf (config.sgiath.agents.enable && cfg.channel == "nightly") (
+      let
+        targets = map (tool: {
+          path = ".t3/tools/${tool.pname}/${tool.version}";
+          source = "${tool}/${tool.pname}/${tool.version}";
+        }) pkgs.${namespace}.t3code-nightly-device-tools.tools;
+      in
+      {
+        home.file = lib.listToAttrs (map (t: lib.nameValuePair t.path { inherit (t) source; }) targets);
+
+        # Linking fails on a directory T3 already installed there itself.
+        home.activation.t3codeDeviceTools = lib.hm.dag.entryBefore [ "checkLinkTargets" ] ''
+          for dir in ${lib.concatMapStringsSep " " (t: ''"$HOME"/${lib.escapeShellArg t.path}'') targets}; do
+            if [[ -d $dir && ! -L $dir ]]; then
+              run rm -rf $VERBOSE_ARG "$dir"
+            fi
+          done
+        '';
+      }
+    ))
+
+    (lib.mkIf (config.sgiath.agents.enable && config.sgiath.roles.desktop.enable) {
+      wayland.windowManager.hyprland.settings.bind = [
+        {
+          _args = [
+            "CTRL + SHIFT + 2"
+            (lib.generators.mkLuaInline ''hl.dsp.global("com.t3tools.T3Code:capture-window")'')
+          ];
+        }
       ];
     })
 

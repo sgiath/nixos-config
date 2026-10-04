@@ -50,8 +50,12 @@
       sshTarget = "sgiath@vesta.local";
     };
     cli-proxy-api.enable = true;
+    herdr-server.enable = true;
     system-failure-watcher.enable = true;
-    t3code.enable = true;
+    t3code = {
+      enable = true;
+      channel = "nightly";
+    };
   };
 
   stylix = {

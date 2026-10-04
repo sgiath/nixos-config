@@ -43,6 +43,8 @@
         git
         fish
         nushell
+        # SSH from kitty forwards TERM=xterm-kitty; headless hosts need the entry.
+        kitty.terminfo
       ];
     };
 

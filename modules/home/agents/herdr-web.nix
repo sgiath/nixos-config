@@ -3,7 +3,6 @@
   lib,
   pkgs,
   namespace,
-  apiKeyWrapper,
   ...
 }:
 let
@@ -11,7 +10,7 @@ let
 in
 {
   options.services.herdr-web = {
-    enable = lib.mkEnableOption "headless herdr server plus the herdr-web-ui browser/phone client";
+    enable = lib.mkEnableOption "herdr-web-ui browser/phone client";
 
     package = lib.mkOption {
       type = lib.types.package;
@@ -33,37 +32,9 @@ in
   };
 
   config = lib.mkIf cfg.enable {
+    services.herdr-server.enable = true;
+
     systemd.user.services = {
-      # Every pane is a child of this unit and inherits its environment, so it
-      # gets what an interactive login has: API keys, the profile PATH, zsh and
-      # the gpg-agent SSH socket for git push. `herdr` over SSH attaches to the
-      # same default session.
-      herdr-server = {
-        Unit = {
-          Description = "herdr headless server";
-          After = [ "network-online.target" ];
-          Wants = [ "network-online.target" ];
-          # Stopping the unit kills every agent in its cgroup, so a switch never
-          # restarts it; a new herdr takes effect only after a manual restart.
-          X-SwitchMethod = "keep-old";
-        };
-
-        Service = {
-          ExecStart = "${lib.getExe apiKeyWrapper} ${lib.getExe config.programs.herdr.package} server";
-          WorkingDirectory = config.home.homeDirectory;
-          Environment = [
-            "HOME=${config.home.homeDirectory}"
-            "PATH=/run/wrappers/bin:${config.home.profileDirectory}/bin:/run/current-system/sw/bin"
-            "SHELL=${lib.getExe pkgs.zsh}"
-            "SSH_AUTH_SOCK=%t/gnupg/S.gpg-agent.ssh"
-          ];
-          Restart = "on-failure";
-          RestartSec = 5;
-        };
-
-        Install.WantedBy = [ "default.target" ];
-      };
-
       herdr-web = {
         Unit = {
           Description = "herdr web UI";
