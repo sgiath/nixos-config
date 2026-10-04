@@ -66,7 +66,7 @@ stdenv.mkDerivation (finalAttrs: {
   ];
 
   # Electron 44 runtime, libstdc++ for the prebuilt node modules, libsecret
-  # for resources/browser-secret.
+  # for safeStorage and resources/browser-secret.
   buildInputs = [
     (lib.getLib stdenv.cc.cc)
     alsa-lib
@@ -129,12 +129,14 @@ stdenv.mkDerivation (finalAttrs: {
     runHook postInstall
   '';
 
-  # ANGLE (bundled libGLESv2.so) dlopens libEGL.so.1 by soname; adding it to
-  # the main binary's DT_NEEDED before patching puts it in the RPATH and in
-  # process scope for that lookup.
+  # ANGLE (bundled libGLESv2.so) dlopens libEGL.so.1 and safeStorage dlopens
+  # libsecret-1.so.0 by soname; adding them to the main binary's DT_NEEDED
+  # before patching puts them in the RPATH and in process scope for those
+  # lookups. Without libsecret, saving a remote environment fails with
+  # "Desktop secure storage is unavailable".
   dontAutoPatchelf = true;
   postFixup = ''
-    patchelf --add-needed libGL.so.1 --add-needed libEGL.so.1 \
+    patchelf --add-needed libGL.so.1 --add-needed libEGL.so.1 --add-needed libsecret-1.so.0 \
       $out/libexec/t3code-desktop/t3code
     autoPatchelf $out/libexec/t3code-desktop
   '';
