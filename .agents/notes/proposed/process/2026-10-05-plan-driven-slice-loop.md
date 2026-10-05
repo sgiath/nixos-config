@@ -393,8 +393,8 @@ That choice is open; see
 | Cutting the plan into slices, order, replans | approves | planner drafts |
 | Slice gate questions | answers one batch per slice | researched and asked ahead |
 | Implementation, tests, worktrees, PRs, CI, CodeRabbit, conflicts | — | worker (own-change, babysit-pr) |
-| Merge | yes (default) | optional per-plan authority |
-| Deploy | yes | detected, never assumed |
+| Merge | only for services outside `autonomy: deploy` | driver, for listed internal services |
+| Deploy and production check | only for services outside `autonomy: deploy`, `manual` migrations, failures | driver through the local release CLI; verified, never assumed |
 | Product review in the app | yes, by screenshots into a replan or a side request | — |
 | Ad hoc fixes from Slack or screenshots | starts them as today, outside the plan | — |
 | Permanent fixes for recurring traps | picks | proposed from the traps file |
@@ -403,6 +403,76 @@ What the loop removes, going by counts from the sessions: about 22 loop-start
 prompts, ~30 "commit / submit PR" messages, ~20 relays of CI or review state,
 ~8 conflict requests, 5+ "it is deployed" messages, "already merged, push to
 master" confusion, and worktree cleanup.
+
+### Automatic merge, deploy and migrations
+
+For internal, non-customer-facing services listed in `plan.md` (for example
+`autonomy: deploy` for `admin_web`, `spider`), merging, deploying and checking
+production become part of the loop. The setting is the durable authorization;
+services outside the list fall back to the user.
+
+The existing release machinery already covers most of the safety:
+
+- Spider and the release dashboard are CI-deployed on every master push
+  (`release_dashboard/lib/release_dashboard/deployments/ci_deployed_services.ex`).
+- Release targets such as `admin_web` deploy through a deploy request. The
+  dashboard verifies the revision live and healthy in Argo, and runs a revert
+  deploy on an explicit rollout failure.
+- A Migration Run (`release_dashboard/CONTEXT.md`) runs staging first and moves
+  to production only after every database verifies. It holds a migration lock,
+  runs a read-only preflight, and requires the stored version to read back with
+  `dirty = false`. Migrations never roll back automatically.
+
+Two pieces are missing. The dashboard has only browser routes, so nothing can
+drive it from a script. And nothing decides which migrations are safe to run
+unattended. The plan fills both:
+
+- **A local release CLI in core_v2.** It performs the dashboard's operations
+  (deploy request and verification, revert, CI-deployed rollback, Migration
+  Run) from a developer machine. It uses the already-authenticated `aws`,
+  `kubectl` and `git` instead of calling the dashboard, and it respects the same
+  locks.
+- **A migration classifier in db-schemas CI.** It labels every migration PR
+  `migration:auto` or `migration:manual`. A migration is `auto` only if all of
+  the following hold:
+  - every statement is additive: `CREATE TABLE`, an index on a table created
+    in the same migration, a nullable or constant-default `ADD COLUMN`, or a
+    foreign key from a new table;
+  - every object it touches is owned by the feature (a declared prefix such as
+    `metadata.support_*`) or created in the same migration;
+  - it has no DML, and no `-- migrator:allow` lint escapes (an agent used one to
+    get #719 through lint);
+  - its `down` drops only what `up` created;
+  - only new files are added; an applied migration is never edited (the
+    support migrations were squashed and changed during development:
+    `0a85559`, `8ec344b`).
+
+  MySQL `core`, ClickHouse `events`, and anything touching shared tables are
+  always `manual`.
+
+For a slice with an `auto` migration, the driver works in this order:
+
+1. Merge the db-schemas PR.
+2. Run the staging → production Migration Run and wait for a verified migration
+   in both environments.
+3. Merge the ce PR.
+4. Deploy: CI does it for spider; for release targets, create a deploy request
+   and wait for a verified deploy.
+5. Check production: error rates for N minutes, read-only production queries
+   for the acceptance gate, and a browser check for UI slices.
+6. Mark the slice deployed.
+
+"Successful but unverified" stops the loop, the same as a failure.
+
+When something fails, the driver reverts the code and stops. It never runs a
+migration `down`; an additive migration left in place is harmless to the old
+code. A dirty database, an interrupted run, a `manual` migration, ClickHouse
+migrations, and recovery runs always go back to the user. New behavior ships
+switched off where possible, and the production check turns it on.
+
+The classifier's evidence would be stronger with two more db-schemas CI jobs: an
+up/down/up run on a fresh database, and a rehearsal on a production-shaped dump
+with the migrator's lock timeout.
 
 ### Spider-style work
 
@@ -498,8 +568,12 @@ the remaining support capabilities or the open spider sc-83572 stack:
   omp managed skills (`parallel-pr-worktrees-elixir`,
   `crazyegg-pr-review-thread-triage`, `gh-actions-failure-diagnosis`). The
   evidence-based PR template on `chore/pr-template-evidence` is unmerged.
-- **Merge authority creep.** Default stays manual. Authority is per plan and
-  explicit.
+- **Autonomy creep.** Merge and deploy authority is per plan and per service,
+  and limited to internal services. Customer-facing services and `manual`
+  migrations stay with the user.
+- **The local CLI bypasses the dashboard's in-process deploy lock.** It must
+  honor an equivalent lock, or the CLI and the dashboard can race on one
+  service.
 
 ## Open questions
 
@@ -514,8 +588,9 @@ the remaining support capabilities or the open spider sc-83572 stack:
    (recommended), or inside each worker thread as today?
 5. **Default parallel limit**: one, with a second allowed only for
    migration-free slices in different apps?
-6. **Merge authority**: always manual, or a per-plan `merge: agent` setting like
-   the one you granted on 10-01?
+6. **Autonomy scope**: which services may be listed under `autonomy: deploy`
+   (proposed: internal ones only, such as `admin_web`, `spider`,
+   `release_dashboard`)?
 7. **Deploy detection**: is the k8s-config image tag the right source of truth
    for ce apps, or the release dashboard? Should non-deploy-gated slices be
    allowed at all?
@@ -530,5 +605,9 @@ the remaining support capabilities or the open spider sc-83572 stack:
 11. **Traps**: is an out-of-repo traps file plus a retro proposal every five
     slices acceptable, or should traps go straight into the repository
     AGENTS.md through the slice PR?
-12. **Naming and scope**: is `drive` the name, and should `plan`/`replan` be
+12. **Point-in-time recovery**: does the metadata Postgres have it? It decides
+    whether any `manual` migration class could later become automatic.
+13. **Feature-owned data**: is losing a feature's own tables acceptable if an
+    `auto` migration later has to be dropped by hand?
+14. **Naming and scope**: is `drive` the name, and should `plan`/`replan` be
     modes of it or a separate skill?
