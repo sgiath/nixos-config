@@ -52,7 +52,7 @@ stdenv.mkDerivation (finalAttrs: {
   # Unpacked and patched rather than run through appimageTools.wrapType2: its
   # bubblewrap user namespace maps /nix/store owners to nobody, and ssh then
   # rejects the Home Manager ~/.ssh/config, which breaks SSH environments.
-  src = appimageTools.extractType2 {
+  src = appimageTools.extract {
     inherit (finalAttrs) pname version;
     src = fetchurl {
       url = "https://github.com/pingdotgg/t3code/releases/download/v${finalAttrs.version}/T3-Code-${finalAttrs.version}-${arch}.AppImage";

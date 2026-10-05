@@ -50,6 +50,7 @@ in
       home-manager.users.sgiath.services.t3code = {
         enable = true;
         host = "127.0.0.1";
+        publicUrl = "https://t3.sgiath.dev";
       };
 
       sops.secrets = lib.mapAttrs' (

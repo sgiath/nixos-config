@@ -9,6 +9,48 @@
 }:
 let
   cfg = config.services.t3code;
+
+  # `t3 pair` builds its QR code from the address the running server
+  # recorded in server-runtime.json and has no public-URL setting, so the
+  # wrapper keeps the minted token and re-renders it for `publicUrl`.
+  cli =
+    if cfg.publicUrl == null then
+      cfg.package
+    else
+      pkgs.writeShellApplication {
+        name = "t3";
+        runtimeInputs = [
+          pkgs.gnused
+          pkgs.qrencode
+        ];
+        text = ''
+          t3=${cfg.package}/bin/t3
+          if [[ ''${1-} != pair ]]; then
+            exec "$t3" "$@"
+          fi
+          for arg in "$@"; do
+            case $arg in
+              --tailscale* | --help | -h | --wizard | --completions*) exec "$t3" "$@" ;;
+            esac
+          done
+
+          out=$("$t3" "$@" 2>&1) || {
+            printf '%s\n' "$out" >&2
+            exit 1
+          }
+          token=$(sed -n 's/^Token: //p' <<<"$out")
+          if [[ -z $token ]]; then
+            printf '%s\n' "$out"
+            exit
+          fi
+          url=${lib.escapeShellArg cfg.publicUrl}/pair#token=$token
+
+          printf 'Pairing through %s.\n\n' ${lib.escapeShellArg cfg.publicUrl}
+          qrencode -t ANSIUTF8 -m 2 "$url"
+          printf '\nPairing URL: %s\nToken: %s\n' "$url" "$token"
+          sed -n '/^Expires: /p' <<<"$out"
+        '';
+      };
 in
 {
   options.services.t3code = {
@@ -57,6 +99,13 @@ in
       description = "HTTP/WebSocket port for the T3 Code server.";
     };
 
+    publicUrl = lib.mkOption {
+      type = lib.types.nullOr lib.types.str;
+      default = null;
+      example = "https://t3-ceres.sgiath.dev";
+      description = "Origin Vesta proxies to this server; `t3 pair` prints its QR code and pairing URL for it instead of the local listen address.";
+    };
+
     extraArgs = lib.mkOption {
       type = lib.types.listOf lib.types.str;
       default = [ ];
@@ -67,7 +116,7 @@ in
   config = lib.mkMerge [
     (lib.mkIf config.sgiath.agents.enable {
       home.packages = [
-        cfg.package
+        cli
       ]
       ++ lib.optionals config.sgiath.roles.desktop.enable [
         cfg.desktopPackage
@@ -109,7 +158,7 @@ in
     })
 
     (lib.mkIf cfg.enable {
-      home.packages = [ cfg.package ];
+      home.packages = [ cli ];
 
       systemd.user.services.t3code = {
         Unit = {

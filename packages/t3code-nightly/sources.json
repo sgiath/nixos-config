@@ -1,11 +1,11 @@
 {
-  "version": "0.0.46-nightly.20261004.2644",
+  "version": "0.0.46-nightly.20261005.2667",
   "x86_64-linux": {
-    "cli": "sha256-X54pzycSyHc2VWyZ6lgGBrOZiXy4RsJAGkNKDQXE7so=",
-    "appimage": "sha512-811xh8ZxLNMqi6UpzMAVgdsoaWfsk4yAwzZAsvasRTfUD8lhktVVkxIP8yPvVBPzW9iCEIl3K7/aTrwAr/8Ufw=="
+    "cli": "sha256-NCIjuZa/lM1OJbfP6y1jSIqN0p9uS9bMbpCr1UEWklU=",
+    "appimage": "sha512-Gc9f3Hy9ogZnTchRJkWK3RnLsQIgDLjQx5xJiz4U+f4CEGJn4f7nu/RC2U6GKhjtAP/k4YuLaUqtAR/Q+nHvyw=="
   },
   "aarch64-linux": {
-    "cli": "sha256-c/A+QfIXOpaVu2Dihn8UEzzzluA0CvbMjgzuzU7819Q=",
-    "appimage": "sha512-Y9v/3kiSdU7/9bwBboeJVYDBd4il7pbMpO78BpacO7RKQ2XyczEsofCYxPin2JpNatNZDfsB/KZAX396UbiGPw=="
+    "cli": "sha256-enFIHohwhhYNvJsLQZS2TPKTztwLMC/LkZtr3ajeplI=",
+    "appimage": "sha512-1MqmHwOrnjlGfEI5XIRjwlG3yp53f31sZflSQcwthyPuB2vxjiiLeU044awxvuR/O90fBj+BTxAcHRBxECN+AQ=="
   }
 }

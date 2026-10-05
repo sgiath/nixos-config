@@ -55,6 +55,7 @@
     t3code = {
       enable = true;
       channel = "nightly";
+      publicUrl = "https://t3-ceres.sgiath.dev";
     };
   };
 
