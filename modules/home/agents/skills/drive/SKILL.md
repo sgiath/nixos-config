@@ -22,7 +22,7 @@ The driver needs T3 Code tools (`t3_thread_launch`, `t3_thread_list`, `t3_thread
 ## `/drive plan @<spec-note> [more notes…]`
 
 1. Read the notes and the code they touch. Cut the work into slices: each is one PR-sized, independently deployable deliverable (plus companion PRs such as a db-schemas migration) with an acceptance gate a reviewer can check and a stop boundary. Put a "local testing with production-like data" slice first when the feature needs one and none exists.
-2. Mark `blocked_by` only for real dependencies. Set `deploy_gate: false` only when later slices do not need the slice running in production. Set `migration: true` for any schema change.
+2. Mark `blocked_by` only for real dependencies, and for every one: a slice that changes code only meaningful after another slice ships (a prompt for a path that slice adds) is blocked by it, so slices that run in parallel each work on master alone. Set `deploy_gate: false` only when later slices do not need the slice running in production. Set `migration: true` for any schema change.
 3. Write each slice's "Questions before starting": the decisions the worker must not guess. Leave them unanswered.
 4. The last slice in order also moves the spec notes to `implemented/` (per the repository's notes rules) and deletes the plan directory.
 5. Show the user one table (id, title, blocked by, deploy gate, migration) and the open questions per slice. Apply corrections. When the user approves, commit the plan on the default branch and push it. Workers branch from the remote default branch and cannot see unpushed plan files.

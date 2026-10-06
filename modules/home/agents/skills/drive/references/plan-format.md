@@ -67,7 +67,7 @@ migration: true
 | Key | Default | Meaning |
 | --- | --- | --- |
 | `title` | slug | Human title, used in thread titles and messages. |
-| `blocked_by` | `[]` | Slice ids that must be done (merged, and deployed when they are deploy-gated) first. |
+| `blocked_by` | `[]` | Slice ids that must be done (merged, and deployed when they are deploy-gated) first. Two slices that may run in parallel must each work on master alone: when a slice changes code that only makes sense after another slice ships, it is blocked by that slice. |
 | `deploy_gate` | `true` | `false` when dependants only need the slice merged. |
 | `migration` | `false` | `true` for any schema change; serializes the slice. |
 

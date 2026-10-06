@@ -24,7 +24,8 @@ The invocation authorizes creating a task worktree/branch, implementing the requ
 
 - Follow repository patterns and relevant domain skills. Keep the implementation direct and scoped. Include all affected consumers, cross-app configuration, migrations and necessary companion-repository changes; no unfinished compatibility shim or isolated server change with missing clients.
 - Delegate genuinely independent slices where useful, with exact worktree/path ownership and shared contracts. The main agent remains responsible for integration, correctness and final verification. Do not let delegates mutate the original checkout.
-- Run the scenario that proves the change: reproduce and confirm a bug fix; exercise the actual UI for visual changes; exercise new API/CLI behavior and applicable project gates. Keep regression tests for plausible observable failures, not tests that merely mirror implementation. Do not claim unrun local e2e or production checks.
+- Run the scenario that proves the change: reproduce and confirm a bug fix; exercise the actual UI for visual changes; exercise new API/CLI behavior and applicable project gates.
+- For UI screenshots in the T3 browser, set up each state (fill fields, click tabs, scroll) in one preview_evaluate call that also fires the input events, then snapshot immediately. Typing and clicking step by step lands text in the wrong place and can leave the tab unresponsive; open a new tab instead of retrying a stuck one. Keep regression tests for plausible observable failures, not tests that merely mirror implementation. Do not claim unrun local e2e or production checks.
 - After behavior is proven, complete in-scope documentation/changelog/generated-artifact updates according to repository conventions and remove throwaway scaffolding. Review the complete change for missed callers, unnecessary complexity, accidental user edits and secrets.
 
 ## 3. Commit and publish
