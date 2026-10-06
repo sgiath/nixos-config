@@ -31,7 +31,7 @@ The invocation authorizes creating a task worktree/branch, implementing the requ
 
 - Read skill://conventional-commit. Commit EVERYTHING intended for this change, including related tests, required lock/schema changes and documentation, in coherent commits. 'Everything' does not include secrets, ignored dependency/build caches, machine-local files or unrelated user/concurrent-agent work. Account for any intentionally uncommitted files.
 - Push the task branch explicitly to the verified remote with upstream tracking. Search for an existing open PR for the exact head repository/branch before creation; an API error is not evidence no PR exists.
-- Create a non-draft PR using the repository template, explicit base/head, clear rationale and actual verification results. Assign the authenticated user (gh pr create --assignee @me). For companion PRs, describe dependencies and safe merge order without deploying or merging them.
+- Create a non-draft PR with explicit base/head and a body written with skill://pr, using the actual verification results as its evidence. Assign the authenticated user (gh pr create --assignee @me). For companion PRs, describe dependencies and safe merge order without deploying or merging them.
 
 ## 4. Babysit until ready
 

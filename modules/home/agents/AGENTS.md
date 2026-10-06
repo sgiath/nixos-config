@@ -22,9 +22,18 @@ mutual benefit.
 - Whenever you are creating any visual page page/demo it has to be dark mode design, 
   ideally something like `/home/sgiath/develop/sgiath/sgiath.dev/` project
 
+## Writing in my name
+
+Whenever I ask you to draft, rewrite, reply, comment, or post text in my name or
+on my behalf, use the `write-as-sgiath` skill before composing it. This includes
+Slack messages, Shortcut or GitHub comments, PR descriptions, emails, and other
+authored text, even when I do not explicitly ask for my writing style. Apply it
+to my text, not your own explanations to me.
+
 ## Pull and merge requests
 
-- Attach review comments to a relevant line or range, or reply to an existing thread; no floating general review comments.
+- Attach review comments to a relevant line or range, or reply to an existing thread; 
+  no floating general review comments.
 - Assign the authenticated user when creating a PR or MR.
 
 ## Tool use and MCPs

@@ -64,13 +64,13 @@ let
 in
 stdenv.mkDerivation (finalAttrs: {
   pname = "herdr-web-ui";
-  version = "0.3.49";
+  version = "0.3.51";
 
   src = fetchFromGitHub {
     owner = "devswha";
     repo = "herdr-web-ui";
     tag = "v${finalAttrs.version}";
-    hash = "sha256-+HoZzLCgUxpakyVI7NbEYfhagESyxJK8HdUmpYE7DUw=";
+    hash = "sha256-kw55170XVZ54uoamGtRTgM7LLscRo5qLaASkymjRFck=";
   };
 
   nativeBuildInputs = [
