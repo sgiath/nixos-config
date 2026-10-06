@@ -1,0 +1,245 @@
+#!/usr/bin/env python3
+"""plan-status: derive the state of every slice in a drive plan.
+
+Usage: plan-status <plan-dir> [--no-deploy-check]
+
+Reads <plan-dir>/plan.md and <plan-dir>/NN-*.md, looks up the slice branches
+on GitHub with `gh`, and prints one JSON document on stdout. It never writes
+anything except what `deploy_check` itself does. See ../references/plan-format.md.
+
+Slice states:
+  blocked      a blocker is not done yet
+  ready        blockers done, no branch or PR yet
+  in_progress  a local branch exists in the plan repository, no PR yet
+  in_review    at least one open PR for the slice branch
+  closed       PRs exist but all were closed without merging
+  merged       all PRs merged, waiting for deploy (deploy_gate: true)
+  done         merged and deployed, or merged with deploy_gate: false
+"""
+
+import json
+import os
+import re
+import subprocess
+import sys
+from pathlib import Path
+
+SLICE_FILE = re.compile(r"^(\d{2,3})-([a-z0-9-]+)\.md$")
+
+
+def fail(message):
+    print(f"plan-status: {message}", file=sys.stderr)
+    sys.exit(2)
+
+
+def run(args, cwd=None, check=True):
+    result = subprocess.run(args, cwd=cwd, capture_output=True, text=True)
+    if check and result.returncode != 0:
+        fail(f"{' '.join(args)} failed: {result.stderr.strip()}")
+    return result
+
+
+def parse_value(raw):
+    raw = raw.strip()
+    if raw.startswith("[") and raw.endswith("]"):
+        return [item.strip().strip("\"'") for item in raw[1:-1].split(",") if item.strip()]
+    if raw in ("true", "false"):
+        return raw == "true"
+    if re.fullmatch(r"\d+", raw) and not raw.startswith("0"):
+        return int(raw)
+    return raw.strip("\"'")
+
+
+def frontmatter(path):
+    """Flat `key: value` frontmatter; lists as `[a, b]`. Nothing nested."""
+    lines = path.read_text().splitlines()
+    if not lines or lines[0].strip() != "---":
+        fail(f"{path} has no frontmatter")
+    meta = {}
+    for line in lines[1:]:
+        if line.strip() == "---":
+            return meta
+        if not line.strip() or line.lstrip().startswith("#"):
+            continue
+        key, sep, value = line.partition(":")
+        if not sep:
+            fail(f"{path}: cannot parse frontmatter line {line!r}")
+        meta[key.strip()] = parse_value(value)
+    fail(f"{path}: frontmatter is not closed")
+
+
+def repo_slug(root):
+    url = run(["git", "remote", "get-url", "origin"], cwd=root).stdout.strip()
+    match = re.search(r"github\.com[:/]([^/]+/[^/]+?)(?:\.git)?$", url)
+    if not match:
+        fail(f"origin {url!r} is not a GitHub remote")
+    return match.group(1)
+
+
+def pull_requests(repo, prefix):
+    result = run(
+        [
+            "gh", "pr", "list", "--repo", repo, "--state", "all", "--limit", "200",
+            "--search", f"head:{prefix}",
+            "--json", "number,url,state,headRefName,mergedAt,mergeCommit,isDraft",
+        ]
+    )
+    prs = json.loads(result.stdout)
+    return [pr for pr in prs if pr["headRefName"].startswith(prefix)]
+
+
+def main():
+    args = sys.argv[1:]
+    skip_deploy_check = "--no-deploy-check" in args
+    args = [arg for arg in args if arg != "--no-deploy-check"]
+    if len(args) != 1:
+        fail("usage: plan-status <plan-dir> [--no-deploy-check]")
+
+    plan_dir = Path(args[0]).resolve()
+    plan_file = plan_dir / "plan.md"
+    if not plan_file.is_file():
+        fail(f"{plan_file} does not exist")
+    plan = frontmatter(plan_file)
+
+    root = Path(run(["git", "rev-parse", "--show-toplevel"], cwd=plan_dir).stdout.strip())
+    main_repo = repo_slug(root)
+    topic = plan.get("topic") or fail("plan.md needs `topic`")
+    prefix = plan.get("branch_prefix", f"{topic}/")
+    repos = plan.get("repos") or [main_repo]
+    if main_repo not in repos:
+        repos = [main_repo, *repos]
+    parallel = int(plan.get("parallel", 1))
+    deploy_check = plan.get("deploy_check")
+
+    state_root = Path(os.environ.get("XDG_STATE_HOME", Path.home() / ".local/state"))
+    state_dir = state_root / "drive" / main_repo.split("/")[1] / plan_dir.name
+
+    slices = {}
+    for path in sorted(plan_dir.iterdir()):
+        match = SLICE_FILE.match(path.name)
+        if not match:
+            continue
+        meta = frontmatter(path)
+        slice_id = match.group(1)
+        slices[slice_id] = {
+            "id": slice_id,
+            "file": str(path),
+            "title": meta.get("title", match.group(2)),
+            "blocked_by": [str(b).zfill(len(slice_id)) for b in meta.get("blocked_by", [])],
+            "deploy_gate": bool(meta.get("deploy_gate", True)),
+            "migration": bool(meta.get("migration", False)),
+            "branch": f"{prefix}{slice_id}-{match.group(2)}",
+            "prs": [],
+            "answered": (state_dir / "answers" / f"{slice_id}.md").is_file(),
+        }
+
+    order = [str(item) for item in plan.get("order", [])] or sorted(slices)
+    unknown = [item for item in order if item not in slices]
+    if unknown:
+        fail(f"plan.md order names missing slices: {unknown}")
+    order += [item for item in sorted(slices) if item not in order]
+
+    for repo in repos:
+        for pr in pull_requests(repo, prefix):
+            for item in slices.values():
+                if pr["headRefName"] == item["branch"]:
+                    item["prs"].append(
+                        {
+                            "repo": repo,
+                            "number": pr["number"],
+                            "url": pr["url"],
+                            "state": pr["state"].lower(),
+                            "draft": pr["isDraft"],
+                            "merged_at": pr["mergedAt"],
+                            "merge_commit": (pr.get("mergeCommit") or {}).get("oid"),
+                        }
+                    )
+
+    local_branches = set(
+        run(
+            ["git", "for-each-ref", "--format=%(refname:short)", f"refs/heads/{prefix}"],
+            cwd=root,
+        ).stdout.split()
+    )
+
+    def deployed(item):
+        if (state_dir / "deployed" / item["id"]).is_file():
+            return True
+        if not deploy_check or skip_deploy_check:
+            return False
+        main_prs = [pr for pr in item["prs"] if pr["repo"] == main_repo and pr["merge_commit"]]
+        if not main_prs:
+            return False
+        for pr in main_prs:
+            command = deploy_check.replace("{sha}", pr["merge_commit"])
+            if subprocess.run(command, shell=True, cwd=root, capture_output=True).returncode != 0:
+                return False
+        return True
+
+    for item in slices.values():
+        states = {pr["state"] for pr in item["prs"]}
+        if "open" in states:
+            item["state"] = "in_review"
+        elif item["prs"] and states == {"closed"}:
+            item["state"] = "closed"
+        elif item["prs"] and "open" not in states and "merged" in states:
+            if not item["deploy_gate"] or deployed(item):
+                item["state"] = "done"
+            else:
+                item["state"] = "merged"
+        elif item["branch"] in local_branches:
+            item["state"] = "in_progress"
+        else:
+            item["state"] = None
+
+    for item in slices.values():
+        if item["state"] is None:
+            missing = [b for b in item["blocked_by"] if b not in slices]
+            if missing:
+                fail(f"slice {item['id']} is blocked by missing slices {missing}")
+            done = all(slices[b]["state"] == "done" for b in item["blocked_by"])
+            item["state"] = "ready" if done else "blocked"
+
+    # The slice whose gate questions to ask ahead: the first unstarted, unanswered
+    # slice in plan order whose blockers have all at least started.
+    ask_next = None
+    for slice_id in order:
+        item = slices[slice_id]
+        if item["state"] not in ("ready", "blocked") or item["answered"]:
+            continue
+        if all(slices[b]["state"] not in ("ready", "blocked") for b in item["blocked_by"]):
+            ask_next = slice_id
+        break
+
+    active = [s for s in slices.values() if s["state"] in ("in_progress", "in_review")]
+    capacity = max(parallel - len(active), 0)
+    ready = [slices[i] for i in order if slices[i]["state"] == "ready"]
+    if any(s["migration"] for s in active):
+        ready = []
+    elif active:
+        ready = [s for s in ready if not s["migration"]]
+
+    print(
+        json.dumps(
+            {
+                "plan": str(plan_dir),
+                "topic": topic,
+                "repository": main_repo,
+                "repos": repos,
+                "branch_prefix": prefix,
+                "parallel": parallel,
+                "deploy_check": deploy_check,
+                "state_dir": str(state_dir),
+                "order": order,
+                "next": [s["id"] for s in ready[:capacity]],
+                "ask_next": ask_next,
+                "complete": all(s["state"] == "done" for s in slices.values()),
+                "slices": [slices[i] for i in order],
+            },
+            indent=2,
+        )
+    )
+
+
+if __name__ == "__main__":
+    main()
