@@ -5,11 +5,15 @@ description: "Use when asked to research a question and save a source-cited repo
 
 Split independent research angles between subagents when useful; keep a narrow lookup in one context.
 
-Use fresh context, not forked context, unless the user explicitly asks otherwise. Researchers and scouts should inspect sources directly instead of relying on the main conversation history.
+Use fresh context, not forked context, unless the user explicitly asks otherwise. Delegated researchers should inspect sources directly instead of relying on the main conversation history.
 
-Use these specialist agent types when available; otherwise give the same briefs to task-capable agents:
-- Use `librarian` for web, docs, standards, ecosystem, recent changes, benchmarks, and primary-source evidence.
-- Use `scout` for local codebase context, existing implementation patterns, repo constraints, and files that would be affected.
+In T3, discover models through `orchestrator_capabilities` and use native subagents where supported or `delegate_task`
+for cross-provider/T3-owned work. Supply the question, source pointers and output contract explicitly. Retain async
+task IDs and yield for completion notifications; do not create separate top-level threads to obtain fresh context.
+
+Give delegated agents task-specific briefs rather than requiring named agent types:
+- External research: official docs, standards, ecosystem changes, benchmarks and primary-source evidence.
+- Codebase research: local implementation patterns, repository constraints and affected files.
 
 1. Investigate the question against **primary sources** — official docs, source code, specs, first-party APIs and academic papers — not a secondary write-up of them. Follow every claim back to the source that owns it.
 2. *Practical tradeoffs* - compare options, risks, edge cases, maintenance cost, and what would be easiest to validate.

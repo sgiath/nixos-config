@@ -1,6 +1,6 @@
 # Agent Note: decide T3 Code's fate after the herdr web UI trial
 
-Status: proposed
+Status: rejected - herdr web UI removed; T3 Code remains configured
 
 ## Problem
 
@@ -8,7 +8,7 @@ T3 Code (`services.t3code`, `modules/home/agents/t3code.nix`) runs on Vesta,
 Ceres and Pallas and is exposed as `t3.sgiath.dev` and `t3-ceres.sgiath.dev`
 over Nebula. It was the only way to follow agent threads from the phone, but
 it replaces OMP's own orchestration, so it is not used for real work.
-[herdr web UI on every host](../../implemented/feature/2026-10-02-herdr-web-ui-everywhere.md)
+[herdr web UI on every host](../../archived/feature/2026-10-02-herdr-web-ui-everywhere.md)
 now covers the phone and multi-machine use case with OMP threads.
 
 ## Proposal

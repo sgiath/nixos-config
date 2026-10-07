@@ -10,7 +10,9 @@ Run ONLY when the user invokes `/drive` or explicitly asks to drive a plan. This
 
 Invoking it authorizes: committing plan files, launching worker threads that run `own-change` (worktrees, commits, pushes, PRs, babysitting), recording answers and deploy markers in the plan's state directory, and scheduling the driver's own wake-ups. It does not authorize merging, deploying, running migrations, or pushing plan changes before the user approves them. The user merges and deploys every slice.
 
-The driver needs T3 Code tools (`t3_thread_launch`, `t3_thread_list`, `t3_thread_read`, `t3_thread_send`, `schedule_task`, `delete_scheduled_task`). If they are missing, say so and stop.
+The driver needs T3 Code thread launch/read/send, PR inventory and scheduler tools. Use live tool documentation;
+if discovery is lazy, make one bounded `orchestrator_capabilities` call before reporting missing capabilities.
+This workflow explicitly authorizes separate top-level workers; read-only research/review remains delegated child work.
 
 ## Artifacts
 
@@ -24,7 +26,10 @@ The driver needs T3 Code tools (`t3_thread_launch`, `t3_thread_list`, `t3_thread
 1. Read the notes and the code they touch. Cut the work into slices: each is one PR-sized, independently deployable deliverable (plus companion PRs such as a db-schemas migration) with an acceptance gate a reviewer can check and a stop boundary. Put a "local testing with production-like data" slice first when the feature needs one and none exists.
 2. Mark `blocked_by` only for real dependencies, and for every one: a slice that changes code only meaningful after another slice ships (a prompt for a path that slice adds) is blocked by it, so slices that run in parallel each work on master alone. Set `deploy_gate: false` only when later slices do not need the slice running in production. Set `migration: true` for any schema change.
 3. Write each slice's "Questions before starting": the decisions the worker must not guess. Leave them unanswered.
-4. The last slice in order also moves the spec notes to `implemented/` (per the repository's notes rules) and deletes the plan directory.
+4. The last slice in order also moves the spec notes to `implemented/` (per the repository's notes rules). It is
+   blocked by every other slice so parallel work cannot finalize the notes early. Retain the plan directory as
+   delivery scope and question records: `plan-status` needs it to verify completion. Removal is a separate requested
+   cleanup after the driver has stopped, not part of the final worker's PR.
 5. Show the user one table (id, title, blocked by, deploy gate, migration) and the open questions per slice. Apply corrections. When the user approves, commit the plan on the default branch and push it. Workers branch from the remote default branch and cannot see unpushed plan files.
 
 ## `/drive replan [findings]`
@@ -33,19 +38,58 @@ Fold new findings, production data, stakeholder input or a changed order into th
 
 ## `/drive @<plan-dir>`: start or resume
 
-The thread where this runs is the driver thread. It holds no code and no state of its own; a fresh thread with the same command continues correctly. Run one tick, then create a `schedule_task` bound to this thread, `{type: "interval", everyMs: 900000}`, with the prompt `Run one drive tick for @<plan-dir> (skill drive, section Tick).` Keep exactly one such schedule per plan: list scheduled tasks first and reuse an existing one.
+The thread where this runs is the driver thread. It holds no code and no state of its own; a fresh thread with the
+same command continues correctly. Run one tick, then only if its finish step still requires future coordination,
+create or retain a `schedule_task` bound to this thread, structured
+`schedule: {type: "interval", everyMs: 900000}`, with the prompt `Run one drive tick for @<plan-dir> (skill drive,
+section Tick).` Keep exactly one schedule per plan: list scheduled tasks first and reuse an existing one. Retain
+its ID, use a stable creation retry key, and report the returned cadence and next run time when creating it. Do not
+recreate a schedule after the tick stopped for completion or user answers. PR waits belong to each
+worker's persistent watcher. End the turn after the tick; do not keep a shell sleep/poll loop alive.
 
 ## Tick
 
 1. Run `scripts/plan-status <plan-dir>` from the skill directory and read `plan.md`. Find worker threads with `t3_thread_list` (`titleContains: "<topic> NN"`).
 2. **Closed slices**: a slice whose PRs were all closed unmerged needs the user. Ask once whether to relaunch, replan or drop it.
-3. **Workers that stopped early** (`in_progress`, thread no longer running, no PR): read the thread's last messages. If the worker is waiting on a decision, relay the question to the user verbatim with the thread link. Otherwise send the worker back once with `t3_thread_send` naming the unmet step; if it stops again, hand it to the user.
-   - A run T3 marks cancelled can leave its agent process alive, invisible to the thread and still committing and pushing. When a worker reports another session in its worktree, or its branch has commits the thread did not make, list `claude` processes with `ps -o pid,ppid,lstart,args` and their `/proc/PID/cwd`, and match start times against the thread's `recentRuns` (`t3_thread_read`). Name the process that matches no live run to the user with that evidence and recommend stopping it. Do not kill it yourself, and do not send the thread back while two agents can push to one branch.
-4. **Slices in review**: when the worker thread has finished and every PR is merge-ready (all checks complete and green, no unresolved actionable threads, Evidence present in the body, a screenshot for UI changes), tell the user once: `NN <title> ready to merge: <PR URLs>`, plus the merge order for companion PRs and any migration they need to run. If the worker finished but the PR is not merge-ready, send the worker back once with the specific gap.
-5. **Cleanup**: when a slice is `merged` or `done`, remove its worktrees with `wt remove <branch>` in each repository it touched (read the `worktrunk` skill). Leave a worktree with uncommitted changes in place and tell the user.
+3. **Workers that stopped early** (`in_progress`, thread no longer running, no PR): read recent thread messages,
+   queued follow-ups and pending user questions. Workspace preparation, queued work or live delegated children are
+   waiting states, not stopped work. If a question is already answered in `answers/NN.md` or current user context,
+   respond through `t3_pending_request_respond` when available; otherwise relay it once with the thread link. Never
+   infer an answer or approve permissions. If no wait/blocker exists, send the worker back once naming the unmet
+   step, with a stable `clientRequestId`; if it stops again, hand it to the user.
+   - A cancelled run can leave its provider process alive and still committing/pushing. If a worker reports another
+     session or unexplained commits, identify the actual provider processes, start times and working directories
+     and compare them with `recentRuns` from `t3_thread_read`. Report the unmatched process with that evidence;
+     do not kill it or restart work while two agents can push to one branch.
+   - **Missing worker** (`in_progress` or `in_review`, no surviving worker thread): this slice is not in `next`,
+     so recover it here. Search thread inventory including settled workers and inspect any known PR watches,
+     queues/children and provider processes for the checkout. Reuse a surviving task thread when possible. If none
+     owns the work, verify the branch, task changes, PR/head and absolute checkout path, then launch one replacement
+     with `workspaceStrategy: {type: "existing_worktree", worktreePath: "<path>", branch: "<slice-branch>"}`.
+     Supply the worker prompt plus the existing PRs, completed checks and outstanding findings; it resumes rather
+     than restarting the slice. If the branch has no checkout, prepare one using native support for existing branches
+     when available, otherwise Worktrunk, then bind the replacement to it. Do not create a replacement while another
+     owner is active or ownership is uncertain. Apply the same retained-ID/ambiguous-launch recovery rules as step 8.
+4. **Slices in review**: an idle worker with an active T3 PR watch is waiting normally, not stopped early. Read
+   `list_thread_pull_requests` for its thread and its last messages; do not send it back merely because CI/review
+   is pending. When every PR is merge-ready (all checks/reviewers complete and green, no unresolved actionable
+   threads, Evidence present, a screenshot for UI changes) and the worker handed it back, tell the user once:
+   `NN <title> ready to merge: <PR URLs>`, plus companion merge order and any migration. If it handed back an
+   incomplete PR without a watcher, send it back once with the specific agent-actionable gap; relay genuine blockers.
+5. **Cleanup**: when a slice is `merged` or `done`, verify all companion PRs are merged and no worker, child task,
+   queued continuation or watcher still uses its checkouts. Use native removal if available; otherwise read the
+   `worktrunk` skill and use `wt remove <branch>` from a different checkout in each repository. Do not remove a
+   dirty or active checkout; report why it remains. Deleting/settling a T3 thread does not remove its worktree.
 6. **Merged slices waiting for deploy**: `deploy_check` in `plan.md` decides. Without one, ask the user once to say when it is deployed; when they do, write `deployed/NN` in the state directory. Never treat a merge as a deploy.
 7. **Ask ahead** (`ask_next` in the status): ground that slice's questions in current code and production data with a read-only research subagent, then ask the user all of them in one numbered message with a recommended answer each. Write the user's answers to `answers/NN.md` verbatim with the date. A slice with no questions gets `answers/NN.md` containing `No questions.`
-8. **Launch** each slice in `next` whose `answers/NN.md` exists: `t3_thread_launch` in this project, `workspaceStrategy: {type: "root"}`, title `<topic> NN: <title>`, message from the [worker prompt](references/worker-prompt.md). Post one line: `Started NN <title>: <thread link>`. Recreate the tick schedule if step 10 deleted it.
+8. **Launch** each slice in `next` whose `answers/NN.md` exists: resolve its branch and verified remote default
+   base, then inspect existing worker threads/worktrees to avoid duplicates. For new work, call `t3_thread_launch`
+   in this project with `workspaceStrategy: {type: "worktree", baseRef: "<default-branch>", branch: "<slice-branch>",
+   startFromOrigin: true}`, title `<topic> NN: <title>`, and `message` from the [worker prompt](references/worker-prompt.md).
+   To resume an existing task checkout, use `existing_worktree` with its verified absolute path and branch.
+   Retain the returned thread ID; a preparing launch is not a failed worker. After a lost/ambiguous response, inspect
+   thread inventory before retrying; launch has no retry key. Post one line: `Started NN <title>: <thread link>`.
+   Let the finish step decide whether a tick schedule remains necessary after this launch.
 9. **Traps**: after a slice is done, read `traps.md`. When it holds the same trap twice, or every five finished slices, propose permanent fixes the way the `retro` skill does (check, reviewer rule, steering edit, skill change, tooling), each with the exact file it touches. Apply nothing; the user picks.
 10. **Finish**: when `complete` is true, delete the schedule, post a summary (slices, PRs, anything unverified) and the trap proposals. When nothing is running, in review or waiting for deploy and the plan only waits for the user's answers, delete the schedule too; the user's reply wakes the driver.
 

@@ -20,6 +20,10 @@ Use this framing in the comparison; no review pause is needed before launching t
 
 Spawn 3+ sub-agents in parallel using the harness’s subagent tool. Each must produce a **radically different** interface for the deepened module.
 
+In T3, discover provider/model IDs with `orchestrator_capabilities`; use native subagents when they support the
+selected model or `delegate_task` otherwise. Give each a read-only brief and absolute paths. Async completion wakes
+the parent; yield rather than polling. These are child tasks, not separate top-level conversations.
+
 Prompt each sub-agent with a separate technical brief (file paths, coupling details, dependency category from [deepening.md](deepening.md), what sits behind the seam). The brief is independent of the user-facing problem-space explanation in Step 1. Give each agent a different design constraint:
 
 - Agent 1: "Minimize the interface — aim for 1–3 entry points max. Maximise leverage per entry point."

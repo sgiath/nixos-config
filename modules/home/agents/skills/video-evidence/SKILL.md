@@ -12,6 +12,8 @@ scripts/video_to_evidence.sh "https://www.loom.com/share/<id>"
 scripts/video_to_evidence.sh "<path/to/video.mp4>"
 ```
 
+For private Looms requiring the user's account, reuse the logged-in browser session. On the local Linux desktop, Chrome's `Default` profile works with `--cookies-from-browser "chrome+gnomekeyring:Default"`. Use it directly when the user says the video is private; otherwise retry with it if downloading fails with an access error or `No video formats found`. Read [authenticated extraction](references/extraction.md#private-videos-and-browser-login) for other profiles, cookie files, and login failures. Do not print or save browser cookie values.
+
 Read the transcript for concrete asks, corrections, and decisions. Inspect a spread of frames, then narration hotspots; quote exact visible labels, values, counts, and errors. Distinguish spoken claims from frame-confirmed evidence and note unavailable audio rather than inventing it. Act within the user's requested task.
 
 Read [extraction options and fallback](references/extraction.md) for flags, model/binary settings, odd filenames, long recordings, and manual commands. Transcription is local, with no API key.

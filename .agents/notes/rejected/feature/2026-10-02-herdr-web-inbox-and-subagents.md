@@ -1,10 +1,10 @@
 # Agent Note: herdr web UI inbox hygiene and OMP subagent transcripts
 
-Status: proposed
+Status: rejected - herdr web UI removed; T3 Code remains configured
 
 ## Problem
 
-[herdr web UI on every host](../../implemented/feature/2026-10-02-herdr-web-ui-everywhere.md)
+[herdr web UI on every host](../../archived/feature/2026-10-02-herdr-web-ui-everywhere.md)
 gives one sidebar and push alerts for every herdr pane, but two parts of the
 "threads are an inbox" workflow are missing upstream:
 

@@ -7,7 +7,7 @@
 # Usage: scripts/nebula-remote.sh <peer> [out-file]
 # Example: scripts/nebula-remote.sh mac
 #
-# The peer accepts only vesta: SSH (herdr.sgiath.dev drives it as a remote PC)
+# The peer accepts only vesta: SSH
 # and T3 Code (proxied as t3-<peer>.sgiath.dev); the NixOS hosts in turn
 # accept nothing from it. The output embeds the private key; it defaults to
 # $XDG_RUNTIME_DIR (tmpfs). Move it to the peer, install it, then delete it.

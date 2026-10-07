@@ -1,51 +1,78 @@
 ---
 name: pr
-description: "Use when writing or updating a pull request body."
+description: "Draft, create or update a pull request, including its title, body, repository requirements and T3 registration. Does not monitor CI or merge."
 ---
 
-# PR body
+# Create or update a PR
 
-Write the body for fast human review: what changed, proof that it works, and how risky the merge is. Skip preambles and keep prose brief. Use the project's domain language from `CONTEXT.md` when it exists. The body is authored in the user's name, so also read skill://write-as-sgiath for the prose.
+Own PR publication and description updates. Read skill://write-as-sgiath before composing text in the user's name.
+Use the project's domain language from `CONTEXT.md` when present. CI and review follow-up belong to
+skill://babysit-pr; this skill does not start babysitting automatically.
+Honor the requested operation: a draft-only request produces text without publishing or changing a host PR.
 
-```markdown
-## Summary
+## Repository requirements
 
-<one or two sentences, then the smallest visual that makes the change clear>
+Before creating or updating a PR, read applicable repository steering and inspect available project-local skills
+for PR requirements. Load the relevant policy alongside this workflow. Repository policy supplies labels,
+dependencies, review conventions and checks; this skill owns publication. A policy must not call this skill again.
+Do this for each repository in a companion PR set.
 
-## Evidence
+The repository's PR template controls headings, marker lines, checklists and terminology. Use its default template
+unless the user selects another. When no template exists, use Summary, Evidence, Merge Danger and Links as needed.
+Do not inject a second set of risk fields into a template that already defines them.
 
-- **Before:** <screenshot, output, or failing test run>
-  **After:** <screenshot, output, or passing test run>
+## Establish the operation
 
-## Merge Danger
+- Resolve repository, authenticated user, verified remote, head repository/branch and intended base. Preserve
+  unrelated work. Do not assume `origin`, `main`/`master`, or that a supplied PR belongs to this checkout.
+- For creation, inspect the branch, working tree, actual diff and commits. Find an open PR for the exact head
+  repository/branch and reuse it. Distinguish an empty lookup from an authentication/network failure; check again
+  immediately before creating. Do not silently revive a closed or merged PR.
+- For a body/title update on an existing PR, read its current description, diff and head. Update only the requested
+  metadata; this operation does not require committing, pushing or changing its draft status.
+- Preserve authorization from the invoking workflow. If committing/pushing is already authorized, complete that
+  work without asking again; read skill://conventional-commit when committing. Otherwise ask only if publication
+  depends on an unapproved commit or push. Never include unrelated work. Account for intentionally uncommitted files.
 
-**Door:** <one-way or two-way>
+## Write the title and body
 
-<optional: why>
+Lead with the concrete problem and resulting behavior. Ground the title, motivation, links and risk in the final
+diff and task context. Rewrite the description when later fixes change its scope.
 
-**Blast radius:** <one or two words>
+- **Summary:** one or two sentences. When useful, add the smallest visual from [show-me](../show-me/SKILL.md):
+  pseudocode, call tree, component/file tree, Mermaid, or a focused diff. Skip its HTML-file option.
+- **Evidence:** gather runtime proof before writing. For a visual change, use before/after screenshots when the
+  environment supports them. For behavior, name the failing-before/passing-after test or command and what it proves.
+  For a refactor, cite existing tests or comparison output. State verification limits; never invent test runs or
+  manual testing. Existing evidence supplied by the user or invoking workflow is usable.
+- **Merge Danger:** follow the template's terms. Without a template, describe **Reversible** (whether reverting
+  undoes the change, naming migrations, data changes, external side effects or deploy ordering) and **Impact** (who
+  or what can break). Apply label values only when repository policy defines them.
+- **Links:** include supported ticket links and companion PR dependencies with their safe merge order.
 
-<optional: what could break and for whom>
-```
+## Publish or update
 
-When the repository has a PR template, keep its headings, marker lines, and checklists, and put this content into the matching sections. Add **Evidence** or **Merge Danger** as their own sections when the template has no place for them. Link the ticket where the template or repository expects it.
+Use the available host API or CLI. With `gh`, write the exact multiline body to a temporary file and pass
+`--body-file`; use explicit repository, base and head when creating. Set the authenticated user as assignee and
+all repository-required labels at creation. Resolve unmerged schema dependencies before publishing.
 
-## Summary
+For creation, finish authorized task commits and push the intended branch explicitly to the verified remote with
+upstream tracking. Confirm the remote head contains the intended commits before opening the PR. Never push task
+changes to the base branch accidentally. Description-only updates do not require a push.
 
-Pick the smallest view from the menu in [show-me](../show-me/SKILL.md): pseudocode, call tree, component tree, file tree, Mermaid, or a focused `diff` of the changed shape. Skip its HTML-file option. One visual is usually enough; never use every format. Keep only the calls, files, and states a reviewer needs.
+Create a non-draft PR when implementation is complete unless the user requested a draft. Mark an existing draft
+ready only when readiness is part of the task. Check for duplicates again after an ambiguous creation failure
+before retrying. An API error is not evidence that no PR was created.
 
-## Evidence
+For an existing PR, preserve unrelated body content and metadata. Apply repository-specific token-scope fallbacks
+without broadening credentials. Verify the resulting URL, head/base, description and required labels.
 
-Show that the change works at runtime, not that the code reads correctly. Gathering evidence often means running one more test or taking one more screenshot; do it before writing the body.
+## T3 registration and delivery
 
-- Visual change: before/after screenshots, when the environment can produce them.
-- Behavior change: the test that failed before and passes after, named and summarized as pseudocode of its steps, or the command output before and after.
-- Refactor with no behavior change: the existing tests or comparison output that prove the behavior is unchanged.
+When T3 exposes `link_pull_request`, link the full URL immediately after creation or before working on an existing
+PR. Link every companion/stack layer this task owns. Before finishing, use `list_thread_pull_requests` and register
+any missing task PRs. Report linking failures; host API/CLI operations alone do not register a PR with T3.
 
-Report only checks that actually ran. If something could not be verified (production-only path, missing credentials), say so here instead of implying coverage.
-
-## Merge Danger
-
-A two-way door can be walked back by reverting the PR. A one-way door cannot be cheaply undone: data migrations or deletions, external side effects, published APIs or messages, irreversible configuration. Name the reason when it is one-way.
-
-Blast radius is who or what can break if the change is wrong: one internal page, a background job, all customers' tracking script, a consumer of a shared API, mobile layout. Small two-way changes need light review; state the radius honestly so the reviewer can calibrate.
+For draft-only work, return the requested title/body. Otherwise return the PR URL(s), a concise summary,
+verification limits and dependency order. Publication is not proof of
+merge readiness. Do not merge, enable auto-merge, deploy or start monitoring unless separately authorized.

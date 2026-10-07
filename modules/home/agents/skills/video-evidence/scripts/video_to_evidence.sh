@@ -4,6 +4,7 @@
 #
 # Usage:
 #   video_to_evidence.sh <video-path-or-url> [--interval SECONDS] [--out DIR] [--model PATH] [--language LANG]
+#     [--cookies-from-browser BROWSER[+KEYRING][:PROFILE][::CONTAINER] | --cookies FILE]
 #
 # The input may be a local file OR a video URL (e.g. a loom.com share link). URLs are
 # downloaded with yt-dlp into <out> before processing.
@@ -22,6 +23,7 @@
 # and prints the transcript plus a frames summary to stdout.
 
 set -euo pipefail
+umask 077
 
 usage() {
   cat <<'EOF'
@@ -30,9 +32,16 @@ evidence: a speech transcript (local whisper.cpp) plus periodic frames for on-sc
 
 Usage:
   video_to_evidence.sh <video-path-or-url> [--interval SECONDS] [--out DIR] [--model PATH] [--language LANG]
+    [--cookies-from-browser BROWSER[+KEYRING][:PROFILE][::CONTAINER] | --cookies FILE]
 
 The input may be a local file OR a video URL (e.g. a loom.com share link); URLs are
 downloaded with yt-dlp into <out> first.
+
+Authentication for private URLs (use one):
+  --cookies-from-browser SPEC  read the logged-in browser session with yt-dlp
+                              e.g. chrome+gnomekeyring:Default on this Linux desktop
+  --cookies FILE              use a Netscape-format cookie file
+No credentials are needed for local files or public URLs.
 
 Defaults: --interval 4  --out $(mktemp -d)  --language auto
   --model  $WHISPER_MODEL or /home/sgiath/.local/share/whisper-cpp/ggml-large-v3-turbo.bin
@@ -57,6 +66,8 @@ input=""
 interval=4
 out=""
 language="auto"
+cookies_from_browser=""
+cookies_file=""
 whisper_bin="${WHISPER_CLI:-whisper-cli}"
 model="${WHISPER_MODEL:-/home/sgiath/.local/share/whisper-cpp/ggml-large-v3-turbo.bin}"
 
@@ -78,6 +89,14 @@ while [ $# -gt 0 ]; do
     language="${2:?--language needs a value}"
     shift 2
     ;;
+  --cookies-from-browser)
+    cookies_from_browser="${2:?--cookies-from-browser needs a value}"
+    shift 2
+    ;;
+  --cookies)
+    cookies_file="${2:?--cookies needs a value}"
+    shift 2
+    ;;
   -h | --help)
     usage
     exit 0
@@ -88,6 +107,7 @@ while [ $# -gt 0 ]; do
 done
 
 [ -n "$input" ] || die "a video path or URL is required (run with --help)"
+[ -z "$cookies_from_browser" ] || [ -z "$cookies_file" ] || die "use either --cookies-from-browser or --cookies, not both"
 command -v ffmpeg >/dev/null 2>&1 || die "ffmpeg not found"
 command -v ffprobe >/dev/null 2>&1 || die "ffprobe not found"
 
@@ -96,6 +116,10 @@ case "$input" in
 http://* | https://*) is_url=1 ;;
 esac
 [ "$is_url" -eq 1 ] || [ -f "$input" ] || die "file not found: $input"
+if [ -n "$cookies_from_browser$cookies_file" ]; then
+  [ "$is_url" -eq 1 ] || die "cookie options require a URL input"
+fi
+[ -z "$cookies_file" ] || [ -r "$cookies_file" ] || die "cookie file not readable: $cookies_file"
 
 [ -n "$out" ] || out="$(mktemp -d "${TMPDIR:-/tmp}/video-evidence.XXXXXX")"
 mkdir -p "$out/frames"
@@ -104,10 +128,17 @@ mkdir -p "$out/frames"
 video="$input"
 if [ "$is_url" -eq 1 ]; then
   command -v yt-dlp >/dev/null 2>&1 || die "yt-dlp not found (needed to download a URL)"
+  download_args=()
+  if [ -n "$cookies_from_browser" ]; then
+    download_args+=(--cookies-from-browser "$cookies_from_browser")
+  elif [ -n "$cookies_file" ]; then
+    download_args+=(--cookies "$cookies_file")
+  fi
   printf '>> downloading %s with yt-dlp\n' "$input" >&2
-  if ! yt-dlp -o "$out/source.%(ext)s" "$input" >"$out/yt-dlp.log" 2>&1; then
+  if ! yt-dlp "${download_args[@]}" -o "$out/source.%(ext)s" "$input" >"$out/yt-dlp.log" 2>&1; then
     printf '>> yt-dlp failed; last lines of %s/yt-dlp.log:\n' "$out" >&2
     tail -n 20 "$out/yt-dlp.log" >&2 || true
+    printf '>> for a private video, use --cookies-from-browser with the profile logged into the account granted access (see references/extraction.md)\n' >&2
     die "yt-dlp download failed"
   fi
   video="$(find "$out" -maxdepth 1 -type f -name 'source.*' ! -name '*.part' | head -1)"

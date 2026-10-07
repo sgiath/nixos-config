@@ -12,8 +12,7 @@ let
   systemctl = lib.getExe' pkgs.systemd "systemctl";
   socketDir = "${config.xdg.configHome}/herdr";
 
-  # The remote web bridge discovers this installed command and invokes
-  # `herdr server`. Both it and a local client use the same managed daemon.
+  # Local clients and `herdr server` use the same managed daemon.
   launcher = pkgs.writeShellScript "herdr-managed" ''
     set -euo pipefail
     if [[ $# == 0 || ( $# == 1 && "$1" == server ) ]]; then

@@ -8,8 +8,6 @@
     ./cursor.nix
     ./dsh.nix
     ./herdr-server.nix
-    ./herdr-web.nix
-    ./herdr-thread.nix
     ./omp.nix
     ./openclaw.nix
     ./opencode.nix

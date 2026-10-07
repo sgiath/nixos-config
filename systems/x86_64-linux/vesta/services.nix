@@ -22,7 +22,6 @@
     hermes-agent.enable = true;
     executor.enable = true;
     opencode.enable = true;
-    herdr-web.enable = true;
     t3code.enable = true;
   };
 

@@ -13,6 +13,25 @@ scripts/video_to_evidence.sh "<path/to/video.mp4>"               # or a local fi
 
 Useful flags: `--interval SECONDS` (raise it for long videos to cap the frame count), `--out DIR`, `--model PATH` (whisper GGML model; defaults to `$WHISPER_MODEL` or the local large-v3-turbo model), `--language LANG` (default `auto`). Override the binary with `$WHISPER_CLI`. The script prints the transcript and the frames directory path.
 
+### Private videos and browser login
+
+Use the account already granted access to the video. The script forwards authentication options to yt-dlp; it does not automate passwords or MFA:
+
+```bash
+scripts/video_to_evidence.sh "https://www.loom.com/share/<id>" \
+  --cookies-from-browser "chrome+gnomekeyring:Default"
+```
+
+This Chrome profile and explicit Secret Service keyring were verified on the local Linux desktop. Plain `chrome:Default` fails to decrypt its `v11` session cookies under Hyprland; yt-dlp can then misleadingly report `No video formats found`. `+gnomekeyring` selects Secret Service, including the configured pass-secret-service provider. It does not require installing GNOME.
+
+On another machine, use the browser/profile that is logged into Loom: for example `chromium+gnomekeyring:Default`, `chrome+gnomekeyring:Profile 1`, or `firefox`. yt-dlp accepts `BROWSER[+KEYRING][:PROFILE][::CONTAINER]`; quote the whole specification, especially profiles with spaces. Browser cookies are read at runtime without exporting a cookie file. The browser profile and its unlocked keyring must be available on the machine running the script; a remote/headless host does not inherit the desktop session.
+
+If the user already supplies a Netscape-format cookie file, use `--cookies "/path/to/cookies.txt"` instead. These options are mutually exclusive and require a URL. yt-dlp may update a supplied cookie file, so keep it outside the repository with mode `0600`. Never paste cookie values into chat, logs, Nix configuration, or the store. Generated evidence files use private permissions.
+
+If cookies cannot be decrypted, check the profile and keyring rather than suppressing warnings or repeatedly retrying. If the session is missing/expired or the account lacks access, ask the user to sign into Loom in that browser profile and open the exact link, then rerun. Access may require Amee to share with that account. Do not try other accounts or change the video's sharing settings. A video password is a separate access mechanism; browser cookies do not replace it.
+
+The [yt-dlp authentication options](https://github.com/yt-dlp/yt-dlp#authentication-options) document supported browsers and profile syntax.
+
 ## 3. Read the transcript
 
 Treat the transcript as the primary account of what the user wants. Extract every concrete ask, correction, and decision — not a vague summary. Screen-recording speech is casual and unpunctuated, so read for intent, not literal wording.

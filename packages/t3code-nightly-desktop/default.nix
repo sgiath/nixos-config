@@ -124,7 +124,7 @@ stdenv.mkDerivation (finalAttrs: {
       --add-flags "\''${NIXOS_OZONE_WL:+\''${WAYLAND_DISPLAY:+--ozone-platform-hint=auto --enable-features=WaylandWindowDecorations --enable-wayland-ime=true}}"
 
     substituteInPlace $out/share/applications/t3code.desktop \
-      --replace-fail 'Exec=AppRun --no-sandbox %U' 'Exec=t3code-desktop %U'
+      --replace-fail 'Exec=AppRun %U' 'Exec=t3code-desktop %U'
 
     runHook postInstall
   '';

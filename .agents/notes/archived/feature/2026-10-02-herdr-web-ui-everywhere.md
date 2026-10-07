@@ -1,6 +1,7 @@
 # Agent Note: herdr web UI on every host, reachable from the phone
 
 Status: implemented
+Archived: 2026-10-07
 
 ## Problem
 

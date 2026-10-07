@@ -10,7 +10,13 @@ Review agent sessions and propose changes to the agent's **environment** that ma
 
 ## 1. Read the sessions
 
-Default to the current session when the user names none. Otherwise find the requested sessions by project directory, date, or topic. Session stores:
+Default to the current session when the user names none. Otherwise find the requested sessions by project directory,
+date, or topic. Inside T3, start with its thread search/read tools: resolve the project, search titles/content, then
+read the matching durable timelines, including relevant tool activity and child work. Paginate with the returned
+cursor/position and recover truncated item text before drawing conclusions. Search is bounded to active threads and
+is not exhaustive: use filtered/paginated thread lists (including settled threads when relevant) to broaden coverage.
+Use provider session files when T3 history lacks needed tool evidence or the requested work happened outside T3;
+deduplicate mirrored transcripts by task, timestamps and message evidence. Session stores:
 
 - Claude Code: `~/.claude/projects/<cwd-with-dashes>/*.jsonl`
 - oh-my-pi: `~/.omp/agent/sessions/<cwd-slug>/` (default profile) and `~/.omp/profiles/<profile>/agent/sessions/<cwd-slug>/` (for example `crazyegg`, `remote`); check every profile, since one project can have sessions in several
@@ -18,7 +24,11 @@ Default to the current session when the user names none. Otherwise find the requ
 - pi: `~/.pi/agent/sessions/<cwd-slug>/`
 - T3 Code threads: search and read them with the T3 thread tools
 
-Worktree checkouts get their own directory slug (`core_v2.feat-x`), so include them when collecting a project's sessions. For large sets, split sessions between subagents that each return findings with session path and message evidence; read the transcripts, not just the final messages.
+Worktree checkouts get their own directory slug (`core_v2.feat-x`), so include them when collecting a project's
+sessions. For large sets, split sessions between subagents that return findings with thread ID/item or session
+path and message evidence; read transcripts, not just final summaries. Supply explicit source IDs/paths and read-only
+briefs. In T3, async delegated completion wakes the parent; yield instead of polling. Do not create top-level review
+threads merely to delegate a retrospective.
 
 Also read the steering the session ran under: the global `AGENTS.md` (source: `~/nixos/modules/home/agents/AGENTS.md`), the repository `AGENTS.md`/`CLAUDE.md`, the skills it loaded (source: `~/nixos/modules/home/agents/skills/`), and the repository's check commands and CI workflows.
 
@@ -34,4 +44,8 @@ Also read the steering the session ran under: the global `AGENTS.md` (source: `~
 
 ## 3. Report
 
-Present the candidates ordered by severity. For each: what happened (session path and short quote or tool-call evidence), the proposed environment change with the exact file it touches, and whether it is a check, reviewer rule, steering edit, skill change, or tooling change. Note any candidate you rejected as a likely false positive, briefly. Then stop and let the user choose; record accepted multi-file changes as proposed notes in `.agents/notes/` when the user wants them tracked instead of done now.
+Present the candidates ordered by severity. For each: what happened (thread/item or session path and short quote or
+tool-call evidence), the proposed environment change with the exact file it touches, and whether it is a check,
+reviewer rule, steering edit, skill change, or tooling change. State history-coverage limits. Note rejected likely
+false positives briefly. Then stop and let the user choose; record accepted multi-file changes as proposed notes
+in `.agents/notes/` when the user wants them tracked instead of done now.

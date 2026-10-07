@@ -404,7 +404,7 @@ Work that is one note and one PR stays a plain `/own-change Implement @<note>`.
   enough, because the user's merge and deploy dominate slice latency.
 - **herdr with omp as host.** It works the same way, through `herdr-thread` and
   agent states, but has no PR watch or scheduler. See
-  [decide T3 Code's fate after the herdr web UI trial](../../proposed/simplification/2026-10-02-t3code-after-herdr-web-trial.md).
+  [decide T3 Code's fate after the herdr web UI trial](../../rejected/simplification/2026-10-02-t3code-after-herdr-web-trial.md).
 
 ## Consequences
 

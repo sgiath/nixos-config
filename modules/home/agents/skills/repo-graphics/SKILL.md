@@ -95,7 +95,9 @@ templates, and copy-paste SVG skeletons. The invariants:
 ## Verification
 
 Build a throwaway HTML page embedding the SVG(s) twice — on `#ffffff` and on
-`#0d1117` — and screenshot it full-page with the browser tool. Check: label
+`#0d1117` — and capture both with the browser tool. In T3, `html_preview` can render the self-contained wrapper and
+inline local SVG paths for screenshot inspection; use collaborative preview tools when interacting with a live page.
+Outside T3, use the available browser's full-page capture. Check: label
 collisions, caption/graphic overlap, clip behavior at card corners, contrast
 on both backgrounds. Standalone SVG tabs may tile artifacts; only trust the
 `<img>`-embedded preview.

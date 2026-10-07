@@ -103,12 +103,10 @@ nix develop -c sops secrets/vesta.yaml
 ```
 
 `secrets.yaml` contains shared/application credentials. `vesta.yaml` contains
-Hermes and its Bird credentials, the T3 Code and herdr web UI tokens, and the
-herdr web UI's per-PC SSH keys; it is encrypted only for Vesta and the
-administrator. `ceres-signing.yaml` contains the build-signing private key and
-is encrypted only for Ceres and the administrator. Public keys are stored
-unencrypted: the signing key in `secrets/ceres-cache.pub` and the herdr web
-UI's SSH keys in `secrets/herdr-web-<pc>.pub`.
+Hermes and its Bird credentials and the T3 Code tokens; it is encrypted only
+for Vesta and the administrator. `ceres-signing.yaml` contains the build-signing
+private key and is encrypted only for Ceres and the administrator. Public keys
+are stored unencrypted: the signing key in `secrets/ceres-cache.pub`.
 
 The configured host recipients are Ceres and Vesta. Before deploying another
 host or replacing a host's SSH key, add its `ssh-to-age` public recipient to
@@ -154,64 +152,3 @@ Removing plaintext from the current configuration does not remove it from
 old store paths, generations, backups, or previously copied sources. Rotate
 the affected credentials after activation; retain recovery generations until
 the migrated services have been verified.
-
-## Agent threads in the browser
-
-`herdr.sgiath.dev` serves [herdr-web-ui](https://github.com/devswha/herdr-web-ui)
-from Vesta to Nebula peers only: a chat and terminal view of every herdr pane,
-remote PCs in the same sidebar, and web push alerts. On Vesta,
-`herdr-server.service` (a user unit) runs the default herdr session headless, so
-`herdr` over SSH attaches to the same panes. `herdr-web.service` listens on
-`127.0.0.1:7317`; nginx adds the shared token to every overlay request, so
-Nebula membership is the login.
-
-- Ceres also runs `herdr-server.service`, after the graphical session imports
-  its display environment. The installed `herdr` launcher routes both local
-  startup and the remote bridge's `herdr server` through that unit; an SSH
-  connection cannot start the default daemon with a headless environment.
-  The login terminal waits for Herdr's API and client sockets to be ready.
-  Remote access requires an active graphical login on Ceres. Logging out
-  stops its daemon and panes, so finish agents before ending that session.
-  Initial deployment refuses to replace an existing unmanaged daemon;
-  install for the next reboot or retire it after its agents finish.
-- A switch never restarts `herdr-server.service`, because stopping it kills
-  every agent. After a herdr bump, run
-  `systemctl --user restart herdr-server` on the affected host when no thread
-  is running.
-- `herdr-web.service` reads `herdr-web-token` from `secrets/vesta.yaml` when it
-  starts; restart it after rotating the token.
-- `~/.config/herdr-web-ui` on Vesta holds paired devices, the remote PC roster
-  and `vapid.json`. Deleting `vapid.json` breaks every push subscription.
-- Settings → Updates reports updates as unmanaged. The version is pinned in
-  `packages/herdr-web-ui`, and `./scripts/update-inputs.sh` bumps it.
-
-Remote PCs are added in Settings → Remote PCs → **Add PC**; the server connects
-over SSH and installs its own bridge runtime on the PC. Turn off "Update PC
-bridges automatically" there. After a package bump that changes the bridge
-bundle, press "Update bridge" once per PC.
-
-- Ceres: destination `sgiath@ceres.nebula.sgiath.dev`, key path
-  `/run/secrets/herdr-web-ceres-ssh-key`. Ceres accepts that key only from
-  Vesta's overlay addresses, with port forwarding limited to its loopback.
-- Remote MacBook: run `scripts/nebula-remote.sh mac`, install the result as the
-  config of a nebula daemon on the Mac (for example Homebrew's `nebula` under
-  launchd) and delete the file. Enable Remote Login and add
-  `from="10.42.0.2,fd51:da00:4788::2",restrict,port-forwarding,permitopen="127.0.0.1:*"`
-  followed by `secrets/herdr-web-mac.pub` to the Mac's
-  `~/.ssh/authorized_keys`. Then add the PC as `<user>@mac.nebula.sgiath.dev`
-  with key path `/run/secrets/herdr-web-mac-ssh-key`. Keep the Mac awake while
-  threads run.
-
-Remote work runs only on the Mac, under the company accounts logged in there;
-other devices only start, watch and answer those threads through the UI.
-Company credentials, repositories and hostnames never enter this repository.
-NixOS hosts drop every Nebula connection the Mac opens.
-
-On the phone, open `herdr.sgiath.dev` over Mobile Nebula, install it as an app,
-and turn on alerts (the bell) to get "needs input" and "done" pushes while the
-app is closed.
-
-`herdr-thread <branch> <prompt>` run from a repository checkout creates the
-branch and its worktree with Worktrunk, opens it as a herdr workspace, starts
-OMP there and sends it the prompt. The web UI's "New session" starts an agent in
-an existing folder without a worktree.

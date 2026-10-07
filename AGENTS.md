@@ -22,10 +22,10 @@ modules/nixos/sites/              # nginx vhosts, sgiath.sites.<name>.enable
 modules/home/common/              # baseline under HM sgiath.enable
 modules/home/{terminal,desktop,gaming}/ # HM roles: sgiath.roles.<role>.enable (pushed from NixOS)
 modules/home/programs/            # opt-in program groups: sgiath.programs.<group>.enable
-modules/home/agents/              # agent tooling and services (cli-proxy-api, t3code, herdr-web, ...)
+modules/home/agents/              # agent tooling and services (cli-proxy-api, t3code, ...)
 modules/home/work/                # sgiath.work.{crazyegg,remote}.enable
 themes/                           # base16 schemes shared by NixOS and HM stylix
-secrets/                          # SOPS files plus public keys (ceres-cache.pub signing key, herdr-web-<pc>.pub SSH keys); nebula.yaml (host certs), nebula-ca.yaml (CA key, PGP-only)
+secrets/                          # SOPS files plus public keys (ceres-cache.pub signing key); nebula.yaml (host certs), nebula-ca.yaml (CA key, PGP-only)
 scripts/                          # update-inputs.sh, nebula-sign.sh, nebula-mobile.sh, nebula-remote.sh
 packages/                         # custom packages, update/clear-cache commands, updater scripts
 overlays/sgiath/default.nix       # selected packages from alternate nixpkgs channels
