@@ -6,9 +6,14 @@
 }:
 {
   config = lib.mkIf config.sgiath.agents.enable {
-    home.packages = with pkgs.llm-agents; [
-      claude-desktop
-    ];
+    home = {
+      packages = with pkgs.llm-agents; [ claude-desktop ];
+      file.".claude-remote/CLAUDE.md".source = ./AGENTS.md;
+      file.".claude-remote/skills" = {
+        source = ./skills;
+        recursive = true;
+      };
+    };
 
     programs.claude-code = {
       enable = true;

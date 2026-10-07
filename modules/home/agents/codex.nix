@@ -12,6 +12,7 @@
       ]
       ++ (lib.optionals config.sgiath.roles.desktop.enable [ pkgs.llm-agents.chatgpt ]);
       file.".codex/AGENTS.md".source = ./AGENTS.md;
+      file.".codex-remote/AGENTS.md".source = ./AGENTS.md;
     };
 
     programs.zsh.shellAliases = {

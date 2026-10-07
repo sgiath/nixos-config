@@ -1,0 +1,6 @@
+interface:
+  display_name: "Self-review"
+  short_description: "Publish one inline GitLab comment per self-review finding"
+  default_prompt: "Use $self-review on my finished MR and publish each finding as an inline GitLab discussion."
+policy:
+  allow_implicit_invocation: false
