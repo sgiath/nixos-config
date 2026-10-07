@@ -81,9 +81,9 @@
     };
 
     # https://forgejo.ellis.link/continuwuation/continuwuity/releases
-    # v26.8.1
+    # v26.9.1
     continuwuity = {
-      url = "git+https://forgejo.ellis.link/continuwuation/continuwuity?rev=ab3c05dac6372ddda3d3279c59b998838094a8bc";
+      url = "git+https://forgejo.ellis.link/continuwuation/continuwuity?rev=046074bbc2c8d1af6dd86f93e1c512fbd8b78da8";
       inputs.nixpkgs.follows = "nixpkgs";
     };
 
@@ -119,29 +119,13 @@
       inputs.nixpkgs.follows = "nixpkgs";
     };
 
-    oh-my-pi = {
-      url = "github:can1357/oh-my-pi/v18.8.3";
-      inputs.nixpkgs.follows = "nixpkgs";
-    };
-
     herdr = {
       url = "github:herdrdev/herdr/v0.9.3";
       inputs.nixpkgs.follows = "nixpkgs";
     };
 
-    tuios = {
-      url = "github:Gaurav-Gosain/tuios/v0.8.5";
-      inputs.nixpkgs.follows = "nixpkgs";
-      inputs.treefmt-nix.follows = "treefmt-nix";
-    };
-
     opencode = {
       url = "github:anomalyco/opencode/v1.18.35";
-      inputs.nixpkgs.follows = "nixpkgs";
-    };
-
-    crit = {
-      url = "github:tomasz-tomczyk/crit/v0.22.0";
       inputs.nixpkgs.follows = "nixpkgs";
     };
   };
@@ -211,7 +195,6 @@
         llm-agents.overlays.shared-nixpkgs
         prismlauncher.overlays.default
         comfyui.overlays.default
-        oh-my-pi.overlays.default
         opencode.overlays.default
         herdr.overlays.default
       ];
@@ -227,18 +210,15 @@
         nix-gaming.nixosModules.platformOptimizations
         nix-gaming.nixosModules.wine
         comfyui.nixosModules.default
-        oh-my-pi.nixosModules.default
         dgx-spark.nixosModules.dgx-spark
       ];
 
       homes.modules = with inputs; [
         hyprland.homeManagerModules.default
-        # noctalia.homeModules.default
         sops-nix.homeManagerModules.sops
         nix-index-database.homeModules.nix-index
         stylix.homeModules.stylix
         voxtype.homeManagerModules.default
-        oh-my-pi.homeManagerModules.default
         worktrunk.homeModules.default
       ];
     };

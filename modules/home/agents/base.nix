@@ -30,7 +30,6 @@
       pkgs.llm-agents.omo-ai
 
       # tools
-      inputs.crit.packages.${pkgs.stdenv.hostPlatform.system}.crit
       pkgs.llm-agents.td
       pkgs.llm-agents.backlog-md
       pkgs.llm-agents.beads

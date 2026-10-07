@@ -32,9 +32,6 @@ in
   ksa = pkgs-ksa.ksa;
   factorio-space-age-experimental = pkgs-master.factorio-space-age-experimental;
 
-  # tuios exposes packages but no overlay.
-  tuios = inputs.tuios.packages.${prev.stdenv.hostPlatform.system}.default;
-
   davinci-resolve-studio = prev.callPackage "${davinci-resolve-dir}/package.nix" {
     studioVariant = true;
   };
