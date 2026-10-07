@@ -1,7 +1,7 @@
 ---
 name: drive
 disable-model-invocation: true
-description: "Manual only: /drive plan|replan|<plan-dir> turns a spec note into ordered slices and drives them one PR at a time through worker threads. Never auto-trigger."
+description: "Manual only: /drive plan|replan|<plan-dir> turns a spec note into ordered slices and drives eligible slices through worker threads. Never auto-trigger."
 ---
 
 # Drive a plan of slices
@@ -17,8 +17,8 @@ This workflow explicitly authorizes separate top-level workers; read-only resear
 ## Artifacts
 
 - **Spec**: Agent Notes in the repository, as usual. Decisions and architecture only, never progress.
-- **Plan**: `.agents/plans/<yyyy-mm-dd>-<topic>/` with `plan.md` and one `NN-<slug>.md` per slice. Format and templates: [plan format](references/plan-format.md). Only planning (on the default branch) and a slice's own PR edit these files.
-- **State**: derived on every wake-up by [`scripts/plan-status <plan-dir>`](scripts/plan-status) from slice files, GitHub PRs on the slice branches, local branches, and the deploy check. Never cache it in the conversation and never write progress into the repository.
+- **Plan**: `.agents/plans/<yyyy-mm-dd>-<topic>/` with `plan.md` and one `NN-<slug>.md` per slice. Format and templates: [plan format](references/plan-format.md). For tracked plans, only planning (on the default branch) and a slice's own PR edit these files. If the user or plan requires local artifacts, keep the plan, answers and spec unpublished; only the driver edits them and workers read absolute local paths. Do not copy them into implementation commits.
+- **State**: derived on every wake-up by [`scripts/plan-status <plan-dir>`](scripts/plan-status) from slice files, GitHub PRs or GitLab MRs on the exact slice branches, local branches, and the deploy check. Run it against the original absolute plan directory independently of worker checkouts. Never cache it in the conversation and never write progress into the repository.
 - **State directory** (outside the repository, printed by `plan-status` as `state_dir`): `answers/NN.md` (the user's answers to a slice's questions), `deployed/NN` (marker when the user reports a deploy that `deploy_check` cannot see), `traps.md` (friction workers hit, appended by workers).
 
 ## `/drive plan @<spec-note> [more notes…]`
@@ -26,15 +26,15 @@ This workflow explicitly authorizes separate top-level workers; read-only resear
 1. Read the notes and the code they touch. Cut the work into slices: each is one PR-sized, independently deployable deliverable (plus companion PRs such as a db-schemas migration) with an acceptance gate a reviewer can check and a stop boundary. Put a "local testing with production-like data" slice first when the feature needs one and none exists.
 2. Mark `blocked_by` only for real dependencies, and for every one: a slice that changes code only meaningful after another slice ships (a prompt for a path that slice adds) is blocked by it, so slices that run in parallel each work on master alone. Set `deploy_gate: false` only when later slices do not need the slice running in production. Set `migration: true` for any schema change.
 3. Write each slice's "Questions before starting": the decisions the worker must not guess. Leave them unanswered.
-4. The last slice in order also moves the spec notes to `implemented/` (per the repository's notes rules). It is
+4. The last slice in order also moves the tracked spec notes to `implemented/` (per the repository's notes rules). For local artifacts, the driver performs that move and link repair locally after the last slice is done. It is
    blocked by every other slice so parallel work cannot finalize the notes early. Retain the plan directory as
    delivery scope and question records: `plan-status` needs it to verify completion. Removal is a separate requested
    cleanup after the driver has stopped, not part of the final worker's PR.
-5. Show the user one table (id, title, blocked by, deploy gate, migration) and the open questions per slice. Apply corrections. When the user approves, commit the plan on the default branch and push it. Workers branch from the remote default branch and cannot see unpushed plan files.
+5. Show the user one table (id, title, blocked by, deploy gate, migration) and the open questions per slice. Apply corrections. When the user approves, commit the tracked plan on the default branch and push it. Local plans stay on this machine; pass their absolute paths and slice scope/answers to workers rather than expecting the plan on the remote default branch.
 
 ## `/drive replan [findings]`
 
-Fold new findings, production data, stakeholder input or a changed order into the plan. Never renumber existing slices; numbers are stable names and the `order` list in `plan.md` is the delivery order. Add new slices with the next free number, delete dropped ones. A slice that is `in_progress` or `in_review` keeps running unless the change invalidates it; then ask the user whether to stop its worker. Show the diff of the plan, then commit and push on approval. Delete `answers/NN.md` for any slice whose questions changed.
+Fold new findings, production data, stakeholder input or a changed order into the plan. Never renumber existing slices; numbers are stable names and the `order` list in `plan.md` is the delivery order. Add new slices with the next free number, delete dropped ones. A slice that is `in_progress` or `in_review` keeps running unless the change invalidates it; then ask the user whether to stop its worker. Show the diff of the plan, then commit and push tracked plans on approval; local plans remain unpublished. Delete `answers/NN.md` for any slice whose questions changed.
 
 ## `/drive @<plan-dir>`: start or resume
 
@@ -49,8 +49,8 @@ worker's persistent watcher. End the turn after the tick; do not keep a shell sl
 
 ## Tick
 
-1. Run `scripts/plan-status <plan-dir>` from the skill directory and read `plan.md`. Find worker threads with `t3_thread_list` (`titleContains: "<topic> NN"`).
-2. **Closed slices**: a slice whose PRs were all closed unmerged needs the user. Ask once whether to relaunch, replan or drop it.
+1. Run `scripts/plan-status <absolute-plan-dir>` from the skill directory and read `plan.md`. The script chooses `gh` or `glab` from origin and uses explicit slice `branch` values when present. Find worker threads with `t3_thread_list` (`titleContains: "<topic> NN"`). Honor the user's provider/model/effort choice for every worker and delegated descendant.
+2. **Closed slices**: a slice with an unmerged closed required PR and none open needs the user. Ask once whether to relaunch, replan or drop it; a merged companion does not complete it.
 3. **Workers that stopped early** (`in_progress`, thread no longer running, no PR): read recent thread messages,
    queued follow-ups and pending user questions. Workspace preparation, queued work or live delegated children are
    waiting states, not stopped work. If a question is already answered in `answers/NN.md` or current user context,
@@ -81,14 +81,15 @@ worker's persistent watcher. End the turn after the tick; do not keep a shell sl
    `worktrunk` skill and use `wt remove <branch>` from a different checkout in each repository. Do not remove a
    dirty or active checkout; report why it remains. Deleting/settling a T3 thread does not remove its worktree.
 6. **Merged slices waiting for deploy**: `deploy_check` in `plan.md` decides. Without one, ask the user once to say when it is deployed; when they do, write `deployed/NN` in the state directory. Never treat a merge as a deploy.
-7. **Ask ahead** (`ask_next` in the status): ground that slice's questions in current code and production data with a read-only research subagent, then ask the user all of them in one numbered message with a recommended answer each. Write the user's answers to `answers/NN.md` verbatim with the date. A slice with no questions gets `answers/NN.md` containing `No questions.`
-8. **Launch** each slice in `next` whose `answers/NN.md` exists: resolve its branch and verified remote default
+7. **Ask ahead** (`ask_ready` and `ask_next` in the status): ground the whole ready group's unanswered questions, plus the next eligible blocked slice's questions, in current code and production data with a read-only research subagent. Ask them together in one numbered message with a recommended answer each; consolidate shared decisions and map them back to each slice. Write the user's answers to each `answers/NN.md` verbatim with the date. A slice with no questions gets `answers/NN.md` containing `No questions.`
+8. **Launch** every eligible slice in `next` whose `answers/NN.md` exists, up to `parallel`: resolve its exact branch and verified remote default
    base, then inspect existing worker threads/worktrees to avoid duplicates. For new work, call `t3_thread_launch`
    in this project with `workspaceStrategy: {type: "worktree", baseRef: "<default-branch>", branch: "<slice-branch>",
    startFromOrigin: true}`, title `<topic> NN: <title>`, and `message` from the [worker prompt](references/worker-prompt.md).
    To resume an existing task checkout, use `existing_worktree` with its verified absolute path and branch.
    Retain the returned thread ID; a preparing launch is not a failed worker. After a lost/ambiguous response, inspect
    thread inventory before retrying; launch has no retry key. Post one line: `Started NN <title>: <thread link>`.
+   An explicit empty branch awaits its real issue/branch; do not invent one. Independent MRs awaiting review consume only the configured capacity, not a group barrier. For local artifacts, supply absolute plan/answer paths and scope in the launch context and forbid workers from publishing them. Use the repository's host workflow: GitLab repositories publish with their template, authenticated-user assignment and GitLab skills; do not route them through `gh` or GitHub-only publication steps.
    Let the finish step decide whether a tick schedule remains necessary after this launch.
 9. **Traps**: after a slice is done, read `traps.md`. When it holds the same trap twice, or every five finished slices, propose permanent fixes the way the `retro` skill does (check, reviewer rule, steering edit, skill change, tooling), each with the exact file it touches. Apply nothing; the user picks.
 10. **Finish**: when `complete` is true, delete the schedule, post a summary (slices, PRs, anything unverified) and the trap proposals. When nothing is running, in review or waiting for deploy and the plan only waits for the user's answers, delete the schedule too; the user's reply wakes the driver.

@@ -120,7 +120,7 @@
     };
 
     oh-my-pi = {
-      url = "github:can1357/oh-my-pi/v18.7.0";
+      url = "github:can1357/oh-my-pi/v18.8.3";
       inputs.nixpkgs.follows = "nixpkgs";
     };
 
@@ -141,7 +141,7 @@
     };
 
     crit = {
-      url = "github:tomasz-tomczyk/crit/v0.21.1";
+      url = "github:tomasz-tomczyk/crit/v0.22.0";
       inputs.nixpkgs.follows = "nixpkgs";
     };
   };

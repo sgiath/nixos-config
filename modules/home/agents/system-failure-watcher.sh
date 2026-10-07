@@ -8,11 +8,9 @@ readonly UNIT_FAILED_MESSAGE_ID=d9b373ed55a64feb8242e02dbe79a49c
 # Transient units the Quickshell launcher starts apps in (launcher/Apps.qml).
 readonly APP_UNIT_PREFIX=app-sgiath-
 readonly dedupe_seconds=${SYSTEM_FAILURE_WATCHER_DEDUPE_SECONDS:-300}
-readonly session=${SYSTEM_FAILURE_WATCHER_TMUX_SESSION:-nixos}
 readonly working_directory=${SYSTEM_FAILURE_WATCHER_WORKING_DIRECTORY:-$HOME/nixos}
-readonly herdr_bin=${SYSTEM_FAILURE_WATCHER_HERDR:-herdr}
-readonly tmux_bin=${SYSTEM_FAILURE_WATCHER_TMUX:-tmux}
-readonly omp_bin=${SYSTEM_FAILURE_WATCHER_OMP:-omp}
+readonly t3_bin=${SYSTEM_FAILURE_WATCHER_T3:-t3}
+readonly t3_endpoint=${SYSTEM_FAILURE_WATCHER_T3_ENDPOINT:-http://localhost:3773/mcp}
 readonly journalctl_bin=${SYSTEM_FAILURE_WATCHER_JOURNALCTL:-journalctl}
 readonly jq_bin=${SYSTEM_FAILURE_WATCHER_JQ:-jq}
 
@@ -25,43 +23,67 @@ log() {
   printf 'system-failure-watcher: %s\n' "$*" >&2
 }
 
-# Tab in the Herdr workspace checked out at the working directory, OMP
-# started in it by Herdr so it shows up as a tracked agent. Returns 1 only
-# when Herdr has no such workspace; once a tab exists it is the dispatch,
-# even if the agent then fails to come up (the log says so).
-dispatch_herdr() {
-  local label=$1 prompt=$2 workspace pane reply
-
-  # shellcheck disable=SC2016 # $path is jq's, bound with --arg
-  workspace=$("$herdr_bin" workspace list 2>/dev/null | "$jq_bin" -r --arg path "$working_directory" '
-    [.result.workspaces[]? | select((.worktree // {}).checkout_path == $path) | .workspace_id] | first // empty
-  ') || return 1
-  [[ -n $workspace ]] || return 1
-
-  pane=$("$herdr_bin" tab create --workspace "$workspace" --cwd "$working_directory" \
-    --label "$label" --no-focus 2>/dev/null | "$jq_bin" -r '.result.root_pane.pane_id // empty') || return 1
-  [[ -n $pane ]] || return 1
-
-  # Readiness detection needs an idle prompt first; a prompt on the command
-  # line would put OMP straight to work and time the start out.
-  if ! reply=$("$herdr_bin" agent start "$label" --kind omp --pane "$pane" 2>&1); then
-    log "herdr tab $label opened but OMP did not start: $reply"
-    return 0
+# The CLI bridge handles MCP initialization and SSE responses. Credentials
+# are minted locally at runtime and expire after five minutes.
+t3_call() {
+  local reply
+  if ! reply=$(timeout 30 "$t3_bin" acp-mcp-call "$1" "$2" 2>&1); then
+    log "T3 $1 failed: $reply"
+    return 1
   fi
-  if ! reply=$("$herdr_bin" agent prompt "$label" "$prompt" 2>&1); then
-    log "herdr tab $label opened but the prompt was not delivered: $reply"
+  if ! "$jq_bin" -e '.isError != true' <<<"$reply" >/dev/null 2>&1; then
+    log "T3 $1 failed: $reply"
+    return 1
   fi
+  "$jq_bin" -e '.structuredContent // (.content[]? | select(.type == "text") | .text | fromjson)' <<<"$reply"
 }
 
-dispatch_tmux() {
-  local label=$1 prompt=$2
+dispatch_t3() (
+  local label=$1 prompt=$2 token page project cursor=0 model payload reply
 
-  "$tmux_bin" has-session -t "$session:" 2>/dev/null || return 1
-  "$tmux_bin" new-window -d -t "$session:" -c "$working_directory" -n "$label" "$omp_bin" "$prompt"
-}
+  if ! token=$("$t3_bin" auth session issue --subject mcp-client \
+    --scope orchestration:read --scope orchestration:operate \
+    --ttl 5m --label system-failure-watcher --token-only); then
+    log "could not issue a local T3 credential"
+    return 1
+  fi
+  export T3_ACP_MCP_ENDPOINT="$t3_endpoint"
+  export T3_ACP_MCP_AUTHORIZATION="Bearer $token"
+
+  while :; do
+    page=$(t3_call t3_project_list "{\"cursor\":$cursor}") || return 1
+    # shellcheck disable=SC2016 # $path is a jq variable.
+    project=$("$jq_bin" -c --arg path "$working_directory" \
+      '.projects[]? | select(.workspaceRoot == $path)' <<<"$page") || return 1
+    [[ -n $project ]] && break
+    cursor=$("$jq_bin" -r '.nextCursor // "null"' <<<"$page") || return 1
+    if [[ $cursor == null ]]; then
+      log "no T3 project registered at '$working_directory'"
+      return 1
+    fi
+  done
+
+  model=$("$jq_bin" -c '.defaultModelSelection // empty' <<<"$project") || return 1
+  if [[ -z $model ]]; then
+    reply=$(t3_call orchestrator_capabilities '{}') || return 1
+    model=$("$jq_bin" -ce '[.providers[] | select(.canRunChildTask and (.models | length > 0))][0] |
+      select(. != null) | {provider: .driverKind, instanceId: .providerInstanceId, model: .models[0].id}' \
+      <<<"$reply") || {
+      log "no available T3 provider/model"
+      return 1
+    }
+  fi
+
+  # shellcheck disable=SC2016 # These are jq variables.
+  payload=$("$jq_bin" -cn --argjson project "$project" --argjson model "$model" \
+    --arg title "$label" --arg message "$prompt" \
+    '{projectId: $project.id, title: $title, message: $message, modelSelection: $model}') || return 1
+  reply=$(t3_call t3_thread_launch "$payload") || return 1
+  "$jq_bin" -er '.threadId | select(type == "string" and length > 0)' <<<"$reply"
+)
 
 dispatch() {
-  local key=$1 label=$2 prompt=$3
+  local key=$1 label=$2 prompt=$3 thread
   local now=${EPOCHSECONDS:-0}
   local last=${last_dispatched[$key]:-0}
 
@@ -73,14 +95,11 @@ dispatch() {
   label=${label//[^a-zA-Z0-9_.-]/-}
   label=failed-${label:0:40}-$now
 
-  if dispatch_herdr "$label" "$prompt"; then
+  if thread=$(dispatch_t3 "$label" "$prompt"); then
     last_dispatched[$key]=$now
-    log "opened herdr tab $label for $key"
-  elif dispatch_tmux "$label" "$prompt"; then
-    last_dispatched[$key]=$now
-    log "opened tmux window $label for $key"
+    log "opened T3 thread $thread ($label) for $key"
   else
-    log "neither herdr nor tmux session '$session' is available; skipped $key"
+    log "could not open a T3 thread; skipped $key"
   fi
 }
 
@@ -105,7 +124,7 @@ handle_coredump() {
   [[ $pid =~ ^[0-9]+$ ]] || return 0
 
   # A failed service produces its own unit event. Let that event own the
-  # diagnosis rather than opening a second window for the same failure.
+  # diagnosis rather than opening a second thread for the same failure.
   # Launcher apps run with ExitType=cgroup, so a dump of something the app
   # forked never becomes a unit failure; hand it over under the same key,
   # which dedupes the case where the main process dumped and both arrive.
@@ -224,7 +243,7 @@ case ${1:-} in
     consume
     ;;
   "")
-    log "watching service failures and application crashes (herdr at '$working_directory', tmux session '$session')"
+    log "watching service failures and application crashes (T3 project at '$working_directory')"
     "$journalctl_bin" --follow --lines=0 --output=json \
       "MESSAGE_ID=$COREDUMP_MESSAGE_ID" \
       "MESSAGE_ID=$PROCESS_EXIT_MESSAGE_ID" \

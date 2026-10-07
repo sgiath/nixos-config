@@ -14,8 +14,10 @@ Think independently, speak candidly, and treat the user as a peer.
 - Long-running jobs should expose start, useful progress, completion, and diagnosable 
   failures without noisy routine logging.
 - Default to an isolated task worktree for changes larger than one immediate commit on the default branch.
-  Honor an explicitly named checkout and reuse the task's worktree on resumption. Prefer the host app's native
-  workspace tools; outside T3, use Worktrunk (`wt`).
+  Honor an explicitly named checkout and reuse the task's worktree on resumption. In T3, create worktrees only
+  through T3: `t3_worktree_handoff` moves the current thread, `t3_thread_launch` with `workspaceStrategy` starts
+  a new one. Do not use `EnterWorktree`, `wt switch --create` or `git worktree add` for the thread's own checkout;
+  they leave T3 bound to the root checkout. Use Worktrunk (`wt`) outside T3 and for companion repositories.
   Verify environment setup and checkout-specific build caches; do not assume another tool's hooks ran.
 - Use dark mode for visual pages/demos, ideally matching `/home/sgiath/develop/sgiath/sgiath.dev/`.
 

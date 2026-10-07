@@ -4,7 +4,7 @@
 Usage: plan-status <plan-dir> [--no-deploy-check]
 
 Reads <plan-dir>/plan.md and <plan-dir>/NN-*.md, looks up the slice branches
-on GitHub with `gh`, and prints one JSON document on stdout. It never writes
+on GitHub with `gh` or GitLab with `glab`, and prints one JSON document on stdout. It never writes
 anything except what `deploy_check` itself does. See ../references/plan-format.md.
 
 Slice states:
@@ -12,7 +12,7 @@ Slice states:
   ready        blockers done, no branch or PR yet
   in_progress  a local branch exists in the plan repository, no PR yet
   in_review    at least one open PR for the slice branch
-  closed       PRs exist but all were closed without merging
+  closed       at least one required PR closed without merging, none open
   merged       all PRs merged, waiting for deploy (deploy_gate: true)
   done         merged and deployed, or merged with deploy_gate: false
 """
@@ -23,6 +23,7 @@ import re
 import subprocess
 import sys
 from pathlib import Path
+from urllib.parse import quote, urlencode
 
 SLICE_FILE = re.compile(r"^(\d{2,3})-([a-z0-9-]+)\.md$")
 
@@ -70,22 +71,55 @@ def frontmatter(path):
 
 def repo_slug(root):
     url = run(["git", "remote", "get-url", "origin"], cwd=root).stdout.strip()
-    match = re.search(r"github\.com[:/]([^/]+/[^/]+?)(?:\.git)?$", url)
+    match = re.search(r"(github\.com|gitlab\.com)[:/]([^/]+/.+?)(?:\.git)?$", url)
     if not match:
-        fail(f"origin {url!r} is not a GitHub remote")
-    return match.group(1)
+        fail(f"origin {url!r} is not a supported GitHub or GitLab remote")
+    return match.groups()
 
 
-def pull_requests(repo, prefix):
-    result = run(
-        [
-            "gh", "pr", "list", "--repo", repo, "--state", "all", "--limit", "200",
-            "--search", f"head:{prefix}",
-            "--json", "number,url,state,headRefName,mergedAt,mergeCommit,isDraft",
-        ]
-    )
-    prs = json.loads(result.stdout)
-    return [pr for pr in prs if pr["headRefName"].startswith(prefix)]
+def pull_requests(repo, branches, host):
+    prs = []
+    for branch in sorted(branches):
+        if host == "gitlab.com":
+            query = urlencode({"scope": "all", "state": "all", "source_branch": branch, "per_page": 100})
+            result = run([
+                "glab", "api", f"projects/{quote(repo, safe='')}/merge_requests?{query}",
+                "--paginate", "--hostname", host,
+            ])
+            remaining = result.stdout.strip()
+            while remaining:
+                page, offset = json.JSONDecoder().raw_decode(remaining)
+                for pr in page:
+                    if pr["source_branch"] == branch:
+                        prs.append({
+                            "repo": repo,
+                            "number": pr["iid"],
+                            "url": pr["web_url"],
+                            "branch": branch,
+                            "state": "open" if pr["state"] in ("opened", "locked") else pr["state"],
+                            "draft": pr.get("draft", pr.get("work_in_progress", False)),
+                            "merged_at": pr.get("merged_at"),
+                            "merge_commit": pr.get("merge_commit_sha") or pr.get("squash_commit_sha"),
+                        })
+                remaining = remaining[offset:].strip()
+        else:
+            result = run([
+                "gh", "pr", "list", "--repo", repo, "--state", "all", "--limit", "200", "--head", branch,
+                "--json", "number,url,state,headRefName,mergedAt,mergeCommit,isDraft",
+            ])
+            for pr in json.loads(result.stdout):
+                if pr["headRefName"] == branch:
+                    prs.append({
+                        "repo": repo,
+                        "number": pr["number"],
+                        "url": pr["url"],
+                        "branch": branch,
+                        "state": pr["state"].lower(),
+                        "draft": pr["isDraft"],
+                        "merged_at": pr["mergedAt"],
+                        "merge_commit": (pr.get("mergeCommit") or {}).get("oid"),
+                    })
+    return prs
 
 
 def main():
@@ -102,7 +136,7 @@ def main():
     plan = frontmatter(plan_file)
 
     root = Path(run(["git", "rev-parse", "--show-toplevel"], cwd=plan_dir).stdout.strip())
-    main_repo = repo_slug(root)
+    host, main_repo = repo_slug(root)
     topic = plan.get("topic") or fail("plan.md needs `topic`")
     prefix = plan.get("branch_prefix", f"{topic}/")
     repos = plan.get("repos") or [main_repo]
@@ -112,7 +146,7 @@ def main():
     deploy_check = plan.get("deploy_check")
 
     state_root = Path(os.environ.get("XDG_STATE_HOME", Path.home() / ".local/state"))
-    state_dir = state_root / "drive" / main_repo.split("/")[1] / plan_dir.name
+    state_dir = state_root / "drive" / main_repo.rsplit("/", 1)[-1] / plan_dir.name
 
     slices = {}
     for path in sorted(plan_dir.iterdir()):
@@ -128,7 +162,8 @@ def main():
             "blocked_by": [str(b).zfill(len(slice_id)) for b in meta.get("blocked_by", [])],
             "deploy_gate": bool(meta.get("deploy_gate", True)),
             "migration": bool(meta.get("migration", False)),
-            "branch": f"{prefix}{slice_id}-{match.group(2)}",
+            "branch": meta.get("branch", f"{prefix}{slice_id}-{match.group(2)}"),
+            "linear_issue": meta.get("linear_issue"),
             "prs": [],
             "answered": (state_dir / "answers" / f"{slice_id}.md").is_file(),
         }
@@ -139,25 +174,18 @@ def main():
         fail(f"plan.md order names missing slices: {unknown}")
     order += [item for item in sorted(slices) if item not in order]
 
+    branches = {item["branch"] for item in slices.values() if item["branch"]}
+    if len(branches) != sum(bool(item["branch"]) for item in slices.values()):
+        fail("slice branches must be distinct")
     for repo in repos:
-        for pr in pull_requests(repo, prefix):
+        for pr in pull_requests(repo, branches, host):
             for item in slices.values():
-                if pr["headRefName"] == item["branch"]:
-                    item["prs"].append(
-                        {
-                            "repo": repo,
-                            "number": pr["number"],
-                            "url": pr["url"],
-                            "state": pr["state"].lower(),
-                            "draft": pr["isDraft"],
-                            "merged_at": pr["mergedAt"],
-                            "merge_commit": (pr.get("mergeCommit") or {}).get("oid"),
-                        }
-                    )
+                if pr["branch"] == item["branch"]:
+                    item["prs"].append(pr)
 
     local_branches = set(
         run(
-            ["git", "for-each-ref", "--format=%(refname:short)", f"refs/heads/{prefix}"],
+            ["git", "for-each-ref", "--format=%(refname:short)", "refs/heads/"],
             cwd=root,
         ).stdout.split()
     )
@@ -180,9 +208,9 @@ def main():
         states = {pr["state"] for pr in item["prs"]}
         if "open" in states:
             item["state"] = "in_review"
-        elif item["prs"] and states == {"closed"}:
+        elif "closed" in states:
             item["state"] = "closed"
-        elif item["prs"] and "open" not in states and "merged" in states:
+        elif item["prs"] and states == {"merged"}:
             if not item["deploy_gate"] or deployed(item):
                 item["state"] = "done"
             else:
@@ -213,10 +241,15 @@ def main():
 
     active = [s for s in slices.values() if s["state"] in ("in_progress", "in_review")]
     capacity = max(parallel - len(active), 0)
-    ready = [slices[i] for i in order if slices[i]["state"] == "ready"]
+    ask_ready = [i for i in order if slices[i]["state"] == "ready" and not slices[i]["answered"]]
+    ready = [slices[i] for i in order if slices[i]["state"] == "ready" and slices[i]["branch"]]
     if any(s["migration"] for s in active):
         ready = []
     elif active:
+        ready = [s for s in ready if not s["migration"]]
+    elif ready and ready[0]["migration"]:
+        ready = ready[:1]
+    else:
         ready = [s for s in ready if not s["migration"]]
 
     print(
@@ -225,6 +258,7 @@ def main():
                 "plan": str(plan_dir),
                 "topic": topic,
                 "repository": main_repo,
+                "host": host,
                 "repos": repos,
                 "branch_prefix": prefix,
                 "parallel": parallel,
@@ -233,6 +267,7 @@ def main():
                 "order": order,
                 "next": [s["id"] for s in ready[:capacity]],
                 "ask_next": ask_next,
+                "ask_ready": ask_ready,
                 "complete": all(s["state"] == "done" for s in slices.values()),
                 "slices": [slices[i] for i in order],
             },

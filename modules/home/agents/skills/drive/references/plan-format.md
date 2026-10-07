@@ -31,8 +31,8 @@ deploy_check: "<command that exits 0 when {sha} runs in production>"
 | Key | Default | Meaning |
 | --- | --- | --- |
 | `topic` | required | Short kebab-case name; used in branch names and thread titles. |
-| `branch_prefix` | `<topic>/` | Slice branch is `<branch_prefix><NN>-<slug>` in every repository. |
-| `repos` | the plan repository | GitHub `owner/name` of every repository a slice may open PRs in. |
+| `branch_prefix` | `<topic>/` | Default slice branch is `<branch_prefix><NN>-<slug>` in every repository; an explicit slice `branch` overrides it. |
+| `repos` | the plan repository | GitHub `owner/name` or GitLab `group[/subgroup]/project` of every repository a slice may open PRs in, on the same host as origin. |
 | `parallel` | `1` | Slices in progress or review at once. A slice with `migration: true` never runs beside another slice. |
 | `order` | numeric order | Delivery order by slice id. Slices not listed run after the listed ones. |
 | `deploy_check` | none | Shell command run from the repository root with `{sha}` replaced by the merge commit of the slice's PR in the plan repository. Exit 0 means that commit runs in production. Without it the user reports deploys. |
@@ -67,8 +67,10 @@ migration: true
 | Key | Default | Meaning |
 | --- | --- | --- |
 | `title` | slug | Human title, used in thread titles and messages. |
+| `branch` | generated from `branch_prefix` | Exact issue branch in every repository. An explicit empty string means the issue/branch is still needed and the slice cannot launch. |
+| `linear_issue` | none | Issue required by the repository's workflow; resolve it and verify its exact branch before launch. |
 | `blocked_by` | `[]` | Slice ids that must be done (merged, and deployed when they are deploy-gated) first. Two slices that may run in parallel must each work on master alone: when a slice changes code that only makes sense after another slice ships, it is blocked by that slice. |
 | `deploy_gate` | `true` | `false` when dependants only need the slice merged. |
 | `migration` | `false` | `true` for any schema change; serializes the slice. |
 
-The slice's own PR records the user's answers under "Questions before starting" and moves any resulting decision into the spec note. Nothing else records progress in the plan; `plan-status` derives it.
+For tracked artifacts, the slice's own PR records the user's answers under "Questions before starting" and moves any resulting decision into the spec note. When the user or plan requires local artifacts, only the driver updates them locally; workers read the absolute local plan and answers without including them in implementation MRs. Nothing records progress in the plan; `plan-status` derives it.

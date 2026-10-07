@@ -35,10 +35,8 @@
     [[pre-start]]
     invalidate-mix-format-cache = "if [ -f .formatter.exs ]; then touch .formatter.exs; fi"
 
-    # FIXME: `direnv allow` exits 1 in repositories without an .envrc, which
-    # fails `wt switch --create` there; guard it with `[ -f .envrc ]`.
     [[pre-start]]
-    direnv = "direnv allow"
+    direnv = "if [ -f .envrc ]; then direnv allow; fi"
 
     [[pre-remove]]
     preserve-omo-plans = "if [ -d .omo/plans ]; then mkdir -p {{ primary_worktree_path }}/.omo/plans && cp -a .omo/plans/. {{ primary_worktree_path }}/.omo/plans/; fi"
