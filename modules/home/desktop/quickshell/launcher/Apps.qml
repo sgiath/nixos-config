@@ -134,9 +134,8 @@ Singleton {
 
     // Apps run as their own transient units: the shell's cgroup gets killed
     // on every restart or shell switch and must not take windows with it.
-    // The unit name carries the entry id so a failure can be traced back
-    // (CrashService) and so system-failure-watcher can tell apps from
-    // services.
+    // The unit name carries the entry id so CrashService can trace a
+    // failure back to the app.
     readonly property string unitPrefix: "app-sgiath-"
 
     function unitId(entry) {
@@ -172,8 +171,7 @@ Singleton {
         // and exit at once; by default the unit would end there and take
         // the fork with it. The verdict still comes from the main process,
         // so a forked child's non-zero exit is invisible; its core dump
-        // (systemd-coredump tags the unit) still reaches the drawer and
-        // the watcher.
+        // (systemd-coredump tags the unit) still reaches the drawer.
         const argv = ["systemd-run", "--user", "--collect", "--quiet", "--slice=app.slice", "--property=ExitType=cgroup", "--unit=" + unit];
         if (entry.workingDirectory !== "")
             argv.push("--working-directory=" + entry.workingDirectory);

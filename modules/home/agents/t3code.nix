@@ -190,6 +190,9 @@ in
           Environment = [
             "HOME=${config.home.homeDirectory}"
             "PATH=/run/wrappers/bin:${config.home.profileDirectory}/bin:/run/current-system/sw/bin"
+            # Web mode defaults to registering the cwd (home) as a project and
+            # opening an empty thread in it on every start.
+            "T3CODE_AUTO_BOOTSTRAP_PROJECT_FROM_CWD=false"
           ];
           KillMode = "mixed";
           # Also covers boot: a user unit cannot order after nebula, so the

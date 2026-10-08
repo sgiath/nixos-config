@@ -12,7 +12,6 @@
     ./openclaw.nix
     ./opencode.nix
     ./pi.nix
-    ./system-failure-watcher.nix
     ./t3code.nix
   ];
 

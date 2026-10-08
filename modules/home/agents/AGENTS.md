@@ -37,6 +37,9 @@ Apply it to my authored text, not your own explanations.
 Prefer directly exposed host tools (including T3 and local Blender tools) and their live documentation.
 Search `executor` first for other integrations before declaring a capability unavailable.
 
+Never use Codegraph when working on Elixir, including Elixir code in mixed-language repositories.
+Use `rg` and read the source directly instead; Codegraph does not support Elixir.
+
 ## Writing density
 
 Use plain, literal language. Avoid decorative metaphors and phrases that display the writer rather than convey

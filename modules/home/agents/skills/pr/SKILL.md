@@ -39,16 +39,53 @@ Do not inject a second set of risk fields into a template that already defines t
 Lead with the concrete problem and resulting behavior. Ground the title, motivation, links and risk in the final
 diff and task context. Rewrite the description when later fixes change its scope.
 
-- **Summary:** one or two sentences. When useful, add the smallest visual from [show-me](../show-me/SKILL.md):
-  pseudocode, call tree, component/file tree, Mermaid, or a focused diff. Skip its HTML-file option.
-- **Evidence:** gather runtime proof before writing. For a visual change, use before/after screenshots when the
-  environment supports them. For behavior, name the failing-before/passing-after test or command and what it proves.
-  For a refactor, cite existing tests or comparison output. State verification limits; never invent test runs or
-  manual testing. Existing evidence supplied by the user or invoking workflow is usable.
+- **Summary:** one or two sentences explaining the concrete trigger and resulting behavior. For a change with
+  meaningful branching, multiple steps or component interactions, add a rendered flowchart or sequence diagram
+  when it makes the change easier to review. Follow the diagram guidance below; do not use an arrow-filled text
+  block or dense pseudocode as a substitute.
+- **Evidence:** gather runtime proof before writing. Every visual change requires embedded media: at least one
+  screenshot when a static image demonstrates the result, or a short video when interaction, transitions or timing
+  are needed to showcase the feature. Follow the capture guidance below. For behavior, name the
+  failing-before/passing-after test or command and what it proves. For a refactor, cite existing tests or comparison
+  output. State verification limits; never invent test runs or manual testing. Existing evidence supplied by the
+  user or invoking workflow is usable when it shows the final implementation.
 - **Merge Danger:** follow the template's terms. Without a template, describe **Reversible** (whether reverting
   undoes the change, naming migrations, data changes, external side effects or deploy ordering) and **Impact** (who
   or what can break). Apply label values only when repository policy defines them.
 - **Links:** include supported ticket links and companion PR dependencies with their safe merge order.
+
+### Summary diagrams
+
+Use a small, readable diagram like a Whiteboard flow: a clear entry point, labeled decisions and arrows, and the
+outcomes relevant to the change. Use domain language and show the changed path; leave implementation details in
+the prose or diff. Prefer a flowchart for branches and a sequence diagram for interactions across components.
+
+Use the host's rendered Mermaid support or embed an exported diagram image. When a useful Whiteboard flow already
+exists, reuse it; inspect its live tools or CLI help for capture/export capabilities rather than guessing commands.
+A Whiteboard link can supplement the embedded diagram, but reviewers must be able to understand the PR without
+opening another app. Keep labels fully visible and legible at the PR's normal width; simplify or split a crowded
+diagram. A diagram explains behavior; it does not satisfy the runtime screenshot/video requirement.
+
+### Capture and attach visual evidence
+
+Inspect the diff for visual changes, including conditionally visible elements such as errors, banners, empty
+states and dialogs. Run the final implementation and trigger the changed state. For browser work, prefer T3
+preview status/open, snapshots and recording tools when available; use the available device tools for native UI.
+Capture the actual interface with enough surrounding context to understand it. Use before/after images when the
+comparison helps; a new element must at least be shown in its visible state. For a video, show the trigger, changed
+interaction and outcome, keeping it short. Tests, code, diagrams and generated mockups do not replace this media.
+
+If the state depends on an unavailable service, try a local reproduction or controlled fixture and label any
+simulated response. State what the capture proves and what still needs an integration check. If capture or upload
+is blocked, report the attempts, exact missing prerequisite and missing media in Evidence and the handoff. The
+description remains incomplete until the required media is embedded; do not silently waive it because the
+environment is inconvenient.
+
+Attach screenshots, videos and exported diagrams through the host's supported upload mechanism or an approved
+repository-accessible asset location, and embed their durable URLs in the description with short captions. Local
+paths, T3-only attachments and links to an interactive canvas do not provide inline PR evidence. Before finishing,
+inspect the rendered PR: media must load for its intended reviewers, screenshots must show the changed state,
+video playback must work, and diagram labels must be readable without clipping or horizontal scrolling.
 
 ## Publish or update
 

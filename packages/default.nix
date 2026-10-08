@@ -1,9 +1,7 @@
 pkgs: {
-  agent-orchestrator = pkgs.callPackage ./agent-orchestrator { };
   bird = pkgs.callPackage ./bird { };
   blender-mcp = pkgs.callPackage ./blender-mcp { };
   burn-iso = pkgs.callPackage ./burn-iso { };
-  clawpatch = pkgs.callPackage ./clawpatch { };
   clear-cache = pkgs.callPackage ./clear-cache { };
   delta = pkgs.callPackage ./delta { };
   dnd5etools = pkgs.callPackage ./dnd5etools { };
@@ -19,5 +17,4 @@ pkgs: {
   t3code-nightly-device-tools = pkgs.callPackage ./t3code-nightly-device-tools { };
   update = pkgs.callPackage ./update { };
   whiteboard = pkgs.callPackage ./whiteboard { };
-  xurl = pkgs.callPackage ./xurl { };
 }

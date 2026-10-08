@@ -5,6 +5,24 @@
   autoPatchelfHook,
   makeBinaryWrapper,
   installShellFiles,
+  alsa-lib,
+  at-spi2-atk,
+  at-spi2-core,
+  dbus,
+  expat,
+  glib,
+  libgbm,
+  libx11,
+  libxcb,
+  libxcomposite,
+  libxdamage,
+  libxext,
+  libxfixes,
+  libxkbcommon,
+  libxrandr,
+  nspr,
+  nss,
+  systemd,
   cloudflared,
   llm-agents,
 }:
@@ -17,6 +35,29 @@ let
       aarch64-linux = "linux-arm64";
     }
     .${stdenv.hostPlatform.system};
+
+  # T3 downloads Chrome for Testing into ~/.t3/tools. nix-ld supplies its
+  # interpreter, but the downloaded browser also needs these libraries.
+  browserLibraries = [
+    alsa-lib
+    at-spi2-atk
+    at-spi2-core
+    dbus
+    expat
+    glib
+    libgbm
+    libx11
+    libxcb
+    libxcomposite
+    libxdamage
+    libxext
+    libxfixes
+    libxkbcommon
+    libxrandr
+    nspr
+    nss
+    systemd
+  ];
 in
 stdenv.mkDerivation (finalAttrs: {
   pname = "t3code-nightly";
@@ -58,6 +99,7 @@ stdenv.mkDerivation (finalAttrs: {
     # otherwise downloads its pinned cloudflared relay client into ~/.t3.
     makeWrapper $out/libexec/t3code/t3 $out/bin/t3 \
       --prefix PATH : ${lib.makeBinPath llm-agents.t3code.providerPackages} \
+      --prefix LD_LIBRARY_PATH : ${lib.makeLibraryPath browserLibraries} \
       --set-default T3CODE_CLOUDFLARED_PATH ${lib.getExe cloudflared}
 
     runHook postInstall

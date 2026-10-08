@@ -5,10 +5,8 @@ import Quickshell.Io
 import qs.launcher
 
 // Watches the journal for launcher units that end badly and keeps the
-// latest failure together with the unit's log. Detection rides the same
-// systemd messages system-failure-watcher reacts to, so the drawer shows
-// exactly the failure an agent gets sent to investigate: the unit verdict
-// for the main process, the core dump for anything the app forked.
+// latest failure together with the unit's log. The drawer shows the unit
+// verdict for the main process and core dumps for anything the app forked.
 Singleton {
     id: root
 
