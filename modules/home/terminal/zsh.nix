@@ -52,6 +52,11 @@ in
 
       zsh = {
         dotDir = "${config.xdg.configHome}/zsh";
+        # Agent shells are non-interactive; let an unmatched glob such as
+        # `grep --include=*.ex` pass through literally instead of aborting.
+        envExtra = ''
+          [[ -o interactive ]] || unsetopt nomatch
+        '';
         shellAliases = {
           mkdir = "mkdir -p";
           tree = "ls --tree --ignore-glob='node_modules'";
