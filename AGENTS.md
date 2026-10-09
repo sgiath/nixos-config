@@ -28,6 +28,7 @@ themes/                           # base16 schemes shared by NixOS and HM stylix
 secrets/                          # SOPS files plus public keys (ceres-cache.pub signing key); nebula.yaml (host certs), nebula-ca.yaml (CA key, PGP-only)
 scripts/                          # update-inputs.sh, nebula-sign.sh, nebula-mobile.sh, nebula-remote.sh
 packages/                         # custom packages, update/clear-cache commands, updater scripts
+checks/                           # flake checks (Snowfall checks/<name>/default.nix); skill-references runs check-skill-references.py
 overlays/sgiath/default.nix       # selected packages from alternate nixpkgs channels
 shells/default/default.nix        # dev/update toolchain
 ```
@@ -115,6 +116,7 @@ nix develop
 nixfmt <file.nix>
 ./scripts/update-inputs.sh
 nix flake update
+nix flake check
 nix build '.#<package>'
 nix build '.#install-isoConfigurations.live'
 nixos-rebuild switch --sudo --flake .
@@ -137,7 +139,7 @@ update --juno1
 - No in-repo CI or NixOS VM test suite. Validate homes through full NixOS builds.
 - Custom user commands `update` and `clear-cache` are packages in `packages/`; `update` commits and pushes before rebuilding (`--no-commit` skips that), `update --vesta` builds/signs on Ceres and pushes over SSH, and `update --juno<N>` evaluates locally but builds and switches on the Spark itself (`--build-host`/`--target-host sgiath@juno<N>.sgiath`, `--no-reexec`).
 - `clear-cache` runs Nix GC, Docker prune, and journal vacuum; treat as destructive maintenance.
-- `scripts/update-inputs.sh` bumps release-pinned flake inputs, runs `packages/*/update.sh`, then `scripts/update-executor.sh`, which pins `version` in `modules/nixos/services/executor.nix` to the newest semver tag on `ghcr.io/rhyssullivan/executor-selfhost`. Never switch Executor to `:latest`: an unchanged unit is not restarted on switch, so the image would never refresh.
+- `scripts/update-inputs.sh` bumps release-pinned flake inputs, runs `packages/*/update.sh`, then `scripts/update-executor.sh`, which pins `version` in `modules/nixos/services/executor.nix` to the newest semver tag on `ghcr.io/rhyssullivan/executor-selfhost`. Never switch Executor to `:latest`: an unchanged unit is not restarted on switch, so the image would never refresh. Afterwards it builds every package an updater changed (including packages that read `../<dir>/`) and exits non-zero naming the failures.
 - `scripts/nebula-sign.sh <host> <ipv4> <ipv6> [groups]` signs a v2 Nebula host cert with the CA in `secrets/nebula-ca.yaml` and stores it in `secrets/nebula.yaml`; then add the peer to `modules/nixos/common/nebula.nix`. The CA (`nebula-cert ca -name sgiath -duration 87600h`) expires 2036-09; host certs inherit that expiry. Nebula's inbound firewall on NixOS hosts admits every personal peer in the `peers` table and nothing a `remote = true` peer starts, so services bound to `nebula.sgiath` need no auth of their own against personal peers; the router forwards UDP 4242 to vesta.
 - `scripts/nebula-mobile.sh <peer> [out]` renders a self-contained Mobile Nebula site YAML (inline CA/cert/key, lighthouse, relay, Pi-hole over the tunnel as DNS) for a non-NixOS peer in the `peers` table (`phone` = `10.42.0.20`; devices start at `.20`), signing it with group `mobile` on first use. Output defaults to `$XDG_RUNTIME_DIR`; it holds the private key, so import via "Add site > From file" and delete it.
 - `scripts/nebula-remote.sh <peer> [out]` renders a plain nebula daemon `config.yml` for a company-administered `remote = true` peer (`mac` = `10.42.0.21`), signing it with group `remote` on first use. Its inbound firewall admits only TCP 22 (SSH) and 3773 (T3 Code) from `vesta`. Same private-key handling as `nebula-mobile.sh`.
