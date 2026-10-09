@@ -4,7 +4,7 @@
       # Desktop
       {
         output = "DP-1";
-        mode = "5120x1440@120";
+        mode = "5120x1440@240";
         position = "0x2560";
         scale = 1;
       }

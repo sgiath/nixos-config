@@ -81,11 +81,22 @@ is blocked, report the attempts, exact missing prerequisite and missing media in
 description remains incomplete until the required media is embedded; do not silently waive it because the
 environment is inconvenient.
 
-Attach screenshots, videos and exported diagrams through the host's supported upload mechanism or an approved
-repository-accessible asset location, and embed their durable URLs in the description with short captions. Local
-paths, T3-only attachments and links to an interactive canvas do not provide inline PR evidence. Before finishing,
-inspect the rendered PR: media must load for its intended reviewers, screenshots must show the changed state,
-video playback must work, and diagram labels must be readable without clipping or horizontal scrolling.
+Keep screenshots, videos and exported diagrams captured solely for PR evidence outside the tracked repository.
+Do not commit them or use repository blob/raw URLs to host them. Product assets required by the change still belong
+in the repository.
+
+For GitHub, use the native GitHub CLI attachment upload: repeat `--attach <file>` on `gh pr create` or `gh pr edit`.
+Write local image references such as `![Before](./before.png)` in the temporary body file and attach those same
+paths; `gh` replaces the references with durable GitHub attachment URLs while preserving their position and alt
+text. For example, add `--body-file /tmp/pr-body.md --attach ./before.png --attach ./after.png` to the publication
+command. This keeps before/after tables and captions intact. Files without a matching reference are appended to
+the body. Check the installed command's help for `--attach`; if unavailable, use the host's supported attachment
+upload or report the missing CLI capability. See [GitHub's attachment documentation](https://docs.github.com/en/github-cli/github-cli/attaching-files-with-github-cli).
+
+Embed the hosted URLs with short captions. Local paths, T3-only attachments and links to an interactive canvas do
+not provide inline PR evidence. Before finishing, inspect the saved description and rendered PR: no local paths
+may remain, media must load for its intended reviewers, screenshots must show the changed state, video playback
+must work, and diagram labels must be readable without clipping or horizontal scrolling.
 
 ## Publish or update
 

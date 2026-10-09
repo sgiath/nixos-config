@@ -101,7 +101,6 @@ in
             # whisper-cpp-vulkan
             yt-dlp
             jq
-            pkgs.${namespace}.xurl
             pkgs.${namespace}.bird
             birdVesta
           ];

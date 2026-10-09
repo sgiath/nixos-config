@@ -26,6 +26,12 @@ Think independently, speak candidly, and treat the user as a peer.
 Use `write-as-sgiath` whenever composing text in my name, including messages, PR descriptions and emails.
 Apply it to my authored text, not your own explanations.
 
+## Commits
+
+- Always sign commits with my configured key. Never disable signing with `--no-gpg-sign`,
+  `-c commit.gpgsign=false`, or any other override, including in non-interactive shells. If signing
+  fails or hangs, stop and report it instead of committing unsigned.
+
 ## Pull and merge requests
 
 - Attach review comments to a relevant line or range, or reply to an existing thread; 

@@ -146,7 +146,6 @@ Runtime checks in records are required future checks unless the record's
 | [`openclaw-desktop-deep-link-wrapper`](#openclaw-desktop-deep-link-wrapper) | temporary fix | required | desktop |
 | [`openclaw-desktop-remote-ssh-limitation`](#openclaw-desktop-remote-ssh-limitation) | known limitation | required | desktop |
 | [`openclaw-desktop-asset-aware-updater`](#openclaw-desktop-asset-aware-updater) | updater constraint | required | desktop |
-| [`xurl-versioned-user-agent-test`](#xurl-versioned-user-agent-test) | temporary fix | required | ceres, vesta, juno1 |
 | [`nak-network-check-disable`](#nak-network-check-disable) | test exception | required | package only (not installed) |
 | [`relay-tester-check-disable`](#relay-tester-check-disable) | test exception | candidate | package only (not installed) |
 | [`cross-architecture-nixos-rebuild-no-reexec`](#cross-architecture-nixos-rebuild-no-reexec) | compatibility | required | ceres, juno1 |
@@ -492,13 +491,6 @@ Also covers audit ID `package-katrain-opencl-test`.
 - **Upstream:** selected [v2026.9.5](https://github.com/openclaw/openclaw/releases/tag/v2026.9.5) has the required Linux asset; newer [v2026.9.7](https://github.com/openclaw/openclaw/releases/tag/v2026.9.7) does not. A newer project version alone is not a removal gate.
 - **Remove when:** upstream has a durable Linux release-asset contract, or the package source type changes deliberately.
 - **Validate:** `desktop`; runtime: OpenClaw local gateway and control UI after an update.
-
-#### `xurl-versioned-user-agent-test`
-
-- **Where:** `packages/xurl/default.nix` (ldflags `version.Version`, test expectation rewritten from `xurl/dev`).
-- **Why:** upstream test hardcodes `xurl/dev` ([client_test.go L171](https://github.com/xdevplatform/xurl/blob/18dcb447f090667171ff23666a05d6d387e2aa73/api/client_test.go#L171)); selected v1.3.4 = HEAD.
-- **Remove when:** the selected test no longer assumes `dev` under release ldflags. Keep runtime version injection.
-- **Validate:** `ceres`, `vesta`, `juno1`; runtime: request to a disposable local HTTP endpoint shows `xurl/<version>`.
 
 #### `nak-network-check-disable`
 
