@@ -5,6 +5,8 @@ SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
 REPO_DIR="$(cd "${SCRIPT_DIR}/.." && pwd)"
 FLAKE_NIX="${REPO_DIR}/flake.nix"
 PACKAGES_DIR="${REPO_DIR}/packages"
+# FIXME: --no-lock is a no-op; nothing below runs `nix flake lock`. Either run
+# it after rewriting flake.nix or drop the flag.
 UPDATE_LOCK=1
 DRY_RUN=0
 RUN_PACKAGE_UPDATERS=1
@@ -15,8 +17,9 @@ Usage: $(basename "$0") [--dry-run] [--no-lock] [--no-packages]
 
 Updates GitHub flake inputs in flake.nix whose refs look like release tags
 to each repository's latest GitHub release tag, then runs package update scripts
-from packages/*/update.sh and bumps the Executor container image
-(scripts/update-executor.sh).
+from packages/*/update.sh, builds every package they changed, and bumps the
+Executor container image (scripts/update-executor.sh). Exits non-zero when a
+changed package fails to build.
 
 Put one of these comments immediately above an input to pin it instead:
   # pin to v1.2.3
@@ -25,7 +28,7 @@ Put one of these comments immediately above an input to pin it instead:
 Options:
   --dry-run      Show what would change; do not edit files, open URLs, or run package scripts
   --no-lock      Update flake.nix only; skip nix flake lock
-  --no-packages  Skip packages/*/update.sh scripts
+  --no-packages  Skip packages/*/update.sh scripts and package builds
 EOF
 }
 
@@ -113,6 +116,69 @@ open_latest_release_page() {
   fi
 }
 
+# Content of a package directory as Nix flake evaluation sees it: tracked and
+# untracked-but-not-ignored files, so `result` links and dirty trees are fine.
+package_fingerprint() {
+  git -C "${REPO_DIR}" ls-files -z -co --exclude-standard -- "packages/$1" |
+    (cd "${REPO_DIR}" && xargs -0r sha256sum) | sha256sum
+}
+
+# Prints `<attr> <dir>` for every `<attr> = pkgs.callPackage ./<dir> { };`.
+registered_packages() {
+  sed -nE 's#^[[:space:]]*([A-Za-z0-9_-]+)[[:space:]]*=[[:space:]]*pkgs\.callPackage[[:space:]]+\./([A-Za-z0-9_-]+).*#\1 \2#p' \
+    "${PACKAGES_DIR}/default.nix"
+}
+
+# Builds each registered package whose directory changed, or whose directory
+# references a changed one (`../<dir>/`, e.g. t3code-nightly-desktop reads
+# t3code-nightly/sources.json). Returns non-zero when any build fails.
+build_changed_packages() {
+  local -n before="$1"
+  local -a changed_dirs=()
+  local -a targets=()
+  local -a failed_builds=()
+  local dir attr pkg_dir changed
+
+  for dir in "${!before[@]}"; do
+    if [[ "$(package_fingerprint "${dir}")" != "${before[${dir}]}" ]]; then
+      changed_dirs+=("${dir}")
+    fi
+  done
+  if [[ "${#changed_dirs[@]}" -eq 0 ]]; then
+    echo "==> No package directories changed; nothing to build"
+    return 0
+  fi
+
+  while read -r attr pkg_dir; do
+    for changed in "${changed_dirs[@]}"; do
+      if [[ "${pkg_dir}" == "${changed}" ]] ||
+        grep -rqF --include='*.nix' "../${changed}/" "${PACKAGES_DIR}/${pkg_dir}"; then
+        targets+=("${attr}")
+        break
+      fi
+    done
+  done < <(registered_packages)
+  if [[ "${#targets[@]}" -eq 0 ]]; then
+    echo "==> Changed directories ${changed_dirs[*]} map to no registered package"
+    return 0
+  fi
+
+  echo "==> Building ${#targets[@]} updated packages: ${targets[*]}"
+  for attr in "${targets[@]}"; do
+    echo "==> ${attr}: nix build '.#${attr}'"
+    if ! nix build --no-link "${REPO_DIR}#${attr}"; then
+      failed_builds+=("${attr}")
+      echo "ERROR: ${attr}: build failed after update" >&2
+    fi
+  done
+
+  if [[ "${#failed_builds[@]}" -gt 0 ]]; then
+    echo "ERROR: updated packages failed to build: ${failed_builds[*]}" >&2
+    return 1
+  fi
+  echo "==> All ${#targets[@]} updated packages build"
+}
+
 run_package_updaters() {
   if [[ "${RUN_PACKAGE_UPDATERS}" -eq 0 ]]; then
     echo "==> Skipping package update scripts"
@@ -146,6 +212,14 @@ run_package_updaters() {
     return
   fi
 
+  local dir
+  local -A fingerprints=()
+  for dir in "${PACKAGES_DIR}"/*/; do
+    dir="$(basename "${dir}")"
+    # shellcheck disable=SC2034 # read through build_changed_packages' nameref
+    fingerprints["${dir}"]="$(package_fingerprint "${dir}")"
+  done
+
   echo "==> Running ${#package_scripts[@]} package update scripts"
   for script in "${package_scripts[@]}"; do
     package_dir="$(dirname "${script}")"
@@ -169,15 +243,23 @@ run_package_updaters() {
       echo "    ${package}"
     done
   fi
+  echo
+
+  build_changed_packages fingerprints
 }
 
 finish() {
-  run_package_updaters
+  local packages_status=0
+  run_package_updaters || packages_status=$?
   echo "==> Updating Executor image"
   if [[ "${DRY_RUN}" -eq 1 ]]; then
     "${SCRIPT_DIR}/update-executor.sh" --dry-run
   else
     "${SCRIPT_DIR}/update-executor.sh"
+  fi
+  if [[ "${packages_status}" -ne 0 ]]; then
+    echo "ERROR: package builds failed; see above" >&2
+    exit "${packages_status}"
   fi
   echo "==> Done"
 }
