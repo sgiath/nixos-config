@@ -5,6 +5,7 @@
   dpkg,
   autoPatchelfHook,
   makeWrapper,
+  python3,
   alsa-lib,
   at-spi2-atk,
   at-spi2-core,
@@ -46,11 +47,11 @@ let
 in
 stdenv.mkDerivation (finalAttrs: {
   pname = "whiteboard";
-  version = "0.2.3";
+  version = "0.2.4";
 
   src = fetchurl {
     url = "https://github.com/devdotfast/whiteboard/releases/download/v${finalAttrs.version}/whiteboard_${finalAttrs.version}-1_amd64.deb";
-    hash = "sha256-5cxxVcS8lb0G0oxyqa6hGRmShcNJ1aed77oRMH34iz0=";
+    hash = "sha256-2dDNCwm8zoVme0AJebauM5swpe3lwr775Mmh6NN/Dpc=";
   };
 
   sourceRoot = "root";
@@ -104,6 +105,11 @@ stdenv.mkDerivation (finalAttrs: {
 
   dontConfigure = true;
   dontBuild = true;
+
+  # The canvas uses both Code OSS theme colors and its own CSS palette.
+  postPatch = ''
+    ${lib.getExe python3} ${./theme.py} usr/share/whiteboard/resources/app
+  '';
 
   # Electron resolves resources/ next to its executable, so the Debian
   # /usr/share/whiteboard tree is kept intact. The deb's legacy `review`
