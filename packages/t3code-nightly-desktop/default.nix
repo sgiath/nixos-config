@@ -31,6 +31,8 @@
   nss,
   pango,
   systemd,
+  unzip,
+  callPackage,
   cloudflared,
   llm-agents,
 }:
@@ -122,7 +124,7 @@ stdenv.mkDerivation (finalAttrs: {
     # expose the same libraries to that browser through its environment.
     makeWrapper $out/libexec/t3code-desktop/t3code $out/bin/t3code-desktop \
       --prefix PATH : ${lib.makeBinPath llm-agents.t3code.providerPackages} \
-      --prefix LD_LIBRARY_PATH : ${lib.makeLibraryPath finalAttrs.buildInputs} \
+      --prefix LD_LIBRARY_PATH : ${finalAttrs.passthru.libraryPath} \
       --set-default T3CODE_CLOUDFLARED_PATH ${lib.getExe cloudflared} \
       --add-flags "\''${NIXOS_OZONE_WL:+\''${WAYLAND_DISPLAY:+--ozone-platform-hint=auto --enable-features=WaylandWindowDecorations --enable-wayland-ime=true}}"
 
@@ -143,6 +145,20 @@ stdenv.mkDerivation (finalAttrs: {
       $out/libexec/t3code-desktop/t3code
     autoPatchelf $out/libexec/t3code-desktop
   '';
+
+  doInstallCheck = true;
+  nativeInstallCheckInputs = [ unzip ];
+  installCheckPhase = ''
+    runHook preInstallCheck
+    source ${../t3code-nightly/check-libraries.sh}
+    assertLinked $out/libexec/t3code-desktop/t3code libsecret-1.so.0 libEGL.so.1
+    LD_LIBRARY_PATH=${finalAttrs.passthru.libraryPath} assertHeadlessShellResolved ${
+      callPackage ../t3code-nightly/headless-shell.nix { }
+    }
+    runHook postInstallCheck
+  '';
+
+  passthru.libraryPath = lib.makeLibraryPath finalAttrs.buildInputs;
 
   meta = {
     description = "Desktop control surface for coding agents (nightly build)";

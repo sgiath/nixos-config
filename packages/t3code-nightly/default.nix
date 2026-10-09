@@ -23,6 +23,8 @@
   nspr,
   nss,
   systemd,
+  unzip,
+  callPackage,
   cloudflared,
   llm-agents,
 }:
@@ -58,6 +60,7 @@ let
     nss
     systemd
   ];
+  browserLibraryPath = lib.makeLibraryPath browserLibraries;
 in
 stdenv.mkDerivation (finalAttrs: {
   pname = "t3code-nightly";
@@ -99,7 +102,7 @@ stdenv.mkDerivation (finalAttrs: {
     # otherwise downloads its pinned cloudflared relay client into ~/.t3.
     makeWrapper $out/libexec/t3code/t3 $out/bin/t3 \
       --prefix PATH : ${lib.makeBinPath llm-agents.t3code.providerPackages} \
-      --prefix LD_LIBRARY_PATH : ${lib.makeLibraryPath browserLibraries} \
+      --prefix LD_LIBRARY_PATH : ${browserLibraryPath} \
       --set-default T3CODE_CLOUDFLARED_PATH ${lib.getExe cloudflared}
 
     runHook postInstall
@@ -110,6 +113,19 @@ stdenv.mkDerivation (finalAttrs: {
     for shell in bash fish zsh; do
       HOME=$TMPDIR installShellCompletion --cmd t3 --"$shell" <("$out/bin/t3" --completions "$shell")
     done
+  '';
+
+  # Preview automation fails with "No preview automation host" when the
+  # downloaded browser misses a library from the wrapper's LD_LIBRARY_PATH.
+  doInstallCheck = true;
+  nativeInstallCheckInputs = [ unzip ];
+  installCheckPhase = ''
+    runHook preInstallCheck
+    source ${./check-libraries.sh}
+    LD_LIBRARY_PATH=${browserLibraryPath} assertHeadlessShellResolved ${
+      callPackage ./headless-shell.nix { }
+    }
+    runHook postInstallCheck
   '';
 
   meta = {
