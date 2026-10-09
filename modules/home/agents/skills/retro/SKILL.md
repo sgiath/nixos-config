@@ -22,7 +22,11 @@ deduplicate mirrored transcripts by task, timestamps and message evidence. Sessi
 - oh-my-pi: `~/.omp/agent/sessions/<cwd-slug>/` (default profile) and `~/.omp/profiles/<profile>/agent/sessions/<cwd-slug>/` (for example `crazyegg`, `remote`); check every profile, since one project can have sessions in several
 - Codex: `~/.codex/sessions/<yyyy>/<mm>/<dd>/*.jsonl`
 - pi: `~/.pi/agent/sessions/<cwd-slug>/`
-- T3 Code threads: search and read them with the T3 thread tools
+- T3 Code threads: search and read them with the T3 thread tools. For a week or more of history, enumerate threads
+  from the state database read-only instead of paging large `t3_thread_list` results:
+  `python3 -I` with `sqlite3.connect('file:$HOME/.t3/userdata/statev2.sqlite?mode=ro', uri=True)`, tables
+  `orchestration_v2_projection_threads` (project, title, created/updated, `payload_json.lineage` for parent and
+  subagent links), `orchestration_v2_projection_messages` and `orchestration_v2_projection_turn_items`
 
 Worktree checkouts get their own directory slug (`core_v2.feat-x`), so include them when collecting a project's
 sessions. For large sets, split sessions between subagents that return findings with thread ID/item or session

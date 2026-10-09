@@ -39,6 +39,8 @@ When `watch_pull_request` is available, use it instead of shell watches, polling
 - On a wake, re-read the current head, all applicable check/reviewer jobs and full review conversations. T3's
   required-check notification is a prompt to verify the finish gate, not proof that optional reviewers finished.
   If work remains external, keep watching and yield again. Do not restart a watcher already active for this thread.
+- When T3 reports it stopped watching or could not read the PR, re-arm the watch once. If that fails too, use
+  the fallback watch below for this PR and report the T3 limitation; do not keep re-arming.
 - Subagents cannot watch. Return their PR URLs, head SHAs, remaining findings and verification to the owning parent;
   the parent must register/watch them before yielding. Ordinary top-level Drive workers can own their own watches.
 - Before handing a ready PR or external blocker back to the user, call `unwatch_pull_request` for each watched PR.
@@ -74,7 +76,7 @@ Repeat this loop, with no arbitrary round limit:
    - gh run view --log refuses while a run is in progress. Read a finished job's log during the run with gh api --allow-escape-sequences "repos/$REPO/actions/jobs/$JOB_ID/logs" | sed 's/\x1b\[[0-9;]*m//g'.
 4. Evaluate each review finding against current code, requirements and deployment contracts. Implement valid in-scope fixes and migrate every affected caller. For invalid, already-fixed or inadvisable suggestions, explain why with concrete code/requirement evidence. Explicitly account for out-of-scope findings; do not silently omit them. Do not accept bot suggestions mechanically.
 5. Exercise the changed behavior and relevant project gates. Read skill://conventional-commit, commit all task-related fixes and push them. Prefer ordinary commits; if a necessary rebase is authorized by repository practice, protect concurrent work with an exact force-with-lease. Resolve conflicts without discarding either side's intended behavior.
-6. Reply in each existing actionable thread: cite the fixing commit and verification, or give an evidence-backed explanation for not changing it. Reply to existing review/PR conversations where supported; do not replace inline replies with a floating summary. Avoid duplicate replies by reading prior dispositions. This skill's invocation explicitly authorizes resolving a thread after its concern has been addressed, including a justified no-change disposition; never resolve merely to clear the UI, and leave disputed concerns open pending a decision. A resolution does not dismiss a changes-requested review or supply a required approval.
+6. Replies are posted in the user's name: read skill://write-as-sgiath before writing them. Reply in each existing actionable thread: cite the fixing commit and verification, or give an evidence-backed explanation for not changing it. Reply to existing review/PR conversations where supported; do not replace inline replies with a floating summary. Avoid duplicate replies by reading prior dispositions. This skill's invocation explicitly authorizes resolving a thread after its concern has been addressed, including a justified no-change disposition; never resolve merely to clear the UI, and leave disputed concerns open pending a decision. A resolution does not dismiss a changes-requested review or supply a required approval.
 7. Any push, conflict resolution, base update or CI rerun invalidates the previous completion decision. Return to
    monitoring and collect the new review batch. If a reply triggers another review job, wait for it too. Do not
    continually request fresh bot reviews when configured CI already runs them. Use skill://pr when fixes change
@@ -85,7 +87,9 @@ Repeat this loop, with no arbitrary round limit:
 Re-fetch the PR immediately before declaring success. Require all of the following for the same current head:
 
 - Open, non-draft PR with a mergeable diff and no conflicts; unknown mergeability must settle. Required base updates and branch-protection requirements satisfied.
-- All applicable CI and automated review jobs completed successfully. Investigate failed, cancelled, missing, pending or unexpected skipped checks; accept intentional not-applicable skips only with configuration evidence. Do not treat neutral/skipped as proof that behavior was tested.
+- All applicable CI and automated review jobs completed successfully. CodeRabbit is not required: when it
+  reports a rate limit, the review was skipped, not failed. Do not wait for it, retry it or request a new review;
+  note the skipped review in the hand-back. Investigate failed, cancelled, missing, pending or unexpected skipped checks; accept intentional not-applicable skips only with configuration evidence. Do not treat neutral/skipped as proof that behavior was tested.
 - Every actionable review comment has a documented disposition; no unresolved actionable threads or outstanding changes-requested decisions. Required approvals must actually exist; never approve your own work, dismiss someone else's review or bypass protection to manufacture readiness.
 - All intended task changes committed and pushed, relevant verification complete, PR description current (re-check its Evidence and Merge Danger after later fixes), and any companion PR dependencies clearly identified and ready in their required merge order.
 - Head SHA unchanged since the successful CI/review inspection. If it changed, repeat.

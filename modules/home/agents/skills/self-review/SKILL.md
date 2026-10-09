@@ -97,6 +97,9 @@ PAGER=cat glab api 'projects/<project-id>/merge_requests/<iid>/discussions' --pa
 PAGER=cat glab api 'projects/<project-id>/merge_requests/<iid>/versions' --paginate
 ```
 
+`--paginate` prints one JSON array per page back to back; merge them with `jq -s add` before parsing. This glab
+has no `--jq` flag; pipe to `jq` instead.
+
 Use the current MR's `diff_refs` and matching diff version to obtain the exact
 `base_sha`, `start_sha`, and `head_sha`. GitLab's `start_sha` is the diff start commit,
 not a substitute for the merge base or a freshly fetched target branch SHA. Fetch
@@ -139,8 +142,8 @@ Create a new positioned discussion, or update the body of its existing owned fin
 note using a payload containing only `body`:
 
 ```bash
-PAGER=cat glab api 'projects/<project-id>/merge_requests/<iid>/discussions' --method POST --input /absolute/path/payload.json
-PAGER=cat glab api 'projects/<project-id>/merge_requests/<iid>/discussions/<discussion-id>/notes/<note-id>' --method PUT --input /absolute/path/body-payload.json
+PAGER=cat glab api 'projects/<project-id>/merge_requests/<iid>/discussions' --method POST --header 'Content-Type: application/json' --input /absolute/path/payload.json
+PAGER=cat glab api 'projects/<project-id>/merge_requests/<iid>/discussions/<discussion-id>/notes/<note-id>' --method PUT --header 'Content-Type: application/json' --input /absolute/path/body-payload.json
 ```
 
 Choose POST or PUT for each finding; do not run both. Never use `glab mr note` or
