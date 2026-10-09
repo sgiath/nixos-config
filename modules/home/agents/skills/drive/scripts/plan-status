@@ -7,6 +7,10 @@ Reads <plan-dir>/plan.md and <plan-dir>/NN-*.md, looks up the slice branches
 on GitHub with `gh` or GitLab with `glab`, and prints one JSON document on stdout. It never writes
 anything except what `deploy_check` itself does. See ../references/plan-format.md.
 
+Questions: `asked/NN.md` in the state directory records questions sent to the user;
+`answers/NN.md` records the answers. Asked-but-unanswered slices are listed in
+`awaiting_answers` and never offered again in `ask_next`/`ask_ready`.
+
 Slice states:
   blocked      a blocker is not done yet
   ready        blockers done, no branch or PR yet
@@ -166,6 +170,7 @@ def main():
             "linear_issue": meta.get("linear_issue"),
             "prs": [],
             "answered": (state_dir / "answers" / f"{slice_id}.md").is_file(),
+            "asked": (state_dir / "asked" / f"{slice_id}.md").is_file(),
         }
 
     order = [str(item) for item in plan.get("order", [])] or sorted(slices)
@@ -228,12 +233,13 @@ def main():
             done = all(slices[b]["state"] == "done" for b in item["blocked_by"])
             item["state"] = "ready" if done else "blocked"
 
-    # The slice whose gate questions to ask ahead: the first unstarted, unanswered
-    # slice in plan order whose blockers have all at least started.
+    # The slice whose gate questions to ask ahead: the first unstarted slice in plan
+    # order that is neither answered nor already asked, whose blockers have all at
+    # least started.
     ask_next = None
     for slice_id in order:
         item = slices[slice_id]
-        if item["state"] not in ("ready", "blocked") or item["answered"]:
+        if item["state"] not in ("ready", "blocked") or item["answered"] or item["asked"]:
             continue
         if all(slices[b]["state"] not in ("ready", "blocked") for b in item["blocked_by"]):
             ask_next = slice_id
@@ -241,7 +247,12 @@ def main():
 
     active = [s for s in slices.values() if s["state"] in ("in_progress", "in_review")]
     capacity = max(parallel - len(active), 0)
-    ask_ready = [i for i in order if slices[i]["state"] == "ready" and not slices[i]["answered"]]
+    ask_ready = [
+        i
+        for i in order
+        if slices[i]["state"] == "ready" and not slices[i]["answered"] and not slices[i]["asked"]
+    ]
+    awaiting_answers = [i for i in order if slices[i]["asked"] and not slices[i]["answered"]]
     ready = [slices[i] for i in order if slices[i]["state"] == "ready" and slices[i]["branch"]]
     if any(s["migration"] for s in active):
         ready = []
@@ -268,6 +279,7 @@ def main():
                 "next": [s["id"] for s in ready[:capacity]],
                 "ask_next": ask_next,
                 "ask_ready": ask_ready,
+                "awaiting_answers": awaiting_answers,
                 "complete": all(s["state"] == "done" for s in slices.values()),
                 "slices": [slices[i] for i in order],
             },

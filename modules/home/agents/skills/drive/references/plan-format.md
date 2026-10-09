@@ -57,7 +57,7 @@ migration: true
 
 ## Questions before starting
 
-1. <decision the worker must not guess>
+1. <decision the worker must not guess> (open because: <spec line or gap>)
 
 ## Stop boundary
 
