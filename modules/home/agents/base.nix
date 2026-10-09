@@ -22,6 +22,11 @@
       pkgs.poppler-utils
       pkgs.hyperfine
 
+      # formatters and linters agents call directly, outside `nix develop`
+      pkgs.nixfmt
+      pkgs.shfmt
+      pkgs.shellcheck
+
       # agents
       pkgs.llm-agents.grok
       pkgs.llm-agents.openclaw
