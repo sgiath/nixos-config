@@ -93,12 +93,14 @@ shells/default/default.nix        # dev/update toolchain
 - Main NixOS/Home Manager state versions are `23.11`; do not bump casually.
 - Secrets are SOPS-encrypted in `secrets/` and decrypted at activation using host SSH keys. Use `sops.secrets` with native runtime credential files; never evaluate plaintext credentials into Nix/store files.
 - New files must be `git add`ed before Nix flake evaluation can see them.
+- Work directly on `master` in `~/nixos`; the global worktree default does not apply here. Other threads may have uncommitted changes in this checkout: commit only your own paths and leave theirs alone.
 - Format Nix with `nixfmt`; use `nix develop` for `nixd`, `nil`, `shfmt`, `prettier`, and update helpers.
 - Do not evaluate Home Manager outputs directly; validate homes as part of the full NixOS system evaluation/build. The Stylix HM module is imported unconditionally from `flake.nix` (`homeManagerIntegration.autoImport = false`), so `stylix.targets.*` exist on headless hosts while Stylix itself is only enabled by the desktop role.
 
 ## ANTI-PATTERNS
 
 - Never delete the `result` symlink; leave it for the user.
+- Never replace Home Manager-managed files or symlinks by hand to preview a change (the next switch then fails with "would be clobbered"). Build the change, or say a rebuild is pending.
 - Do not use `nix-shell` shebangs in new update scripts; add missing tools to `shells/default/default.nix`.
 - Do not compute hashes before detecting that an updater's version actually changed.
 - Do not copy `packages/relay-tester/update.sh`'s `nix-shell` lockfile step into new scripts; treat it as legacy.
