@@ -107,7 +107,6 @@ Runtime checks in records are required future checks unless the record's
 | ID | Kind | Status | Profile |
 | --- | --- | --- | --- |
 | [`pihole-ftl-gcc16-unused-counter`](#pihole-ftl-gcc16-unused-counter) | temporary fix | required | vesta |
-| [`davinci-resolve-21-1-republished-hash`](#davinci-resolve-21-1-republished-hash) | temporary fix | candidate | ceres |
 | [`snowfall-flake-utils-plus-deferred-config`](#snowfall-flake-utils-plus-deferred-config) | vendored fork | required | all |
 | [`sops-nix-build-go126-fork`](#sops-nix-build-go126-fork) | input fork | candidate | all |
 | [`hyprland-glaze-release-freeze`](#hyprland-glaze-release-freeze) | input pin | required | desktop |
@@ -156,15 +155,6 @@ Runtime checks in records are required future checks unless the record's
 - **Remove when:** the FTL source selected by root nixpkgs lacks the counter or carries the upstream correction. Remove overlay attr and patch together; never by disabling `-Werror`.
 - **Validate:** `vesta`; runtime: `pihole-ftl` healthy, local `dns.hosts` names and public DNS still answer.
 - **Exercised:** focused package build, IPv4/IPv6 sanitizer smoke and full Vesta evaluation succeeded when the backport landed.
-
-#### `davinci-resolve-21-1-republished-hash`
-
-- **Where:** `overlays/sgiath/default.nix` (`davinci-resolve-dir`, `davinci-resolve-studio`); only consumer commented out in `homes/x86_64-linux/sgiath@ceres/default.nix`.
-- **Why:** Blackmagic republished 21.1 archives without a version bump; the overlay applied the hash fix from a nixpkgs PR to the pinned package directory.
-- **Upstream:** [NixOS/nixpkgs#562336](https://github.com/NixOS/nixpkgs/pull/562336) merged 2026-09-18 (748f45f3).
-- **Selected pin:** root nixpkgs contains the merge (compare `behind_by=0`); `package.nix` already has the corrected Studio and non-Studio hashes. Forcing `nixosConfigurations.ceres.pkgs.davinci-resolve-studio` fails IFD with "Reversed (or previously applied) patch detected". Normal system evaluation does not force it (dormant).
-- **Remove when:** already satisfied at source level. In an authorized change delete `davinci-resolve-dir` and the Studio override so upstream `davinci-resolve-studio` is used; keep the commented consumer as is.
-- **Validate:** `ceres` plus force/build `.#nixosConfigurations.ceres.pkgs.davinci-resolve-studio`; runtime (licensed workstation): launch, open project, import/play media, GPU processing.
 
 #### `snowfall-flake-utils-plus-deferred-config`
 
@@ -517,3 +507,4 @@ Fix together with the next change touching the file; behavior must not change.
 | `stylix-release-check-suppression` | 2026-10-10 | Release checks re-enabled: NixOS, Home Manager and Stylix all report 26.11 at 9426fcce, so nothing was suppressed. Owner validates `desktop` builds without release warnings. |
 | `home-manager-gpg-ssh-unit-cycle` | 2026-10-10 | Override removed: pinned Home Manager dfadbe51 contains e9cbe698 and no longer orders `set-SSH_AUTH_SOCK` against socket providers (2026-10-01 read-only comparison gave identical fields). Owner validates `all` and a real login without the ordering cycle. |
 | `amd-radv-nofibril` | 2026-10-10 | Flag removed: selected Mesa 26.1.5 `radv_perftest_options` has no `nofibril`, so it was a no-op. Owner compares a game/shader-compilation workload on Ceres after removal. |
+| `davinci-resolve-21-1-republished-hash` | 2026-10-10 | Overlay removed: root nixpkgs contains NixOS/nixpkgs#562336 (748f45f3) and its corrected hashes; upstream `davinci-resolve-studio` is used. The only consumer stays commented out in `homes/x86_64-linux/sgiath@ceres/default.nix`. Owner validates the package and licensed runtime on enablement. |
