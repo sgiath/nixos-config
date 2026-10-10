@@ -42,7 +42,7 @@ nix build '.#<package>'
 
 ## NOTES
 
-- Some packages disable checks because upstream tests need network or external services (`nak`, `relay-tester`, `eve-flipper`).
+- Some packages disable checks because upstream tests need network or external services (`nak`, `eve-flipper`).
 - `kimi-webbridge` versions from HTTP `Last-Modified`, not release tags.
 - `linear-cli` uses fixed-output hashing rather than a normal source build.
 - `t3code-nightly` (prebuilt Node SEA tarball) and `t3code-nightly-desktop` (AppImage) share `t3code-nightly/sources.json`; only `t3code-nightly/update.sh` exists and it rewrites that file from the release's `SHA256SUMS` and `nightly-linux*.yml` without downloading the artifacts. The SEA must keep `dontStrip`, and its `autoPatchelf` runs explicitly in `postFixup` because the completions step executes it. The desktop AppImage is extracted and autoPatchelf'd, not wrapped with `appimageTools.wrapType2`: that bubblewrap user namespace shows `/nix/store` as owned by `nobody`, so ssh rejects the Home Manager `~/.ssh/config` and SSH environments fail.

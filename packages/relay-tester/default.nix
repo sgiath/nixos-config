@@ -33,9 +33,6 @@ rustPlatform.buildRustPackage {
 
   OPENSSL_NO_VENDOR = 1;
 
-  # Tests often require external relay environment
-  doCheck = false;
-
   meta = with lib; {
     description = "Relay test suite for nostr relays";
     homepage = "https://github.com/mikedilger/relay-tester";

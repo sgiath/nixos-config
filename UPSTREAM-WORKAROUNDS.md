@@ -144,7 +144,6 @@ Runtime checks in records are required future checks unless the record's
 | [`openclaw-desktop-remote-ssh-limitation`](#openclaw-desktop-remote-ssh-limitation) | known limitation | required | desktop |
 | [`openclaw-desktop-asset-aware-updater`](#openclaw-desktop-asset-aware-updater) | updater constraint | required | desktop |
 | [`nak-network-check-disable`](#nak-network-check-disable) | test exception | required | package only (not installed) |
-| [`relay-tester-check-disable`](#relay-tester-check-disable) | test exception | candidate | package only (not installed) |
 | [`cross-architecture-nixos-rebuild-no-reexec`](#cross-architecture-nixos-rebuild-no-reexec) | compatibility | required | ceres, juno1 |
 | [`burn-iso-hybrid-mbr-key-partition`](#burn-iso-hybrid-mbr-key-partition) | compatibility | required | iso |
 | [`whiteboard-bundled-electron`](#whiteboard-bundled-electron) | security exception | watch (2027-01-05) | desktop |
@@ -473,16 +472,6 @@ Also covers audit ID `package-nak-network-tests`.
 - **Remove when:** upstream makes relay tests opt-in/hermetic, or packaging selects only offline tests that pass in the sandbox.
 - **Validate:** package build with checks and network disabled (meaningful tests run) plus `ceres`/`vesta`/`juno1` boundary; runtime: `nak` help and offline encode/decode.
 
-#### `relay-tester-check-disable`
-
-Also covers audit ID `package-relay-tester-checks`.
-
-- **Where:** `packages/relay-tester/default.nix` (`doCheck = false`, comment "Tests often require external relay environment"); package exposed, not installed.
-- **Why/status:** pinned a8483f82 (= HEAD, no releases) has no `#[test]`/`#[cfg(test)]` in its 23 source files and no Cargo test target; `cargo test` should compile and report zero tests. The comment is likely stale, but the check phase has not been run.
-- **Upstream:** selected [relay-tester a8483f82](https://github.com/mikedilger/relay-tester/tree/a8483f82f4965841faa92fae02105d4fd67d9117) equals live HEAD; [Cargo metadata](https://github.com/mikedilger/relay-tester/blob/a8483f82f4965841faa92fae02105d4fd67d9117/Cargo.toml) was inspected, but the sandbox check phase remains unexercised.
-- **Remove when:** the default Rust check phase passes in the sandbox; then drop `doCheck = false` and its comment. `OPENSSL_NO_VENDOR` is normal integration, keep it.
-- **Validate:** package build with default checks plus `ceres`/`vesta`/`juno1` boundary; never run the conformance suite against a public relay.
-
 #### `cross-architecture-nixos-rebuild-no-reexec`
 
 - **Where:** `packages/update/default.nix` (`--no-reexec` for `update --juno<N>`).
@@ -552,3 +541,4 @@ Fix together with the next change touching the file; behavior must not change.
 | `minio-insecure-package-allowance` | 8134472e | Removed together with its host. |
 | `agent-orchestrator-tmux-locale-shim`, `agent-orchestrator-go-patchelf-rpath`, `agent-orchestrator-angle-dlopen`, `agent-orchestrator-bundled-electron` | 5549fac4 | Removed together with `packages/agent-orchestrator` (last selected 0.13.4); no consumer remains at 9426fcce. Upstream v0.13.6 still resolves Electron 33.4.11 (EOL 2025-04-28), so reintroducing the package reopens the expired exception. |
 | `clawpatch-trust-lockfile` | 5549fac4 | Removed together with `packages/clawpatch` (last selected 0.8.2); no `trust-lockfile`/`prePnpmInstall` remains at 9426fcce. Upstream v0.8.2 keeps `minimumReleaseAge: 2880`; reintroducing the package must not carry the bypass forward without an owner decision. |
+| `relay-tester-check-disable` | 2026-10-10 | Re-enabled the default Rust check phase: pinned a8483f82 (= upstream HEAD) defines no tests. Owner validates the package build with checks after removal. |
