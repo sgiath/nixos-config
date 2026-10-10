@@ -125,7 +125,6 @@ Runtime checks in records are required future checks unless the record's
 | [`amd-radv-nofibril`](#amd-radv-nofibril) | compatibility | candidate | ceres |
 | [`satty-floating-hack`](#satty-floating-hack) | compatibility | required | desktop |
 | [`quickshell-store-theme-restart`](#quickshell-store-theme-restart) | compatibility | required | desktop |
-| [`stylix-release-check-suppression`](#stylix-release-check-suppression) | guard suppression | candidate | desktop |
 | [`tmux-sessionizer-session-target`](#tmux-sessionizer-session-target) | temporary fix | required | all |
 | [`home-manager-gpg-ssh-unit-cycle`](#home-manager-gpg-ssh-unit-cycle) | temporary fix | candidate | all |
 | [`pihole-first-run-setup-retry`](#pihole-first-run-setup-retry) | temporary fix | required | vesta |
@@ -310,14 +309,6 @@ Common runtime check for every ComfyUI record: `systemctl show comfyui.service -
 - **Why:** the file watcher does not notice the store theme symlink target changing during a switch ([QFileSystemWatcher](https://doc.qt.io/qt-6/qfilesystemwatcher.html) stops watching renamed files; exact case not reproduced).
 - **Remove when:** the selected watcher picks up an atomic symlink replacement in live and packaged modes.
 - **Validate:** `desktop`; runtime: change theme in a disposable branch, switch, verify colors/fonts/wallpaper update without losing app windows.
-
-#### `stylix-release-check-suppression`
-
-- **Where:** `modules/nixos/desktop/stylix.nix`, `modules/home/desktop/stylix.nix` (`enableReleaseChecks = false`).
-- **Why:** silences Stylix/NixOS/HM release mismatch warnings. Evaluated 2026-10-01: all three report 26.11, so nothing is currently suppressed.
-- **Upstream:** [stylix/release.nix](https://github.com/danth/stylix/blob/fb28acd59e2ac1984ec84fa496599d6b4bf3e690/stylix/release.nix#L9-L19).
-- **Remove when:** checks evaluate clean on all systems and the input-tracking policy does not need mismatched releases.
-- **Validate:** `desktop`; inspect themes only if inputs change.
 
 ### Terminal, agents and services
 
@@ -542,3 +533,4 @@ Fix together with the next change touching the file; behavior must not change.
 | `agent-orchestrator-tmux-locale-shim`, `agent-orchestrator-go-patchelf-rpath`, `agent-orchestrator-angle-dlopen`, `agent-orchestrator-bundled-electron` | 5549fac4 | Removed together with `packages/agent-orchestrator` (last selected 0.13.4); no consumer remains at 9426fcce. Upstream v0.13.6 still resolves Electron 33.4.11 (EOL 2025-04-28), so reintroducing the package reopens the expired exception. |
 | `clawpatch-trust-lockfile` | 5549fac4 | Removed together with `packages/clawpatch` (last selected 0.8.2); no `trust-lockfile`/`prePnpmInstall` remains at 9426fcce. Upstream v0.8.2 keeps `minimumReleaseAge: 2880`; reintroducing the package must not carry the bypass forward without an owner decision. |
 | `relay-tester-check-disable` | 2026-10-10 | Re-enabled the default Rust check phase: pinned a8483f82 (= upstream HEAD) defines no tests. Owner validates the package build with checks after removal. |
+| `stylix-release-check-suppression` | 2026-10-10 | Release checks re-enabled: NixOS, Home Manager and Stylix all report 26.11 at 9426fcce, so nothing was suppressed. Owner validates `desktop` builds without release warnings. |

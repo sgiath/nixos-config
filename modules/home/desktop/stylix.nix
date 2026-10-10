@@ -20,7 +20,6 @@ in
 
       stylix = {
         enable = true;
-        enableReleaseChecks = false;
 
         polarity = "dark";
         base16Scheme = ../../../themes/sgiath.yaml;
