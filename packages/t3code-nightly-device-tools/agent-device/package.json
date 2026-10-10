@@ -1,5 +1,5 @@
 {
   "dependencies": {
-    "agent-device": "^0.21.12"
+    "agent-device": "^0.21.23"
   }
 }

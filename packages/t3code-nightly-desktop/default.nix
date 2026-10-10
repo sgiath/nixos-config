@@ -150,6 +150,12 @@ stdenv.mkDerivation (finalAttrs: {
   nativeInstallCheckInputs = [ unzip ];
   installCheckPhase = ''
     runHook preInstallCheck
+    bash -n "$out/bin/t3code-desktop"
+    grep -Fx 'Exec=t3code-desktop %U' "$out/share/applications/t3code.desktop" > /dev/null
+    test -s "$out/share/icons/hicolor/512x512/apps/t3code.png"
+    timeout 30 "$out/libexec/t3code-desktop/resources/resource-monitor/t3-resource-monitor" \
+      < /dev/null > "$TMPDIR/resource-monitor.json"
+    grep -F '"type":"hello"' "$TMPDIR/resource-monitor.json" > /dev/null
     source ${../t3code-nightly/check-libraries.sh}
     assertLinked $out/libexec/t3code-desktop/t3code libsecret-1.so.0 libEGL.so.1
     LD_LIBRARY_PATH=${finalAttrs.passthru.libraryPath} assertHeadlessShellResolved ${

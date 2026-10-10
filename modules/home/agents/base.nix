@@ -1,5 +1,6 @@
 {
   config,
+  inputs,
   lib,
   pkgs,
   namespace,
@@ -44,8 +45,7 @@
       pkgs.${namespace}.whiteboard
     ])
     ++ (lib.optionals config.sgiath.roles.desktop.enable [
-      # x86_64-linux binary GUI editor; absent from pkgs.${namespace} on aarch64.
-      pkgs.${namespace}.delta
+      inputs.delta.packages.${pkgs.stdenv.hostPlatform.system}.delta
       pkgs.llm-agents.hermes-desktop
       pkgs.llm-agents.grok-bot
       pkgs.${namespace}.openclaw-desktop

@@ -3,7 +3,6 @@ pkgs: {
   blender-mcp = pkgs.callPackage ./blender-mcp { };
   burn-iso = pkgs.callPackage ./burn-iso { };
   clear-cache = pkgs.callPackage ./clear-cache { };
-  delta = pkgs.callPackage ./delta { };
   dnd5etools = pkgs.callPackage ./dnd5etools { };
   fix-images = pkgs.callPackage ./fix-images { };
   katrain = pkgs.callPackage ./katrain { };

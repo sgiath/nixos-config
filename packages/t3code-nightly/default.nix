@@ -111,7 +111,10 @@ stdenv.mkDerivation (finalAttrs: {
   postFixup = ''
     autoPatchelf $out
     for shell in bash fish zsh; do
-      HOME=$TMPDIR installShellCompletion --cmd t3 --"$shell" <("$out/bin/t3" --completions "$shell")
+      # Process substitution hides the generator's exit status, accepting
+      # partial output even when the executable fails.
+      HOME=$TMPDIR timeout 30 "$out/bin/t3" --completions "$shell" > "$TMPDIR/t3.$shell"
+      installShellCompletion --cmd t3 --"$shell" "$TMPDIR/t3.$shell"
     done
   '';
 
@@ -121,6 +124,16 @@ stdenv.mkDerivation (finalAttrs: {
   nativeInstallCheckInputs = [ unzip ];
   installCheckPhase = ''
     runHook preInstallCheck
+    export HOME="$(mktemp -d)"
+    actualVersion="$(timeout 30 "$out/bin/t3" --version)"
+    if [[ "$actualVersion" != "t3 v${finalAttrs.version}" ]]; then
+      echo "ERROR: expected t3 v${finalAttrs.version}, got $actualVersion" >&2
+      exit 1
+    fi
+    timeout 30 "$out/bin/t3" --help > /dev/null
+    timeout 30 "$out/libexec/t3code/resource-monitor/${platform}/t3-resource-monitor" \
+      < /dev/null > "$TMPDIR/resource-monitor.json"
+    grep -F '"type":"hello"' "$TMPDIR/resource-monitor.json" > /dev/null
     source ${./check-libraries.sh}
     LD_LIBRARY_PATH=${browserLibraryPath} assertHeadlessShellResolved ${
       callPackage ./headless-shell.nix { }
