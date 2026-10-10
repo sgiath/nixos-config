@@ -108,7 +108,6 @@ Runtime checks in records are required future checks unless the record's
 | --- | --- | --- | --- |
 | [`pihole-ftl-gcc16-unused-counter`](#pihole-ftl-gcc16-unused-counter) | temporary fix | required | vesta |
 | [`snowfall-flake-utils-plus-deferred-config`](#snowfall-flake-utils-plus-deferred-config) | vendored fork | required | all |
-| [`sops-nix-build-go126-fork`](#sops-nix-build-go126-fork) | input fork | candidate | all |
 | [`hyprland-glaze-release-freeze`](#hyprland-glaze-release-freeze) | input pin | required | desktop |
 | [`ksa-unmerged-nixpkgs-package`](#ksa-unmerged-nixpkgs-package) | input fork | required | ceres |
 | [`bird-unavailable-upstream-vendoring`](#bird-unavailable-upstream-vendoring) | vendored source | required | ceres, vesta |
@@ -164,15 +163,6 @@ Runtime checks in records are required future checks unless the record's
 - **Remove when:** a selected upstream supports host `nixpkgs.config`, channel overlays/config, registry/input linking and `nix.settings.nix-path`. Then retarget the follows and delete the vendor tree. Merging #163 alone is insufficient; do not move host package policy into a new workaround to accommodate it.
 - **Validate:** `all`; runtime (VM/host): Nix registry, input symlinks, `NIX_PATH`, representative overlaid packages.
 - **Origin:** 26bbf25b (2026-08-09).
-
-#### `sops-nix-build-go126-fork`
-
-- **Where:** `flake.nix` (`sops-nix.url = github:c2fc2f/sops-nix/buildGo126Module`), used by NixOS and Home Manager module lists.
-- **Why:** the fork's locked commit 16954c1c ("Bump go to stable") moves to Go 1.26 / `buildGoModule`.
-- **Upstream:** [Mic92/sops-nix 16954c1c](https://github.com/Mic92/sops-nix/commit/16954c1c360c3dc4d4b3b3e64df59f7e89452cb1) is in Mic92 master (ahead 8, behind 0 on 2026-10-10); fork branch is behind 8, ahead 0.
-- **Selected pin:** the exact pinned commit is already upstream. Original motivation beyond the Go bump is undocumented (switched in 6ffdb793).
-- **Remove when:** source-only cutover to `github:Mic92/sops-nix` at a revision containing 16954c1c (ideally the same revision), keeping `nixpkgs.follows` and module wiring.
-- **Validate:** `all`; runtime: sops units succeed, secret files exist with expected owner/mode (never print values), one dependent service starts.
 
 #### `hyprland-glaze-release-freeze`
 
@@ -508,3 +498,4 @@ Fix together with the next change touching the file; behavior must not change.
 | `home-manager-gpg-ssh-unit-cycle` | 2026-10-10 | Override removed: pinned Home Manager dfadbe51 contains e9cbe698 and no longer orders `set-SSH_AUTH_SOCK` against socket providers (2026-10-01 read-only comparison gave identical fields). Owner validates `all` and a real login without the ordering cycle. |
 | `amd-radv-nofibril` | 2026-10-10 | Flag removed: selected Mesa 26.1.5 `radv_perftest_options` has no `nofibril`, so it was a no-op. Owner compares a game/shader-compilation workload on Ceres after removal. |
 | `davinci-resolve-21-1-republished-hash` | 2026-10-10 | Overlay removed: root nixpkgs contains NixOS/nixpkgs#562336 (748f45f3) and its corrected hashes; upstream `davinci-resolve-studio` is used. The only consumer stays commented out in `homes/x86_64-linux/sgiath@ceres/default.nix`. Owner validates the package and licensed runtime on enablement. |
+| `sops-nix-build-go126-fork` | 2026-10-10 | Input moved to `github:Mic92/sops-nix`, locked at the same 16954c1c (identical narHash; Mic92 master contains it). Owner validates `all` and sops activation after removal. |
