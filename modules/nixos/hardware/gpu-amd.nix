@@ -18,7 +18,6 @@
       ];
       sessionVariables = {
         AMD_VULKAN_ICD = "RADV";
-        RADV_PERFTEST = "nofibril";
       };
     };
 

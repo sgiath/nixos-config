@@ -122,7 +122,6 @@ Runtime checks in records are required future checks unless the record's
 | [`desktop-hyprland-mesa-abi`](#desktop-hyprland-mesa-abi) | ABI | required | desktop |
 | [`portal-qt-theme-isolation`](#portal-qt-theme-isolation) | compatibility | unverified | desktop |
 | [`legacy-wlroots-session-flags`](#legacy-wlroots-session-flags) | compatibility | unverified | desktop |
-| [`amd-radv-nofibril`](#amd-radv-nofibril) | compatibility | candidate | ceres |
 | [`satty-floating-hack`](#satty-floating-hack) | compatibility | required | desktop |
 | [`quickshell-store-theme-restart`](#quickshell-store-theme-restart) | compatibility | required | desktop |
 | [`tmux-sessionizer-session-target`](#tmux-sessionizer-session-target) | temporary fix | required | all |
@@ -286,14 +285,6 @@ Common runtime check for every ComfyUI record: `systemctl show comfyui.service -
 - **Upstream:** [selected Hyprland source](https://github.com/hyprwm/Hyprland/tree/5c9377c15f85c50648f35ca5a213754f95b93ca0/src) has no consumer found for either flag; [wlroots](https://gitlab.freedesktop.org/wlroots/wlroots) remains a possible consumer family. No original failure or fixed revision is identified.
 - **Remove when:** actual session consumers are inventoried and cursors/rendering work without each flag on AMD and NVIDIA.
 - **Validate:** `desktop`; runtime: login, cursor movement and capture, monitor hotplug, wlroots-based apps.
-
-#### `amd-radv-nofibril`
-
-- **Where:** `modules/nixos/hardware/gpu-amd.nix` (`RADV_PERFTEST=nofibril`; RADV selection itself is deliberate).
-- **Why:** undocumented. [Mesa envvars docs](https://docs.mesa3d.org/envvars.html) do not mention it.
-- **Selected pin (2026-10-10):** both desktops select Mesa 26.1.5 (Hyprland's nixpkgs). Its [`radv_perftest_options`](https://gitlab.freedesktop.org/mesa/mesa/-/blob/mesa-26.1.5/src/amd/vulkan/radv_instance.c#L107-L131), parsed from `RADV_PERFTEST` at L457, has no `nofibril` entry and the file never mentions "fibril"; `parse_debug_string` ignores unknown names, so the flag is a no-op for the selected RADV.
-- **Remove when:** the source half is met; an authorized change still needs a shader-compilation/game workload that behaves the same without it.
-- **Validate:** `ceres`; runtime: controlled Vulkan/game comparison.
 
 #### `satty-floating-hack`
 
@@ -525,3 +516,4 @@ Fix together with the next change touching the file; behavior must not change.
 | `relay-tester-check-disable` | 2026-10-10 | Re-enabled the default Rust check phase: pinned a8483f82 (= upstream HEAD) defines no tests. Owner validates the package build with checks after removal. |
 | `stylix-release-check-suppression` | 2026-10-10 | Release checks re-enabled: NixOS, Home Manager and Stylix all report 26.11 at 9426fcce, so nothing was suppressed. Owner validates `desktop` builds without release warnings. |
 | `home-manager-gpg-ssh-unit-cycle` | 2026-10-10 | Override removed: pinned Home Manager dfadbe51 contains e9cbe698 and no longer orders `set-SSH_AUTH_SOCK` against socket providers (2026-10-01 read-only comparison gave identical fields). Owner validates `all` and a real login without the ordering cycle. |
+| `amd-radv-nofibril` | 2026-10-10 | Flag removed: selected Mesa 26.1.5 `radv_perftest_options` has no `nofibril`, so it was a no-op. Owner compares a game/shader-compilation workload on Ceres after removal. |
