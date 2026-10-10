@@ -126,7 +126,6 @@ Runtime checks in records are required future checks unless the record's
 | [`satty-floating-hack`](#satty-floating-hack) | compatibility | required | desktop |
 | [`quickshell-store-theme-restart`](#quickshell-store-theme-restart) | compatibility | required | desktop |
 | [`tmux-sessionizer-session-target`](#tmux-sessionizer-session-target) | temporary fix | required | all |
-| [`home-manager-gpg-ssh-unit-cycle`](#home-manager-gpg-ssh-unit-cycle) | temporary fix | candidate | all |
 | [`pihole-first-run-setup-retry`](#pihole-first-run-setup-retry) | temporary fix | required | vesta |
 | [`searx-json-secret-interpolation`](#searx-json-secret-interpolation) | temporary fix | required | vesta |
 | [`executor-state-ownership-migration`](#executor-state-ownership-migration) | data migration | required | vesta |
@@ -320,15 +319,6 @@ Common runtime check for every ComfyUI record: `systemctl show comfyui.service -
 - **Remove when:** the selected release qualifies the target and the collision scenario passes without the patch. Keep the popup bindings.
 - **Validate:** `all`; runtime: run TMS from the popup in a session containing a window whose name starts with the target session name.
 - **Exercised (2026-10-01):** isolated tmux 3.7c probe: `-t target` failed "index 0 in use", `-t target:` created the window in the right session.
-
-#### `home-manager-gpg-ssh-unit-cycle`
-
-- **Where:** `modules/home/terminal/gpg.nix` (`systemd.user.services."set-SSH_AUTH_SOCK"` forced `WantedBy`/`Before`).
-- **Why:** HM ordered `set-SSH_AUTH_SOCK` against `gpg-agent-ssh.socket`, creating a unit cycle.
-- **Upstream:** [home-manager e9cbe698](https://github.com/nix-community/home-manager/commit/e9cbe69850d67c2b472db8416faca7292960f99f) (2026-06-08); pinned [ssh-auth-sock.nix](https://github.com/nix-community/home-manager/blob/dfadbe5162d5e86bc0808badec8f346f81b4b3f0/modules/misc/ssh-auth-sock.nix#L11) still skips socket providers (`orderedProviderUnits` is empty when the provider is a socket; compare e9cbe698...dfadbe51 `ahead`, 2026-10-10).
-- **Exercised (2026-10-01):** read-only Ceres `extendModules` comparison without the local override produced identical fields (`Before=[]`, `WantedBy=["default.target"]`).
-- **Remove when:** authorized: delete only the override and its comment; all systems build; a real login shows no ordering cycle.
-- **Validate:** `all`; runtime: `systemctl --user status gpg-agent-ssh.socket set-SSH_AUTH_SOCK.service`, `SSH_AUTH_SOCK` set, `ssh-add -L` lists expected keys.
 
 #### `pihole-first-run-setup-retry`
 
@@ -534,3 +524,4 @@ Fix together with the next change touching the file; behavior must not change.
 | `clawpatch-trust-lockfile` | 5549fac4 | Removed together with `packages/clawpatch` (last selected 0.8.2); no `trust-lockfile`/`prePnpmInstall` remains at 9426fcce. Upstream v0.8.2 keeps `minimumReleaseAge: 2880`; reintroducing the package must not carry the bypass forward without an owner decision. |
 | `relay-tester-check-disable` | 2026-10-10 | Re-enabled the default Rust check phase: pinned a8483f82 (= upstream HEAD) defines no tests. Owner validates the package build with checks after removal. |
 | `stylix-release-check-suppression` | 2026-10-10 | Release checks re-enabled: NixOS, Home Manager and Stylix all report 26.11 at 9426fcce, so nothing was suppressed. Owner validates `desktop` builds without release warnings. |
+| `home-manager-gpg-ssh-unit-cycle` | 2026-10-10 | Override removed: pinned Home Manager dfadbe51 contains e9cbe698 and no longer orders `set-SSH_AUTH_SOCK` against socket providers (2026-10-01 read-only comparison gave identical fields). Owner validates `all` and a real login without the ordering cycle. |
