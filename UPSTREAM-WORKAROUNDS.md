@@ -14,19 +14,19 @@ must not keep a second inventory.
   not misreported as stale workarounds; they have no upstream removal gate.
 - **Resolved history:** short record of verified clean cutovers.
 
-Baseline of the current evidence: repository `c2ffb23b`, checked 2026-10-01.
-Root pins at that time: `nixpkgs` b4fd65b1 (lock node `nixpkgs_4`),
-`home-manager` c8ecc29e (`home-manager_2`), `hyprland` 5c9377c1 (v0.56.1; its
+Baseline of the current evidence: repository `9426fcce`, checked 2026-10-10.
+Root pins at that time: `nixpkgs` e7439b6b (lock node `nixpkgs_4`),
+`home-manager` dfadbe51 (`home-manager_2`), `hyprland` 5c9377c1 (v0.56.1; its
 own nixpkgs 61b7c44c), `comfyui` 58f91b00 (its own nixpkgs dc5d91f8, lock node
 `nixpkgs`), `sops-nix` 16954c1c, `snowfall-lib` 6ee3542c, `nixpkgs-master`
-424084aa, `nixpkgs-ksa` 670a3617. Re-resolve them for each manual review; never read
+6f38529c, `nixpkgs-ksa` 670a3617. Re-resolve them for each manual review; never read
 bare `nodes.nixpkgs`/`nodes.home-manager` from `flake.lock`, those are nested
 dependency nodes.
 
 ## Manual review
 
 Invoke `/skill:review-upstream-workarounds` when you want fresh upstream checks.
-The [project skill](.omp/skills/review-upstream-workarounds/SKILL.md) defines the
+The [project skill](.agents/skills/review-upstream-workarounds/SKILL.md) defines the
 workflow. Reviews do not run automatically at session startup.
 
 Adding or changing a workaround updates its record in the same change: stable
@@ -122,7 +122,7 @@ Runtime checks in records are required future checks unless the record's
 | [`desktop-hyprland-mesa-abi`](#desktop-hyprland-mesa-abi) | ABI | required | desktop |
 | [`portal-qt-theme-isolation`](#portal-qt-theme-isolation) | compatibility | unverified | desktop |
 | [`legacy-wlroots-session-flags`](#legacy-wlroots-session-flags) | compatibility | unverified | desktop |
-| [`amd-radv-nofibril`](#amd-radv-nofibril) | compatibility | unknown | ceres |
+| [`amd-radv-nofibril`](#amd-radv-nofibril) | compatibility | candidate | ceres |
 | [`satty-floating-hack`](#satty-floating-hack) | compatibility | required | desktop |
 | [`quickshell-store-theme-restart`](#quickshell-store-theme-restart) | compatibility | required | desktop |
 | [`stylix-release-check-suppression`](#stylix-release-check-suppression) | guard suppression | candidate | desktop |
@@ -138,9 +138,6 @@ Runtime checks in records are required future checks unless the record's
 | [`katrain-chardet-major-version`](#katrain-chardet-major-version) | compatibility | required | ceres |
 | [`katrain-bundled-katago-appimage`](#katrain-bundled-katago-appimage) | compatibility | required | ceres |
 | [`katrain-opencl-test-exclusion`](#katrain-opencl-test-exclusion) | test exception | required | ceres |
-| [`agent-orchestrator-tmux-locale-shim`](#agent-orchestrator-tmux-locale-shim) | temporary fix | required | desktop |
-| [`agent-orchestrator-go-patchelf-rpath`](#agent-orchestrator-go-patchelf-rpath) | temporary fix | required | desktop |
-| [`agent-orchestrator-angle-dlopen`](#agent-orchestrator-angle-dlopen) | compatibility | required | desktop |
 | [`whiteboard-angle-runpath`](#whiteboard-angle-runpath) | compatibility | required | desktop |
 | [`whiteboard-cli-desktop-environment`](#whiteboard-cli-desktop-environment) | compatibility | required | desktop |
 | [`openclaw-desktop-deep-link-wrapper`](#openclaw-desktop-deep-link-wrapper) | temporary fix | required | desktop |
@@ -150,9 +147,7 @@ Runtime checks in records are required future checks unless the record's
 | [`relay-tester-check-disable`](#relay-tester-check-disable) | test exception | candidate | package only (not installed) |
 | [`cross-architecture-nixos-rebuild-no-reexec`](#cross-architecture-nixos-rebuild-no-reexec) | compatibility | required | ceres, juno1 |
 | [`burn-iso-hybrid-mbr-key-partition`](#burn-iso-hybrid-mbr-key-partition) | compatibility | required | iso |
-| [`agent-orchestrator-bundled-electron`](#agent-orchestrator-bundled-electron) | security exception | expired | desktop |
-| [`clawpatch-trust-lockfile`](#clawpatch-trust-lockfile) | security exception | decision | ceres, vesta, juno1 |
-| [`whiteboard-bundled-electron`](#whiteboard-bundled-electron) | security exception | watch (2026-10-20) | desktop |
+| [`whiteboard-bundled-electron`](#whiteboard-bundled-electron) | security exception | watch (2027-01-05) | desktop |
 
 ### Flake inputs, overlays and vendoring
 
@@ -188,7 +183,7 @@ Runtime checks in records are required future checks unless the record's
 
 - **Where:** `flake.nix` (`sops-nix.url = github:c2fc2f/sops-nix/buildGo126Module`), used by NixOS and Home Manager module lists.
 - **Why:** the fork's locked commit 16954c1c ("Bump go to stable") moves to Go 1.26 / `buildGoModule`.
-- **Upstream:** [Mic92/sops-nix 16954c1c](https://github.com/Mic92/sops-nix/commit/16954c1c360c3dc4d4b3b3e64df59f7e89452cb1) is in Mic92 master (5efb5a6f); fork branch is behind 7, ahead 0.
+- **Upstream:** [Mic92/sops-nix 16954c1c](https://github.com/Mic92/sops-nix/commit/16954c1c360c3dc4d4b3b3e64df59f7e89452cb1) is in Mic92 master (ahead 8, behind 0 on 2026-10-10); fork branch is behind 8, ahead 0.
 - **Selected pin:** the exact pinned commit is already upstream. Original motivation beyond the Go bump is undocumented (switched in 6ffdb793).
 - **Remove when:** source-only cutover to `github:Mic92/sops-nix` at a revision containing 16954c1c (ideally the same revision), keeping `nixpkgs.follows` and module wiring.
 - **Validate:** `all`; runtime: sops units succeed, secret files exist with expected owner/mode (never print values), one dependent service starts.
@@ -227,7 +222,7 @@ Common runtime check for every ComfyUI record: `systemctl show comfyui.service -
 
 - **Where:** `overlays/comfyui/default.nix` (`applyPatches` override), `overlays/comfyui/rocm-int8-compute.patch`.
 - **Why:** PyTorch 2.10.0+rocm7.1 lacks the hipBLASLt gfx1030 Tensile library. The patch probes `torch._int_mm` once per AMD device in `supports_int8_compute`, caching `False` on `RuntimeError` so ComfyUI uses its existing dequantized full-precision path; CPU and non-AMD paths are not probed.
-- **Upstream:** `supports_int8_compute` has no ROCm probe in ComfyUI 0.37.0 ([73c9bad4](https://github.com/Comfy-Org/ComfyUI/blob/73c9bad4d21e7addbe1d13bc92eee0f1431b017d/comfy/model_management.py#L2049-L2065)), 0.38.0 or master 651ca296. [#16130](https://github.com/Comfy-Org/ComfyUI/pull/16130) and [#16285](https://github.com/Comfy-Org/ComfyUI/pull/16285) are related, not equivalent. No ROCm `_int_mm` issue found (search absence is not proof). comfyui-nix main = latest release = pin 58f91b00 (v0.37.0-r1).
+- **Upstream:** `supports_int8_compute` has no ROCm probe in ComfyUI 0.37.0 ([73c9bad4](https://github.com/Comfy-Org/ComfyUI/blob/73c9bad4d21e7addbe1d13bc92eee0f1431b017d/comfy/model_management.py#L2049-L2065)), 0.38.0, latest release 0.39.0 or master [0df64eb2](https://github.com/Comfy-Org/ComfyUI/blob/0df64eb242b7c5759c3e86afd5d1846d923b1033/comfy/model_management.py#L2082-L2098) (excludes only MPS, XPU, DirectML, ixuca). [#16130](https://github.com/Comfy-Org/ComfyUI/pull/16130) and [#16285](https://github.com/Comfy-Org/ComfyUI/pull/16285) are related, not equivalent. No ROCm `_int_mm` issue found (search absence is not proof). comfyui-nix main = latest release = pin 58f91b00 (v0.37.0-r1).
 - **Remove when:** the selected comfyui-nix package contains an equivalent capability check, or its selected ROCm wheel runs INT8 GEMM on gfx1030. Inspect the fetched/patched source and actual wheel. Cut over the package construction, service selection and `json-repair` together.
 - **Validate:** `ceres` + `juno1`; runtime: with packaged Python, `torch._int_mm` and `supports_int8_compute` for `cuda:0` and `cpu`, then both workflows without HIPBLAS errors.
 - **Exercised (2026-10-01):** deployed packaged Python reported gfx1030; native probe hit missing `TensileLibrary_lazy_gfx1030.dat`/`HIPBLAS_STATUS_INVALID_VALUE`; GPU `False` (cached), CPU `True`. No image generated.
@@ -274,7 +269,7 @@ Common runtime check for every ComfyUI record: `systemctl show comfyui.service -
 #### `desktop-hyprland-mesa-abi`
 
 - **Where:** `modules/nixos/desktop/wayland.nix` (`hardware.graphics.package`/`package32` from `inputs.hyprland.inputs.nixpkgs`); enabled by `modules/nixos/hardware/gpu.nix`. README "Desktop graphics" explains the failure.
-- **Why:** root Mesa can require a newer glibc than the pinned compositor loads, causing `Cannot open backend: no allocator available` (5299bbf2). Evaluated 2026-10-01: selected Mesa 26.1.5 with Hyprland's glibc 2.42 vs root Mesa 26.2.3 / glibc 2.44.
+- **Why:** root Mesa can require a newer glibc than the pinned compositor loads, causing `Cannot open backend: no allocator available` (5299bbf2). Evaluated 2026-10-10: selected Mesa 26.1.5 with Hyprland's glibc 2.42 vs root Mesa 26.2.4 / glibc 2.44.
 - **Upstream:** [Hyprland on NixOS (0.54)](https://wiki.hypr.land/0.54.0/Nix/Hyprland-on-NixOS/) still recommends Mesa from Hyprland's nixpkgs. [hyprwm/Hyprland#5148](https://github.com/hyprwm/Hyprland/issues/5148) is closed (2024-03-17), not proof for the current pins.
 - **Remove when:** compositor, portal and 64/32-bit Mesa share a coherent package universe (e.g. Hyprland follows root nixpkgs, or its nixpkgs equals root) and the session runs without the override.
 - **Validate:** `desktop`; runtime: running Hyprland and `/run/opengl-driver` paths, no loader/GLIBC errors in journal, accelerated rendering, screen sharing; on Ceres a 32-bit Steam/Proton game.
@@ -298,8 +293,9 @@ Common runtime check for every ComfyUI record: `systemctl show comfyui.service -
 #### `amd-radv-nofibril`
 
 - **Where:** `modules/nixos/hardware/gpu-amd.nix` (`RADV_PERFTEST=nofibril`; RADV selection itself is deliberate).
-- **Why:** undocumented. [Mesa envvars docs](https://docs.mesa3d.org/envvars.html) do not mention it; Mesa GitLab source could not be fetched (timed out), so recognition in Mesa 26.1.5 is unverified.
-- **Remove when:** the selected RADV's handling of the flag is established and a shader-compilation/game workload behaves the same without it.
+- **Why:** undocumented. [Mesa envvars docs](https://docs.mesa3d.org/envvars.html) do not mention it.
+- **Selected pin (2026-10-10):** both desktops select Mesa 26.1.5 (Hyprland's nixpkgs). Its [`radv_perftest_options`](https://gitlab.freedesktop.org/mesa/mesa/-/blob/mesa-26.1.5/src/amd/vulkan/radv_instance.c#L107-L131), parsed from `RADV_PERFTEST` at L457, has no `nofibril` entry and the file never mentions "fibril"; `parse_debug_string` ignores unknown names, so the flag is a no-op for the selected RADV.
+- **Remove when:** the source half is met; an authorized change still needs a shader-compilation/game workload that behaves the same without it.
 - **Validate:** `ceres`; runtime: controlled Vulkan/game comparison.
 
 #### `satty-floating-hack`
@@ -339,7 +335,7 @@ Common runtime check for every ComfyUI record: `systemctl show comfyui.service -
 
 - **Where:** `modules/home/terminal/gpg.nix` (`systemd.user.services."set-SSH_AUTH_SOCK"` forced `WantedBy`/`Before`).
 - **Why:** HM ordered `set-SSH_AUTH_SOCK` against `gpg-agent-ssh.socket`, creating a unit cycle.
-- **Upstream:** [home-manager e9cbe698](https://github.com/nix-community/home-manager/commit/e9cbe69850d67c2b472db8416faca7292960f99f) (2026-06-08); pinned [ssh-auth-sock.nix](https://github.com/nix-community/home-manager/blob/c8ecc29e5175452bee4a2aa1ba2383856d795338/modules/misc/ssh-auth-sock.nix#L121-L138) already skips socket providers.
+- **Upstream:** [home-manager e9cbe698](https://github.com/nix-community/home-manager/commit/e9cbe69850d67c2b472db8416faca7292960f99f) (2026-06-08); pinned [ssh-auth-sock.nix](https://github.com/nix-community/home-manager/blob/dfadbe5162d5e86bc0808badec8f346f81b4b3f0/modules/misc/ssh-auth-sock.nix#L11) still skips socket providers (`orderedProviderUnits` is empty when the provider is a socket; compare e9cbe698...dfadbe51 `ahead`, 2026-10-10).
 - **Exercised (2026-10-01):** read-only Ceres `extendModules` comparison without the local override produced identical fields (`Before=[]`, `WantedBy=["default.target"]`).
 - **Remove when:** authorized: delete only the override and its comment; all systems build; a real login shows no ordering cycle.
 - **Validate:** `all`; runtime: `systemctl --user status gpg-agent-ssh.socket set-SSH_AUTH_SOCK.service`, `SSH_AUTH_SOCK` set, `ssh-add -L` lists expected keys.
@@ -348,7 +344,7 @@ Common runtime check for every ComfyUI record: `systemctl show comfyui.service -
 
 - **Where:** `modules/nixos/services/pi-hole.nix` (`pihole-ftl-setup` `Restart=on-failure`, `RestartSec=5`).
 - **Why:** on fresh state the upstream setup script creates `gravity.db`, signals FTL and posts lists immediately; the first request can fail "Database not available".
-- **Upstream:** pinned [pihole-ftl-setup-script.nix](https://github.com/NixOS/nixpkgs/blob/b4fd65b198c599cbe814fcb9f42d25d021595ec9/nixos/modules/services/networking/pihole-ftl-setup-script.nix#L76-L95) still only probes API availability, not database reopen. No upstream issue/fix known.
+- **Upstream:** pinned [pihole-ftl-setup-script.nix](https://github.com/NixOS/nixpkgs/blob/e7439b6b14ad3cc35d05608ebca9bce01a25f5f8/nixos/modules/services/networking/pihole-ftl-setup-script.nix#L76-L95) still only probes API availability, not database reopen. No upstream issue/fix known.
 - **Remove when:** the selected setup script waits for database readiness (or retries list submission) and a disposable fresh-state run provisions all lists without the retry. Never reset production Pi-hole state to test.
 - **Validate:** `vesta`; runtime: disposable fresh-state setup succeeds, lists exist, DNS resolves; populated-state rerun stays idempotent.
 
@@ -356,7 +352,7 @@ Common runtime check for every ComfyUI record: `systemctl show comfyui.service -
 
 - **Where:** `modules/nixos/services/searx.nix` (`searx-init` replaced with `jq --rawfile`).
 - **Why:** upstream `envsubst` interpolates secrets unescaped into JSON strings; jq encodes them correctly while keeping runtime credentials and restart wiring.
-- **Upstream:** pinned [searx.nix](https://github.com/NixOS/nixpkgs/blob/b4fd65b198c599cbe814fcb9f42d25d021595ec9/nixos/modules/services/networking/searx.nix#L31-L37) still uses `envsubst`. No upstream issue recorded.
+- **Upstream:** pinned [searx.nix](https://github.com/NixOS/nixpkgs/blob/e7439b6b14ad3cc35d05608ebca9bce01a25f5f8/nixos/modules/services/networking/searx.nix#L31-L37) still uses `envsubst`. No upstream issue recorded.
 - **Remove when:** the selected module serializes credential strings safely at runtime; reconcile favicon/limiter generation first; keep restart wiring. Credential handling review belongs to the security model.
 - **Validate:** `vesta`; runtime: fixture with special characters round-trips, `searx-init` and SearXNG start, a search works.
 
@@ -382,7 +378,7 @@ Also covers audit ID `executor-root-to-nonroot-state-migration`.
 
 - **Where:** `modules/nixos/services/ollama.nix` (`ollama-rocm`, gfx 10.3.0 override); referenced from `systems/x86_64-linux/ceres/default.nix`.
 - **Why:** spoofs the ROCm GPU target. Evaluated 2026-10-01: Ollama disabled on every host.
-- **Upstream / selected pin:** [Ollama GPU support](https://docs.ollama.com/gpu) is the compatibility reference; no original issue or fixed revision is recorded. Root nixpkgs currently exposes `ollama-rocm` 0.34.4 (evaluated 2026-10-01), but this dormant service has no exercised GPU runtime.
+- **Upstream / selected pin:** [Ollama GPU support](https://docs.ollama.com/gpu) is the compatibility reference; no original issue or fixed revision is recorded. Root nixpkgs currently exposes `ollama-rocm` 0.40.0 (evaluated 2026-10-10; Ollama still disabled on every host), but this dormant service has no exercised GPU runtime.
 - **Remove/change when:** before enabling, establish GPU support for the selected ROCm/Ollama and run real inference without spoofing.
 - **Validate:** `ceres` on enablement; runtime: GPU detected, inference works.
 
@@ -428,35 +424,11 @@ Also covers audit ID `package-katrain-opencl-test`.
 - **Remove when:** the test becomes hermetic/CPU-backed, or the sandbox gets a deterministic software OpenCL.
 - **Validate:** `ceres` plus package check phase; runtime as `katrain-bundled-katago-appimage`.
 
-#### `agent-orchestrator-tmux-locale-shim`
-
-- **Where:** `packages/agent-orchestrator/default.nix` (`resources/tmux/bin/tmux` replaced by a `/bin/sh` shim, shebang patching off).
-- **Why:** bundled static-glibc tmux fails on `/usr/lib/locale`; AO copies tmux into `~/.ao/runtime/tmux/<version>-linux-x64` once and ignores inherited `AO_TMUX_BINARY`.
-- **Upstream:** selected/latest v0.13.2; HEAD 53ba1e81 still stages and reuses the copied binary ([bundled-tmux.ts](https://github.com/Untrivial-ai/agent-orchestrator/blob/53ba1e81a4cd299e8d3e48767b06a185132ac54f/frontend/src/shared/bundled-tmux.ts)).
-- **Remove when:** the selected release honors a system tmux path or ships tmux that works on NixOS, including same-version staged copies.
-- **Validate:** `desktop`; runtime: isolated `AO_DATA_DIR`, start an agent session, relaunch, staged tmux still works. Never delete the user's `~/.ao`.
-
-#### `agent-orchestrator-go-patchelf-rpath`
-
-- **Where:** `packages/agent-orchestrator/default.nix` (move `ao` out of autoPatchelf's tree, set interpreter only).
-- **Why:** adding an RPATH corrupts the Go daemon's `.dynamic` (SIGSEGV) with patchelf 0.15/0.18; root nixpkgs patchelf is 0.15.2.
-- **Upstream:** [patchelf#457](https://github.com/NixOS/patchelf/issues/457) (related, closed 2023); latest [0.19.1](https://github.com/NixOS/patchelf/releases/tag/0.19.1). Neither proves the selected patchelf handles this binary.
-- **Remove when:** the selected patchelf patches this `ao` without corruption and the daemon runs.
-- **Validate:** `desktop`; runtime: `ao` CLI and real daemon/session startup.
-
-#### `agent-orchestrator-angle-dlopen`
-
-- **Where:** `packages/agent-orchestrator/default.nix` (`--add-needed libGL.so.1 libEGL.so.1` before autoPatchelf).
-- **Why:** bundled ANGLE dlopens by soname in process scope.
-- **Upstream:** selected/latest [Agent Orchestrator v0.13.2](https://github.com/Untrivial-ai/agent-orchestrator/releases/tag/v0.13.2). Local loader rationale is recorded; no equivalent upstream NixOS packaging fix was established.
-- **Remove when:** a selected package supplies both libraries through a tested loader contract.
-- **Validate:** `desktop`; runtime: AO GUI on Wayland without EGL/GL errors.
-
 #### `whiteboard-angle-runpath`
 
 - **Where:** `packages/whiteboard/default.nix` (runtime dlopen deps; libglvnd appended to all relevant RUNPATHs).
 - **Why:** bundled ANGLE loads libEGL/libGL itself; `runtimeDependencies` only reaches executables.
-- **Upstream:** selected/latest [v0.1.5](https://github.com/devdotfast/whiteboard/releases/tag/v0.1.5).
+- **Upstream:** selected/latest [v0.2.4](https://github.com/devdotfast/whiteboard/releases/tag/v0.2.4) (2026-10-10).
 - **Remove when:** a selected package/native build resolves EGL/GL without the extra RUNPATH.
 - **Validate:** `desktop`; runtime: `whiteboard-desktop` and CLI-launched desktop render a canvas on Wayland.
 
@@ -464,7 +436,7 @@ Also covers audit ID `package-katrain-opencl-test`.
 
 - **Where:** `packages/whiteboard/default.nix` (both wrappers add git/xdg-utils; desktop clears `ELECTRON_RUN_AS_NODE`/`VSCODE_*`; CLI sets `ELECTRON_RUN_AS_NODE`; desktop file `Exec` rewritten).
 - **Why:** the CLI launches the desktop through `process.execPath`, bypassing the desktop wrapper.
-- **Upstream:** selected/latest [Whiteboard v0.1.5](https://github.com/devdotfast/whiteboard/releases/tag/v0.1.5). No equivalent native-NixOS launcher contract or specific upstream fix was established.
+- **Upstream:** selected/latest [Whiteboard v0.2.4](https://github.com/devdotfast/whiteboard/releases/tag/v0.2.4) (2026-10-10). No equivalent native-NixOS launcher contract or specific upstream fix was established.
 - **Remove when:** the selected CLI routes launches through a supported wrapper keeping the environment on cold/warm launch.
 - **Validate:** `desktop`; runtime: CLI-initiated and direct desktop launches from an environment containing the Electron/VSCode variables; git and external links work.
 
@@ -472,7 +444,7 @@ Also covers audit ID `package-katrain-opencl-test`.
 
 - **Where:** `packages/openclaw-desktop/default.nix` (no `update-desktop-database` on PATH; shipped `OpenClaw.desktop` handles `openclaw://`).
 - **Why:** runtime registration would point the handler at the unwrapped ELF.
-- **Upstream:** selected [v2026.9.5](https://github.com/openclaw/openclaw/releases/tag/v2026.9.5).
+- **Upstream:** selected/latest stable [v2026.9.9](https://github.com/openclaw/openclaw/releases/tag/v2026.9.9) (2026-10-10).
 - **Remove when:** the selected Tauri/plugin integration registers the wrapped launcher on NixOS, verified on cold launch.
 - **Validate:** `desktop`; runtime: in an isolated desktop profile cold-open an `openclaw://` URI. Never overwrite the user's handler to test.
 
@@ -480,15 +452,15 @@ Also covers audit ID `package-katrain-opencl-test`.
 
 - **Where:** `packages/openclaw-desktop/default.nix` (FIXME; binary not patched).
 - **Why:** remote gateway only tries `/usr/bin/ssh` and `/bin/ssh` (the FIXME mentions only the first); neither exists on NixOS, so remote-gateway mode does not work.
-- **Upstream:** [remote_gateway.rs](https://github.com/openclaw/openclaw/blob/76d542b06c28386e9bfb2931d53dcea1f249ae06/apps/linux/src-tauri/src/remote_gateway.rs#L1045) on HEAD 76d542b0 still hardcodes both paths.
+- **Upstream:** selected [v2026.9.9 remote_gateway.rs](https://github.com/openclaw/openclaw/blob/v2026.9.9/apps/linux/src-tauri/src/remote_gateway.rs#L1046) and [main 7f9594b2](https://github.com/openclaw/openclaw/blob/7f9594b2338497adf41a3c92cc9c6aa49b85eb02/apps/linux/src-tauri/src/remote_gateway.rs#L1028) still hardcode both paths (2026-10-10).
 - **Resolve when:** the downloaded `.deb` actually includes a PATH/configurable ssh fix; then drop the FIXME.
 - **Validate:** `desktop`; runtime: authorized SSH connection to a test gateway.
 
 #### `openclaw-desktop-asset-aware-updater`
 
 - **Where:** `packages/openclaw-desktop/update.sh` (highest stable release that has `OpenClaw-<version>-amd64.deb`).
-- **Why:** latest project release (2026.9.7) has no Linux `.deb`; Linux `.deb` releases: 2026.9.5, 2026.9.4, 2026.8.2.
-- **Upstream:** selected [v2026.9.5](https://github.com/openclaw/openclaw/releases/tag/v2026.9.5) has the required Linux asset; newer [v2026.9.7](https://github.com/openclaw/openclaw/releases/tag/v2026.9.7) does not. A newer project version alone is not a removal gate.
+- **Why:** stable releases do not reliably ship a Linux `.deb`: on 2026-10-10 the latest stable 2026.9.9 has one, while 2026.9.8, 2026.8.35, 2026.8.34 and 2026.9.7 do not (the 2026.10.1 betas have none either).
+- **Upstream:** selected [v2026.9.9](https://github.com/openclaw/openclaw/releases/tag/v2026.9.9) has the required Linux asset; the preceding [v2026.9.8](https://github.com/openclaw/openclaw/releases/tag/v2026.9.8) does not. A newer project version alone is not a removal gate.
 - **Remove when:** upstream has a durable Linux release-asset contract, or the package source type changes deliberately.
 - **Validate:** `desktop`; runtime: OpenClaw local gateway and control UI after an update.
 
@@ -497,7 +469,7 @@ Also covers audit ID `package-katrain-opencl-test`.
 Also covers audit ID `package-nak-network-tests`.
 
 - **Where:** `packages/nak/default.nix` (`doCheck = false`); package exposed, not installed (`modules/home/terminal/role.nix` entry commented).
-- **Why:** some tests contact public Nostr relays ([cli_test.go](https://github.com/fiatjaf/nak/blob/8b1c3c9403d5fdce9f8e7c77b6d6fc6f1b86302c/cli_test.go#L127)); others are offline, so the blanket skip is broader than needed. Selected = latest v0.20.7.
+- **Why:** some tests contact public Nostr relays (selected [v0.21.2 cli_test.go](https://github.com/fiatjaf/nak/blob/v0.21.2/cli_test.go#L166-L180) runs `nak req … nos.lol`); others are offline, so the blanket skip is broader than needed. Selected = latest v0.21.2 (2026-10-10).
 - **Remove when:** upstream makes relay tests opt-in/hermetic, or packaging selects only offline tests that pass in the sandbox.
 - **Validate:** package build with checks and network disabled (meaningful tests run) plus `ceres`/`vesta`/`juno1` boundary; runtime: `nak` help and offline encode/decode.
 
@@ -529,36 +501,15 @@ Also covers audit ID `package-relay-tester-checks`.
 
 ### Security exceptions
 
-Records from the security lifecycle audit. Bundled runtimes are invisible to nixpkgs `knownVulnerabilities`, so these deadlines are checked here. No `permittedInsecurePackages`, `allowInsecure`, `knownVulnerabilities` or `NIXPKGS_ALLOW_INSECURE` exists in the repository (2026-10-01).
-
-#### `agent-orchestrator-bundled-electron`
-
-Also covers audit IDs `package-agent-orchestrator-bundled-electron`, `agent-orchestrator-electron33` and the ABI half of `agent-orchestrator-bundled-abi-and-cli`.
-
-- **Where:** `packages/agent-orchestrator/default.nix` (binary DEB with bundled Electron; comment on exact ABI).
-- **Why:** `better-sqlite3` is compiled for the bundled Electron 33 ABI; swapping in nixpkgs Electron breaks it.
-- **Status:** **expired** — Electron 33 EOL 2025-04-28 ([schedule](https://releases.electronjs.org/schedule.json)). Latest upstream [v0.13.2](https://github.com/Untrivial-ai/agent-orchestrator/releases/tag/v0.13.2) (2026-09-30, = selected) still pins `electron@33.4.11` in [frontend/package.json](https://github.com/Untrivial-ai/agent-orchestrator/blob/v0.13.2/frontend/package.json). Report on each manual review.
-- **Remove when:** an upstream release ships a supported Electron major with `better-sqlite3` built for the same ABI. Do not replace Electron alone.
-- **Validate:** inspect new release metadata and packaged runtime version; `desktop`; runtime: DB-backed create/open/persist flow and bundled `ao` CLI.
-
-#### `clawpatch-trust-lockfile`
-
-Also covers audit ID `package-clawpatch-trust-lockfile`.
-
-- **Where:** `packages/clawpatch/default.nix` and `packages/clawpatch/update.sh` (`pnpm config set trust-lockfile true` in `prePnpmInstall`).
-- **Why:** undocumented; added during the 0.6→0.7 bump. [INFERENCE] lets updates fetch dependencies younger than upstream's maturity window.
-- **Effect:** bypasses upstream's `minimumReleaseAge: 2880` (48 h, [pnpm-workspace.yaml](https://github.com/openclaw/clawpatch/blob/v0.8.1/pnpm-workspace.yaml), unchanged in v0.8.2) and `trustPolicy` checks ([pnpm trustLockfile](https://pnpm.io/settings/dependency-resolution)). Selected 0.8.1; [v0.8.2](https://github.com/openclaw/clawpatch/releases/tag/v0.8.2) published 2026-10-01.
-- **Status:** `decision` — explicitly accept with rationale, or remove both settings together.
-- **Remove when:** the newest locked dependency is past 48 h; regenerate the pnpm dependency hash without `prePnpmInstall`.
-- **Validate:** `.#clawpatch` build and CLI help/version plus affected full systems; updater in an isolated checkout must fail closed on a too-fresh lockfile. Re-review on any version, lock hash or upstream `minimumReleaseAge` change.
+Records from the security lifecycle audit. Bundled runtimes are invisible to nixpkgs `knownVulnerabilities`, so these deadlines are checked here. No `permittedInsecurePackages`, `allowInsecure`, `knownVulnerabilities` or `NIXPKGS_ALLOW_INSECURE` exists in the repository (2026-10-10).
 
 #### `whiteboard-bundled-electron`
 
 Also covers audit ID `package-whiteboard-bundled-electron`.
 
-- **Where:** `packages/whiteboard/default.nix` (binary DEB with bundled Electron 42.10.0).
-- **Status:** `watch` — Electron 42 EOL **2026-10-20**. Latest upstream [v0.1.5](https://github.com/devdotfast/whiteboard/releases/tag/v0.1.5) (2026-09-28, = selected) pins 42.10.0 ([electron checksums](https://github.com/devdotfast/whiteboard/blob/v0.1.5/apps/review-desktop/code-oss/build/checksums/electron.txt)). On each manual review, warn before the date; after it, set `expired` and report.
-- **Remove when:** update to a release whose packaged Electron major is supported (verify both source metadata and packaged runtime).
+- **Where:** `packages/whiteboard/default.nix` (binary DEB with bundled Electron 43.7.9).
+- **Status:** `watch` — Electron 43 EOL **2027-01-05** ([schedule](https://releases.electronjs.org/schedule.json)). Selected = latest upstream [v0.2.4](https://github.com/devdotfast/whiteboard/releases/tag/v0.2.4) (5b00f0e6) pins 43.7.9 ([electron checksums](https://github.com/devdotfast/whiteboard/blob/v0.2.4/apps/review-desktop/code-oss/build/checksums/electron.txt)); the packaged `share/whiteboard/whiteboard` of the selected `whiteboard-0.2.4` reports `Electron/43.7.9` (checked 2026-10-10). The earlier Electron 42 deadline (2026-10-20) no longer applies. On each manual review, warn before the date; after it, set `expired` and report.
+- **Remove when:** the package no longer bundles its own Electron. Until then, move the deadline to the packaged major's EOL on each update (verify both source metadata and packaged runtime).
 - **Validate:** `desktop`; runtime: desktop launch, CLI-to-desktop launch, one review/canvas flow.
 
 ## Deliberate choices (not upstream workarounds)
@@ -572,7 +523,7 @@ happens; do not remove them because upstream changed. Group names are stable.
 | `release-pins` | `ordinary-root-release-pins`, `standard-input-follows-and-overlays`, `flake-binary-cache-configuration`, `comfyui-upstream-release-pin` | `flake.nix`, `scripts/update-inputs.sh` | Ordinary tagged/immutable input refs advanced by the release updater, per-input `nixpkgs` follows, module wiring, upstream overlays, and substituter/key preferences. Only `hyprland-glaze-release-freeze` is a pin workaround; Hyprland's nixpkgs not following root is tracked in `desktop-hyprland-mesa-abi`. Trust/cache changes are separate scope. |
 | `bird-product` | `bird-native-linux-chromium-cookie-source`, `bird-standard-pnpm-recipe`, `hermes-bird-vesta-command-adapter` | `vendor/bird/src/lib/cookies.ts`, `vendor/bird/src/lib/chromium-cookies.ts`, `packages/bird/default.nix`, `modules/nixos/services/hermes-bird-vesta.sh` | Required read-only open-Chromium cookie reading (v11 keyring unsupported), normal pnpm recipe, digest command adapter. Credential/security changes need the security model. |
 | `comfyui-product` | `comfyui-cache-registration`, `comfyui-json-repair`, `comfyui-prompt-enhancer-node`, `comfyui-rocm-attention-policy`, `comfyui-bundled-nodes-opt-out`, `comfyui-qwen-service-state`, `comfyui-qwen-workflow-seeding`, `comfyui-qwen-model-downloads` | `flake.nix` nixConfig, `overlays/comfyui/default.nix`, `modules/nixos/services/comfyui.nix`, `systems/x86_64-linux/ceres/qwen-image.nix`, `systems/x86_64-linux/ceres/qwen-image/` | Cache opt-in, enhancer dependency/node pin, ROCm attention policy, node surface, user-owned state, edit-preserving workflow seeding, verified model downloader. `json-repair` migrates with `comfyui-service-overlay-selection`. |
-| `package-recipes` | `local-product-packaging`, `clawpatch-node-pnpm-toolchain`, `katrain-package-integration-details`, `openclaw-tauri-binary-layout`, `whiteboard-legacy-alias-removal`, `agent-orchestrator-bundled-abi-and-cli` (CLI exposure), `delta-authenticated-archive-packaging`, `relay-tester-manual-git-hash-refresh`, `quickshell-qtmultimedia-extension`, `quickshell-multimedia-and-qml-tooling` | `packages/`, `modules/home/desktop/quickshell.nix` | Ordinary reproducible packaging, binary relocation, QtMultimedia for video wallpaper. The bundled-Electron ABI is tracked in `agent-orchestrator-bundled-electron`. |
+| `package-recipes` | `local-product-packaging`, `katrain-package-integration-details`, `openclaw-tauri-binary-layout`, `whiteboard-legacy-alias-removal`, `delta-authenticated-archive-packaging`, `relay-tester-manual-git-hash-refresh`, `quickshell-qtmultimedia-extension`, `quickshell-multimedia-and-qml-tooling` | `packages/`, `modules/home/desktop/quickshell.nix` | Ordinary reproducible packaging, binary relocation, QtMultimedia for video wallpaper. |
 | `updater-and-maintenance` | `dnd5etools-split-image-release-policy`, `local-maintenance-and-installer-commands`, `development-shell-and-input-updater-policy`, `nebula-certificate-mobile-helpers` | `packages/dnd5etools/`, `packages/update/`, `packages/clear-cache/`, `packages/fix-images/`, `packages/live-install/`, `packages/burn-iso/`, `scripts/`, `shells/default/` | Local tools and update policy (dnd5etools images advanced manually by decision). |
 | `security-policy` | `whiteboard-user-namespace-sandbox`, `grok-sandbox-off`, `installer-exported-keys-and-mobile-config`, `factorio-default-fetch-flow`, `factorio-headless-runtime-settings`, `matrix-livekit-runtime-turn-settings`, `normal-service-restart-and-auth-integrations` | `packages/whiteboard/default.nix`, `modules/home/agents/base.nix`, `packages/burn-iso/default.nix`, `scripts/nebula-mobile.sh`, `modules/nixos/gaming/role.nix`, `modules/nixos/services/factorio.nix`, `modules/nixos/services/matrix.nix`, agent/service modules | Intentional security-sensitive decisions: inert setuid helper removed (user-namespace sandbox, no `--no-sandbox`), explicit `GROK_SANDBOX=off`, exported installer keys, approved Factorio token handling, runtime credential serialization, service restart/auth boundaries. Change only by owner/security decision; never auto-remove. |
 | `session-lifecycle` | `desktop-once-per-session-startup`, `desktop-launcher-independent-app-cgroups`, `herdr-managed-desktop-environment`, `docker-delayed-workstation-start`, `qml-local-reactivity-patterns`, `quickshell-icon-lookup-cost` | `modules/home/desktop/role.nix`, `modules/home/programs/chat.nix`, `modules/home/programs/email.nix`, `modules/home/agents/herdr-server.nix`, `modules/home/desktop/quickshell/`, `modules/nixos/services/docker.nix` | Required once-per-session startup, app cgroup isolation, Herdr daemon ownership and graphical environment, boot policy, local QML patterns, launcher icon omission (owned by the proposed icon-lookup note). |
@@ -599,3 +550,5 @@ Fix together with the next change touching the file; behavior must not change.
 | `comfyui-retired-template-media-assets02-injection` | 4b9bbf78 | Pinned `nix/vendored-packages.nix` includes media-assets-02. |
 | `comfyui-retired-rocm-launcher-library-order` | 4b9bbf78 | Pinned `nix/packages.nix:370-378` orders torch libs before the host driver dir; packaged torch import/GPU discovery verified 2026-10-01. |
 | `minio-insecure-package-allowance` | 8134472e | Removed together with its host. |
+| `agent-orchestrator-tmux-locale-shim`, `agent-orchestrator-go-patchelf-rpath`, `agent-orchestrator-angle-dlopen`, `agent-orchestrator-bundled-electron` | 5549fac4 | Removed together with `packages/agent-orchestrator` (last selected 0.13.4); no consumer remains at 9426fcce. Upstream v0.13.6 still resolves Electron 33.4.11 (EOL 2025-04-28), so reintroducing the package reopens the expired exception. |
+| `clawpatch-trust-lockfile` | 5549fac4 | Removed together with `packages/clawpatch` (last selected 0.8.2); no `trust-lockfile`/`prePnpmInstall` remains at 9426fcce. Upstream v0.8.2 keeps `minimumReleaseAge: 2880`; reintroducing the package must not carry the bypass forward without an owner decision. |
