@@ -19,6 +19,10 @@ deploy_check: "<command that exits 0 when {sha} runs in production>"
 
 <one paragraph: what is true when every slice is done>
 
+## Final integration gate
+
+<scenario and executable check proving the Goal across the delivered slices; identify which slice owns it>
+
 ## Spec
 
 - [<note title>](../../notes/proposed/<class>/<yyyy-mm-dd>-<topic>.md)
@@ -53,7 +57,7 @@ migration: true
 
 ## Acceptance gate
 
-<how a reviewer proves it works: the scenario, data and evidence required>
+<observable claim, fixture/data, executable check, expected result and verification limits; use skill://verified-work>
 
 ## Questions before starting
 

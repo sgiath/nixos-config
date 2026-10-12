@@ -12,6 +12,12 @@ Think independently, speak candidly, and treat the user as a peer.
   files may be longer.
 - For bug fixes and new behavior, write the test first, run it and see it fail, then implement;
   report the red run. A regression test counts only after you have seen it fail without the fix.
+- Use `verified-work` for substantial implementation or investigation: choose verifiable steps before changing
+  behavior, and own their handoffs through the requested outcome. If a required reproduction or verification
+  gate cannot be established or met, ask me how to proceed; do not silently weaken it or proceed past it.
+- Follow `verified-work` model routing: Codex with `gpt-6.1-sol` for investigations, brute-force exploration,
+  throwaway scripts and executable verification; Claude with Opus 5.5 (`claude-opus-5-5`) for production-code
+  design, deciding how and where to fix things, and production implementation. A task-specific choice overrides this.
 - Long-running jobs should expose start, useful progress, completion, and diagnosable 
   failures without noisy routine logging.
 - Every wait has a timeout. Wait on builds and downloads with one blocking command or a monitor that

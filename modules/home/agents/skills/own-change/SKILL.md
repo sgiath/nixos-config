@@ -12,9 +12,14 @@ Run ONLY when the user invokes /skill:own-change or explicitly asks to use own-c
 
 The invocation authorizes creating a task worktree/branch, implementing the requested change, committing all intended task work, pushing, creating PRs, and running skill://babysit-pr until merge-ready. It does not authorize merging, enabling auto-merge, deployment, destructive cleanup, inclusion of unrelated work or bypassing repository protections.
 
+Use skill://verified-work for acceptance gates, validated checks, handoffs and blockers throughout this workflow.
+This skill owns workspace, publication and readiness scope; do not start a second plan for each phase. If a required
+reproduction or gate cannot be established or met, ask the user how to proceed and stop dependent work, including
+publication as a completed implementation. A recorded limitation does not waive that requirement.
+
 ## 1. Establish scope and isolate work
 
-- Resolve the requested behavior and acceptance criteria from the user's request, repository conventions, ticket and supplied context. If no change was supplied and context cannot establish one, ask what to implement rather than inventing scope.
+- Resolve the requested behavior and acceptance criteria from the user's request, repository conventions, ticket and supplied context. Establish the verifiable steps and final integration gate before changing behavior. If no change was supplied and context cannot establish one, ask what to implement rather than inventing scope.
 - Inspect the current repository, branch, dirty state, relevant remotes and base. Record and preserve existing user changes; never stash/reset/clean the main checkout just to start. If the requested change depends on existing uncommitted work, isolate only the relevant work safely without removing the original; ask only when ownership/scope cannot be established.
 - Reuse a task worktree already prepared by T3, an invoking driver or an earlier turn. Verify its branch/base
   and task ownership before editing. Otherwise create a new task branch/worktree from the verified remote default
@@ -37,14 +42,15 @@ The invocation authorizes creating a task worktree/branch, implementing the requ
 ## 2. Implement and verify the complete change
 
 - Follow repository patterns and relevant domain skills. Keep the implementation direct and scoped. Include all affected consumers, cross-app configuration, migrations and necessary companion-repository changes; no unfinished compatibility shim or isolated server change with missing clients.
-- Delegate genuinely independent slices where useful, with exact worktree/path ownership and shared contracts. The main agent remains responsible for integration, correctness and final verification. Do not let delegates mutate the original checkout.
-- Run the scenario that proves the change: reproduce and confirm a bug fix; exercise the actual UI for visual changes; exercise new API/CLI behavior and applicable project gates.
+- Delegate genuinely independent evidence, reproduction, implementation or verification tasks where useful, with verified-work's handoff record and exact worktree/path ownership. The owning thread collects findings and coordinates fixes and reverification without user relay. Do not let delegates mutate the original checkout.
+- Apply verified-work's role routing: Codex investigates and verifies; Claude Opus 5.5 judges and implements production changes. If the owner runs Codex, delegate production design/implementation to Claude rather than treating delegation as optional for that phase.
+- Validate the reproduction/check before the fix, then run it against the change. Use skill://diagnosing-bugs when the cause is uncertain and skill://tdd for behavioral tests. Exercise the actual UI for visual changes, new API/CLI behavior and the final integration gate; distinguish injected mechanisms from confirmed natural triggers.
 - For UI verification in T3, prefer its collaborative preview: inspect status, open if needed, and use
   snapshot-provided locators and focused interaction tools. Use evaluation only where the tool's contract
   supports it. Diagnose a failed call and correct actionable arguments before switching tools; use a fallback
   when the preview tools are absent or explicitly unavailable. Keep regression tests for plausible observable
   failures, not tests that merely mirror implementation. Do not claim unrun local e2e or production checks.
-- After behavior is proven, complete in-scope documentation/changelog/generated-artifact updates according to repository conventions and remove throwaway scaffolding. Review the complete change for missed callers, unnecessary complexity, accidental user edits and secrets.
+- After behavior is proven, complete in-scope documentation/changelog/generated-artifact updates according to repository conventions and remove throwaway setup. Retain runnable evidence needed for review or handoffs. Review the complete change for missed callers, unnecessary complexity, accidental user edits and secrets.
 
 ## 3. Commit and publish
 
@@ -63,7 +69,8 @@ The babysit-pr skill owns the CI/review state machine: wait for all CI including
 
 Stay with the task while work remains actionable. Yield to T3 when waiting for CI/review; do not declare completion
 at implementation, PR creation, first green check or first review round. Required human approvals, unavailable access
-or a genuine external decision can block completion; unwatch before handing back and report the exact unmet condition.
+or a genuine external decision can block completion; ask how to proceed for an unachievable required gate,
+unwatch before handing back and preserve the exact unmet condition and resumption evidence.
 Do not fabricate approval or bypass protections to satisfy the goal.
 
 ## Delivery

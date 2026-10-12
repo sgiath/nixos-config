@@ -3,9 +3,11 @@ import QtQuick
 import Quickshell
 import Quickshell.Io
 
-// Polls `omp usage --json` and flattens its reports into one entry per
-// account: provider, who it belongs to, its limits, and the weekly limit as
-// the account's headline fraction.
+// Polls `sgiath-usage` (desktop/usage-collector) and flattens its reports
+// into one entry per account: provider, who it belongs to, its limits, and
+// the weekly limit as the account's headline fraction. Fractions are null
+// where a provider names a window but not its usage; a provider that failed
+// keeps its card with an error.
 Singleton {
     id: root
 
@@ -28,33 +30,9 @@ Singleton {
         proc.running = true;
     }
 
-    // Fraction of the window consumed; null when the limit has no ceiling.
-    function fraction(amount) {
-        if (amount.usedFraction !== undefined)
-            return amount.usedFraction;
-        if (amount.limit)
-            return amount.used / amount.limit;
-        return null;
-    }
-
-    // Window length in ms for ranking; monthly windows carry no duration,
-    // only an id, and windowless pools (extra usage) rank below everything.
-    function span(limit) {
-        if (!limit.window)
-            return 0;
-        if (limit.window.id === "monthly")
-            return 30 * 24 * 60 * 60 * 1000;
-        return limit.window.durationMs || 0;
-    }
-    function formatAmount(amount) {
-        switch (amount.unit) {
-        case "percent":
-            return Math.round(amount.used) + "%";
-        case "usd":
-            return "$" + amount.used.toFixed(2) + (amount.limit ? " / $" + amount.limit : "");
-        default:
-            return amount.used + " " + amount.unit.toUpperCase();
-        }
+    // "42%", or "--" when the provider did not say.
+    function formatPercent(fraction) {
+        return fraction === null ? "--" : Math.round(fraction * 100) + "%";
     }
 
     // "2D 04H", "4H 12M", "12M"; "DUE" once the window has already rolled.
@@ -82,25 +60,25 @@ Singleton {
         accounts = data.reports.map((report, index) => {
             const limits = report.limits.filter(limit => hiddenLimits.indexOf(limit.id) === -1).map(limit => ({
                         label: limit.label,
-                        window: limit.window ? limit.window.label : "",
-                        span: span(limit),
-                        resetsAt: limit.window && limit.window.resetsAt ? limit.window.resetsAt : 0,
-                        fraction: fraction(limit.amount),
-                        value: formatAmount(limit.amount),
+                        span: limit.window.durationMs,
+                        resetsAt: limit.window.resetsAt,
+                        fraction: limit.amount.usedFraction,
+                        value: formatPercent(limit.amount.usedFraction),
                         exhausted: limit.status === "exhausted"
                     }));
             // The headline drives the gauge and the compact countdown: the
-            // tightest limit in the account's longest window, so 7 days for
-            // most, monthly for OpenCode and Cursor, never a 5-hour or
-            // extra-usage pool while a longer window exists.
+            // tightest known limit in the account's longest window, so 7 days
+            // rather than a 5-hour pool. With nothing known in that window
+            // it stays null and keeps the window's countdown.
             const longest = limits.reduce((acc, l) => Math.max(acc, l.span), 0);
-            const headline = limits.filter(l => l.span === longest).reduce((acc, l) => (l.fraction ?? 0) > (acc ? acc.fraction ?? 0 : -1) ? l : acc, null);
+            const headline = limits.filter(l => l.span === longest).reduce((acc, l) => !acc || (l.fraction ?? -1) > (acc.fraction ?? -1) ? l : acc, null);
             return {
                 rank: rank(report.provider) * data.reports.length + index,
                 provider: report.provider.replace(/-/g, " "),
-                owner: (report.metadata || {}).email || (report.metadata || {}).planType || "",
+                owner: report.metadata.email || report.metadata.planType || "",
                 limits: limits,
-                worst: headline ? headline.fraction ?? 0 : 0,
+                error: report.error || "",
+                worst: headline ? headline.fraction : null,
                 worstResetsAt: headline ? headline.resetsAt : 0
             };
         }).sort((a, b) => a.rank - b.rank);
@@ -111,7 +89,7 @@ Singleton {
     Process {
         id: proc
 
-        command: ["omp", "--profile", "default", "usage", "--json"]
+        command: ["sgiath-usage"]
         running: true
 
         stdout: StdioCollector {
@@ -128,8 +106,8 @@ Singleton {
             id: stderr
         }
 
-        // Non-zero exit: last stderr line is the most specific message omp
-        // gives; stderr noise on a successful run is not an error.
+        // The collector reports provider failures in its JSON; a non-zero
+        // exit is a crash, whose last stderr line names the exception.
         onExited: (code, status) => {
             if (code === 0)
                 return;

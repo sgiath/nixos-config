@@ -18,4 +18,8 @@ Read the transcript for concrete asks, corrections, and decisions. Inspect a spr
 
 Read [extraction options and fallback](references/extraction.md) for flags, model/binary settings, odd filenames, long recordings, and manual commands. Transcription is local, with no API key.
 
-Delete the generated temporary workspace when finished, not the user's source video. For a user-supplied output directory, remove only generated artifacts rather than unrelated contents.
+Before deleting temporary extraction output, retain the minimal transcript/frames needed for a pending verification
+gate or handoff in the task's evidence location and pass their paths to the recipient. A recording establishes an
+observed symptom, not a cause or local reproduction; use skill://verified-work when this is part of a larger task.
+Delete disposable extraction output when finished, not the user's source video or retained task evidence. For a
+user-supplied output directory, remove only generated artifacts rather than unrelated contents.

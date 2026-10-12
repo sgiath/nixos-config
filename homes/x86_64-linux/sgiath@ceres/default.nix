@@ -9,7 +9,7 @@
     packages = with pkgs; [
       texliveMedium
       # lmstudio
-      # davinci-resolve-studio
+      davinci-resolve-studio
       whisper-cpp-vulkan
       pkgs.${namespace}.katrain
     ];
@@ -45,6 +45,7 @@
   };
 
   services = {
+    davinci-resolve-mcp.enable = true;
     openclaw.node = {
       enable = true;
       sshTarget = "sgiath@vesta.local";

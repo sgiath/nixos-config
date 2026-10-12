@@ -40,7 +40,7 @@ in
         After = [ "graphical-session.target" ];
       };
       Service = {
-        # Distinct app id so only this instance is pinned to workspace 1.
+        # Distinct app id so only this instance opens on the terminal special workspace.
         ExecStart = "${terminalCommand} --class kitty-login";
         Slice = "app.slice";
       };
@@ -58,7 +58,7 @@ in
       window_rule = [
         {
           match.class = "kitty-login";
-          workspace = "1";
+          workspace = "special:terminal silent";
         }
       ];
     };

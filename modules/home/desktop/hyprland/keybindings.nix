@@ -40,7 +40,7 @@ in
       (bind "SUPER + right" ''hl.dsp.focus({ workspace = "r+1" })'')
 
       # go to workspace
-      (bind "SUPER + grave" ''hl.dsp.workspace.toggle_special("nasa")'')
+      (bind "SUPER + grave" ''hl.dsp.workspace.toggle_special("terminal")'')
       (bind "SUPER + 1" ''hl.dsp.focus({ workspace = "1", on_current_monitor = true })'')
       (bind "SUPER + 2" ''hl.dsp.focus({ workspace = "2", on_current_monitor = true })'')
       (bind "SUPER + 3" ''hl.dsp.focus({ workspace = "3", on_current_monitor = true })'')
@@ -53,7 +53,7 @@ in
       (bind "SUPER + 0" ''hl.dsp.focus({ workspace = "10", on_current_monitor = true })'')
 
       # move to workspace
-      (bind "SUPER + SHIFT + grave" ''hl.dsp.window.move({ workspace = "special:nasa" })'')
+      (bind "SUPER + SHIFT + grave" ''hl.dsp.window.move({ workspace = "special:terminal" })'')
       (bind "SUPER + SHIFT + 1" ''hl.dsp.window.move({ workspace = "1" })'')
       (bind "SUPER + SHIFT + 2" ''hl.dsp.window.move({ workspace = "2" })'')
       (bind "SUPER + SHIFT + 3" ''hl.dsp.window.move({ workspace = "3" })'')

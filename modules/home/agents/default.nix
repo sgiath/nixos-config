@@ -6,9 +6,10 @@
     ./cli-proxy-api.nix
     ./codex.nix
     ./cursor.nix
+    ./davinci-resolve-mcp.nix
     ./dsh.nix
     ./herdr-server.nix
-    ./omp.nix
+    ./muse-code.nix
     ./openclaw.nix
     ./opencode.nix
     ./pi.nix

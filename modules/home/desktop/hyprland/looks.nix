@@ -23,7 +23,8 @@ in
         # Dim
         dim_inactive = true;
         dim_strength = 0.025;
-        dim_special = 0.07;
+        # Backdrop behind a shown scratchpad; the workspace stays readable under it.
+        dim_special = 0.5;
 
         blur = {
           enabled = true;
@@ -41,7 +42,7 @@ in
         };
       };
 
-      animations.enabled = false;
+      animations.enabled = true;
     };
 
     curve = [
@@ -215,14 +216,14 @@ in
         enabled = true;
         speed = 2.8;
         bezier = "emphasizedDecel";
-        style = "slidevert";
+        style = "slidevert -100%";
       }
       {
         leaf = "specialWorkspaceOut";
         enabled = true;
         speed = 1.2;
         bezier = "emphasizedAccel";
-        style = "slidevert";
+        style = "slidevert -100%";
       }
     ];
   };

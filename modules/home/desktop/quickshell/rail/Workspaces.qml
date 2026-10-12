@@ -8,13 +8,18 @@ import qs.components
 // workspaces have negative ids. Each cell shows the id (what the keybinding
 // targets) and, for named workspaces, the name (what lives there).
 // Focused: solid accent block. Active but not focused (this monitor's
-// visible workspace while another monitor holds focus): accent outline.
-// Everything else: hairline cell.
+// visible workspace while another monitor holds focus, or covered by a
+// scratchpad): accent outline. Everything else: hairline cell.
+// A shown scratchpad (any special workspace) gets its own cell below the
+// regular ones and takes the solid block while its monitor is focused;
+// clicking it hides the scratchpad again.
 Column {
     id: root
 
     required property ShellScreen screen
     readonly property HyprlandMonitor monitor: Hyprland.monitorFor(screen)
+    readonly property string scratchpad: Scratchpad.shown(monitor)
+    readonly property bool focused: Hyprland.focusedMonitor === monitor
 
     spacing: Theme.spacing
 
@@ -28,12 +33,12 @@ Column {
 
             required property HyprlandWorkspace modelData
 
-            readonly property bool lit: modelData.focused || modelData.urgent
+            readonly property bool lit: (modelData.focused && !root.scratchpad) || modelData.urgent
             readonly property bool named: modelData.name !== String(modelData.id)
 
             width: Theme.railWidth - 2 * Theme.padding - 1
             height: 46
-            color: modelData.urgent ? Theme.urgent : modelData.focused ? Theme.accent : "transparent"
+            color: modelData.urgent ? Theme.urgent : lit ? Theme.accent : "transparent"
             border.width: 1
             border.color: modelData.active ? Theme.accent : Theme.line
 
@@ -66,6 +71,52 @@ Column {
                 anchors.fill: parent
                 onClicked: cell.modelData.activate()
             }
+        }
+    }
+
+    Rectangle {
+        visible: root.scratchpad !== ""
+        width: Theme.railWidth - 2 * Theme.padding - 1
+        height: 1
+        color: Theme.line
+    }
+
+    Rectangle {
+        id: scratch
+
+        visible: root.scratchpad !== ""
+        width: Theme.railWidth - 2 * Theme.padding - 1
+        height: 46
+        color: root.focused ? Theme.accent : "transparent"
+        border.width: 1
+        border.color: Theme.accent
+
+        Column {
+            anchors.centerIn: parent
+            spacing: 1
+
+            Label {
+                text: "scratch"
+                color: root.focused ? Theme.background : Theme.muted
+                anchors.horizontalCenter: parent.horizontalCenter
+            }
+
+            Text {
+                text: root.scratchpad
+                color: root.focused ? Theme.background : Theme.text
+                width: scratch.width - 2
+                elide: Text.ElideRight
+                horizontalAlignment: Text.AlignHCenter
+                font.family: Theme.fontFamily
+                font.pointSize: Theme.fontSize
+                font.bold: root.focused
+                anchors.horizontalCenter: parent.horizontalCenter
+            }
+        }
+
+        MouseArea {
+            anchors.fill: parent
+            onClicked: Hyprland.dispatch(`hl.dsp.workspace.toggle_special(${JSON.stringify(root.scratchpad)})`)
         }
     }
 }

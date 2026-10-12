@@ -30,6 +30,8 @@ in
           environment = {
             # Must match the URL loaded in the browser or logins fail with invalid-origin.
             EXECUTOR_WEB_BASE_URL = "https://${host}";
+            # Personal MCP services (Resolve on Ceres) live on Nebula.
+            EXECUTOR_ALLOW_LOCAL_NETWORK = "true";
           };
         };
       };

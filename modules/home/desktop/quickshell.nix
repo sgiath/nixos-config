@@ -39,6 +39,15 @@ let
   # video wallpaper.
   quickshell = pkgs.${namespace}.quickshell;
 
+  # `sgiath-usage`, polled by quickshell/usage/UsageService.qml; its tests run
+  # as part of the build.
+  usageCollector = pkgs.runCommandLocal "sgiath-usage" { } ''
+    PYTHONDONTWRITEBYTECODE=1 ${lib.getExe pkgs.python3} -I -m unittest discover \
+      -s ${./usage-collector} -t ${./usage-collector}
+    install -Dm755 ${./usage-collector/usage.py} $out/bin/sgiath-usage
+    sed -i '1c#!${lib.getExe pkgs.python3} -I' $out/bin/sgiath-usage
+  '';
+
   qmlTooling = pkgs.kdePackages.qtdeclarative; # qmlls, qmlformat
   qmlImportPath = lib.concatStringsSep ":" [
     "${quickshell}/lib/qt-6/qml"
@@ -71,9 +80,11 @@ in
       ++ lib.optional (!live) "${config.xdg.configFile."quickshell/sgiath".source}";
     };
 
-    home = lib.mkIf live {
-      packages = [ qmlTooling ];
-      sessionVariables.QML_IMPORT_PATH = qmlImportPath;
+    home = {
+      # sgiath-usage goes on the PATH the shell service inherits, next to the
+      # `codex` and `claude` it asks.
+      packages = [ usageCollector ] ++ lib.optional live qmlTooling;
+      sessionVariables = lib.mkIf live { QML_IMPORT_PATH = qmlImportPath; };
     };
 
     wayland.windowManager.hyprland.settings.layer_rule = [

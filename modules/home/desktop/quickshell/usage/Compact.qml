@@ -67,7 +67,7 @@ Item {
 
                     required property var modelData
 
-                    readonly property color tone: Theme.load(modelData.worst)
+                    readonly property color tone: modelData.worst === null ? Theme.muted : Theme.load(modelData.worst)
 
                     width: Theme.railWidth - 2 * Theme.padding - 1
                     height: body.implicitHeight + Theme.padding * 2
@@ -84,12 +84,12 @@ Item {
                         Gauge {
                             width: 48
                             height: 48
-                            fraction: cell.modelData.worst
+                            fraction: cell.modelData.worst ?? 0
                             color: cell.tone
                             anchors.horizontalCenter: parent.horizontalCenter
 
                             Label {
-                                text: Math.round(cell.modelData.worst * 100) + "%"
+                                text: UsageService.formatPercent(cell.modelData.worst)
                                 color: cell.tone
                                 font.letterSpacing: 0
                                 anchors.centerIn: parent
@@ -106,9 +106,10 @@ Item {
                         }
 
                         Label {
-                            text: cell.modelData.worstResetsAt ? "T-" + UsageService.formatReset(cell.modelData.worstResetsAt, root.now) : ""
+                            text: cell.modelData.error !== "" ? "failed" : cell.modelData.worstResetsAt ? "T-" + UsageService.formatReset(cell.modelData.worstResetsAt, root.now) : ""
                             visible: text !== ""
-                            dim: true
+                            dim: cell.modelData.error === ""
+                            color: dim ? Theme.muted : Theme.urgent
                             font.letterSpacing: 0
                             anchors.horizontalCenter: parent.horizontalCenter
                         }

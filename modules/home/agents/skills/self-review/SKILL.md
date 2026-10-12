@@ -9,6 +9,12 @@ Make the author's AI review visible so teammates can see what was checked, what
 remains open, and what was fixed or dismissed without repeating the same review.
 This is a personal workflow, not a change to the team's approval policy.
 
+When reviewing a verified-work task, carry its original acceptance gates, executable artifacts and user decisions
+into this review. Verify the changed-to-unchanged interactions relevant to those gates and distinguish reproduced
+behavior from code inference. Report an unavailable required check to the owning thread using skill://verified-work's
+blocker rule; do not silently waive it or implement a fix under this read-only review scope. Posting remains governed
+by this skill's explicit invocation, not by an ordinary independent verification task.
+
 ## Invocation and scope
 
 Run only when explicitly invoked as `$self-review`, `/self-review`, or requested by name.

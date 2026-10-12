@@ -10,6 +10,13 @@ Use the project's domain language from `CONTEXT.md` when present. CI and review 
 skill://babysit-pr; this skill does not start babysitting automatically.
 Honor the requested operation: a draft-only request produces text without publishing or changing a host PR.
 
+Use skill://verified-work's gate results and blocker rule for implementation evidence. Publication consumes that
+evidence; it does not restart implementation or authorize new tests/source changes for a description-only request.
+Before publishing a completed implementation or marking it ready, a required reproduction/evidence gate that cannot
+be established or met needs the user's decision. An explicitly requested draft/progress PR may report blocked gates,
+but must remain incomplete and must not imply readiness. Updating an existing description may accurately record
+blockers without changing code, draft status or previously accepted scope.
+
 ## Repository requirements
 
 Before creating or updating a PR, read applicable repository steering and inspect available project-local skills
@@ -76,10 +83,10 @@ comparison helps; a new element must at least be shown in its visible state. For
 interaction and outcome, keeping it short. Tests, code, diagrams and generated mockups do not replace this media.
 
 If the state depends on an unavailable service, try a local reproduction or controlled fixture and label any
-simulated response. State what the capture proves and what still needs an integration check. If capture or upload
-is blocked, report the attempts, exact missing prerequisite and missing media in Evidence and the handoff. The
-description remains incomplete until the required media is embedded; do not silently waive it because the
-environment is inconvenient.
+simulated response. State what the capture proves and what still needs an integration check; a fixture cannot waive
+a required live-service gate. If required capture or upload cannot be achieved, ask the user how to proceed under
+verified-work, with the attempts and missing prerequisite. Keep that blocker in Evidence and the handoff. The
+description remains incomplete until the required media is embedded or the user explicitly accepts a limited gate.
 
 Keep screenshots, videos and exported diagrams captured solely for PR evidence outside the tracked repository.
 Do not commit them or use repository blob/raw URLs to host them. Product assets required by the change still belong
@@ -108,8 +115,8 @@ For creation, finish authorized task commits and push the intended branch explic
 upstream tracking. Confirm the remote head contains the intended commits before opening the PR. Never push task
 changes to the base branch accidentally. Description-only updates do not require a push.
 
-Create a non-draft PR when implementation is complete unless the user requested a draft. Mark an existing draft
-ready only when readiness is part of the task. Check for duplicates again after an ambiguous creation failure
+Create a non-draft PR when implementation and its required verification are complete unless the user requested a draft.
+Mark an existing draft ready only when readiness is part of the task and those gates are met. Check for duplicates again after an ambiguous creation failure
 before retrying. An API error is not evidence that no PR was created.
 
 For an existing PR, preserve unrelated body content and metadata. Apply repository-specific token-scope fallbacks

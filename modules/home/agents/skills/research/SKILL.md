@@ -3,10 +3,17 @@ name: research
 description: "Use when asked to research a question and save a source-cited repository note."
 ---
 
+For research that is a step in a larger implementation/investigation, use skill://verified-work's existing gates
+and handoff record. Save the note requested here without turning a hypothesis into a verified diagnosis or starting
+implementation/publication. If required evidence or reproduction cannot be obtained, ask how to proceed under its
+blocker rule. Source-supported conclusions and clearly stated unknowns can satisfy a research-only request.
+
 Split independent research angles between subagents when useful; keep a narrow lookup in one context.
 
 Use fresh context, not forked context, unless the user explicitly asks otherwise. Delegated researchers should inspect sources directly instead of relying on the main conversation history.
 
+Apply skill://verified-work's model routing to research: use Codex with `gpt-6.1-sol` for evidence gathering;
+use Claude Opus 5.5 for production-design judgments when those are requested. Preserve the research-only scope.
 In T3, discover models through `orchestrator_capabilities` and use native subagents where supported or `delegate_task`
 for cross-provider/T3-owned work. Supply the question, source pointers and output contract explicitly. Retain async
 task IDs and yield for completion notifications; do not create separate top-level threads to obtain fresh context.

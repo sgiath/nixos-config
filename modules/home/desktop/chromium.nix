@@ -42,7 +42,7 @@
     wayland.windowManager.hyprland.settings.window_rule = [
       {
         match.class = "chromium-browser";
-        workspace = "3 silent";
+        workspace = "2 silent";
       }
     ];
   };

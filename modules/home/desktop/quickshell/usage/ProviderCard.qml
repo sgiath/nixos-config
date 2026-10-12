@@ -2,7 +2,8 @@ import QtQuick
 import qs.config
 import qs.components
 
-// One account: ordinal, provider, owner, headline gauge, then a meter per limit.
+// One account: ordinal, provider, owner, headline gauge, then a meter per
+// limit, or why there are none.
 Item {
     id: root
 
@@ -81,10 +82,18 @@ Item {
 
                 width: 26
                 height: 26
-                fraction: root.account.worst
-                color: Theme.load(root.account.worst)
+                fraction: root.account.worst ?? 0
+                color: Theme.load(root.account.worst ?? 0)
                 anchors.right: parent.right
             }
+        }
+
+        Label {
+            text: root.account.error
+            visible: text !== ""
+            color: Theme.urgent
+            width: parent.width
+            elide: Text.ElideRight
         }
 
         Repeater {

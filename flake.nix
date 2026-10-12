@@ -119,7 +119,7 @@
     };
 
     hermes-agent = {
-      url = "github:NousResearch/hermes-agent/v0.21.6";
+      url = "github:NousResearch/hermes-agent/v0.21.7";
       inputs.nixpkgs.follows = "nixpkgs";
     };
 
@@ -129,7 +129,7 @@
     };
 
     opencode = {
-      url = "github:anomalyco/opencode/v1.18.35";
+      url = "github:anomalyco/opencode/v1.19.0";
       inputs.nixpkgs.follows = "nixpkgs";
     };
   };

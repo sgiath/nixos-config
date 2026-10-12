@@ -20,13 +20,20 @@ The human-assisted template exposes `step "<instruction>"` (wait for Enter) and 
 
 ## Establish the failure signal
 
-Before causal experiments, record one reproduction command already run and its output. It must exercise the actual path and detect the user's exact symptom, not merely exit successfully. Use the user's reported failure as evidence, not as something to reconfirm; run the command to establish the diagnostic loop.
+Before causal experiments, record one reproduction command already run and its output. It must exercise the relevant
+production path and detect the reported symptom, not merely exit successfully. Use the reported failure as evidence;
+the command establishes the diagnostic loop. When a synthetic condition is needed, record the injection, compare
+the visible/error/state sequence with the report, and run a normal control. Do not simulate the failure by replacing
+the behavior under investigation. A matching injected mechanism does not establish the customer's natural trigger.
 
 Keep the loop unattended where possible, deterministic, and short enough to rerun frequently (seconds where feasible). Cache setup, narrow unrelated initialization, pin time and random seeds, and isolate filesystem/network state. Record deviations that the real scenario requires rather than replacing it with an easier but different bug.
 
 For intermittent failures, record attempts and reproduction rate. Repeated triggers, concurrency, stress, controlled timing windows, or injected delays can raise the rate; preserve the conditions so before/after measurements remain comparable. One passing run does not prove an intermittent bug fixed.
 
-If no usable loop is possible, report attempts and the exact missing prerequisite: environment access, a captured HAR/log/core dump or timestamped recording, or authorization for temporary production instrumentation. Do not present an untested cause as a diagnosis or add production instrumentation without permission.
+If no usable loop is possible, ask the user how to proceed using skill://verified-work's blocker rule. Report attempts
+and the exact missing prerequisite: environment access, a captured HAR/log/core dump or timestamped recording, or
+authorization for temporary production instrumentation. Stop dependent implementation until the user answers.
+Do not present an untested cause as a diagnosis or add production instrumentation without permission.
 
 ## Minimize and discriminate
 
@@ -40,14 +47,18 @@ For performance regressions, establish a comparable timing/profile/query-plan ba
 
 ## Fix and verify
 
-A regression seam must reach the real call-site pattern: a single-caller unit test is insufficient when the failure needs several callers or a longer chain. Where a suitable seam exists, turn the minimized reproduction into a failing regression test before the fix, observe failure, apply the fix, and observe success. If no suitable seam exists, record the limitation instead of adding a shallow test that gives false confidence.
+A regression seam must reach the real call-site pattern: a single-caller unit test is insufficient when the failure
+needs several callers or a longer chain. Turn the minimized reproduction into a failing behavioral check before
+the fix, observe failure, apply the fix, and observe success; use skill://tdd for tests worth keeping. A throwaway
+production-code harness can supply the check when no committed test seam exists. If neither can prove the required
+behavior, ask the user how to proceed instead of adding a shallow test or treating the limitation as completion.
 
 Completion requires:
 
-- The original, unminimized reproduction no longer exhibits the symptom; intermittent/performance cases use comparable conditions and measurements.
-- The regression test passes, or the missing seam and available reproduction proof are documented.
+- The required, unminimized reproduction no longer exhibits the symptom; intermittent/performance cases use comparable conditions and measurements. If the required gate includes the original environment and it is unavailable, ask how to proceed; a synthetic check cannot silently replace it.
+- The behavioral regression check passes. State whether it exercises the natural trigger or an injected condition, and any user-approved verification limitation.
 - Temporary `[DEBUG-...]` instrumentation is removed, checked by its prefix.
-- Throwaway prototypes are removed or moved to a clearly marked debug location.
+- Throwaway setup is removed; runnable fixtures and results needed by the next agent or reviewer are retained in a clearly marked location and handed off before cleanup.
 - The supported cause and verification evidence are reported; include the cause in a commit/PR message if one is requested.
 
 After the fix, note a concrete preventive architectural change if the evidence warrants it (for example, a missing test seam or hidden caller coupling). Do not expand the fix into that redesign without user scope.

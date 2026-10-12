@@ -7,6 +7,11 @@ description: "Watch a GitHub PR through all CI and review jobs, fix failures, ad
 
 Own the CI/review feedback loop until the PR is ready to merge. Accept a PR URL/number or use the current branch. If no open PR exists for that branch, publish one. This skill authorizes task-related fixes, commits, pushes, replies and resolution of addressed review threads; it does not authorize merging, enabling auto-merge, deployment, bypassing protections or unrelated changes.
 
+Use skill://verified-work for behavioral gates, handoffs and blocker decisions. Reuse the implementation's evidence
+and user decisions; do not replace a required behavioral gate with green CI. Exercise affected gates for review
+fixes and coordinate independent findings directly with the implementation owner. If a required reproduction/gate
+cannot be established or met, ask the user how to proceed, preserve the blocker and unwatch before handing back.
+
 ## Establish the target
 
 1. Resolve repository, authenticated user, PR, base branch, head repository/branch/SHA and its worktree. Read the
@@ -18,7 +23,7 @@ Own the CI/review feedback loop until the PR is ready to merge. Accept a PR URL/
 2. Read applicable repository steering and project-local PR/review/CI skills, even when the PR already exists.
    Repository policy supplements this workflow. If the branch has no open PR, call skill://pr to publish it;
    this invocation authorizes the task-related commits and push it needs. Do not duplicate PR creation here.
-   Reuse an existing PR. Mark a draft ready when implementation is complete unless the user requested a draft.
+   Reuse an existing PR. Mark a draft ready when implementation and its required verification are complete unless the user requested a draft.
 3. When T3 exposes `link_pull_request`, register the full URL before working on an existing PR. Link every
    task-owned companion or stack layer; creation through `pr` also links it. Keep each URL, current head SHA,
    outstanding findings and verification limits in task state for resumption.
@@ -92,12 +97,13 @@ Re-fetch the PR immediately before declaring success. Require all of the followi
   note the skipped review in the hand-back. Investigate failed, cancelled, missing, pending or unexpected skipped checks; accept intentional not-applicable skips only with configuration evidence. Do not treat neutral/skipped as proof that behavior was tested.
 - Every actionable review comment has a documented disposition; no unresolved actionable threads or outstanding changes-requested decisions. Required approvals must actually exist; never approve your own work, dismiss someone else's review or bypass protection to manufacture readiness.
 - All intended task changes committed and pushed, relevant verification complete, PR description current (re-check its Evidence and Merge Danger after later fixes), and any companion PR dependencies clearly identified and ready in their required merge order.
+- Required behavioral and integration gates passed on applicable revisions; any limited replacement gate was explicitly accepted by the user. A documented unknown is not an implicit waiver.
 - Head SHA unchanged since the successful CI/review inspection. If it changed, repeat.
 
 Keep working while agent-actionable work remains. Pending CI or review is a watcher wait: in T3, yield and resume
 on notifications. A genuinely external blocker (required human approval, unavailable permission/secret, service
 outage, unresolved product decision) is not success: finish reachable work, preserve state for resumption,
-unwatch before handing it back, and report the exact blocker without claiming merge-ready.
+unwatch before handing it back, and ask how to proceed with the exact blocker without claiming merge-ready.
 
 Before final delivery, call `list_thread_pull_requests` when available and link any missing task-owned PRs.
 Unwatch all monitored task PRs before handing the result back. Leave PR links intact.

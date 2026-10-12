@@ -10,7 +10,7 @@ Column {
     required property double now
 
     readonly property bool metered: limit.fraction !== null
-    readonly property color tone: limit.exhausted ? Theme.red : Theme.load(metered ? limit.fraction : 0)
+    readonly property color tone: limit.exhausted ? Theme.red : metered ? Theme.load(limit.fraction) : Theme.muted
 
     spacing: 4
 
