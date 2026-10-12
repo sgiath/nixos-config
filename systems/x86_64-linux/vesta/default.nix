@@ -1,5 +1,6 @@
 {
   imports = [
+    ./crazyegg.nix
     ./hardware.nix
     ./disko.nix
     ./services.nix

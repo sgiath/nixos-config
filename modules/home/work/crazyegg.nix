@@ -6,9 +6,6 @@
 }:
 {
   config = lib.mkIf config.sgiath.work.crazyegg.enable {
-    home.packages = with pkgs; [
-      google-chrome
-      insomnia
-    ];
+    home.packages = lib.optionals config.sgiath.roles.desktop.enable (with pkgs; [ google-chrome ] );
   };
 }

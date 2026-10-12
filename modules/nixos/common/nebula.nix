@@ -7,8 +7,6 @@ let
   # Overlay addresses; hosts with a fixed LAN address mirror its last octet,
   # non-NixOS devices (Mobile Nebula, scripts/nebula-mobile.sh) start at .20.
   # Certificates come from scripts/nebula-sign.sh, keyed by peer name.
-  # `remote` peers are company-administered (scripts/nebula-remote.sh): they
-  # get no inbound access on any NixOS host.
   peers = {
     vesta = {
       ip4 = "10.42.0.2";
@@ -30,21 +28,11 @@ let
       ip4 = "10.42.0.20";
       ip6 = "fd51:da00:4788::20";
     };
-    mac = {
-      ip4 = "10.42.0.21";
-      ip6 = "fd51:da00:4788::21";
-      remote = true;
-    };
   };
   peerType = lib.types.submodule {
     options = {
       ip4 = lib.mkOption { type = lib.types.str; };
       ip6 = lib.mkOption { type = lib.types.str; };
-      remote = lib.mkOption {
-        type = lib.types.bool;
-        default = false;
-        description = "Company-administered peer: reachable from personal hosts, never allowed in.";
-      };
     };
   };
 in
@@ -112,11 +100,9 @@ in
       };
       listen.host = "[::]";
 
-      # Every peer holds a certificate signed by our CA; that is the auth for
-      # personal peers, so services bound to the nebula interface need no
-      # login of their own. Inbound is an allowlist of personal peers by
-      # certificate name; `remote` peers only get replies to connections the
-      # personal hosts open (Vesta's SSH to the Mac).
+      # Every peer holds a certificate signed by our CA; that is the auth, so
+      # services bound to the nebula interface need no login of their own.
+      # Inbound is an allowlist of the peers above by certificate name.
       firewall = {
         outbound = [
           {
@@ -129,7 +115,7 @@ in
           port = "any";
           proto = "any";
           host = name;
-        }) (lib.filterAttrs (_: peer: !peer.remote) cfg.peers);
+        }) cfg.peers;
       };
 
       settings.punchy = {

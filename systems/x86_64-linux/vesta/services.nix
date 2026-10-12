@@ -27,6 +27,7 @@
 
   # proxies
   sgiath.sites = {
+    crazyeggdev.enable = true;
     sinai-camp.enable = true;
     nas.enable = true;
   };

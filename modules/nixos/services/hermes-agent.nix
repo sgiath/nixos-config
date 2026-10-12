@@ -108,6 +108,9 @@ in
           environmentFiles = [ config.sops.secrets.hermes-env.path ];
           environment = {
             HERMES_DASHBOARD_TUI = "1";
+            # The unit sets HOME to stateDir; borrow the account's own Claude Code login,
+            # which Hermes refreshes in place.
+            CLAUDE_CONFIG_DIR = "${config.users.users.sgiath.home}/.claude";
 
             MATRIX_HOMESERVER = "https://matrix.sgiath.dev";
             MATRIX_USER_ID = "@niamh:sgiath.dev";
@@ -187,18 +190,16 @@ in
               skin = "mono";
             };
 
+            # Built-in memory only. Holographic left core and its catalog install fails on the
+            # store path; its facts DB stays in HERMES_HOME. The settings merge keeps old keys,
+            # so the provider must be overridden with "" rather than removed.
             memory = {
-              provider = "holographic";
+              provider = "";
               memory_enabled = true;
               user_profile_enabled = true;
-            };
-            plugins = {
-              hermes-memory-store = {
-                auto_extract = true;
-                db_path = "${stateDir}/.hermes/memory_store.db";
-                default_trust = 0.5;
-                hrr_dim = 1024;
-              };
+              # Twice the defaults; both files were nearly full at the defaults.
+              memory_char_limit = 4400;
+              user_char_limit = 2750;
             };
 
             gateway.platforms = {
