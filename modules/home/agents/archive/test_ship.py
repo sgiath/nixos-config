@@ -209,5 +209,48 @@ class ShipTest(unittest.TestCase):
         self.assertEqual(self.inserts, inserts)
 
 
+class DiscoverTest(unittest.TestCase):
+    def setUp(self):
+        self.home = Path(tempfile.mkdtemp())
+
+    def store(self, rel, content=b'{"type":"session"}\n'):
+        path = self.home / rel
+        path.parent.mkdir(parents=True, exist_ok=True)
+        path.write_bytes(content)
+
+    def database(self, rel, table, rows=0):
+        path = self.home / rel
+        path.parent.mkdir(parents=True, exist_ok=True)
+        db = sqlite3.connect(path)
+        db.execute(f"CREATE TABLE {table} (id TEXT)")
+        db.executemany(f"INSERT INTO {table} VALUES (?)", [(str(i),) for i in range(rows)])
+        db.commit()
+        db.close()
+
+    def test_reports_session_stores_no_source_covers(self):
+        self.store(".newagent/sessions/2026/a.jsonl")
+        self.store(".newagent/sessions/2026/b.jsonl")
+        self.store(".known/sessions/c.jsonl")
+        self.database(".otheragent/state.db", "sessions", rows=1)
+        sources = [ship.Jsonl("known", [".known/sessions/**/*.jsonl"])]
+        self.assertEqual(
+            ship.discover(self.home, sources, ignored=[]),
+            {".newagent/sessions/2026": 2, ".otheragent/state.db": 1},
+        )
+
+    def test_waits_until_a_store_holds_data(self):
+        # A tool installed but never used is reported once it stores something.
+        self.store(".unused/sessions/a.jsonl", b"")
+        self.database(".unused/state.db", "sessions")
+        self.assertEqual(ship.discover(self.home, [], ignored=[]), {})
+
+    def test_skips_ignored_paths_and_unrelated_files(self):
+        self.store(".tool/sessions/debug.jsonl")
+        self.store(".tool/data/export.jsonl")  # not in a session-like directory
+        self.database(".tool/cache.db", "entries", rows=1)  # no session-like table
+        ignored = [(".tool/sessions/**", "debug traces, not conversations")]
+        self.assertEqual(ship.discover(self.home, [], ignored=ignored), {})
+
+
 if __name__ == "__main__":
     unittest.main()

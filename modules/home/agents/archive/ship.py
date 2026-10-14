@@ -124,7 +124,14 @@ SOURCES = [
         "omp",
         [f"{root}/agent/sessions/**/*.{ext}" for root in (".omp", ".omp/profiles/*") for ext in ("log", "md")],
     ),
-    Jsonl("omo", [".omo/agent/sessions/**/*.jsonl"]),
+    # oh-my-pi's per-message stats index; it outlives session files deleted since.
+    *(
+        Sqlite("omp", db, table, "id", "id")
+        for db in (".omp/stats.db", ".omp/profiles/*/stats.db")
+        for table in ("messages", "user_messages", "tool_calls")
+    ),
+    # Sessions, and the memory agent's captures (its own format, kept raw).
+    Jsonl("omo", [".omo/agent/sessions/**/*.jsonl", ".omo/memory/agents/*/runtime/transcripts/**/*.jsonl"]),
     Jsonl("pi", [".pi/agent/sessions/**/*.jsonl"]),
     Jsonl("prime", [".prime/agent/sessions/**/*.jsonl", ".prime/agent/session-artifacts/**/*.jsonl"]),
     # Every thread, run, message and tool item as T3 recorded it.
@@ -140,6 +147,8 @@ SOURCES = [
         "key LIKE 'composerData:%' OR key LIKE 'bubbleId:%' OR key LIKE 'messageRequestContext:%'",
     ),
     Sqlite("cursor", ".config/Cursor/User/globalStorage/state.vscdb", "composerHeaders", "composerId", "lastUpdatedAt"),
+    # Cursor CLI agent runs.
+    Jsonl("cursor", [".cursor/projects/*/agent-transcripts/**/*.jsonl"]),
     # Per-project prompt and generation history, the only record of some
     # 2025 conversations whose messages are gone from the global store.
     Sqlite(
@@ -153,6 +162,10 @@ SOURCES = [
     Jsonl("grok", [".grok/sessions/**/*.jsonl"]),
     Files("grok", [".grok/sessions/**/summary.json"]),
     Jsonl("muse", [".local/share/muse/sessions/**/*.jsonl"]),
+    Jsonl("fx", [".fx/sessions/**/*.jsonl"]),
+    Sqlite("goose", ".local/share/goose/sessions/sessions.db", "sessions", "id", "CAST(strftime('%s', updated_at) AS INTEGER) * 1000"),
+    Sqlite("goose", ".local/share/goose/sessions/sessions.db", "messages", "id", "id"),
+    Sqlite("goose", ".local/share/goose/sessions/sessions.db", "usage_ledger", "id", "id"),
     # FIXME: Hermes has no update stamps: messages and sessions are shipped as
     # first seen (or ended), later compaction edits are not. Reconcile changed
     # sessions if the edited versions turn out to matter.
@@ -181,6 +194,83 @@ SOURCES = [
         "created_at",
     ),
 ]
+
+
+# --discover looks for agent session stores that SOURCES misses: JSONL files
+# under a session-like directory, and SQLite databases with a session-like
+# table, once they hold data (an installed but unused tool is not reported).
+# Every hit must be added to SOURCES or listed in IGNORED with a reason.
+SESSION_DIRS = {"sessions", "session", "projects", "transcripts", "chats", "conversations", "history", "threads"}
+SESSION_TABLES = {"session", "sessions", "message", "messages", "conversation", "conversations", "chat", "chats"}
+# Trees not searched at all: large and not agent state. Project checkouts
+# under develop/ hold repository data, not tool homes.
+PRUNE = {".cache", ".git", "node_modules", ".nix-defexpr", ".nix-profile", ".npm", ".cargo", ".rustup", "go"}
+PRUNE_PATHS = {
+    "develop",
+    "Downloads",
+    "Pictures",
+    "Videos",
+    "Music",
+    ".t3/worktrees",
+    ".local/share/Steam",
+    ".local/share/Trash",
+    # Repositories OpenCode cloned and its git snapshots of worktrees.
+    ".local/share/opencode/repos",
+    ".local/share/opencode/snapshot",
+}
+IGNORED = [
+    (".ao/data/ao.db", "AO app projection; its sessions are the OMP and Codex sessions archived natively"),
+    (".config/Cursor/User/globalStorage/conversation-search.db", "search index derived from state.vscdb"),
+    (".local/share/muse/session-index.db", "index derived from the session logs"),
+    (".ipython/profile_default/history.sqlite", "IPython history, not an agent"),
+    (".local/share/gajim/*.db", "XMPP client"),
+    (".local/share/fractal/**", "Matrix client"),
+]
+
+
+def _is_session_db(path):
+    if path.suffix not in (".db", ".sqlite", ".sqlite3", ".vscdb"):
+        return False
+    try:
+        with open(path, "rb") as f:
+            if f.read(16) != b"SQLite format 3\0":
+                return False
+        db = _connect(path)
+        try:
+            tables = [name for (name,) in db.execute("SELECT name FROM sqlite_master WHERE type = 'table'")]
+            return any(
+                db.execute(f'SELECT 1 FROM "{name}" LIMIT 1').fetchone()
+                for name in tables
+                if name.lower() in SESSION_TABLES
+            )
+        finally:
+            db.close()
+    except (OSError, sqlite3.Error):
+        return False
+
+
+def discover(home, sources, ignored=IGNORED):
+    """{store: files} for session-like stores under $HOME that no source covers."""
+    covered = set()
+    for source in sources:
+        covered.update(_files(home, [source.path] if isinstance(source, Sqlite) else source.globs))
+    found = {}
+    for root, dirs, files in os.walk(home):
+        rel_root = Path(root).relative_to(home)
+        dirs[:] = [d for d in dirs if d not in PRUNE and str(rel_root / d) not in PRUNE_PATHS]
+        for name in files:
+            path = Path(root) / name
+            rel = rel_root / name
+            if path in covered or any(rel.full_match(pattern) for pattern, _ in ignored):
+                continue
+            if name.endswith(".jsonl") and SESSION_DIRS & set(rel.parts[:-1]) and path.stat().st_size:
+                store = str(rel.parent)
+            elif _is_session_db(path):
+                store = str(rel)
+            else:
+                continue
+            found[store] = found.get(store, 0) + 1
+    return found
 
 
 def jsonl_records(path, cursor):
@@ -430,7 +520,32 @@ def ship(home, host, sources, clickhouse):
     return out.sent
 
 
+def report_uncovered():
+    """Fail, and post to ntfy, when a session store is neither shipped nor ignored."""
+    host = socket.gethostname()
+    print(f"looking for unarchived agent sessions on {host}")
+    found = discover(Path.home(), SOURCES)
+    if not found:
+        print("every session store is archived or ignored")
+        return
+    stores = "\n".join(f"~/{store} ({files} files)" for store, files in sorted(found.items()))
+    print(f"not archived:\n{stores}", file=sys.stderr)
+    request = urllib.request.Request(
+        os.environ.get("AGENT_ARCHIVE_NTFY", "https://ntfy.sgiath.dev/agent-archive"),
+        data=f"{stores}\n\nAdd them to SOURCES or IGNORED in modules/home/agents/archive/ship.py.".encode(),
+        headers={"Title": f"Unarchived agent sessions on {host}"},
+    )
+    try:
+        urllib.request.urlopen(request, timeout=30).close()
+    except OSError as error:
+        print(f"ntfy: {error}", file=sys.stderr)
+    raise SystemExit(f"{len(found)} session stores are not archived")
+
+
 def main():
+    if sys.argv[1:] == ["--discover"]:
+        report_uncovered()
+        return
     url = os.environ.get("AGENT_ARCHIVE_URL", "https://clickhouse.sgiath.dev")
     host = socket.gethostname()
     started = time.monotonic()

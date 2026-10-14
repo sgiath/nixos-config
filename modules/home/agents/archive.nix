@@ -83,6 +83,28 @@ in
       };
     };
 
+    # Daily check for session stores the shipper does not know about (a new
+    # harness, a new profile); fails and posts to ntfy topic agent-archive.
+    systemd.user.services.agent-archive-discover = {
+      Unit.Description = "Look for agent sessions the archive misses";
+      Service = {
+        Type = "oneshot";
+        ExecStart = "${lib.getExe' shipper "agent-archive-ship"} --discover";
+        Nice = 10;
+        IOSchedulingClass = "idle";
+        TimeoutStartSec = "30min";
+      };
+    };
+    systemd.user.timers.agent-archive-discover = {
+      Unit.Description = "Look for agent sessions the archive misses daily";
+      Timer = {
+        OnCalendar = "daily";
+        Persistent = true;
+        RandomizedDelaySec = "1h";
+      };
+      Install.WantedBy = [ "timers.target" ];
+    };
+
     systemd.user.services.otel-agent = {
       Unit.Description = "Forward agent telemetry to the archive";
       Service = {

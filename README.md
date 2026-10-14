@@ -75,6 +75,54 @@ update
 update --vesta
 ```
 
+## Agent session archive
+
+Every agent session from every host is kept forever in ClickHouse on Vesta
+(`services.agent-archive`; the host side is `modules/home/agents/archive.nix`).
+Why it is built this way is in
+[the decision note](.agents/notes/implemented/architecture/2026-10-14-agent-session-archive.md).
+
+- **Session records.** The hourly `agent-archive` user timer on every host with
+  agents ships each store listed in `SOURCES`
+  (`modules/home/agents/archive/ship.py`) verbatim into `archive.raw`. It
+  keeps no local state and catches up after time offline.
+- **Telemetry.** Claude Code and Codex send OpenTelemetry to the `otel-agent`
+  user service on `127.0.0.1:4318`, which forwards it from a disk queue to
+  database `otel`.
+- **Analysis tables.** Database `agents` (`requests`, `tool_calls`, `commands`,
+  `sessions`, `tool_timing`, `opencode_recovered_sessions`) is rebuilt from
+  `archive.raw` and `otel` every hour, and recreated when its SQL in
+  `modules/nixos/services/agent-archive/` changes.
+- **Backups.** A daily Parquet file per ingest month of `archive.raw` in
+  `/var/backup/agent-archive` on Vesta's root disk. Restore one with
+  `clickhouse-client --port 9001 --user archive --query 'INSERT INTO archive.raw FORMAT Parquet' < raw-YYYYMM.parquet`.
+
+Query it over Nebula; the `default` user is read-only:
+
+```bash
+curl -s https://clickhouse.sgiath.dev --data \
+  "SELECT tool, count() FROM agents.requests GROUP BY tool FORMAT PrettyCompact"
+```
+
+The Hermes migration copy on Vesta is readable only by root; archive it once
+after deploying with `sudo env HOME=/nonexistent agent-archive-ship`.
+
+### Adding an agent harness
+
+The daily `agent-archive-discover` check on every host fails and posts to the
+ntfy topic `agent-archive` (`https://ntfy.sgiath.dev/agent-archive`) when it
+finds a session store that is neither shipped nor ignored. When adding a
+harness, or a new profile of one:
+
+1. Add its session store to `SOURCES` in `ship.py` (`Jsonl`, `Files` or
+   `Sqlite`; never credential tables), or to `IGNORED` with the reason.
+2. If it records requests or tool calls, add
+   `modules/nixos/services/agent-archive/<tool>.sql` with `<tool>_requests` and
+   `<tool>_tool_calls` views, list it in `derivedSql`, add it to the unions in
+   `tables.sql` (and its shell tool to the `commands` filter), and check the
+   counts against the store itself.
+3. If it exports OpenTelemetry, point it at `http://127.0.0.1:4318`.
+
 ## Upstream workarounds
 
 [UPSTREAM-WORKAROUNDS.md](UPSTREAM-WORKAROUNDS.md) tracks local patches, forks,

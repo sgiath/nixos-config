@@ -46,6 +46,12 @@ host with agents (`modules/home/agents/archive.nix`) ships records to it.
   data; the local hop answers at once and delivers later. Claude request
   spans join `agents.requests` by request ID (duration, TTFT); Codex has no
   response IDs in telemetry, so its TTFT joins by session and token counts.
+- **Missed stores are detected, not remembered.** A daily discovery pass on
+  every host walks `$HOME` for JSONL under session-like directories and
+  SQLite databases with populated session or message tables, and alerts via
+  ntfy when one is neither shipped nor explicitly ignored with a reason. The
+  first run found stores the initial survey missed (oh-my-pi profiles and
+  stats, Goose, OmO memory transcripts, Cursor CLI transcripts, fx).
 - **Nebula is the auth.** The `default` user is read-only for analysis; the
   `archive` user writes.
 
