@@ -79,6 +79,11 @@ cumulative totals per rollout).
   per-response usage from cumulative `token_count` snapshots.
 - Request duration and TTFT exist where the tool measures them (OMP) and,
   from telemetry, for Claude Code and Codex sessions since it was enabled.
+- Cursor reports tokens per turn, not per model call: its requests are model
+  calls plus one final reply per turn carrying the turn's tokens. Its
+  per-project prompt history (workspace `state.vscdb`) is archived raw, the
+  only trace of 2025 conversations whose messages are gone. Grok records
+  usage only for a few turns, so its requests carry no tokens.
 - OpenCode's database was replaced in June 2026; its 646 earlier sessions
   (Feb–Jun) are recovered from oh-my-opencode's hook copy into `tool_calls`,
   `commands` and `agents.opencode_recovered_sessions`, without requests or

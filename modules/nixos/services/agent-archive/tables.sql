@@ -32,7 +32,10 @@ REFRESH EVERY 1 HOUR OFFSET 30 MINUTE TO agents.requests AS
 SELECT * FROM agents.claude_requests
 UNION ALL SELECT * FROM agents.codex_requests
 UNION ALL SELECT * FROM agents.pi_requests
-UNION ALL SELECT * FROM agents.opencode_requests;
+UNION ALL SELECT * FROM agents.opencode_requests
+UNION ALL SELECT * FROM agents.cursor_requests
+UNION ALL SELECT * FROM agents.muse_requests
+UNION ALL SELECT * FROM agents.grok_requests;
 
 -- Model-issued tool calls. request_id is empty where the tool does not link
 -- calls to responses (Codex).
@@ -59,7 +62,10 @@ SELECT * FROM agents.claude_tool_calls
 UNION ALL SELECT * FROM agents.codex_tool_calls
 UNION ALL SELECT * FROM agents.pi_tool_calls
 UNION ALL SELECT * FROM agents.opencode_tool_calls
-UNION ALL SELECT * FROM agents.opencode_hook_tool_calls;
+UNION ALL SELECT * FROM agents.opencode_hook_tool_calls
+UNION ALL SELECT * FROM agents.cursor_tool_calls
+UNION ALL SELECT * FROM agents.muse_tool_calls
+UNION ALL SELECT * FROM agents.grok_tool_calls;
 
 -- Shell commands as executed: one row per command, including each command a
 -- Codex code-mode script ran.
@@ -91,7 +97,10 @@ SELECT
     CAST(NULL AS Nullable(Int32)) AS exit_code,
     duration_ms
 FROM agents.tool_calls
-WHERE (tool = 'claude' AND name = 'Bash') OR (tool IN ('omp', 'omo', 'pi', 'prime', 'opencode') AND name = 'bash')
+WHERE (tool = 'claude' AND name = 'Bash')
+    OR (tool IN ('omp', 'omo', 'pi', 'prime', 'opencode', 'muse') AND name = 'bash')
+    OR (tool = 'cursor' AND name = 'run_terminal_cmd')
+    OR (tool = 'grok' AND name = 'run_terminal_command')
 UNION ALL
 SELECT * FROM agents.codex_commands;
 

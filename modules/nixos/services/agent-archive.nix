@@ -27,6 +27,9 @@ let
     ./agent-archive/pi.sql
     ./agent-archive/opencode.sql
     ./agent-archive/opencode_hooks.sql
+    ./agent-archive/cursor.sql
+    ./agent-archive/muse.sql
+    ./agent-archive/grok.sql
     ./agent-archive/tables.sql
   ];
 in

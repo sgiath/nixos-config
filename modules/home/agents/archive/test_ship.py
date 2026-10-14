@@ -164,6 +164,23 @@ class ShipTest(unittest.TestCase):
         self.ship()
         self.assertEqual([r["record"] for r in self.rows("p/s.json")], ['{"items":[]}', '{"items":[1]}'])
 
+    def test_ships_every_database_a_glob_matches(self):
+        for name in ("a", "b"):
+            (self.home / "ws" / name).mkdir(parents=True)
+            db = sqlite3.connect(self.home / "ws" / name / "state.vscdb")
+            db.execute("CREATE TABLE ItemTable (key TEXT UNIQUE ON CONFLICT REPLACE, value TEXT)")
+            db.executemany("INSERT INTO ItemTable VALUES (?, ?)", [("aiService.prompts", "[]"), ("secret", "x")])
+            db.commit()
+            db.close()
+        self.sources = [
+            ship.Sqlite("cursor", "ws/*/state.vscdb", "ItemTable", key="key", position="rowid", where="key LIKE 'aiService.%'")
+        ]
+        self.ship()
+        self.assertEqual(
+            sorted((r["source"], r["key"]) for r in self.clickhouse.rows if r["key"] != "read"),
+            [("ws/a/state.vscdb#ItemTable", "aiService.prompts"), ("ws/b/state.vscdb#ItemTable", "aiService.prompts")],
+        )
+
     def test_skips_databases_this_user_cannot_read(self):
         # Root-only stores are archived by a root run of the same shipper.
         db = sqlite3.connect(self.home / "a.db")

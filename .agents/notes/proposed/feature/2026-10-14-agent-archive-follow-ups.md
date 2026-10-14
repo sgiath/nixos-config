@@ -6,8 +6,9 @@ Status: proposed
 
 The [agent session archive](../../implemented/architecture/2026-10-14-agent-session-archive.md)
 ships text session records from the main stores and normalizes Claude Code,
-Codex, OpenCode and the Pi family. Some data is still only on its source host
-or only raw, and every copy of the archive is in the same house.
+Codex, OpenCode, the Pi family, Cursor, Muse and Grok. Some data is still only
+on its source host or only raw, and every copy of the archive is in the same
+house.
 
 ## Proposal
 
@@ -23,7 +24,7 @@ or only raw, and every copy of the archive is in the same house.
   account/rate-limit RPCs.
 - **More normalizers.** T3 (thread titles, runs, provider thread links through
   `nativeThreadRef.nativeId`), Hermes (session/route aggregates only),
-  Cursor bubbles, Grok, Muse model completions, OpenClaw.
+  OpenClaw.
 - **Hermes reconciliation.** Re-ship changed sessions' messages, since Hermes
   has no update stamps.
 

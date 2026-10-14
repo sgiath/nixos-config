@@ -53,9 +53,11 @@ class Files:
 class Sqlite:
     """One table of a live SQLite database, read incrementally.
 
-    `position` is a column or expression that grows whenever a row is written
-    (or only when it is inserted, when nothing better exists); rows are re-read
-    from the last stored value onward. `where` limits the rows shipped.
+    `path` may be a glob; every matching database is shipped as its own
+    source. `position` is a column or expression that grows whenever a row is
+    written (or only when it is inserted, when nothing better exists); rows
+    are re-read from the last stored value onward. `where` limits the rows
+    shipped.
     """
 
     tool: str
@@ -138,6 +140,16 @@ SOURCES = [
         "key LIKE 'composerData:%' OR key LIKE 'bubbleId:%' OR key LIKE 'messageRequestContext:%'",
     ),
     Sqlite("cursor", ".config/Cursor/User/globalStorage/state.vscdb", "composerHeaders", "composerId", "lastUpdatedAt"),
+    # Per-project prompt and generation history, the only record of some
+    # 2025 conversations whose messages are gone from the global store.
+    Sqlite(
+        "cursor",
+        ".config/Cursor/User/workspaceStorage/*/state.vscdb",
+        "ItemTable",
+        "key",
+        "rowid",
+        "key IN ('aiService.prompts', 'aiService.generations', 'composer.composerData')",
+    ),
     Jsonl("grok", [".grok/sessions/**/*.jsonl"]),
     Files("grok", [".grok/sessions/**/summary.json"]),
     Jsonl("muse", [".local/share/muse/sessions/**/*.jsonl"]),
@@ -394,8 +406,8 @@ def ship(home, host, sources, clickhouse):
     databases = {}
     for source in sources:
         if isinstance(source, Sqlite):
-            path = Path(source.path) if source.path.startswith("/") else home / source.path
-            databases.setdefault(path, []).append(source)
+            for path in _files(home, [source.path]):
+                databases.setdefault(path, []).append(source)
 
     work = [
         (s.tool, s.globs, lambda s=s: (_ship_jsonl if isinstance(s, Jsonl) else _ship_files)(home, s, cursors, out))
