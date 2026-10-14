@@ -20,6 +20,7 @@ let
     ./agent-archive/codex.sql
     ./agent-archive/pi.sql
     ./agent-archive/opencode.sql
+    ./agent-archive/opencode_hooks.sql
     ./agent-archive/tables.sql
   ];
 in

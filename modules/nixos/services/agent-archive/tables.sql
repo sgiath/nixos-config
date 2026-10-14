@@ -58,7 +58,8 @@ REFRESH EVERY 1 HOUR OFFSET 30 MINUTE TO agents.tool_calls AS
 SELECT * FROM agents.claude_tool_calls
 UNION ALL SELECT * FROM agents.codex_tool_calls
 UNION ALL SELECT * FROM agents.pi_tool_calls
-UNION ALL SELECT * FROM agents.opencode_tool_calls;
+UNION ALL SELECT * FROM agents.opencode_tool_calls
+UNION ALL SELECT * FROM agents.opencode_hook_tool_calls;
 
 -- Shell commands as executed: one row per command, including each command a
 -- Codex code-mode script ran.

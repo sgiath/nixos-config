@@ -70,6 +70,10 @@ cumulative totals per rollout).
   input is split accordingly. Codex rollouts before September 2026 derive
   per-response usage from cumulative `token_count` snapshots.
 - Request duration and TTFT exist only where the tool measures them (OMP).
+- OpenCode's database was replaced in June 2026; its 646 earlier sessions
+  (Feb–Jun) are recovered from oh-my-opencode's hook copy into `tool_calls`,
+  `commands` and `agents.opencode_recovered_sessions`, without requests or
+  usage, which that copy never recorded.
 - The static Hermes migration store on Vesta is root-only: archive it with a
   one-time root run of `agent-archive-ship`.
 - Remaining sources, binary assets and an offsite backup are tracked in
