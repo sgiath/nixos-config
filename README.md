@@ -105,7 +105,8 @@ curl -s https://clickhouse.sgiath.dev --data \
 ```
 
 The Hermes migration copy on Vesta is readable only by root; archive it once
-after deploying with `sudo env HOME=/nonexistent agent-archive-ship`.
+after deploying with `sudo env HOME=/nonexistent ~/.nix-profile/bin/agent-archive-ship`
+(sudo drops your profile from `PATH`).
 
 ### Adding an agent harness
 
