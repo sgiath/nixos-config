@@ -543,6 +543,9 @@ def report_uncovered():
 
 
 def main():
+    # Under systemd stdout is a pipe; without this the start line only
+    # appears once a long first upload has finished.
+    sys.stdout.reconfigure(line_buffering=True)
     if sys.argv[1:] == ["--discover"]:
         report_uncovered()
         return
