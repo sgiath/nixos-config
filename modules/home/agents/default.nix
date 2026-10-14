@@ -1,6 +1,7 @@
 { lib, ... }:
 {
   imports = [
+    ./archive.nix
     ./base.nix
     ./claude.nix
     ./cli-proxy-api.nix

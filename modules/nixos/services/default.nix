@@ -1,5 +1,6 @@
 {
   imports = [
+    ./agent-archive.nix
     ./audiobookshelf.nix
     ./comfyui.nix
     ./dnd5etools.nix

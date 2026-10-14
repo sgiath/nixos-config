@@ -19,6 +19,7 @@
     ntfy-sh.enable = true;
     monitoring.enable = false;
 
+    agent-archive.enable = true;
     hermes-agent.enable = true;
     executor.enable = true;
     opencode.enable = true;
