@@ -13,9 +13,15 @@ let
   httpPort = 8124;
   tcpPort = 9001;
   backupDir = "/var/backup/agent-archive";
+  # OTLP/HTTP forwarded by each host's local collector
+  # (modules/home/agents/archive.nix, which owns :4318 on every host),
+  # written by this collector into the `otel` database.
+  otelHost = "otel.sgiath.dev";
+  otlpPort = 4319;
   client = "${ch}/bin/clickhouse-client --port ${toString tcpPort} --user archive";
   # Per-tool parsing views, then the tables they fill.
   derivedSql = [
+    ./agent-archive/otel.sql
     ./agent-archive/claude.sql
     ./agent-archive/codex.sql
     ./agent-archive/pi.sql
@@ -34,7 +40,12 @@ in
   };
 
   config = lib.mkMerge [
-    { sgiath.nebula.services = [ "clickhouse" ]; }
+    {
+      sgiath.nebula.services = [
+        "clickhouse"
+        "otel"
+      ];
+    }
 
     (lib.mkIf (config.sgiath.roles.server.enable && cfg.enable) {
       services.clickhouse = {
@@ -93,6 +104,44 @@ in
         };
       };
 
+      # Telemetry is kept forever like the session records (no TTL). The
+      # queue is on disk and retried without limit, so a ClickHouse restart
+      # loses nothing that reached the collector.
+      services.opentelemetry-collector = {
+        enable = true;
+        package = pkgs.opentelemetry-collector-contrib;
+        settings = {
+          extensions.file_storage = {
+            directory = "/var/lib/opentelemetry-collector";
+            create_directory = true;
+          };
+          receivers.otlp.protocols.http.endpoint = "127.0.0.1:${toString otlpPort}";
+          processors.batch = { };
+          exporters.clickhouse = {
+            endpoint = "tcp://127.0.0.1:${toString tcpPort}";
+            username = "archive";
+            database = "otel";
+            create_schema = true;
+            sending_queue.storage = "file_storage";
+            retry_on_failure.max_elapsed_time = "0s";
+          };
+          service = {
+            # No self-metrics listener (it would claim :8888).
+            telemetry.metrics.level = "none";
+            extensions = [ "file_storage" ];
+            pipelines = lib.genAttrs [ "logs" "traces" "metrics" ] (_: {
+              receivers = [ "otlp" ];
+              processors = [ "batch" ];
+              exporters = [ "clickhouse" ];
+            });
+          };
+        };
+      };
+      systemd.services.opentelemetry-collector = {
+        wants = [ "clickhouse.service" ];
+        after = [ "clickhouse.service" ];
+      };
+
       systemd.tmpfiles.rules = [
         "d /data/clickhouse 0750 clickhouse clickhouse -"
         "d ${backupDir} 0750 root root -"
@@ -106,12 +155,24 @@ in
         description = "Agent archive schema";
         wantedBy = [ "multi-user.target" ];
         requires = [ "clickhouse.service" ];
-        after = [ "clickhouse.service" ];
+        wants = [ "opentelemetry-collector.service" ];
+        after = [
+          "clickhouse.service"
+          "opentelemetry-collector.service"
+        ];
         serviceConfig = {
           Type = "oneshot";
           RemainAfterExit = true;
+          TimeoutStartSec = "10min";
         };
+        # The derived views read the collector's tables, which its exporter
+        # creates when it starts.
         script = ''
+          for _ in $(seq 60); do
+            [ "$(${client} --query "SELECT count() FROM system.tables
+              WHERE database = 'otel' AND name IN ('otel_traces', 'otel_logs')")" = 2 ] && break
+            sleep 2
+          done
           ${client} --queries-file ${./agent-archive/raw.sql}
           ${client} --multiquery --query 'DROP DATABASE IF EXISTS agents SYNC; CREATE DATABASE agents'
           ${lib.concatMapStrings (sql: "${client} --queries-file ${sql}\n") derivedSql}
@@ -194,6 +255,28 @@ in
             proxy_read_timeout 1h;
             proxy_send_timeout 1h;
           '';
+        };
+      };
+
+      services.nginx.virtualHosts.${otelHost} = {
+        # SSL
+        onlySSL = true;
+        kTLS = true;
+
+        # ACME
+        enableACME = true;
+        acmeRoot = null;
+
+        # Overlay only
+        extraConfig = ''
+          allow ${nebula.cidr4};
+          allow ${nebula.cidr6};
+          deny all;
+        '';
+
+        locations."/" = {
+          proxyPass = "http://127.0.0.1:${toString otlpPort}";
+          extraConfig = "client_max_body_size 64m;";
         };
       };
     })

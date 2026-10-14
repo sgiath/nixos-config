@@ -38,6 +38,14 @@ host with agents (`modules/home/agents/archive.nix`) ships records to it.
 - **Backups are portable files.** A daily job writes one Parquet file per
   ingest month of `archive.raw` to `/var/backup/agent-archive` (Vesta's other
   disk), rewriting only changed months.
+- **Telemetry next to the records.** Claude Code (with its beta request and
+  tool tracing) and Codex export OpenTelemetry to a collector on every host,
+  which forwards from a disk queue to a collector on Vesta writing database
+  `otel`, kept forever like the records. Exporting straight to Vesta stalled
+  `codex exec` 13-20 s at exit whenever Vesta was unreachable and dropped the
+  data; the local hop answers at once and delivers later. Claude request
+  spans join `agents.requests` by request ID (duration, TTFT); Codex has no
+  response IDs in telemetry, so its TTFT joins by session and token counts.
 - **Nebula is the auth.** The `default` user is read-only for analysis; the
   `archive` user writes.
 
@@ -69,7 +77,8 @@ cumulative totals per rollout).
 - Token columns in `agents.requests` are disjoint categories; Codex inclusive
   input is split accordingly. Codex rollouts before September 2026 derive
   per-response usage from cumulative `token_count` snapshots.
-- Request duration and TTFT exist only where the tool measures them (OMP).
+- Request duration and TTFT exist where the tool measures them (OMP) and,
+  from telemetry, for Claude Code and Codex sessions since it was enabled.
 - OpenCode's database was replaced in June 2026; its 646 earlier sessions
   (Feb–Jun) are recovered from oh-my-opencode's hook copy into `tool_calls`,
   `commands` and `agents.opencode_recovered_sessions`, without requests or

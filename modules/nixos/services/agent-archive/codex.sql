@@ -5,6 +5,8 @@
 -- one response, `last_token_usage` its usage. Codex input counts include the
 -- cached and cache-write parts; here they are split so every tool reports
 -- disjoint input categories. The 2025 whole-JSON rollouts carry no usage.
+-- Time to first token comes from telemetry (agents.codex_response_timing)
+-- where it was enabled.
 
 CREATE VIEW agents.codex_lines AS
 SELECT
@@ -86,7 +88,7 @@ SELECT
     argMin(turns.model, u.at) AS model,
     min(u.at) AS ts,
     CAST(NULL AS Nullable(Float64)) AS duration_ms,
-    CAST(NULL AS Nullable(Float64)) AS ttft_ms,
+    any(timing.ttft_ms) AS ttft_ms,
     max(greatest(toInt64(JSONExtractUInt(u.usage, 'input_tokens'))
         - JSONExtractUInt(u.usage, 'cached_input_tokens')
         - JSONExtractUInt(u.usage, 'cache_write_input_tokens'), 0)) AS input_tokens,
@@ -100,6 +102,11 @@ SELECT
 FROM usages AS u
 ASOF LEFT JOIN turns ON u.source = turns.source AND u.line >= turns.line
 LEFT JOIN agents.codex_threads AS t ON u.source = t.source
+-- Telemetry has no response id; the same session and token counts identify it.
+LEFT JOIN agents.codex_response_timing AS timing
+    ON timing.session_id = t.session_id
+    AND timing.input_tokens = JSONExtractUInt(u.usage, 'input_tokens')
+    AND timing.output_tokens = JSONExtractUInt(u.usage, 'output_tokens')
 WHERE u.request_id != ''
 GROUP BY u.request_id;
 
