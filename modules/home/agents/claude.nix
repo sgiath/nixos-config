@@ -25,10 +25,11 @@
 
     # Claude rewrites settings.json itself (theme, plugins), so merge the
     # attribution policy into both config dirs instead of owning the file.
+    # Without cleanupPeriodDays Claude deletes transcripts after 30 days.
     home.activation.claudeAttribution = lib.hm.dag.entryAfter [ "writeBoundary" ] ''
       for f in "$HOME/.claude/settings.json" "$HOME/.claude-remote/settings.json"; do
         old=$(cat "$f" 2>/dev/null || true)
-        new=$(printf '%s' "''${old:-"{}"}" | ${lib.getExe pkgs.jq} '.attribution = {commit: "", pr: ""}')
+        new=$(printf '%s' "''${old:-"{}"}" | ${lib.getExe pkgs.jq} '.attribution = {commit: "", pr: ""} | .cleanupPeriodDays = 36500')
         if [ "$new" != "$old" ]; then
           run mkdir -p "$(dirname "$f")"
           run ${pkgs.coreutils}/bin/tee "$f" <<<"$new" >/dev/null
