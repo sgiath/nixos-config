@@ -107,11 +107,24 @@ SOURCES = [
         for db in (".local/share/opencode/opencode.db", ".local/share/opencode/opencode-local.db")
         for table in ("project", "session", "session_v2", "message", "part", "session_message")
     ),
-    Jsonl("omp", [".omp/agent/sessions/**/*.jsonl"]),
+    # The default profile, named profiles (`omp --profile`), and the security
+    # review runs each profile keeps per repository.
+    Jsonl(
+        "omp",
+        [
+            f"{root}/{store}/**/*.jsonl"
+            for root in (".omp", ".omp/profiles/*")
+            for store in ("agent/sessions", "security/*/sessions")
+        ],
+    ),
     # Full tool outputs; transcripts truncate them.
-    Files("omp", [".omp/agent/sessions/**/*.log", ".omp/agent/sessions/**/*.md"]),
+    Files(
+        "omp",
+        [f"{root}/agent/sessions/**/*.{ext}" for root in (".omp", ".omp/profiles/*") for ext in ("log", "md")],
+    ),
     Jsonl("omo", [".omo/agent/sessions/**/*.jsonl"]),
     Jsonl("pi", [".pi/agent/sessions/**/*.jsonl"]),
+    Jsonl("prime", [".prime/agent/sessions/**/*.jsonl", ".prime/agent/session-artifacts/**/*.jsonl"]),
     # Every thread, run, message and tool item as T3 recorded it.
     Sqlite("t3", ".t3/userdata/statev2.sqlite", "orchestration_events", "sequence", "sequence"),
     # Conversation keys only; the rest of the store holds editor state and tokens.

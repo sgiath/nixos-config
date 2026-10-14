@@ -90,7 +90,7 @@ SELECT
     CAST(NULL AS Nullable(Int32)) AS exit_code,
     duration_ms
 FROM agents.tool_calls
-WHERE (tool = 'claude' AND name = 'Bash') OR (tool IN ('omp', 'omo', 'pi', 'opencode') AND name = 'bash')
+WHERE (tool = 'claude' AND name = 'Bash') OR (tool IN ('omp', 'omo', 'pi', 'prime', 'opencode') AND name = 'bash')
 UNION ALL
 SELECT * FROM agents.codex_commands;
 

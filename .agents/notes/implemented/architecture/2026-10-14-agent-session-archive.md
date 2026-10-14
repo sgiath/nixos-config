@@ -5,10 +5,10 @@ Status: implemented
 ## Problem
 
 Agent sessions live in a dozen tool-specific stores on several hosts (Claude
-Code, Codex, OpenCode, oh-my-pi, OmO, Pi, T3 Code, Cursor, Grok, Muse, Hermes,
-OpenClaw). Tools prune them (Claude Code deleted transcripts after 30 days
-until `cleanupPeriodDays` was set), rewrite them, or abandon them when the user
-moves to another tool. There was no durable copy and no way to analyse usage
+Code, Codex, OpenCode, oh-my-pi with its named profiles, OmO, Pi, Prime, T3
+Code, Cursor, Grok, Muse, Hermes, OpenClaw). Tools prune them (Claude Code
+deleted transcripts after 30 days until `cleanupPeriodDays` was set), rewrite
+them, or abandon them when the user moves to another tool. There was no durable copy and no way to analyse usage
 across tools.
 
 ## Decision

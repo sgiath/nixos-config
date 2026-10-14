@@ -1,5 +1,6 @@
--- Pi session format v3: oh-my-pi (.omp), the older OmO harness (.omo) and
--- plain Pi (.pi). One assistant entry is one complete API response.
+-- Pi session format v3: oh-my-pi (.omp and its named profiles under
+-- .omp/profiles/<name>), the older OmO harness (.omo), plain Pi (.pi) and
+-- Prime (.prime). One assistant entry is one complete API response.
 --
 -- OMP rewrites session files, so the same entries can appear in several
 -- generations; requests and tool calls are keyed by their own IDs. OMP also
@@ -17,7 +18,7 @@ SELECT
     JSONExtractString(record, 'id') AS entry_id,
     parseDateTime64BestEffort(JSONExtractString(record, 'timestamp'), 3, 'UTC') AS at
 FROM archive.raw
-WHERE tool IN ('omp', 'omo', 'pi') AND source LIKE '%.jsonl';
+WHERE tool IN ('omp', 'omo', 'pi', 'prime') AND source LIKE '%.jsonl';
 
 CREATE VIEW agents.pi_sessions AS
 SELECT
@@ -33,7 +34,8 @@ CREATE VIEW agents.pi_requests AS
 SELECT
     any(l.tool) AS tool,
     any(l.host) AS host,
-    any(splitByChar('/', l.source)[1]) AS account,
+    -- A named OMP profile is its own account.
+    any(coalesce(nullIf(extract(l.source, '^(\\.omp/profiles/[^/]+)/'), ''), splitByChar('/', l.source)[1])) AS account,
     any(s.session_id) AS session_id,
     coalesce(nullIf(JSONExtractString(l.record, 'message', 'responseId'), ''), concat(s.session_id, ':', l.entry_id)) AS request_id,
     any(s.is_subagent) AS is_subagent,
