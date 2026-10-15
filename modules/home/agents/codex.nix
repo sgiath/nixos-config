@@ -14,9 +14,5 @@
       file.".codex/AGENTS.md".source = ./AGENTS.md;
       file.".codex-remote/AGENTS.md".source = ./AGENTS.md;
     };
-
-    programs.zsh.shellAliases = {
-      cx = "${lib.getExe pkgs.llm-agents.codex} --yolo";
-    };
   };
 }
