@@ -14,7 +14,7 @@ Singleton {
     readonly property int intervalMs: 5 * 60 * 1000
 
     // Cards appear in this order; providers not listed follow in report order.
-    readonly property var providerOrder: ["openai-codex", "anthropic", "xai-oauth"]
+    readonly property var providerOrder: ["openai-codex", "anthropic", "xai-oauth", "meta-muse"]
 
     // Limits that add nothing next to their siblings: the Claude 7-day pool
     // is only interesting through its Fable tier, Spark and the Grok chat and

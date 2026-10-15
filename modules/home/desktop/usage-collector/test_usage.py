@@ -189,6 +189,36 @@ class GrokCredentialTest(unittest.TestCase):
             usage.grok_credential(self.env)
 
 
+class MuseReportTest(unittest.TestCase):
+    def test_reads_the_subscription_frame_that_ends_a_response_stream(self):
+        stream = [
+            b"event: response.created\n",
+            b'data: {"type":"response.created","response":{"status":"in_progress"}}\n',
+            b"\n",
+            b"event: response.subscription_usage\n",
+            b'data: {"subscription":{"tier":"2768","weekly":{"resets_at":1792368000,"used_percent":1},'
+            b'"window":{"resets_at":1791927345,"used_percent":104,"window_duration_mins":300}},'
+            b'"type":"response.subscription_usage"}\n',
+        ]
+
+        report = usage.muse_report("me@example.com", usage.muse_subscription(stream))
+
+        self.assertEqual(report["provider"], "meta-muse")
+        self.assertEqual(report["metadata"], {"email": "me@example.com", "planType": None})
+        rows = {row["id"]: row for row in report["limits"]}
+        self.assertEqual(list(rows), ["meta-muse:5h", "meta-muse:7d"])
+        self.assertEqual(rows["meta-muse:5h"]["label"], "5 hours")
+        self.assertEqual(rows["meta-muse:5h"]["window"]["resetsAt"], 1791927345000)
+        self.assertEqual(rows["meta-muse:5h"]["amount"]["usedFraction"], 1.04)
+        self.assertEqual(rows["meta-muse:5h"]["status"], "exhausted")
+        self.assertEqual(rows["meta-muse:7d"]["window"], {"id": "7d", "label": "7 days", "durationMs": WEEK_MS, "resetsAt": 1792368000000})
+        self.assertEqual(rows["meta-muse:7d"]["amount"]["usedFraction"], 0.01)
+
+    def test_a_stream_without_the_frame_is_an_error(self):
+        with self.assertRaises(usage.ProviderError):
+            usage.muse_subscription([b"event: response.completed\n", b'data: {"type":"response.completed"}\n'])
+
+
 class CollectTest(unittest.TestCase):
     def test_failed_providers_keep_their_card_without_leaking_details(self):
         codex = {"provider": "openai-codex", "metadata": {}, "limits": [{"id": "openai-codex:primary"}]}

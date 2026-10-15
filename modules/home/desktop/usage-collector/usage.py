@@ -3,7 +3,8 @@
 
 Asks each native agent app for its own quota: Codex through `codex
 app-server`, Claude through the CLI's `get_usage` control request, Grok
-through the billing endpoint its CLI uses. Credentials stay with the apps:
+through the billing endpoint its CLI uses, Muse through the usage frame of a
+minimal model response made with its CLI's key. Credentials stay with the apps:
 nothing here refreshes or writes them, so an expired login shows up as that
 provider's error until its app renews it.
 
@@ -424,8 +425,90 @@ def grok_fetch(env):
     return grok_report(email, body)
 
 
+# Muse
+
+# Meta has no read-only quota endpoint: usage arrives only as the
+# `response.subscription_usage` frame closing a model stream (or from minting a
+# new API key, which this must not do). So each refresh pays for the cheapest
+# response the API accepts, and may start a 5-hour window while idle.
+MUSE_BASE = "https://api.meta.ai/v1"
+MUSE_PROBE = {"model": "muse-spark-1.2-contributor", "input": "Reply with: ok", "max_output_tokens": 16, "store": False, "stream": True}
+
+
+def muse_credential(env):
+    """(API key, base URL, email) the Muse CLI would use."""
+    # The CLI lets this override its account login.
+    if env.get("META_API_KEY", "").strip():
+        return env["META_API_KEY"].strip(), MUSE_BASE, None
+    config = Path(env.get("XDG_CONFIG_HOME", "").strip() or Path(env.get("HOME", "~"), ".config")).expanduser()
+    try:
+        entry = json.loads((config / "muse" / "auth.json").read_text())["providers"]["meta"]
+    except (FileNotFoundError, KeyError):
+        raise ProviderError("not logged in") from None
+    key = entry.get("api_key")
+    if not isinstance(key, str) or not key.strip():
+        raise ProviderError("not logged in")
+    return key.strip(), entry.get("api_base_url") or MUSE_BASE, entry.get("user_email")
+
+
+def muse_subscription(lines):
+    """The `subscription` of the stream's `response.subscription_usage` frame."""
+    for line in lines:
+        if not line.startswith(b"data:"):
+            continue
+        try:
+            frame = json.loads(line[5:])
+        except ValueError:
+            continue
+        if isinstance(frame, dict) and frame.get("type") == "response.subscription_usage":
+            return frame.get("subscription") or {}
+    raise ProviderError("no subscription usage")
+
+
+def muse_report(email, subscription):
+    report = {"provider": "meta-muse", "metadata": {"email": email, "planType": None}, "limits": []}
+    current = subscription.get("window") or {}
+    mins = number(current.get("window_duration_mins"))
+    if mins:
+        win = window(int(mins) * MINUTE_MS, int(number(current.get("resets_at")) or 0) * 1000)
+        report["limits"].append(limit(f"meta-muse:{win['id']}", win["label"], win, percent(number(current.get("used_percent")))))
+    weekly = subscription.get("weekly") or {}
+    if weekly:
+        win = window(7 * 1440 * MINUTE_MS, int(number(weekly.get("resets_at")) or 0) * 1000)
+        report["limits"].append(limit("meta-muse:7d", win["label"], win, percent(number(weekly.get("used_percent")))))
+    return report
+
+
+def muse_fetch(env):
+    """Reads the frame from the smallest response the Muse API will stream."""
+    key, base, email = muse_credential(env)
+    request = urllib.request.Request(
+        base.rstrip("/") + "/responses",
+        data=json.dumps(MUSE_PROBE).encode(),
+        headers={"Authorization": f"Bearer {key}", "Content-Type": "application/json", "Accept": "text/event-stream"},
+    )
+    try:
+        with urllib.request.build_opener(NoRedirect).open(request, timeout=20) as response:
+            return muse_report(email, muse_subscription(response))
+    except urllib.error.HTTPError as error:
+        # The CLI re-mints its key on the next run after a 401.
+        if error.code in (401, 403):
+            raise ProviderError("login expired") from None
+        # FIXME: a spent quota is refused with 429 and no usage frame, so the
+        # card shows this error instead of which window is spent. Parse the
+        # error body's reset time once a real 429 body has been captured.
+        raise ProviderError("quota exhausted" if error.code == 429 else f"responses HTTP {error.code}") from None
+    except (urllib.error.URLError, OSError):
+        raise ProviderError("responses unreachable") from None
+
+
 def main():
-    fetchers = [("openai-codex", codex_fetch), ("anthropic", claude_fetch), ("xai-oauth", grok_fetch)]
+    fetchers = [
+        ("openai-codex", codex_fetch),
+        ("anthropic", claude_fetch),
+        ("xai-oauth", grok_fetch),
+        ("meta-muse", muse_fetch),
+    ]
     json.dump(collect(fetchers, dict(os.environ)), sys.stdout)
     sys.stdout.write("\n")
 
