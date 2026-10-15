@@ -61,28 +61,35 @@ again. New evidence or an answer can reopen the loop.
 
 ## Route work by role
 
-Unless the user chooses differently for this task, use these provider/model pairs:
+Unless the user chooses differently for this task, use these provider/model pairs. Delegate when a bounded task
+benefits from a fresh context, parallel work or an independent check; model routing alone is not a reason to spawn
+a subagent for supporting work that Opus can handle in the main session.
 
 | Work | Provider/model |
 | --- | --- |
-| Investigation, evidence gathering, causal experiments, brute-force exploration, fuzzing/bisection, synthetic reproductions, throwaway scripts and executable verification | Codex with `gpt-6.1-sol` on the `fast` service tier |
-| Judging how and where to fix things, production design and seam placement, production code, refactoring and durable regression tests | Claude with Opus 5.5 (`claude-opus-5-5` in the live catalog) |
-| Any UI or design work, including investigation, implementation, review and verification | Claude with `fable-5-1` at `xhigh` reasoning effort |
+| Useful non-production-code delegates: research, investigation, evidence gathering, causal experiments, brute-force exploration, fuzzing/bisection, synthetic reproductions, throwaway scripts, screenshots and executable verification | Codex with `gpt-6.1-sol` on the `fast` service tier |
+| Independent review of a complicated fix or PR, including production-code correctness and design judgments | Codex with `gpt-6.1-sol` at `high` reasoning effort on the `fast` service tier |
+| Judging how and where to fix things, production design and seam placement, production code, refactoring, durable regression tests and existing UI changes that do not require a new design; also supporting work kept in the main session | Claude with Opus 5.5 (`claude-opus-5-5` in the live catalog) |
+| Creating and designing new UIs or substantial redesigns where visual and UX judgment adds value, including animations and transitions | Claude with `fable-5-1` at `xhigh` reasoning effort |
 
-Always apply the UI/design routing to every UI or design phase and descendant; it takes precedence over the
-general investigation and production routing above, including production design and seam placement.
+Use Fable sparingly because it is expensive. Limit its scope to design and implementation that requires those
+design choices. Routine UI updates, bug fixes, investigation, testing, screenshots, review and verification use
+the general Opus/Codex routing; touching a UI does not route a phase or its descendants to Fable.
 Always use the `fast` service tier for Codex with `gpt-6.1-sol`, including every delegated phase and descendant.
 
-Codex can establish causes and compare measured alternatives; Claude judges the production change from that evidence.
+For delegated supporting work, Codex can establish causes and compare measured alternatives; Claude judges the
+production change from that evidence. Opus may do both directly when keeping the work in the main session is useful.
 Exploration scripts stay disposable. Turning one into shipped tooling, or applying an exploratory patch to production,
-is production implementation and belongs to Claude. Separate empirical review checks from judgments about the fix:
-Codex can reproduce a failure; Claude evaluates the production design and writes the change.
+is production implementation and belongs to Claude. Codex's thoroughness is also useful when a complicated fix
+or PR needs an independent review: that review can judge production-code correctness and design, not just run
+empirical checks. Opus owns the resulting production changes.
 
-The current thread remains the owner regardless of its model. If it is not running the model assigned to the next
-role, delegate that bounded phase with its gate, evidence and explicit ownership rather than doing it under the
-wrong model or asking the user to move threads. A matching current model can do its phase directly. Reuse valid
-evidence across the handoff; do not repeat investigation merely to change providers. Pure instruction/metadata
-edits and coordination do not require a production-code delegate.
+The current thread remains the owner regardless of its model. Opus can handle any phase directly except the
+UI design work reserved for Fable and independent reviews assigned to Codex above. A matching current model
+can do its phase directly. When a phase
+requires another model, delegate that bounded phase with its gate, evidence and explicit ownership rather than
+asking the user to move threads. Reuse valid evidence across the handoff; do not repeat investigation merely to
+change providers. Pure instruction/metadata edits and coordination do not require a production-code delegate.
 
 Resolve provider instances and exact model IDs from `orchestrator_capabilities`; use the requested provider,
 not another harness that happens to expose the same model. Honor task-specific provider/model/effort overrides

@@ -15,12 +15,21 @@ Think independently, speak candidly, and treat the user as a peer.
 - Use `verified-work` for substantial implementation or investigation: choose verifiable steps before changing
   behavior, and own their handoffs through the requested outcome. If a required reproduction or verification
   gate cannot be established or met, ask me how to proceed; do not silently weaken it or proceed past it.
-- Follow `verified-work` model routing: Codex with `gpt-6.1-sol` for investigations, brute-force exploration,
-  throwaway scripts and executable verification; Claude with Opus 5.5 (`claude-opus-5-5`) for production-code
-  design, deciding how and where to fix things, and production implementation. A task-specific choice overrides this.
+- Follow `verified-work` model routing: use Claude with Opus 5.5 (`claude-opus-5-5`) for production-code
+  design, deciding how and where to fix things, production implementation, and updates to existing UIs that
+  do not require a new design. Opus can also handle research, reproduction, testing and other supporting work
+  in the main session. Delegate when it benefits the task, not merely to change models; use Codex with
+  `gpt-6.1-sol` for useful non-production-code delegates such as research, investigations, brute-force
+  exploration, throwaway scripts and executable verification. A task-specific choice overrides this.
+- When a complicated fix or PR needs an independent review, use Codex with `gpt-6.1-sol` at `high`
+  reasoning effort on the `fast` service tier for its thorough review, including production-code correctness
+  and design judgments. Production implementation remains with Opus.
 - Always use the `fast` service tier for Codex with `gpt-6.1-sol`, including delegated tasks.
-- For any UI or design work, always use Claude with `fable-5-1` at `xhigh` reasoning effort, including
-  investigation, implementation, review and verification. This takes precedence over the general role routing above.
+- Use Claude with `fable-5-1` at `xhigh` reasoning effort sparingly, for creating and designing new UIs or
+  substantial redesigns where its visual and UX judgment adds value, including animations and transitions.
+  Limit its work to the design and implementation that requires those choices. Routine UI updates, bug fixes,
+  investigation, testing, screenshots, review and verification follow the general routing above; UI involvement
+  alone is not a reason to use Fable or spawn a Fable subagent.
 - Long-running jobs should expose start, useful progress, completion, and diagnosable 
   failures without noisy routine logging.
 - Every wait has a timeout. Wait on builds and downloads with one blocking command or a monitor that
