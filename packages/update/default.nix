@@ -132,7 +132,7 @@ writeShellScriptBin "update" ''
           exit 1
         fi
       done
-      git log --oneline "$head..HEAD"
+      git --no-pager log --oneline "$head..HEAD"
     fi
     git push
   fi
