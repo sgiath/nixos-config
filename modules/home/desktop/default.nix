@@ -10,6 +10,7 @@
     ./shell.nix
     ./stylix.nix
     ./voxtype.nix
+    ./wayscriber.nix
     ./yazi.nix
   ];
 
