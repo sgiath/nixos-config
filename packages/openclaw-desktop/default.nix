@@ -19,11 +19,11 @@
 
 stdenv.mkDerivation (finalAttrs: {
   pname = "openclaw-desktop";
-  version = "2026.10.2";
+  version = "2026.10.3";
 
   src = fetchurl {
     url = "https://github.com/openclaw/openclaw/releases/download/v${finalAttrs.version}/OpenClaw-${finalAttrs.version}-amd64.deb";
-    hash = "sha256-utu9ibixmfLEnXk41hJV6svyiTvQNhndQ9oD87gytNM=";
+    hash = "sha256-Q7H6ss+Px1PIzwCWwWI/UzdqfvfhEmQil1JSEzZMTbI=";
   };
 
   sourceRoot = "root";

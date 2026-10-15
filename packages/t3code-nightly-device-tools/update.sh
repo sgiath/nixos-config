@@ -11,14 +11,14 @@ T3_VERSION="${1:-$(jq -r '.version' "${SCRIPT_DIR}/../t3code-nightly/sources.jso
 T3_VERSION="${T3_VERSION#v}"
 
 echo "==> Reading device tool pins from T3 Code ${T3_VERSION}..."
-TOOLCHAIN="$(gh api -H "Accept: application/vnd.github.raw" \
-	"repos/${REPO}/contents/apps/server/src/device/DeviceToolchain.ts?ref=v${T3_VERSION}")"
+PINS="$(gh api -H "Accept: application/vnd.github.raw" \
+	"repos/${REPO}/contents/apps/server/src/device/deviceToolVersions.json?ref=v${T3_VERSION}")"
 
 pin() {
 	local version
-	version="$(sed -n "s/^export const $1 = \"\\([^\"]*\\)\";\$/\\1/p" <<<"${TOOLCHAIN}")"
+	version="$(jq -r --arg name "$1" '.[$name] // empty' <<<"${PINS}")"
 	if [[ -z "${version}" ]]; then
-		echo "ERROR: $1 not found in DeviceToolchain.ts at v${T3_VERSION}" >&2
+		echo "ERROR: $1 not found in deviceToolVersions.json at v${T3_VERSION}" >&2
 		exit 1
 	fi
 	echo "${version}"
@@ -44,8 +44,12 @@ update_tool() {
 	)
 }
 
-update_tool expo-device-hub "$(pin DEVICE_HUB_VERSION)"
-update_tool agent-device "$(pin AGENT_DEVICE_VERSION)"
+# Assign before use: a failing `$(pin ...)` passed straight as an argument
+# would not stop the script, and npm would then install the latest version.
+HUB_VERSION="$(pin expo-device-hub)"
+AGENT_VERSION="$(pin agent-device)"
+update_tool expo-device-hub "${HUB_VERSION}"
+update_tool agent-device "${AGENT_VERSION}"
 
 DATACHANNEL="$(locked expo-device-hub node-datachannel)"
 CURRENT_DATACHANNEL="$(jq -r '."node-datachannel".version' "${SOURCES_JSON}")"

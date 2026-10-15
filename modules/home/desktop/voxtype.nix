@@ -24,6 +24,7 @@ in
       settings = {
         hotkey.enabled = false;
         whisper.language = "en";
+        osd.frontend = "native";
         meeting = {
           enabled = true;
           audio.loopback_device = "auto";

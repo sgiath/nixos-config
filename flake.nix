@@ -96,7 +96,7 @@
       inputs.nixpkgs.follows = "nixpkgs";
     };
 
-    voxtype.url = "github:peteonrails/voxtype/v1.1.0";
+    voxtype.url = "github:peteonrails/voxtype/v1.1.1";
     comfyui.url = "github:utensils/comfyui-nix/v0.37.0-r1";
 
     # NVIDIA DGX Spark (GB10, aarch64): NVIDIA 6.17 kernel, open driver, CUDA, ConnectX-7.
@@ -119,12 +119,12 @@
     };
 
     hermes-agent = {
-      url = "github:NousResearch/hermes-agent/v0.21.7";
+      url = "github:NousResearch/hermes-agent/v0.22.1";
       inputs.nixpkgs.follows = "nixpkgs";
     };
 
     herdr = {
-      url = "github:herdrdev/herdr/v0.9.3";
+      url = "github:herdrdev/herdr/v0.9.5";
       inputs.nixpkgs.follows = "nixpkgs";
     };
 
