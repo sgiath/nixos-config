@@ -92,16 +92,18 @@ writeShellScriptBin "update" ''
         --tools 'Bash,Read,Grep,Glob,Skill' \
         --allowedTools 'Bash(git:*),Read,Grep,Glob,Skill' \
         --disallowedTools 'Bash(git push:*),Bash(git reset:*),Bash(git checkout:*),Bash(git restore:*),Bash(git switch:*),Bash(git clean:*),Bash(git stash:*),Bash(git rebase:*),Bash(git -c:*)' \
-        <<'EOF'
+        >"$snapshot/claude.log" 2>&1 <<'EOF'
   The user ran their `update` command, which asks you to commit every pending change in this Git worktree before it pushes and deploys. Commit all of them, including changes you did not make; this request overrides any instruction to commit only your own changes.
 
   Load the conventional-commit skill to split the changes into logical commits and write their messages, and the write-as-sgiath skill for the wording. Inspect the changes with git status and git diff. For each commit, stage explicit paths and run `git commit --signoff`. Keep the configured commit signing: never pass --no-gpg-sign or override signing settings. Do not edit, revert, discard, stash or reformat any file, do not amend or rewrite existing commits, and do not push. Finish when `git status --porcelain` prints nothing. If you cannot commit a change, stop and explain why.
   EOF
       agent_status=$?
       if ((agent_status == 124)); then
+        cat "$snapshot/claude.log" >&2
         echo "Claude timed out; not pushing or deploying" >&2
         exit 1
       elif ((agent_status != 0)); then
+        cat "$snapshot/claude.log" >&2
         echo "Claude failed with exit status $agent_status; not pushing or deploying" >&2
         exit 1
       fi
@@ -111,18 +113,21 @@ writeShellScriptBin "update" ''
         exit 1
       fi
       if [[ -n "$leftover" ]]; then
+        cat "$snapshot/claude.log" >&2
         echo "Claude left uncommitted changes; not pushing or deploying:" >&2
         echo "$leftover" >&2
         exit 1
       fi
       if ! git merge-base --is-ancestor "$head" HEAD \
         || [[ "$(git rev-parse 'HEAD^{tree}')" != "$tree" ]]; then
+        cat "$snapshot/claude.log" >&2
         echo "Claude's commits do not hold exactly the local changes on top of $head; not pushing or deploying" >&2
         exit 1
       fi
       for commit in $(git rev-list "$head..HEAD"); do
         if ! git cat-file commit "$commit" | grep -q '^gpgsig' \
           || [[ -z "$(git log -1 --format='%(trailers:key=Signed-off-by)' "$commit")" ]]; then
+          cat "$snapshot/claude.log" >&2
           echo "Claude created commit $commit without a signature or Signed-off-by; not pushing or deploying" >&2
           exit 1
         fi
