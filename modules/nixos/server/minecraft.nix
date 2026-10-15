@@ -49,7 +49,7 @@
 
       # GT: New Horizons (port 25567)
       minecraft-gtnh = {
-        enable = true;
+        enable = false;
         description = "Minecraft GTNH server";
         after = [ "network.target" ];
         wantedBy = [ "multi-user.target" ];
