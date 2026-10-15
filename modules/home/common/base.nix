@@ -13,6 +13,7 @@
       packages = with pkgs; [
         pkgs.${namespace}.update
         pkgs.${namespace}.fix-images
+        pkgs.${namespace}.fix-video
         pkgs.${namespace}.clear-cache
         pkgs.${namespace}.burn-iso
 
