@@ -49,5 +49,16 @@ in
         float = true;
       }
     ];
+
+    layer_rule = [
+      # Hyprland keeps a fading snapshot of every unmapped layer (`layersOut`,
+      # `fadeLayersOut` in looks.nix), so grim would capture slurp's border and
+      # selection fill through it. Disabling the animation drops the snapshot.
+      {
+        name = "slurp-selection";
+        match.namespace = "^selection$";
+        no_anim = true;
+      }
+    ];
   };
 }

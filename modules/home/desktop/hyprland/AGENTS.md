@@ -27,6 +27,7 @@ Hyprland implementation shards imported by `modules/home/desktop/hyprland.nix`; 
 - Do not rename monitor outputs, workspaces, or window classes without checking all rules/binds.
 - Do not add generic desktop app enables here; use `desktop/default.nix` or `programs/` feature modules.
 - Do not re-enable Stylix targets unless intentionally replacing the manual theme choices.
+- Do not drop the `no_anim` layer rule for slurp's `selection` namespace in `screenshot.nix`: Hyprland fades out a snapshot of an unmapped layer, and grim would capture the selection border and fill through it.
 
 ## VALIDATION
 
