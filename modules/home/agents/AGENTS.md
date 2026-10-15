@@ -18,6 +18,9 @@ Think independently, speak candidly, and treat the user as a peer.
 - Follow `verified-work` model routing: Codex with `gpt-6.1-sol` for investigations, brute-force exploration,
   throwaway scripts and executable verification; Claude with Opus 5.5 (`claude-opus-5-5`) for production-code
   design, deciding how and where to fix things, and production implementation. A task-specific choice overrides this.
+- Always use the `fast` service tier for Codex with `gpt-6.1-sol`, including delegated tasks.
+- For any UI or design work, always use Claude with `fable-5-1` at `xhigh` reasoning effort, including
+  investigation, implementation, review and verification. This takes precedence over the general role routing above.
 - Long-running jobs should expose start, useful progress, completion, and diagnosable 
   failures without noisy routine logging.
 - Every wait has a timeout. Wait on builds and downloads with one blocking command or a monitor that
@@ -54,6 +57,15 @@ Apply it to my authored text, not your own explanations.
 
 Prefer directly exposed host tools (including T3 and local Blender tools) and their live documentation.
 Search `executor` first for other integrations before declaring a capability unavailable.
+
+When I ask to use Whiteboard, use the installed dev.fast Whiteboard application through its `whiteboard`
+CLI or MCP tools and load the `whiteboard` skill. Do not substitute a custom website, HTML preview, or
+another visualization tool unless I explicitly ask for one. If Whiteboard is unavailable, explain the
+blocker before choosing another tool.
+
+I especially like Whiteboard's native Flow feature. Prefer it when explaining processes, user journeys,
+control flow, or branching behavior. Use clear steps and labeled branches, show relevant failure and
+retry paths, and link steps to the underlying code when useful.
 
 Never use Codegraph when working on Elixir, including Elixir code in mixed-language repositories.
 Use `rg` and read the source directly instead; Codegraph does not support Elixir.

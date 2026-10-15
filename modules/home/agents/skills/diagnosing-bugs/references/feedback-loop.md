@@ -48,7 +48,8 @@ For performance regressions, establish a comparable timing/profile/query-plan ba
 ## Fix and verify
 
 A regression seam must reach the real call-site pattern: a single-caller unit test is insufficient when the failure
-needs several callers or a longer chain. Turn the minimized reproduction into a failing behavioral check before
+needs several callers or a longer chain. Within that constraint, place it at the lowest layer that reproduces the
+failure rather than routing it through the slowest end-to-end path. Turn the minimized reproduction into a failing behavioral check before
 the fix, observe failure, apply the fix, and observe success; use skill://tdd for tests worth keeping. A throwaway
 production-code harness can supply the check when no committed test seam exists. If neither can prove the required
 behavior, ask the user how to proceed instead of adding a shallow test or treating the limitation as completion.

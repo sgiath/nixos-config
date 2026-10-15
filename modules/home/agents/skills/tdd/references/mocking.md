@@ -11,6 +11,7 @@ Don't mock:
 
 - The module under test
 - Internal collaborators that do not represent external I/O
+- The layer below the module under test; run it for real (see [layers.md](layers.md))
 
 An owned client module that wraps a remote service is still an I/O boundary.
 

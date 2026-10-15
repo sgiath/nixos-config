@@ -14,6 +14,8 @@ Pure computation, in-memory state, no I/O. Always deepenable — merge the modul
 
 Dependencies that have local test stand-ins (PGLite for Postgres, in-memory filesystem). Deepenable if the stand-in exists. The deepened module is tested with the stand-in running in the test suite. The seam is internal; no port at the module's external interface.
 
+Before reaching for a stand-in, check whether the effect can move into a layer above: the core then becomes in-process, takes what it needs as a function argument, and its tests need no stand-in at all.
+
 ### 3. Remote but owned
 
 Your own services across a network seam (microservices, internal APIs). Usually hide the transport behind a named boundary module and call it directly from the deep module. Tests mock that boundary module with Mimic.
@@ -30,10 +32,11 @@ Third-party services (Stripe, Twilio, etc.) you don't control. Put the integrati
 
 - **One production adapter means a hypothetical seam. Two production adapters means a real one.** Don't introduce a port unless real production variation justifies it. A test-only fake does not count; use Mimic at the boundary module instead.
 - **Internal seams vs external seams.** A deep module can have internal seams (private to its implementation, used by its own tests) as well as the external seam at its interface. Don't expose internal seams through the interface just because tests use them.
+- **A function argument that keeps I/O out of a pure layer is not a port.** It exists because the pure layer must not perform I/O, not to swap implementations, so a single production caller is enough.
 
-## Testing strategy: replace, don't layer
+## Testing strategy: replace, don't stack
 
-- Old unit tests on shallow modules become waste once tests at the deepened module's interface exist — delete them.
+- Old unit tests on shallow modules become waste once tests at the deepened module's interface exist — delete them. This applies to pass-through modules being merged; a **layer** that is deep in its own right keeps its own tests (see skill://tdd's test layers reference).
 - Write new tests at the deepened module's interface. The **interface is the test surface**.
 - Tests assert on observable outcomes through the interface, not internal state.
 - Tests should survive internal refactors — they describe behaviour, not implementation. If a test has to change when the implementation changes, it's testing past the interface.

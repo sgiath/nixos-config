@@ -65,8 +65,13 @@ Unless the user chooses differently for this task, use these provider/model pair
 
 | Work | Provider/model |
 | --- | --- |
-| Investigation, evidence gathering, causal experiments, brute-force exploration, fuzzing/bisection, synthetic reproductions, throwaway scripts and executable verification | Codex with `gpt-6.1-sol` |
+| Investigation, evidence gathering, causal experiments, brute-force exploration, fuzzing/bisection, synthetic reproductions, throwaway scripts and executable verification | Codex with `gpt-6.1-sol` on the `fast` service tier |
 | Judging how and where to fix things, production design and seam placement, production code, refactoring and durable regression tests | Claude with Opus 5.5 (`claude-opus-5-5` in the live catalog) |
+| Any UI or design work, including investigation, implementation, review and verification | Claude with `fable-5-1` at `xhigh` reasoning effort |
+
+Always apply the UI/design routing to every UI or design phase and descendant; it takes precedence over the
+general investigation and production routing above, including production design and seam placement.
+Always use the `fast` service tier for Codex with `gpt-6.1-sol`, including every delegated phase and descendant.
 
 Codex can establish causes and compare measured alternatives; Claude judges the production change from that evidence.
 Exploration scripts stay disposable. Turning one into shipped tooling, or applying an exploratory patch to production,

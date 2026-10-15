@@ -80,6 +80,8 @@ Good interfaces make testing natural:
 
 4. **Use adapters only for real production variation.** Elixir behaviours and injected modules are useful when production has multiple implementations. A test-only fake is not enough reason to widen the interface.
 
+5. **Keep effects out of pure layers.** When a pure transformation needs something only an effectful layer can supply, such as resolving a module from disk, accept it as a function argument that the layer above provides in production. That argument is a production interface, not test-only injection, and it keeps the pure layer testable with a plain function.
+
 ## Relationships
 
 - A **Module** has exactly one **Interface** (the surface it presents to callers and tests).

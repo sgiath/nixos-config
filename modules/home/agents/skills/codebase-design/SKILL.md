@@ -23,6 +23,8 @@ Use these terms exactly — don't substitute "component," "service," "API," or "
 
 **Adapter** — a concrete thing that satisfies an interface at a seam. Describes *role* (what slot it fills), not substance (what's inside).
 
+**Layer** — a module whose implementation builds on the module below it, where each is meaningful on its own: typically a pure core under a module that performs the I/O the core needs. Each layer has its own interface and tests; tests of an upper layer run the lower one for real. _Avoid_: tier (reserved for deployment).
+
 **Leverage** — what callers get from depth: more capability per unit of interface they learn. One implementation pays back across N call sites and M tests.
 
 **Locality** — what maintainers get from depth: change, bugs, knowledge, and verification concentrate in one place rather than spreading across callers. Fix once, fixed everywhere.

@@ -28,12 +28,17 @@ writing tests; otherwise identify the observable behavior and proceed. Ask when 
 unresolved product/interface decision, or when a required behavioral check cannot be established or met under
 verified-work's blocker rule. Do not stop just because a faithful harness has no existing unit-test seam.
 
+In a layered system, test each behavior at the lowest layer that can express it, let a layer's tests run the
+layers below it for real, and keep the end-to-end layer thin. [layers.md](references/layers.md) covers designing
+testable layers, golden tests, regression placement and stating laws before examples.
+
 When the shape of that interface is itself in question — how deep the module is, where the seam belongs, what the interface should expose — use the `/codebase-design` skill for the vocabulary. It is the shared source of the module, interface, depth, seam, adapter, leverage and locality terms, and it is a reference to consult, not a session to run.
 
 ## Anti-patterns
 
 - **Implementation-coupled** — mocks internal collaborators, tests private methods, or verifies through a side channel when the contract has an observable public read path. Querying persisted state is appropriate when persistence or transaction behavior is itself the contract under test. The tell: the test breaks when you refactor but behavior hasn't changed.
 - **Tautological** — the assertion recomputes the expected value the way the code does (`expect(add(a, b)).toBe(a + b)`, a snapshot derived by hand the same way, a constant asserted equal to itself), so it passes by construction and can never disagree with the code. Expected values must come from an independent source of truth — a known-good literal, a worked example, the spec.
+- **Wrong layer** — a fine-grained property asserted through the expensive end-to-end path, or a layer tested with the layer below it mocked out. The tell: a precise assertion needs a slow, indirect setup, or the test duplicates coverage the lower layer already has.
 - **Horizontal slicing** — writing all tests first, then all implementation. Bulk tests verify _imagined_ behavior: you test the _shape_ of things rather than user-facing behavior, the tests go insensitive to real changes, and you commit to test structure before understanding the implementation. Work in **vertical slices** instead — one test → one implementation → repeat, each test a **tracer bullet** that responds to what the last cycle taught you.
 
 ## Rules of the loop
