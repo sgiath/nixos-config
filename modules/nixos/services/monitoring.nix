@@ -32,15 +32,6 @@
         ];
       };
 
-      grafana = {
-        enable = true;
-        settings = {
-          server = {
-            root_url = "https://monitoring.sgiath.dev";
-          };
-        };
-      };
-
       loki = {
         enable = false;
         configuration = {
@@ -98,11 +89,6 @@
 
         locations."/goaccess" = {
           root = "/data/www/monitoring";
-        };
-
-        locations."/" = {
-          proxyWebsockets = true;
-          proxyPass = "http://127.0.0.1:3000";
         };
       };
     };

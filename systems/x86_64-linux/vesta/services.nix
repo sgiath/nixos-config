@@ -20,6 +20,7 @@
     monitoring.enable = false;
 
     agent-archive.enable = true;
+    grafana.enable = true;
     hermes-agent.enable = true;
     executor.enable = true;
     opencode.enable = true;

@@ -1,0 +1,647 @@
+{
+  "uid": "agent-models",
+  "title": "Agent models",
+  "description": "Compare models across harnesses. Timing exists where the harness measures it: OMP and Muse, and Claude Code and Codex through OpenTelemetry since 2026-10-14.",
+  "tags": [
+    "agents"
+  ],
+  "editable": true,
+  "graphTooltip": 1,
+  "timezone": "browser",
+  "time": {
+    "from": "now-90d",
+    "to": "now"
+  },
+  "refresh": "",
+  "schemaVersion": 41,
+  "templating": {
+    "list": [
+      {
+        "type": "query",
+        "name": "host",
+        "label": "Host",
+        "datasource": {
+          "type": "grafana-clickhouse-datasource",
+          "uid": "agent-archive"
+        },
+        "query": "SELECT DISTINCT host FROM agents.requests ORDER BY host",
+        "definition": "SELECT DISTINCT host FROM agents.requests ORDER BY host",
+        "multi": true,
+        "includeAll": true,
+        "current": {
+          "selected": true,
+          "text": [
+            "All"
+          ],
+          "value": [
+            "$__all"
+          ]
+        },
+        "refresh": 2,
+        "sort": 0
+      },
+      {
+        "type": "query",
+        "name": "tool",
+        "label": "Harness",
+        "datasource": {
+          "type": "grafana-clickhouse-datasource",
+          "uid": "agent-archive"
+        },
+        "query": "SELECT tool FROM agents.requests WHERE host IN (${host:singlequote}) GROUP BY tool ORDER BY count() DESC",
+        "definition": "SELECT tool FROM agents.requests WHERE host IN (${host:singlequote}) GROUP BY tool ORDER BY count() DESC",
+        "multi": true,
+        "includeAll": true,
+        "current": {
+          "selected": true,
+          "text": [
+            "All"
+          ],
+          "value": [
+            "$__all"
+          ]
+        },
+        "refresh": 2,
+        "sort": 0
+      },
+      {
+        "type": "query",
+        "name": "model",
+        "label": "Model",
+        "datasource": {
+          "type": "grafana-clickhouse-datasource",
+          "uid": "agent-archive"
+        },
+        "query": "SELECT model FROM agents.requests WHERE host IN (${host:singlequote}) AND tool IN (${tool:singlequote}) AND model != '' GROUP BY model ORDER BY count() DESC",
+        "definition": "SELECT model FROM agents.requests WHERE host IN (${host:singlequote}) AND tool IN (${tool:singlequote}) AND model != '' GROUP BY model ORDER BY count() DESC",
+        "multi": true,
+        "includeAll": true,
+        "current": {
+          "selected": true,
+          "text": [
+            "All"
+          ],
+          "value": [
+            "$__all"
+          ]
+        },
+        "refresh": 2,
+        "sort": 0
+      },
+      {
+        "type": "custom",
+        "name": "min_requests",
+        "label": "Min requests",
+        "query": "1,10,100,300,1000",
+        "current": {
+          "selected": true,
+          "text": "100",
+          "value": "100"
+        },
+        "options": [
+          {
+            "selected": false,
+            "text": "1",
+            "value": "1"
+          },
+          {
+            "selected": false,
+            "text": "10",
+            "value": "10"
+          },
+          {
+            "selected": true,
+            "text": "100",
+            "value": "100"
+          },
+          {
+            "selected": false,
+            "text": "300",
+            "value": "300"
+          },
+          {
+            "selected": false,
+            "text": "1000",
+            "value": "1000"
+          }
+        ]
+      }
+    ]
+  },
+  "annotations": {
+    "list": []
+  },
+  "links": [
+    {
+      "type": "dashboards",
+      "tags": [
+        "agents"
+      ],
+      "asDropdown": false,
+      "includeVars": true,
+      "keepTime": true,
+      "title": "Agents"
+    }
+  ],
+  "panels": [
+    {
+      "type": "table",
+      "title": "Model comparison",
+      "description": "Thinking share is reasoning over output tokens where the harness reports reasoning (not OpenCode, whose reasoning count often exceeds its output). Parallel tool calls is the share of tool-calling responses that issued two or more (not recorded by Codex and OpenCode). Output tok/s excludes time to first token.",
+      "datasource": {
+        "type": "grafana-clickhouse-datasource",
+        "uid": "agent-archive"
+      },
+      "targets": [
+        {
+          "refId": "A",
+          "datasource": {
+            "type": "grafana-clickhouse-datasource",
+            "uid": "agent-archive"
+          },
+          "editorType": "sql",
+          "format": 1,
+          "queryType": "table",
+          "rawSql": "SELECT\n    tool AS \"Harness\",\n    model AS \"Model\",\n    count() AS \"Requests\",\n    uniq(session_id) AS \"Sessions\",\n    countIf(is_subagent) / count() AS \"Subagent share\",\n    avg(output_tokens) AS \"Output per request\",\n    sumIf(reasoning_tokens, reasoning_tokens IS NOT NULL AND tool != 'opencode') / nullIf(sumIf(output_tokens, reasoning_tokens IS NOT NULL AND tool != 'opencode'), 0) AS \"Thinking share\",\n    countIf(tool_calls >= 2) / nullIf(countIf(tool_calls >= 1), 0) AS \"Parallel tool calls\",\n    countIf(ttft_ms IS NOT NULL) AS \"Timed requests\",\n    if(countIf(ttft_ms IS NOT NULL) = 0, NULL, quantileIf(0.5)(ttft_ms, ttft_ms IS NOT NULL) / 1000) AS \"Median TTFT\",\n    if(countIf(duration_ms IS NOT NULL) = 0, NULL, quantileIf(0.5)(duration_ms, duration_ms IS NOT NULL) / 1000) AS \"Median duration\",\n    sumIf(output_tokens, ifNull(duration_ms > ttft_ms, 0)) / nullIf(sumIf(duration_ms - ttft_ms, ifNull(duration_ms > ttft_ms, 0)), 0) * 1000 AS \"Output tok/s\",\n    min(ts) AS \"First\",\n    max(ts) AS \"Last\"\nFROM agents.requests\nWHERE $__timeFilter(ts) AND host IN (${host:singlequote}) AND tool IN (${tool:singlequote}) AND model IN (${model:singlequote})\nGROUP BY tool, model\nHAVING count() >= $min_requests\nORDER BY count() DESC"
+        }
+      ],
+      "fieldConfig": {
+        "defaults": {
+          "custom": {
+            "align": "auto",
+            "cellOptions": {
+              "type": "auto"
+            },
+            "filterable": true
+          }
+        },
+        "overrides": [
+          {
+            "matcher": {
+              "id": "byName",
+              "options": "Subagent share"
+            },
+            "properties": [
+              {
+                "id": "unit",
+                "value": "percentunit"
+              }
+            ]
+          },
+          {
+            "matcher": {
+              "id": "byName",
+              "options": "Thinking share"
+            },
+            "properties": [
+              {
+                "id": "unit",
+                "value": "percentunit"
+              }
+            ]
+          },
+          {
+            "matcher": {
+              "id": "byName",
+              "options": "Parallel tool calls"
+            },
+            "properties": [
+              {
+                "id": "unit",
+                "value": "percentunit"
+              }
+            ]
+          },
+          {
+            "matcher": {
+              "id": "byName",
+              "options": "Median TTFT"
+            },
+            "properties": [
+              {
+                "id": "unit",
+                "value": "s"
+              }
+            ]
+          },
+          {
+            "matcher": {
+              "id": "byName",
+              "options": "Median duration"
+            },
+            "properties": [
+              {
+                "id": "unit",
+                "value": "s"
+              }
+            ]
+          },
+          {
+            "matcher": {
+              "id": "byName",
+              "options": "Output per request"
+            },
+            "properties": [
+              {
+                "id": "unit",
+                "value": "short"
+              }
+            ]
+          }
+        ]
+      },
+      "options": {
+        "showHeader": true,
+        "cellHeight": "sm",
+        "sortBy": [
+          {
+            "displayName": "Requests",
+            "desc": true
+          }
+        ]
+      },
+      "id": 1,
+      "gridPos": {
+        "h": 12,
+        "w": 24,
+        "x": 0,
+        "y": 0
+      }
+    },
+    {
+      "type": "timeseries",
+      "title": "Median time to first token",
+      "description": "The eight models with the most timed requests in the range.",
+      "interval": "1d",
+      "datasource": {
+        "type": "grafana-clickhouse-datasource",
+        "uid": "agent-archive"
+      },
+      "targets": [
+        {
+          "refId": "A",
+          "datasource": {
+            "type": "grafana-clickhouse-datasource",
+            "uid": "agent-archive"
+          },
+          "editorType": "sql",
+          "format": 0,
+          "queryType": "timeseries",
+          "rawSql": "SELECT $__timeInterval(ts) AS time, model, quantile(0.5)(ttft_ms) / 1000 AS ttft\nFROM agents.requests\nWHERE $__timeFilter(ts) AND host IN (${host:singlequote}) AND tool IN (${tool:singlequote}) AND model IN (${model:singlequote}) AND ttft_ms IS NOT NULL AND model IN (SELECT model FROM agents.requests WHERE $__timeFilter(ts) AND host IN (${host:singlequote}) AND tool IN (${tool:singlequote}) AND model IN (${model:singlequote}) AND ttft_ms IS NOT NULL GROUP BY model ORDER BY count() DESC LIMIT 8)\nGROUP BY time, model\nORDER BY time"
+        }
+      ],
+      "fieldConfig": {
+        "defaults": {
+          "custom": {
+            "drawStyle": "line",
+            "fillOpacity": 0,
+            "lineWidth": 1,
+            "pointSize": 4,
+            "showPoints": "always",
+            "spanNulls": false,
+            "stacking": {
+              "mode": "none",
+              "group": "A"
+            },
+            "axisSoftMin": 0,
+            "axisLabel": ""
+          },
+          "unit": "s",
+          "color": {
+            "mode": "palette-classic"
+          },
+          "displayName": "${__field.labels.__values}"
+        },
+        "overrides": []
+      },
+      "options": {
+        "legend": {
+          "displayMode": "list",
+          "placement": "bottom",
+          "showLegend": true
+        },
+        "tooltip": {
+          "mode": "multi",
+          "sort": "desc"
+        }
+      },
+      "id": 2,
+      "gridPos": {
+        "h": 8,
+        "w": 12,
+        "x": 0,
+        "y": 12
+      }
+    },
+    {
+      "type": "timeseries",
+      "title": "Output tokens per second",
+      "description": "Output tokens over generation time (duration minus time to first token); the eight models with the most timed requests.",
+      "interval": "1d",
+      "datasource": {
+        "type": "grafana-clickhouse-datasource",
+        "uid": "agent-archive"
+      },
+      "targets": [
+        {
+          "refId": "A",
+          "datasource": {
+            "type": "grafana-clickhouse-datasource",
+            "uid": "agent-archive"
+          },
+          "editorType": "sql",
+          "format": 0,
+          "queryType": "timeseries",
+          "rawSql": "SELECT $__timeInterval(ts) AS time, model, sum(output_tokens) / sum(duration_ms - ttft_ms) * 1000 AS tok_s\nFROM agents.requests\nWHERE $__timeFilter(ts) AND host IN (${host:singlequote}) AND tool IN (${tool:singlequote}) AND model IN (${model:singlequote}) AND ifNull(duration_ms > ttft_ms, 0) AND model IN (SELECT model FROM agents.requests WHERE $__timeFilter(ts) AND host IN (${host:singlequote}) AND tool IN (${tool:singlequote}) AND model IN (${model:singlequote}) AND ifNull(duration_ms > ttft_ms, 0) GROUP BY model ORDER BY count() DESC LIMIT 8)\nGROUP BY time, model\nORDER BY time"
+        }
+      ],
+      "fieldConfig": {
+        "defaults": {
+          "custom": {
+            "drawStyle": "line",
+            "fillOpacity": 0,
+            "lineWidth": 1,
+            "pointSize": 4,
+            "showPoints": "always",
+            "spanNulls": false,
+            "stacking": {
+              "mode": "none",
+              "group": "A"
+            },
+            "axisSoftMin": 0,
+            "axisLabel": ""
+          },
+          "unit": "short",
+          "color": {
+            "mode": "palette-classic"
+          },
+          "displayName": "${__field.labels.__values}"
+        },
+        "overrides": []
+      },
+      "options": {
+        "legend": {
+          "displayMode": "list",
+          "placement": "bottom",
+          "showLegend": true
+        },
+        "tooltip": {
+          "mode": "multi",
+          "sort": "desc"
+        }
+      },
+      "id": 3,
+      "gridPos": {
+        "h": 8,
+        "w": 12,
+        "x": 12,
+        "y": 12
+      }
+    },
+    {
+      "type": "timeseries",
+      "title": "Requests per day by model",
+      "description": "The ten models with the most requests in the range; the rest are summed as other.",
+      "interval": "1d",
+      "datasource": {
+        "type": "grafana-clickhouse-datasource",
+        "uid": "agent-archive"
+      },
+      "targets": [
+        {
+          "refId": "A",
+          "datasource": {
+            "type": "grafana-clickhouse-datasource",
+            "uid": "agent-archive"
+          },
+          "editorType": "sql",
+          "format": 0,
+          "queryType": "timeseries",
+          "rawSql": "SELECT $__timeInterval(ts) AS time, if(model IN (SELECT model FROM agents.requests WHERE $__timeFilter(ts) AND host IN (${host:singlequote}) AND tool IN (${tool:singlequote}) AND model IN (${model:singlequote}) AND 1 GROUP BY model ORDER BY count() DESC LIMIT 10), model, 'other') AS model_name, count() AS requests\nFROM agents.requests\nWHERE $__timeFilter(ts) AND host IN (${host:singlequote}) AND tool IN (${tool:singlequote}) AND model IN (${model:singlequote})\nGROUP BY time, model_name\nORDER BY time"
+        }
+      ],
+      "fieldConfig": {
+        "defaults": {
+          "custom": {
+            "drawStyle": "bars",
+            "fillOpacity": 85,
+            "lineWidth": 1,
+            "pointSize": 4,
+            "showPoints": "never",
+            "spanNulls": false,
+            "stacking": {
+              "mode": "normal",
+              "group": "A"
+            },
+            "axisSoftMin": 0,
+            "axisLabel": ""
+          },
+          "unit": "short",
+          "color": {
+            "mode": "palette-classic"
+          },
+          "displayName": "${__field.labels.__values}"
+        },
+        "overrides": []
+      },
+      "options": {
+        "legend": {
+          "displayMode": "list",
+          "placement": "bottom",
+          "showLegend": true
+        },
+        "tooltip": {
+          "mode": "multi",
+          "sort": "desc"
+        }
+      },
+      "id": 4,
+      "gridPos": {
+        "h": 8,
+        "w": 12,
+        "x": 0,
+        "y": 20
+      }
+    },
+    {
+      "type": "timeseries",
+      "title": "Thinking share per week",
+      "description": "Reasoning over output tokens; the eight models with the most such requests. OpenCode is left out.",
+      "interval": "7d",
+      "datasource": {
+        "type": "grafana-clickhouse-datasource",
+        "uid": "agent-archive"
+      },
+      "targets": [
+        {
+          "refId": "A",
+          "datasource": {
+            "type": "grafana-clickhouse-datasource",
+            "uid": "agent-archive"
+          },
+          "editorType": "sql",
+          "format": 0,
+          "queryType": "timeseries",
+          "rawSql": "SELECT toDateTime(toStartOfWeek(ts, 1)) AS time, model, sum(reasoning_tokens) / nullIf(sum(output_tokens), 0) AS thinking\nFROM agents.requests\nWHERE $__timeFilter(ts) AND host IN (${host:singlequote}) AND tool IN (${tool:singlequote}) AND model IN (${model:singlequote}) AND reasoning_tokens IS NOT NULL AND tool != 'opencode' AND model IN (SELECT model FROM agents.requests WHERE $__timeFilter(ts) AND host IN (${host:singlequote}) AND tool IN (${tool:singlequote}) AND model IN (${model:singlequote}) AND reasoning_tokens IS NOT NULL AND tool != 'opencode' GROUP BY model ORDER BY count() DESC LIMIT 8)\nGROUP BY time, model\nORDER BY time"
+        }
+      ],
+      "fieldConfig": {
+        "defaults": {
+          "custom": {
+            "drawStyle": "line",
+            "fillOpacity": 0,
+            "lineWidth": 1,
+            "pointSize": 4,
+            "showPoints": "always",
+            "spanNulls": false,
+            "stacking": {
+              "mode": "none",
+              "group": "A"
+            },
+            "axisSoftMin": 0,
+            "axisLabel": ""
+          },
+          "unit": "percentunit",
+          "color": {
+            "mode": "palette-classic"
+          },
+          "displayName": "${__field.labels.__values}"
+        },
+        "overrides": []
+      },
+      "options": {
+        "legend": {
+          "displayMode": "list",
+          "placement": "bottom",
+          "showLegend": true
+        },
+        "tooltip": {
+          "mode": "multi",
+          "sort": "desc"
+        }
+      },
+      "id": 5,
+      "gridPos": {
+        "h": 8,
+        "w": 12,
+        "x": 12,
+        "y": 20
+      }
+    },
+    {
+      "type": "table",
+      "title": "Steps per turn",
+      "description": "Main-agent responses per turn; a turn ends with an end_turn or stop response. Codex, Cursor and Grok record no stop reason.",
+      "datasource": {
+        "type": "grafana-clickhouse-datasource",
+        "uid": "agent-archive"
+      },
+      "targets": [
+        {
+          "refId": "A",
+          "datasource": {
+            "type": "grafana-clickhouse-datasource",
+            "uid": "agent-archive"
+          },
+          "editorType": "sql",
+          "format": 1,
+          "queryType": "table",
+          "rawSql": "SELECT\n    tool AS \"Harness\",\n    model AS \"Model\",\n    sum(requests) / nullIf(sum(stops), 0) AS \"Responses per turn\",\n    sum(stops) AS \"Completed turns\",\n    count() AS \"Sessions\"\nFROM\n(\n    SELECT tool, session_id, topK(1)(model)[1] AS model, count() AS requests,\n        countIf(stop_reason IN ('end_turn', 'stop')) AS stops\n    FROM agents.requests\n    WHERE $__timeFilter(ts) AND host IN (${host:singlequote}) AND tool IN (${tool:singlequote}) AND is_subagent = 0 AND tool NOT IN ('codex', 'cursor', 'grok')\n    GROUP BY tool, session_id\n)\nWHERE model IN (${model:singlequote})\nGROUP BY tool, model\nHAVING sum(requests) >= $min_requests\nORDER BY sum(requests) DESC"
+        }
+      ],
+      "fieldConfig": {
+        "defaults": {
+          "custom": {
+            "align": "auto",
+            "cellOptions": {
+              "type": "auto"
+            },
+            "filterable": true
+          }
+        },
+        "overrides": []
+      },
+      "options": {
+        "showHeader": true,
+        "cellHeight": "sm",
+        "sortBy": [
+          {
+            "displayName": "Completed turns",
+            "desc": true
+          }
+        ]
+      },
+      "id": 6,
+      "gridPos": {
+        "h": 9,
+        "w": 12,
+        "x": 0,
+        "y": 28
+      }
+    },
+    {
+      "type": "table",
+      "title": "Tool calls that returned an error",
+      "description": "Where the harness records an error flag and links calls to responses (not Codex).",
+      "datasource": {
+        "type": "grafana-clickhouse-datasource",
+        "uid": "agent-archive"
+      },
+      "targets": [
+        {
+          "refId": "A",
+          "datasource": {
+            "type": "grafana-clickhouse-datasource",
+            "uid": "agent-archive"
+          },
+          "editorType": "sql",
+          "format": 1,
+          "queryType": "table",
+          "rawSql": "SELECT\n    r.tool AS \"Harness\",\n    r.model AS \"Model\",\n    count() AS \"Tool calls\",\n    countIf(t.is_error = 1) / count() AS \"Error share\"\nFROM agents.tool_calls AS t\nINNER JOIN agents.requests AS r ON r.tool = t.tool AND r.session_id = t.session_id AND r.request_id = t.request_id\nWHERE $__timeFilter(r.ts) AND r.host IN (${host:singlequote}) AND r.tool IN (${tool:singlequote}) AND r.model IN (${model:singlequote})\n    AND t.is_error IS NOT NULL\nGROUP BY r.tool, r.model\nHAVING count() >= $min_requests\nORDER BY count() DESC"
+        }
+      ],
+      "fieldConfig": {
+        "defaults": {
+          "custom": {
+            "align": "auto",
+            "cellOptions": {
+              "type": "auto"
+            },
+            "filterable": true
+          }
+        },
+        "overrides": [
+          {
+            "matcher": {
+              "id": "byName",
+              "options": "Error share"
+            },
+            "properties": [
+              {
+                "id": "unit",
+                "value": "percentunit"
+              }
+            ]
+          }
+        ]
+      },
+      "options": {
+        "showHeader": true,
+        "cellHeight": "sm",
+        "sortBy": [
+          {
+            "displayName": "Tool calls",
+            "desc": true
+          }
+        ]
+      },
+      "id": 7,
+      "gridPos": {
+        "h": 9,
+        "w": 12,
+        "x": 12,
+        "y": 28
+      }
+    }
+  ]
+}

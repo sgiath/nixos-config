@@ -1,0 +1,1443 @@
+{
+  "uid": "agent-tool-calls",
+  "title": "Agent tool calls",
+  "description": "Tool calls and shell commands (agents.tool_calls, agents.commands). Command figures are text matches; the static report's parser also follows pipes, heredocs and wrappers.",
+  "tags": [
+    "agents"
+  ],
+  "editable": true,
+  "graphTooltip": 1,
+  "timezone": "browser",
+  "time": {
+    "from": "now-90d",
+    "to": "now"
+  },
+  "refresh": "",
+  "schemaVersion": 41,
+  "templating": {
+    "list": [
+      {
+        "type": "query",
+        "name": "host",
+        "label": "Host",
+        "datasource": {
+          "type": "grafana-clickhouse-datasource",
+          "uid": "agent-archive"
+        },
+        "query": "SELECT DISTINCT host FROM agents.requests ORDER BY host",
+        "definition": "SELECT DISTINCT host FROM agents.requests ORDER BY host",
+        "multi": true,
+        "includeAll": true,
+        "current": {
+          "selected": true,
+          "text": [
+            "All"
+          ],
+          "value": [
+            "$__all"
+          ]
+        },
+        "refresh": 2,
+        "sort": 0
+      },
+      {
+        "type": "query",
+        "name": "tool",
+        "label": "Harness",
+        "datasource": {
+          "type": "grafana-clickhouse-datasource",
+          "uid": "agent-archive"
+        },
+        "query": "SELECT tool FROM agents.requests WHERE host IN (${host:singlequote}) GROUP BY tool ORDER BY count() DESC",
+        "definition": "SELECT tool FROM agents.requests WHERE host IN (${host:singlequote}) GROUP BY tool ORDER BY count() DESC",
+        "multi": true,
+        "includeAll": true,
+        "current": {
+          "selected": true,
+          "text": [
+            "All"
+          ],
+          "value": [
+            "$__all"
+          ]
+        },
+        "refresh": 2,
+        "sort": 0
+      }
+    ]
+  },
+  "annotations": {
+    "list": []
+  },
+  "links": [
+    {
+      "type": "dashboards",
+      "tags": [
+        "agents"
+      ],
+      "asDropdown": false,
+      "includeVars": true,
+      "keepTime": true,
+      "title": "Agents"
+    }
+  ],
+  "panels": [
+    {
+      "type": "timeseries",
+      "title": "Tool calls per day by category",
+      "description": "",
+      "interval": "1d",
+      "datasource": {
+        "type": "grafana-clickhouse-datasource",
+        "uid": "agent-archive"
+      },
+      "targets": [
+        {
+          "refId": "A",
+          "datasource": {
+            "type": "grafana-clickhouse-datasource",
+            "uid": "agent-archive"
+          },
+          "editorType": "sql",
+          "format": 0,
+          "queryType": "timeseries",
+          "rawSql": "SELECT $__timeInterval(ts) AS time, multiIf(\n    name IN ('Bash', 'bash', 'exec_command', 'exec', 'shell_command', 'write_stdin', 'interactive_bash', 'shell', 'Shell', 'run_terminal_cmd', 'run_terminal_command_v2', 'run_terminal_command'), 'shell',\n    name IN ('eval', 'execute', 'mcpScript', 'mcp_script', 'ipython'), 'code mode',\n    name IN ('Read', 'read', 'Grep', 'grep', 'Glob', 'glob', 'find', 'ls', 'list', 'ToolSearch', 'tool_search', 'session_search', 'look_at', 'LS', 'read_file', 'read_file_v2', 'list_dir', 'codebase_search', 'glob_file_search', 'ripgrep_raw_search', 'file_search', 'read_lints', 'rg', 'search', 'search_tool', 'search_conversations'), 'read & search',\n    name IN ('Edit', 'edit', 'Write', 'write', 'apply_patch', 'MultiEdit', 'NotebookEdit', 'search_replace', 'write_file', 'edit_file', 'edit_file_v2', 'delete_file', 'edit_notebook'), 'edit & write',\n    name IN ('task', 'Task', 'Agent', 'call_omo_agent', 'subagent', 'subagent_wait', 'wait', 'wait_agent', 'sleep', 'background_output', 'yield', 'hub', 'vibe_wait', 'delegate_task', 'task_status', 'run_experiment', 'spawn_agent', 'send_message', 'advise', 'mcp__t3-code__t3_thread_wait', 'mcp__t3-code__delegate_task', 'mcp__t3-code__watch_pull_request', 'mcp__t3-code__task_status'), 'delegation & waiting',\n    name IN ('question', 'ask', 'AskUserQuestion', 'ask_user_question', 'request_user_input', 'interview', 'plan_exit', 'submit_plan', 'contact_supervisor', 'ExitPlanMode', 'fn_review_step', 'ask_question', 'submit_reminder_decision'), 'user interaction',\n    name IN ('webfetch', 'websearch', 'web_search', 'WebFetch', 'WebSearch', 'web_fetch'), 'web',\n    name IN ('todo', 'todowrite', 'TodoWrite', 'update_plan', 'task_update', 'task_create', 'task_edit', 'memory', 'log_experiment', 'skill', 'Skill', 'skill_mcp', 'todo_write', 'create_plan', 'read_skill'), 'planning & notes',\n    startsWith(name, 'lsp') OR position(name, 'codegraph') > 0, 'read & search',\n    'MCP & other') AS category, count() AS calls\nFROM agents.tool_calls\nWHERE $__timeFilter(ts) AND host IN (${host:singlequote}) AND tool IN (${tool:singlequote})\nGROUP BY time, category\nORDER BY time"
+        }
+      ],
+      "fieldConfig": {
+        "defaults": {
+          "custom": {
+            "drawStyle": "bars",
+            "fillOpacity": 85,
+            "lineWidth": 1,
+            "pointSize": 4,
+            "showPoints": "never",
+            "spanNulls": false,
+            "stacking": {
+              "mode": "normal",
+              "group": "A"
+            },
+            "axisSoftMin": 0,
+            "axisLabel": ""
+          },
+          "unit": "short",
+          "color": {
+            "mode": "palette-classic"
+          },
+          "displayName": "${__field.labels.__values}"
+        },
+        "overrides": [
+          {
+            "matcher": {
+              "id": "byRegexp",
+              "options": "^(.+ )?shell$"
+            },
+            "properties": [
+              {
+                "id": "color",
+                "value": {
+                  "mode": "fixed",
+                  "fixedColor": "#35a97f"
+                }
+              }
+            ]
+          },
+          {
+            "matcher": {
+              "id": "byRegexp",
+              "options": "^(.+ )?code mode$"
+            },
+            "properties": [
+              {
+                "id": "color",
+                "value": {
+                  "mode": "fixed",
+                  "fixedColor": "#2d9bb9"
+                }
+              }
+            ]
+          },
+          {
+            "matcher": {
+              "id": "byRegexp",
+              "options": "^(.+ )?read & search$"
+            },
+            "properties": [
+              {
+                "id": "color",
+                "value": {
+                  "mode": "fixed",
+                  "fixedColor": "#4f84c8"
+                }
+              }
+            ]
+          },
+          {
+            "matcher": {
+              "id": "byRegexp",
+              "options": "^(.+ )?edit & write$"
+            },
+            "properties": [
+              {
+                "id": "color",
+                "value": {
+                  "mode": "fixed",
+                  "fixedColor": "#c47f33"
+                }
+              }
+            ]
+          },
+          {
+            "matcher": {
+              "id": "byRegexp",
+              "options": "^(.+ )?delegation & waiting$"
+            },
+            "properties": [
+              {
+                "id": "color",
+                "value": {
+                  "mode": "fixed",
+                  "fixedColor": "#9085e9"
+                }
+              }
+            ]
+          },
+          {
+            "matcher": {
+              "id": "byRegexp",
+              "options": "^(.+ )?user interaction$"
+            },
+            "properties": [
+              {
+                "id": "color",
+                "value": {
+                  "mode": "fixed",
+                  "fixedColor": "#e25d52"
+                }
+              }
+            ]
+          },
+          {
+            "matcher": {
+              "id": "byRegexp",
+              "options": "^(.+ )?web$"
+            },
+            "properties": [
+              {
+                "id": "color",
+                "value": {
+                  "mode": "fixed",
+                  "fixedColor": "#d4b24c"
+                }
+              }
+            ]
+          },
+          {
+            "matcher": {
+              "id": "byRegexp",
+              "options": "^(.+ )?planning & notes$"
+            },
+            "properties": [
+              {
+                "id": "color",
+                "value": {
+                  "mode": "fixed",
+                  "fixedColor": "#c45fa0"
+                }
+              }
+            ]
+          },
+          {
+            "matcher": {
+              "id": "byRegexp",
+              "options": "^(.+ )?MCP & other$"
+            },
+            "properties": [
+              {
+                "id": "color",
+                "value": {
+                  "mode": "fixed",
+                  "fixedColor": "#787882"
+                }
+              }
+            ]
+          }
+        ]
+      },
+      "options": {
+        "legend": {
+          "displayMode": "list",
+          "placement": "bottom",
+          "showLegend": true
+        },
+        "tooltip": {
+          "mode": "multi",
+          "sort": "desc"
+        }
+      },
+      "id": 1,
+      "gridPos": {
+        "h": 9,
+        "w": 12,
+        "x": 0,
+        "y": 0
+      }
+    },
+    {
+      "type": "timeseries",
+      "title": "Hours in tool calls per day by category",
+      "description": "Summed call durations; parallel calls each count in full. Leaves out the recovered OpenCode lsp_diagnostics artifact.",
+      "interval": "1d",
+      "datasource": {
+        "type": "grafana-clickhouse-datasource",
+        "uid": "agent-archive"
+      },
+      "targets": [
+        {
+          "refId": "A",
+          "datasource": {
+            "type": "grafana-clickhouse-datasource",
+            "uid": "agent-archive"
+          },
+          "editorType": "sql",
+          "format": 0,
+          "queryType": "timeseries",
+          "rawSql": "SELECT $__timeInterval(ts) AS time, multiIf(\n    name IN ('Bash', 'bash', 'exec_command', 'exec', 'shell_command', 'write_stdin', 'interactive_bash', 'shell', 'Shell', 'run_terminal_cmd', 'run_terminal_command_v2', 'run_terminal_command'), 'shell',\n    name IN ('eval', 'execute', 'mcpScript', 'mcp_script', 'ipython'), 'code mode',\n    name IN ('Read', 'read', 'Grep', 'grep', 'Glob', 'glob', 'find', 'ls', 'list', 'ToolSearch', 'tool_search', 'session_search', 'look_at', 'LS', 'read_file', 'read_file_v2', 'list_dir', 'codebase_search', 'glob_file_search', 'ripgrep_raw_search', 'file_search', 'read_lints', 'rg', 'search', 'search_tool', 'search_conversations'), 'read & search',\n    name IN ('Edit', 'edit', 'Write', 'write', 'apply_patch', 'MultiEdit', 'NotebookEdit', 'search_replace', 'write_file', 'edit_file', 'edit_file_v2', 'delete_file', 'edit_notebook'), 'edit & write',\n    name IN ('task', 'Task', 'Agent', 'call_omo_agent', 'subagent', 'subagent_wait', 'wait', 'wait_agent', 'sleep', 'background_output', 'yield', 'hub', 'vibe_wait', 'delegate_task', 'task_status', 'run_experiment', 'spawn_agent', 'send_message', 'advise', 'mcp__t3-code__t3_thread_wait', 'mcp__t3-code__delegate_task', 'mcp__t3-code__watch_pull_request', 'mcp__t3-code__task_status'), 'delegation & waiting',\n    name IN ('question', 'ask', 'AskUserQuestion', 'ask_user_question', 'request_user_input', 'interview', 'plan_exit', 'submit_plan', 'contact_supervisor', 'ExitPlanMode', 'fn_review_step', 'ask_question', 'submit_reminder_decision'), 'user interaction',\n    name IN ('webfetch', 'websearch', 'web_search', 'WebFetch', 'WebSearch', 'web_fetch'), 'web',\n    name IN ('todo', 'todowrite', 'TodoWrite', 'update_plan', 'task_update', 'task_create', 'task_edit', 'memory', 'log_experiment', 'skill', 'Skill', 'skill_mcp', 'todo_write', 'create_plan', 'read_skill'), 'planning & notes',\n    startsWith(name, 'lsp') OR position(name, 'codegraph') > 0, 'read & search',\n    'MCP & other') AS category, sum(duration_ms) / 3600000 AS hours\nFROM agents.tool_calls\nWHERE $__timeFilter(ts) AND host IN (${host:singlequote}) AND tool IN (${tool:singlequote}) AND NOT (tool = 'opencode' AND request_id = '' AND name = 'lsp_diagnostics')\nGROUP BY time, category\nORDER BY time"
+        }
+      ],
+      "fieldConfig": {
+        "defaults": {
+          "custom": {
+            "drawStyle": "bars",
+            "fillOpacity": 85,
+            "lineWidth": 1,
+            "pointSize": 4,
+            "showPoints": "never",
+            "spanNulls": false,
+            "stacking": {
+              "mode": "normal",
+              "group": "A"
+            },
+            "axisSoftMin": 0,
+            "axisLabel": "hours"
+          },
+          "unit": "none",
+          "color": {
+            "mode": "palette-classic"
+          },
+          "displayName": "${__field.labels.__values}",
+          "decimals": 1
+        },
+        "overrides": [
+          {
+            "matcher": {
+              "id": "byRegexp",
+              "options": "^(.+ )?shell$"
+            },
+            "properties": [
+              {
+                "id": "color",
+                "value": {
+                  "mode": "fixed",
+                  "fixedColor": "#35a97f"
+                }
+              }
+            ]
+          },
+          {
+            "matcher": {
+              "id": "byRegexp",
+              "options": "^(.+ )?code mode$"
+            },
+            "properties": [
+              {
+                "id": "color",
+                "value": {
+                  "mode": "fixed",
+                  "fixedColor": "#2d9bb9"
+                }
+              }
+            ]
+          },
+          {
+            "matcher": {
+              "id": "byRegexp",
+              "options": "^(.+ )?read & search$"
+            },
+            "properties": [
+              {
+                "id": "color",
+                "value": {
+                  "mode": "fixed",
+                  "fixedColor": "#4f84c8"
+                }
+              }
+            ]
+          },
+          {
+            "matcher": {
+              "id": "byRegexp",
+              "options": "^(.+ )?edit & write$"
+            },
+            "properties": [
+              {
+                "id": "color",
+                "value": {
+                  "mode": "fixed",
+                  "fixedColor": "#c47f33"
+                }
+              }
+            ]
+          },
+          {
+            "matcher": {
+              "id": "byRegexp",
+              "options": "^(.+ )?delegation & waiting$"
+            },
+            "properties": [
+              {
+                "id": "color",
+                "value": {
+                  "mode": "fixed",
+                  "fixedColor": "#9085e9"
+                }
+              }
+            ]
+          },
+          {
+            "matcher": {
+              "id": "byRegexp",
+              "options": "^(.+ )?user interaction$"
+            },
+            "properties": [
+              {
+                "id": "color",
+                "value": {
+                  "mode": "fixed",
+                  "fixedColor": "#e25d52"
+                }
+              }
+            ]
+          },
+          {
+            "matcher": {
+              "id": "byRegexp",
+              "options": "^(.+ )?web$"
+            },
+            "properties": [
+              {
+                "id": "color",
+                "value": {
+                  "mode": "fixed",
+                  "fixedColor": "#d4b24c"
+                }
+              }
+            ]
+          },
+          {
+            "matcher": {
+              "id": "byRegexp",
+              "options": "^(.+ )?planning & notes$"
+            },
+            "properties": [
+              {
+                "id": "color",
+                "value": {
+                  "mode": "fixed",
+                  "fixedColor": "#c45fa0"
+                }
+              }
+            ]
+          },
+          {
+            "matcher": {
+              "id": "byRegexp",
+              "options": "^(.+ )?MCP & other$"
+            },
+            "properties": [
+              {
+                "id": "color",
+                "value": {
+                  "mode": "fixed",
+                  "fixedColor": "#787882"
+                }
+              }
+            ]
+          }
+        ]
+      },
+      "options": {
+        "legend": {
+          "displayMode": "list",
+          "placement": "bottom",
+          "showLegend": true
+        },
+        "tooltip": {
+          "mode": "multi",
+          "sort": "desc"
+        }
+      },
+      "id": 2,
+      "gridPos": {
+        "h": 9,
+        "w": 12,
+        "x": 12,
+        "y": 0
+      }
+    },
+    {
+      "type": "table",
+      "title": "Tools",
+      "description": "",
+      "datasource": {
+        "type": "grafana-clickhouse-datasource",
+        "uid": "agent-archive"
+      },
+      "targets": [
+        {
+          "refId": "A",
+          "datasource": {
+            "type": "grafana-clickhouse-datasource",
+            "uid": "agent-archive"
+          },
+          "editorType": "sql",
+          "format": 1,
+          "queryType": "table",
+          "rawSql": "SELECT\n    tool AS \"Harness\",\n    name AS \"Tool\",\n    multiIf(\n    name IN ('Bash', 'bash', 'exec_command', 'exec', 'shell_command', 'write_stdin', 'interactive_bash', 'shell', 'Shell', 'run_terminal_cmd', 'run_terminal_command_v2', 'run_terminal_command'), 'shell',\n    name IN ('eval', 'execute', 'mcpScript', 'mcp_script', 'ipython'), 'code mode',\n    name IN ('Read', 'read', 'Grep', 'grep', 'Glob', 'glob', 'find', 'ls', 'list', 'ToolSearch', 'tool_search', 'session_search', 'look_at', 'LS', 'read_file', 'read_file_v2', 'list_dir', 'codebase_search', 'glob_file_search', 'ripgrep_raw_search', 'file_search', 'read_lints', 'rg', 'search', 'search_tool', 'search_conversations'), 'read & search',\n    name IN ('Edit', 'edit', 'Write', 'write', 'apply_patch', 'MultiEdit', 'NotebookEdit', 'search_replace', 'write_file', 'edit_file', 'edit_file_v2', 'delete_file', 'edit_notebook'), 'edit & write',\n    name IN ('task', 'Task', 'Agent', 'call_omo_agent', 'subagent', 'subagent_wait', 'wait', 'wait_agent', 'sleep', 'background_output', 'yield', 'hub', 'vibe_wait', 'delegate_task', 'task_status', 'run_experiment', 'spawn_agent', 'send_message', 'advise', 'mcp__t3-code__t3_thread_wait', 'mcp__t3-code__delegate_task', 'mcp__t3-code__watch_pull_request', 'mcp__t3-code__task_status'), 'delegation & waiting',\n    name IN ('question', 'ask', 'AskUserQuestion', 'ask_user_question', 'request_user_input', 'interview', 'plan_exit', 'submit_plan', 'contact_supervisor', 'ExitPlanMode', 'fn_review_step', 'ask_question', 'submit_reminder_decision'), 'user interaction',\n    name IN ('webfetch', 'websearch', 'web_search', 'WebFetch', 'WebSearch', 'web_fetch'), 'web',\n    name IN ('todo', 'todowrite', 'TodoWrite', 'update_plan', 'task_update', 'task_create', 'task_edit', 'memory', 'log_experiment', 'skill', 'Skill', 'skill_mcp', 'todo_write', 'create_plan', 'read_skill'), 'planning & notes',\n    startsWith(name, 'lsp') OR position(name, 'codegraph') > 0, 'read & search',\n    'MCP & other') AS \"Category\",\n    count() AS \"Calls\",\n    countIf(duration_ms IS NOT NULL) AS \"Timed calls\",\n    sumIf(duration_ms, NOT (tool = 'opencode' AND request_id = '' AND name = 'lsp_diagnostics')) / 3600000 AS \"Hours\",\n    quantileIf(0.5)(duration_ms, duration_ms IS NOT NULL) / 1000 AS \"Median\",\n    quantileIf(0.9)(duration_ms, duration_ms IS NOT NULL) / 1000 AS \"p90\",\n    countIf(is_error = 1) / nullIf(countIf(is_error IS NOT NULL), 0) AS \"Error share\",\n    avg(output_bytes) AS \"Mean output\"\nFROM agents.tool_calls\nWHERE $__timeFilter(ts) AND host IN (${host:singlequote}) AND tool IN (${tool:singlequote})\nGROUP BY tool, name\nORDER BY count() DESC\nLIMIT 300"
+        }
+      ],
+      "fieldConfig": {
+        "defaults": {
+          "custom": {
+            "align": "auto",
+            "cellOptions": {
+              "type": "auto"
+            },
+            "filterable": true
+          }
+        },
+        "overrides": [
+          {
+            "matcher": {
+              "id": "byName",
+              "options": "Hours"
+            },
+            "properties": [
+              {
+                "id": "unit",
+                "value": "none"
+              }
+            ]
+          },
+          {
+            "matcher": {
+              "id": "byName",
+              "options": "Median"
+            },
+            "properties": [
+              {
+                "id": "unit",
+                "value": "s"
+              }
+            ]
+          },
+          {
+            "matcher": {
+              "id": "byName",
+              "options": "p90"
+            },
+            "properties": [
+              {
+                "id": "unit",
+                "value": "s"
+              }
+            ]
+          },
+          {
+            "matcher": {
+              "id": "byName",
+              "options": "Error share"
+            },
+            "properties": [
+              {
+                "id": "unit",
+                "value": "percentunit"
+              }
+            ]
+          },
+          {
+            "matcher": {
+              "id": "byName",
+              "options": "Mean output"
+            },
+            "properties": [
+              {
+                "id": "unit",
+                "value": "decbytes"
+              }
+            ]
+          }
+        ]
+      },
+      "options": {
+        "showHeader": true,
+        "cellHeight": "sm",
+        "sortBy": [
+          {
+            "displayName": "Calls",
+            "desc": true
+          }
+        ]
+      },
+      "id": 3,
+      "gridPos": {
+        "h": 10,
+        "w": 24,
+        "x": 0,
+        "y": 9
+      }
+    },
+    {
+      "type": "timeseries",
+      "title": "Shell commands per day",
+      "description": "",
+      "interval": "1d",
+      "datasource": {
+        "type": "grafana-clickhouse-datasource",
+        "uid": "agent-archive"
+      },
+      "targets": [
+        {
+          "refId": "A",
+          "datasource": {
+            "type": "grafana-clickhouse-datasource",
+            "uid": "agent-archive"
+          },
+          "editorType": "sql",
+          "format": 0,
+          "queryType": "timeseries",
+          "rawSql": "SELECT $__timeInterval(ts) AS time, tool, count() AS commands\nFROM agents.commands\nWHERE $__timeFilter(ts) AND host IN (${host:singlequote}) AND tool IN (${tool:singlequote})\nGROUP BY time, tool\nORDER BY time"
+        }
+      ],
+      "fieldConfig": {
+        "defaults": {
+          "custom": {
+            "drawStyle": "bars",
+            "fillOpacity": 85,
+            "lineWidth": 1,
+            "pointSize": 4,
+            "showPoints": "never",
+            "spanNulls": false,
+            "stacking": {
+              "mode": "normal",
+              "group": "A"
+            },
+            "axisSoftMin": 0,
+            "axisLabel": ""
+          },
+          "unit": "short",
+          "color": {
+            "mode": "palette-classic"
+          },
+          "displayName": "${__field.labels.__values}"
+        },
+        "overrides": [
+          {
+            "matcher": {
+              "id": "byRegexp",
+              "options": "^(.+ )?omo$"
+            },
+            "properties": [
+              {
+                "id": "color",
+                "value": {
+                  "mode": "fixed",
+                  "fixedColor": "#35a97f"
+                }
+              }
+            ]
+          },
+          {
+            "matcher": {
+              "id": "byRegexp",
+              "options": "^(.+ )?codex$"
+            },
+            "properties": [
+              {
+                "id": "color",
+                "value": {
+                  "mode": "fixed",
+                  "fixedColor": "#4f84c8"
+                }
+              }
+            ]
+          },
+          {
+            "matcher": {
+              "id": "byRegexp",
+              "options": "^(.+ )?opencode$"
+            },
+            "properties": [
+              {
+                "id": "color",
+                "value": {
+                  "mode": "fixed",
+                  "fixedColor": "#c47f33"
+                }
+              }
+            ]
+          },
+          {
+            "matcher": {
+              "id": "byRegexp",
+              "options": "^(.+ )?omp$"
+            },
+            "properties": [
+              {
+                "id": "color",
+                "value": {
+                  "mode": "fixed",
+                  "fixedColor": "#2d9bb9"
+                }
+              }
+            ]
+          },
+          {
+            "matcher": {
+              "id": "byRegexp",
+              "options": "^(.+ )?claude$"
+            },
+            "properties": [
+              {
+                "id": "color",
+                "value": {
+                  "mode": "fixed",
+                  "fixedColor": "#e25d52"
+                }
+              }
+            ]
+          },
+          {
+            "matcher": {
+              "id": "byRegexp",
+              "options": "^(.+ )?cursor$"
+            },
+            "properties": [
+              {
+                "id": "color",
+                "value": {
+                  "mode": "fixed",
+                  "fixedColor": "#9085e9"
+                }
+              }
+            ]
+          },
+          {
+            "matcher": {
+              "id": "byRegexp",
+              "options": "^(.+ )?muse$"
+            },
+            "properties": [
+              {
+                "id": "color",
+                "value": {
+                  "mode": "fixed",
+                  "fixedColor": "#787882"
+                }
+              }
+            ]
+          },
+          {
+            "matcher": {
+              "id": "byRegexp",
+              "options": "^(.+ )?prime$"
+            },
+            "properties": [
+              {
+                "id": "color",
+                "value": {
+                  "mode": "fixed",
+                  "fixedColor": "#8e8e98"
+                }
+              }
+            ]
+          },
+          {
+            "matcher": {
+              "id": "byRegexp",
+              "options": "^(.+ )?pi$"
+            },
+            "properties": [
+              {
+                "id": "color",
+                "value": {
+                  "mode": "fixed",
+                  "fixedColor": "#62626c"
+                }
+              }
+            ]
+          },
+          {
+            "matcher": {
+              "id": "byRegexp",
+              "options": "^(.+ )?grok$"
+            },
+            "properties": [
+              {
+                "id": "color",
+                "value": {
+                  "mode": "fixed",
+                  "fixedColor": "#a4a4ae"
+                }
+              }
+            ]
+          }
+        ]
+      },
+      "options": {
+        "legend": {
+          "displayMode": "list",
+          "placement": "bottom",
+          "showLegend": true
+        },
+        "tooltip": {
+          "mode": "multi",
+          "sort": "desc"
+        }
+      },
+      "id": 4,
+      "gridPos": {
+        "h": 9,
+        "w": 12,
+        "x": 0,
+        "y": 19
+      }
+    },
+    {
+      "type": "table",
+      "title": "Programs",
+      "description": "First program of each command after a leading cd and variable assignments.",
+      "datasource": {
+        "type": "grafana-clickhouse-datasource",
+        "uid": "agent-archive"
+      },
+      "targets": [
+        {
+          "refId": "A",
+          "datasource": {
+            "type": "grafana-clickhouse-datasource",
+            "uid": "agent-archive"
+          },
+          "editorType": "sql",
+          "format": 1,
+          "queryType": "table",
+          "rawSql": "SELECT\n    replaceRegexpOne(extract(replaceRegexpOne(command, '^\\\\s*(cd\\\\s+\\\\S+\\\\s*&&\\\\s*)?([A-Za-z_][A-Za-z0-9_]*=\\\\S*\\\\s+)*', ''), '^(\\\\S+)'), '^.*/', '') AS \"Program\",\n    count() AS \"Commands\",\n    count() / (SELECT count() FROM agents.commands WHERE $__timeFilter(ts) AND host IN (${host:singlequote}) AND tool IN (${tool:singlequote})) AS \"Share\",\n    topK(1)(tool)[1] AS \"Main harness\"\nFROM agents.commands\nWHERE $__timeFilter(ts) AND host IN (${host:singlequote}) AND tool IN (${tool:singlequote})\nGROUP BY \"Program\"\nORDER BY count() DESC\nLIMIT 100"
+        }
+      ],
+      "fieldConfig": {
+        "defaults": {
+          "custom": {
+            "align": "auto",
+            "cellOptions": {
+              "type": "auto"
+            },
+            "filterable": true
+          }
+        },
+        "overrides": [
+          {
+            "matcher": {
+              "id": "byName",
+              "options": "Share"
+            },
+            "properties": [
+              {
+                "id": "unit",
+                "value": "percentunit"
+              }
+            ]
+          }
+        ]
+      },
+      "options": {
+        "showHeader": true,
+        "cellHeight": "sm",
+        "sortBy": [
+          {
+            "displayName": "Commands",
+            "desc": true
+          }
+        ]
+      },
+      "id": 5,
+      "gridPos": {
+        "h": 9,
+        "w": 12,
+        "x": 12,
+        "y": 19
+      }
+    },
+    {
+      "type": "timeseries",
+      "title": "grep share of grep and rg",
+      "description": "Per week, among commands that run grep or rg; weeks with fewer than ten such commands are left out.",
+      "interval": "7d",
+      "datasource": {
+        "type": "grafana-clickhouse-datasource",
+        "uid": "agent-archive"
+      },
+      "targets": [
+        {
+          "refId": "A",
+          "datasource": {
+            "type": "grafana-clickhouse-datasource",
+            "uid": "agent-archive"
+          },
+          "editorType": "sql",
+          "format": 0,
+          "queryType": "timeseries",
+          "rawSql": "SELECT toDateTime(toStartOfWeek(ts, 1)) AS time, tool,\n    countIf(match(command, '(^|[|;&(]\\\\s*|\\\\s(xargs|sudo|env|time)\\\\s+)grep\\\\b')) / nullIf(countIf(match(command, '(^|[|;&(]\\\\s*|\\\\s(xargs|sudo|env|time)\\\\s+)(grep|rg)\\\\b')), 0) AS grep_share\nFROM agents.commands\nWHERE $__timeFilter(ts) AND host IN (${host:singlequote}) AND tool IN (${tool:singlequote})\nGROUP BY time, tool\nHAVING countIf(match(command, '(^|[|;&(]\\\\s*|\\\\s(xargs|sudo|env|time)\\\\s+)(grep|rg)\\\\b')) >= 10\nORDER BY time"
+        }
+      ],
+      "fieldConfig": {
+        "defaults": {
+          "custom": {
+            "drawStyle": "line",
+            "fillOpacity": 0,
+            "lineWidth": 1,
+            "pointSize": 4,
+            "showPoints": "always",
+            "spanNulls": false,
+            "stacking": {
+              "mode": "none",
+              "group": "A"
+            },
+            "axisSoftMin": 0,
+            "axisLabel": ""
+          },
+          "unit": "percentunit",
+          "color": {
+            "mode": "palette-classic"
+          },
+          "displayName": "${__field.labels.__values}"
+        },
+        "overrides": [
+          {
+            "matcher": {
+              "id": "byRegexp",
+              "options": "^(.+ )?omo$"
+            },
+            "properties": [
+              {
+                "id": "color",
+                "value": {
+                  "mode": "fixed",
+                  "fixedColor": "#35a97f"
+                }
+              }
+            ]
+          },
+          {
+            "matcher": {
+              "id": "byRegexp",
+              "options": "^(.+ )?codex$"
+            },
+            "properties": [
+              {
+                "id": "color",
+                "value": {
+                  "mode": "fixed",
+                  "fixedColor": "#4f84c8"
+                }
+              }
+            ]
+          },
+          {
+            "matcher": {
+              "id": "byRegexp",
+              "options": "^(.+ )?opencode$"
+            },
+            "properties": [
+              {
+                "id": "color",
+                "value": {
+                  "mode": "fixed",
+                  "fixedColor": "#c47f33"
+                }
+              }
+            ]
+          },
+          {
+            "matcher": {
+              "id": "byRegexp",
+              "options": "^(.+ )?omp$"
+            },
+            "properties": [
+              {
+                "id": "color",
+                "value": {
+                  "mode": "fixed",
+                  "fixedColor": "#2d9bb9"
+                }
+              }
+            ]
+          },
+          {
+            "matcher": {
+              "id": "byRegexp",
+              "options": "^(.+ )?claude$"
+            },
+            "properties": [
+              {
+                "id": "color",
+                "value": {
+                  "mode": "fixed",
+                  "fixedColor": "#e25d52"
+                }
+              }
+            ]
+          },
+          {
+            "matcher": {
+              "id": "byRegexp",
+              "options": "^(.+ )?cursor$"
+            },
+            "properties": [
+              {
+                "id": "color",
+                "value": {
+                  "mode": "fixed",
+                  "fixedColor": "#9085e9"
+                }
+              }
+            ]
+          },
+          {
+            "matcher": {
+              "id": "byRegexp",
+              "options": "^(.+ )?muse$"
+            },
+            "properties": [
+              {
+                "id": "color",
+                "value": {
+                  "mode": "fixed",
+                  "fixedColor": "#787882"
+                }
+              }
+            ]
+          },
+          {
+            "matcher": {
+              "id": "byRegexp",
+              "options": "^(.+ )?prime$"
+            },
+            "properties": [
+              {
+                "id": "color",
+                "value": {
+                  "mode": "fixed",
+                  "fixedColor": "#8e8e98"
+                }
+              }
+            ]
+          },
+          {
+            "matcher": {
+              "id": "byRegexp",
+              "options": "^(.+ )?pi$"
+            },
+            "properties": [
+              {
+                "id": "color",
+                "value": {
+                  "mode": "fixed",
+                  "fixedColor": "#62626c"
+                }
+              }
+            ]
+          },
+          {
+            "matcher": {
+              "id": "byRegexp",
+              "options": "^(.+ )?grok$"
+            },
+            "properties": [
+              {
+                "id": "color",
+                "value": {
+                  "mode": "fixed",
+                  "fixedColor": "#a4a4ae"
+                }
+              }
+            ]
+          }
+        ]
+      },
+      "options": {
+        "legend": {
+          "displayMode": "list",
+          "placement": "bottom",
+          "showLegend": true
+        },
+        "tooltip": {
+          "mode": "multi",
+          "sort": "desc"
+        }
+      },
+      "id": 6,
+      "gridPos": {
+        "h": 8,
+        "w": 12,
+        "x": 0,
+        "y": 28
+      }
+    },
+    {
+      "type": "timeseries",
+      "title": "Commands piped into head or tail",
+      "description": "",
+      "interval": "7d",
+      "datasource": {
+        "type": "grafana-clickhouse-datasource",
+        "uid": "agent-archive"
+      },
+      "targets": [
+        {
+          "refId": "A",
+          "datasource": {
+            "type": "grafana-clickhouse-datasource",
+            "uid": "agent-archive"
+          },
+          "editorType": "sql",
+          "format": 0,
+          "queryType": "timeseries",
+          "rawSql": "SELECT toDateTime(toStartOfWeek(ts, 1)) AS time, tool, countIf(match(command, '\\\\|\\\\s*(head|tail)\\\\b')) / count() AS share\nFROM agents.commands\nWHERE $__timeFilter(ts) AND host IN (${host:singlequote}) AND tool IN (${tool:singlequote})\nGROUP BY time, tool\nHAVING count() >= 10\nORDER BY time"
+        }
+      ],
+      "fieldConfig": {
+        "defaults": {
+          "custom": {
+            "drawStyle": "line",
+            "fillOpacity": 0,
+            "lineWidth": 1,
+            "pointSize": 4,
+            "showPoints": "always",
+            "spanNulls": false,
+            "stacking": {
+              "mode": "none",
+              "group": "A"
+            },
+            "axisSoftMin": 0,
+            "axisLabel": ""
+          },
+          "unit": "percentunit",
+          "color": {
+            "mode": "palette-classic"
+          },
+          "displayName": "${__field.labels.__values}"
+        },
+        "overrides": [
+          {
+            "matcher": {
+              "id": "byRegexp",
+              "options": "^(.+ )?omo$"
+            },
+            "properties": [
+              {
+                "id": "color",
+                "value": {
+                  "mode": "fixed",
+                  "fixedColor": "#35a97f"
+                }
+              }
+            ]
+          },
+          {
+            "matcher": {
+              "id": "byRegexp",
+              "options": "^(.+ )?codex$"
+            },
+            "properties": [
+              {
+                "id": "color",
+                "value": {
+                  "mode": "fixed",
+                  "fixedColor": "#4f84c8"
+                }
+              }
+            ]
+          },
+          {
+            "matcher": {
+              "id": "byRegexp",
+              "options": "^(.+ )?opencode$"
+            },
+            "properties": [
+              {
+                "id": "color",
+                "value": {
+                  "mode": "fixed",
+                  "fixedColor": "#c47f33"
+                }
+              }
+            ]
+          },
+          {
+            "matcher": {
+              "id": "byRegexp",
+              "options": "^(.+ )?omp$"
+            },
+            "properties": [
+              {
+                "id": "color",
+                "value": {
+                  "mode": "fixed",
+                  "fixedColor": "#2d9bb9"
+                }
+              }
+            ]
+          },
+          {
+            "matcher": {
+              "id": "byRegexp",
+              "options": "^(.+ )?claude$"
+            },
+            "properties": [
+              {
+                "id": "color",
+                "value": {
+                  "mode": "fixed",
+                  "fixedColor": "#e25d52"
+                }
+              }
+            ]
+          },
+          {
+            "matcher": {
+              "id": "byRegexp",
+              "options": "^(.+ )?cursor$"
+            },
+            "properties": [
+              {
+                "id": "color",
+                "value": {
+                  "mode": "fixed",
+                  "fixedColor": "#9085e9"
+                }
+              }
+            ]
+          },
+          {
+            "matcher": {
+              "id": "byRegexp",
+              "options": "^(.+ )?muse$"
+            },
+            "properties": [
+              {
+                "id": "color",
+                "value": {
+                  "mode": "fixed",
+                  "fixedColor": "#787882"
+                }
+              }
+            ]
+          },
+          {
+            "matcher": {
+              "id": "byRegexp",
+              "options": "^(.+ )?prime$"
+            },
+            "properties": [
+              {
+                "id": "color",
+                "value": {
+                  "mode": "fixed",
+                  "fixedColor": "#8e8e98"
+                }
+              }
+            ]
+          },
+          {
+            "matcher": {
+              "id": "byRegexp",
+              "options": "^(.+ )?pi$"
+            },
+            "properties": [
+              {
+                "id": "color",
+                "value": {
+                  "mode": "fixed",
+                  "fixedColor": "#62626c"
+                }
+              }
+            ]
+          },
+          {
+            "matcher": {
+              "id": "byRegexp",
+              "options": "^(.+ )?grok$"
+            },
+            "properties": [
+              {
+                "id": "color",
+                "value": {
+                  "mode": "fixed",
+                  "fixedColor": "#a4a4ae"
+                }
+              }
+            ]
+          }
+        ]
+      },
+      "options": {
+        "legend": {
+          "displayMode": "list",
+          "placement": "bottom",
+          "showLegend": true
+        },
+        "tooltip": {
+          "mode": "multi",
+          "sort": "desc"
+        }
+      },
+      "id": 7,
+      "gridPos": {
+        "h": 8,
+        "w": 12,
+        "x": 12,
+        "y": 28
+      }
+    },
+    {
+      "type": "table",
+      "title": "Permission waits",
+      "description": "From OpenTelemetry (Claude Code and Codex since 2026-10-14): time spent executing versus blocked on a permission decision.",
+      "datasource": {
+        "type": "grafana-clickhouse-datasource",
+        "uid": "agent-archive"
+      },
+      "targets": [
+        {
+          "refId": "A",
+          "datasource": {
+            "type": "grafana-clickhouse-datasource",
+            "uid": "agent-archive"
+          },
+          "editorType": "sql",
+          "format": 1,
+          "queryType": "table",
+          "rawSql": "SELECT\n    c.tool AS \"Harness\",\n    t.name AS \"Tool\",\n    count() AS \"Calls\",\n    countIf(t.blocked_ms > 1000) AS \"Blocked over 1 s\",\n    sum(t.execution_ms) / 1000 AS \"Executing\",\n    sum(t.blocked_ms) / 1000 AS \"Waiting for permission\",\n    any(t.decision_source) AS \"Decision source\"\nFROM agents.tool_timing AS t\nINNER JOIN agents.tool_calls AS c ON c.tool = t.tool AND c.call_id = t.call_id\nWHERE $__timeFilter(c.ts) AND c.host IN (${host:singlequote}) AND c.tool IN (${tool:singlequote})\nGROUP BY c.tool, t.name\nORDER BY sum(t.blocked_ms) DESC"
+        }
+      ],
+      "fieldConfig": {
+        "defaults": {
+          "custom": {
+            "align": "auto",
+            "cellOptions": {
+              "type": "auto"
+            },
+            "filterable": true
+          }
+        },
+        "overrides": [
+          {
+            "matcher": {
+              "id": "byName",
+              "options": "Executing"
+            },
+            "properties": [
+              {
+                "id": "unit",
+                "value": "s"
+              }
+            ]
+          },
+          {
+            "matcher": {
+              "id": "byName",
+              "options": "Waiting for permission"
+            },
+            "properties": [
+              {
+                "id": "unit",
+                "value": "s"
+              }
+            ]
+          }
+        ]
+      },
+      "options": {
+        "showHeader": true,
+        "cellHeight": "sm",
+        "sortBy": []
+      },
+      "id": 8,
+      "gridPos": {
+        "h": 8,
+        "w": 24,
+        "x": 0,
+        "y": 36
+      }
+    },
+    {
+      "type": "table",
+      "title": "Recent shell commands",
+      "description": "",
+      "datasource": {
+        "type": "grafana-clickhouse-datasource",
+        "uid": "agent-archive"
+      },
+      "targets": [
+        {
+          "refId": "A",
+          "datasource": {
+            "type": "grafana-clickhouse-datasource",
+            "uid": "agent-archive"
+          },
+          "editorType": "sql",
+          "format": 1,
+          "queryType": "table",
+          "rawSql": "SELECT\n    ts AS \"Time\",\n    tool AS \"Harness\",\n    host AS \"Host\",\n    command AS \"Command\",\n    duration_ms / 1000 AS \"Duration\",\n    exit_code AS \"Exit code\",\n    session_id AS \"Session\"\nFROM agents.commands\nWHERE $__timeFilter(ts) AND host IN (${host:singlequote}) AND tool IN (${tool:singlequote})\nORDER BY ts DESC\nLIMIT 500"
+        }
+      ],
+      "fieldConfig": {
+        "defaults": {
+          "custom": {
+            "align": "auto",
+            "cellOptions": {
+              "type": "auto"
+            },
+            "filterable": true
+          }
+        },
+        "overrides": [
+          {
+            "matcher": {
+              "id": "byName",
+              "options": "Duration"
+            },
+            "properties": [
+              {
+                "id": "unit",
+                "value": "s"
+              }
+            ]
+          }
+        ]
+      },
+      "options": {
+        "showHeader": true,
+        "cellHeight": "sm",
+        "sortBy": []
+      },
+      "id": 9,
+      "gridPos": {
+        "h": 12,
+        "w": 24,
+        "x": 0,
+        "y": 44
+      }
+    }
+  ]
+}

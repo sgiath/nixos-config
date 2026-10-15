@@ -97,6 +97,13 @@ Why it is built this way is in
   `/var/backup/agent-archive` on Vesta's root disk. Restore one with
   `clickhouse-client --port 9001 --user archive --query 'INSERT INTO archive.raw FORMAT Parquet' < raw-YYYYMM.parquet`.
 
+Dashboards are at <https://grafana.sgiath.dev> (Nebula only, no login), folder
+Agents: usage, model comparison, and tool calls and commands, each filterable
+by host and harness. They are provisioned read-only from
+`modules/nixos/services/agent-archive/dashboards/`; to change one, edit it in
+Grafana, copy the JSON model (Edit > Settings > JSON Model) over its file and
+deploy. Explore takes ad-hoc SQL against the same data source.
+
 Query it over Nebula; the `default` user is read-only:
 
 ```bash

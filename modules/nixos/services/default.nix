@@ -8,6 +8,7 @@
     ./executor.nix
     ./factorio.nix
     ./foundryvtt.nix
+    ./grafana.nix
     ./hermes-agent.nix
     ./home-assistant.nix
     ./jellyfin.nix

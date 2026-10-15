@@ -1,0 +1,1436 @@
+{
+  "uid": "agent-usage",
+  "title": "Agent usage",
+  "description": "Requests, tokens and activity across every harness and host (agents.requests, rebuilt hourly at :30).",
+  "tags": [
+    "agents"
+  ],
+  "editable": true,
+  "graphTooltip": 1,
+  "timezone": "browser",
+  "time": {
+    "from": "now-1y",
+    "to": "now"
+  },
+  "refresh": "",
+  "schemaVersion": 41,
+  "templating": {
+    "list": [
+      {
+        "type": "query",
+        "name": "host",
+        "label": "Host",
+        "datasource": {
+          "type": "grafana-clickhouse-datasource",
+          "uid": "agent-archive"
+        },
+        "query": "SELECT DISTINCT host FROM agents.requests ORDER BY host",
+        "definition": "SELECT DISTINCT host FROM agents.requests ORDER BY host",
+        "multi": true,
+        "includeAll": true,
+        "current": {
+          "selected": true,
+          "text": [
+            "All"
+          ],
+          "value": [
+            "$__all"
+          ]
+        },
+        "refresh": 2,
+        "sort": 0
+      },
+      {
+        "type": "query",
+        "name": "tool",
+        "label": "Harness",
+        "datasource": {
+          "type": "grafana-clickhouse-datasource",
+          "uid": "agent-archive"
+        },
+        "query": "SELECT tool FROM agents.requests WHERE host IN (${host:singlequote}) GROUP BY tool ORDER BY count() DESC",
+        "definition": "SELECT tool FROM agents.requests WHERE host IN (${host:singlequote}) GROUP BY tool ORDER BY count() DESC",
+        "multi": true,
+        "includeAll": true,
+        "current": {
+          "selected": true,
+          "text": [
+            "All"
+          ],
+          "value": [
+            "$__all"
+          ]
+        },
+        "refresh": 2,
+        "sort": 0
+      }
+    ]
+  },
+  "annotations": {
+    "list": []
+  },
+  "links": [
+    {
+      "type": "dashboards",
+      "tags": [
+        "agents"
+      ],
+      "asDropdown": false,
+      "includeVars": true,
+      "keepTime": true,
+      "title": "Agents"
+    }
+  ],
+  "panels": [
+    {
+      "type": "stat",
+      "title": "Requests",
+      "description": "Prompt tokens include cache reads and writes. Cache reads and subagent requests are shares of the totals.",
+      "datasource": {
+        "type": "grafana-clickhouse-datasource",
+        "uid": "agent-archive"
+      },
+      "targets": [
+        {
+          "refId": "A",
+          "datasource": {
+            "type": "grafana-clickhouse-datasource",
+            "uid": "agent-archive"
+          },
+          "editorType": "sql",
+          "format": 1,
+          "queryType": "table",
+          "rawSql": "SELECT\n    count() AS \"Requests\",\n    uniq(tool, session_id) AS \"Sessions\",\n    uniq(toDate(ts, 'Europe/Prague')) AS \"Active days\",\n    sum(input_tokens + cache_read_tokens + cache_write_tokens) AS \"Prompt tokens\",\n    sum(cache_read_tokens) / sum(input_tokens + cache_read_tokens + cache_write_tokens) AS \"Cache reads\",\n    sum(output_tokens) AS \"Output tokens\",\n    countIf(is_subagent) / count() AS \"Subagent requests\"\nFROM agents.requests\nWHERE $__timeFilter(ts) AND host IN (${host:singlequote}) AND tool IN (${tool:singlequote})"
+        }
+      ],
+      "fieldConfig": {
+        "defaults": {
+          "unit": "short",
+          "decimals": 1,
+          "color": {
+            "mode": "fixed",
+            "fixedColor": "text"
+          }
+        },
+        "overrides": [
+          {
+            "matcher": {
+              "id": "byName",
+              "options": "Active days"
+            },
+            "properties": [
+              {
+                "id": "unit",
+                "value": "none"
+              },
+              {
+                "id": "decimals",
+                "value": 0
+              }
+            ]
+          },
+          {
+            "matcher": {
+              "id": "byName",
+              "options": "Cache reads"
+            },
+            "properties": [
+              {
+                "id": "unit",
+                "value": "percentunit"
+              }
+            ]
+          },
+          {
+            "matcher": {
+              "id": "byName",
+              "options": "Subagent requests"
+            },
+            "properties": [
+              {
+                "id": "unit",
+                "value": "percentunit"
+              }
+            ]
+          }
+        ]
+      },
+      "options": {
+        "reduceOptions": {
+          "calcs": [
+            "lastNotNull"
+          ],
+          "fields": "",
+          "values": false
+        },
+        "colorMode": "none",
+        "graphMode": "none",
+        "justifyMode": "center",
+        "textMode": "value_and_name",
+        "orientation": "vertical",
+        "wideLayout": true
+      },
+      "id": 1,
+      "gridPos": {
+        "h": 4,
+        "w": 24,
+        "x": 0,
+        "y": 0
+      }
+    },
+    {
+      "type": "stat",
+      "title": "Tool calls",
+      "description": "Tool calls include the OpenCode sessions recovered from the plugin hook copy (Feb-Jun 2026), which have no requests. Hours leave out their lsp_diagnostics results, which were stamped long after the call.",
+      "datasource": {
+        "type": "grafana-clickhouse-datasource",
+        "uid": "agent-archive"
+      },
+      "targets": [
+        {
+          "refId": "A",
+          "datasource": {
+            "type": "grafana-clickhouse-datasource",
+            "uid": "agent-archive"
+          },
+          "editorType": "sql",
+          "format": 1,
+          "queryType": "table",
+          "rawSql": "SELECT\n    (SELECT count() FROM agents.tool_calls WHERE $__timeFilter(ts) AND host IN (${host:singlequote}) AND tool IN (${tool:singlequote})) AS \"Tool calls\",\n    (SELECT count() FROM agents.commands WHERE $__timeFilter(ts) AND host IN (${host:singlequote}) AND tool IN (${tool:singlequote})) AS \"Shell commands\",\n    (SELECT sum(duration_ms) / 3600000 FROM agents.tool_calls WHERE $__timeFilter(ts) AND host IN (${host:singlequote}) AND tool IN (${tool:singlequote}) AND NOT (tool = 'opencode' AND request_id = '' AND name = 'lsp_diagnostics')) AS \"Hours in tool calls\",\n    (SELECT countIf(is_error = 1) / countIf(is_error IS NOT NULL) FROM agents.tool_calls WHERE $__timeFilter(ts) AND host IN (${host:singlequote}) AND tool IN (${tool:singlequote})) AS \"Calls with an error\",\n    (SELECT count() FROM agents.opencode_recovered_sessions\n        WHERE $__timeFilter(started) AND host IN (${host:singlequote}) AND has([${tool:singlequote}], 'opencode')) AS \"Recovered OpenCode sessions\""
+        }
+      ],
+      "fieldConfig": {
+        "defaults": {
+          "unit": "short",
+          "decimals": 1,
+          "color": {
+            "mode": "fixed",
+            "fixedColor": "text"
+          }
+        },
+        "overrides": [
+          {
+            "matcher": {
+              "id": "byName",
+              "options": "Hours in tool calls"
+            },
+            "properties": [
+              {
+                "id": "unit",
+                "value": "none"
+              },
+              {
+                "id": "decimals",
+                "value": 0
+              }
+            ]
+          },
+          {
+            "matcher": {
+              "id": "byName",
+              "options": "Calls with an error"
+            },
+            "properties": [
+              {
+                "id": "unit",
+                "value": "percentunit"
+              }
+            ]
+          },
+          {
+            "matcher": {
+              "id": "byName",
+              "options": "Recovered OpenCode sessions"
+            },
+            "properties": [
+              {
+                "id": "unit",
+                "value": "none"
+              },
+              {
+                "id": "decimals",
+                "value": 0
+              }
+            ]
+          }
+        ]
+      },
+      "options": {
+        "reduceOptions": {
+          "calcs": [
+            "lastNotNull"
+          ],
+          "fields": "",
+          "values": false
+        },
+        "colorMode": "none",
+        "graphMode": "none",
+        "justifyMode": "center",
+        "textMode": "value_and_name",
+        "orientation": "vertical",
+        "wideLayout": true
+      },
+      "id": 2,
+      "gridPos": {
+        "h": 4,
+        "w": 24,
+        "x": 0,
+        "y": 4
+      }
+    },
+    {
+      "type": "timeseries",
+      "title": "Requests per day",
+      "description": "",
+      "interval": "1d",
+      "datasource": {
+        "type": "grafana-clickhouse-datasource",
+        "uid": "agent-archive"
+      },
+      "targets": [
+        {
+          "refId": "A",
+          "datasource": {
+            "type": "grafana-clickhouse-datasource",
+            "uid": "agent-archive"
+          },
+          "editorType": "sql",
+          "format": 0,
+          "queryType": "timeseries",
+          "rawSql": "SELECT $__timeInterval(ts) AS time, tool, count() AS requests\nFROM agents.requests\nWHERE $__timeFilter(ts) AND host IN (${host:singlequote}) AND tool IN (${tool:singlequote})\nGROUP BY time, tool\nORDER BY time"
+        }
+      ],
+      "fieldConfig": {
+        "defaults": {
+          "custom": {
+            "drawStyle": "bars",
+            "fillOpacity": 85,
+            "lineWidth": 1,
+            "pointSize": 4,
+            "showPoints": "never",
+            "spanNulls": false,
+            "stacking": {
+              "mode": "normal",
+              "group": "A"
+            },
+            "axisSoftMin": 0,
+            "axisLabel": ""
+          },
+          "unit": "short",
+          "color": {
+            "mode": "palette-classic"
+          },
+          "displayName": "${__field.labels.__values}"
+        },
+        "overrides": [
+          {
+            "matcher": {
+              "id": "byRegexp",
+              "options": "^(.+ )?omo$"
+            },
+            "properties": [
+              {
+                "id": "color",
+                "value": {
+                  "mode": "fixed",
+                  "fixedColor": "#35a97f"
+                }
+              }
+            ]
+          },
+          {
+            "matcher": {
+              "id": "byRegexp",
+              "options": "^(.+ )?codex$"
+            },
+            "properties": [
+              {
+                "id": "color",
+                "value": {
+                  "mode": "fixed",
+                  "fixedColor": "#4f84c8"
+                }
+              }
+            ]
+          },
+          {
+            "matcher": {
+              "id": "byRegexp",
+              "options": "^(.+ )?opencode$"
+            },
+            "properties": [
+              {
+                "id": "color",
+                "value": {
+                  "mode": "fixed",
+                  "fixedColor": "#c47f33"
+                }
+              }
+            ]
+          },
+          {
+            "matcher": {
+              "id": "byRegexp",
+              "options": "^(.+ )?omp$"
+            },
+            "properties": [
+              {
+                "id": "color",
+                "value": {
+                  "mode": "fixed",
+                  "fixedColor": "#2d9bb9"
+                }
+              }
+            ]
+          },
+          {
+            "matcher": {
+              "id": "byRegexp",
+              "options": "^(.+ )?claude$"
+            },
+            "properties": [
+              {
+                "id": "color",
+                "value": {
+                  "mode": "fixed",
+                  "fixedColor": "#e25d52"
+                }
+              }
+            ]
+          },
+          {
+            "matcher": {
+              "id": "byRegexp",
+              "options": "^(.+ )?cursor$"
+            },
+            "properties": [
+              {
+                "id": "color",
+                "value": {
+                  "mode": "fixed",
+                  "fixedColor": "#9085e9"
+                }
+              }
+            ]
+          },
+          {
+            "matcher": {
+              "id": "byRegexp",
+              "options": "^(.+ )?muse$"
+            },
+            "properties": [
+              {
+                "id": "color",
+                "value": {
+                  "mode": "fixed",
+                  "fixedColor": "#787882"
+                }
+              }
+            ]
+          },
+          {
+            "matcher": {
+              "id": "byRegexp",
+              "options": "^(.+ )?prime$"
+            },
+            "properties": [
+              {
+                "id": "color",
+                "value": {
+                  "mode": "fixed",
+                  "fixedColor": "#8e8e98"
+                }
+              }
+            ]
+          },
+          {
+            "matcher": {
+              "id": "byRegexp",
+              "options": "^(.+ )?pi$"
+            },
+            "properties": [
+              {
+                "id": "color",
+                "value": {
+                  "mode": "fixed",
+                  "fixedColor": "#62626c"
+                }
+              }
+            ]
+          },
+          {
+            "matcher": {
+              "id": "byRegexp",
+              "options": "^(.+ )?grok$"
+            },
+            "properties": [
+              {
+                "id": "color",
+                "value": {
+                  "mode": "fixed",
+                  "fixedColor": "#a4a4ae"
+                }
+              }
+            ]
+          }
+        ]
+      },
+      "options": {
+        "legend": {
+          "displayMode": "list",
+          "placement": "bottom",
+          "showLegend": true
+        },
+        "tooltip": {
+          "mode": "multi",
+          "sort": "desc"
+        }
+      },
+      "id": 3,
+      "gridPos": {
+        "h": 9,
+        "w": 24,
+        "x": 0,
+        "y": 8
+      }
+    },
+    {
+      "type": "timeseries",
+      "title": "Output tokens per day",
+      "description": "",
+      "interval": "1d",
+      "datasource": {
+        "type": "grafana-clickhouse-datasource",
+        "uid": "agent-archive"
+      },
+      "targets": [
+        {
+          "refId": "A",
+          "datasource": {
+            "type": "grafana-clickhouse-datasource",
+            "uid": "agent-archive"
+          },
+          "editorType": "sql",
+          "format": 0,
+          "queryType": "timeseries",
+          "rawSql": "SELECT $__timeInterval(ts) AS time, tool, sum(output_tokens) AS output_tokens\nFROM agents.requests\nWHERE $__timeFilter(ts) AND host IN (${host:singlequote}) AND tool IN (${tool:singlequote})\nGROUP BY time, tool\nORDER BY time"
+        }
+      ],
+      "fieldConfig": {
+        "defaults": {
+          "custom": {
+            "drawStyle": "bars",
+            "fillOpacity": 85,
+            "lineWidth": 1,
+            "pointSize": 4,
+            "showPoints": "never",
+            "spanNulls": false,
+            "stacking": {
+              "mode": "normal",
+              "group": "A"
+            },
+            "axisSoftMin": 0,
+            "axisLabel": ""
+          },
+          "unit": "short",
+          "color": {
+            "mode": "palette-classic"
+          },
+          "displayName": "${__field.labels.__values}"
+        },
+        "overrides": [
+          {
+            "matcher": {
+              "id": "byRegexp",
+              "options": "^(.+ )?omo$"
+            },
+            "properties": [
+              {
+                "id": "color",
+                "value": {
+                  "mode": "fixed",
+                  "fixedColor": "#35a97f"
+                }
+              }
+            ]
+          },
+          {
+            "matcher": {
+              "id": "byRegexp",
+              "options": "^(.+ )?codex$"
+            },
+            "properties": [
+              {
+                "id": "color",
+                "value": {
+                  "mode": "fixed",
+                  "fixedColor": "#4f84c8"
+                }
+              }
+            ]
+          },
+          {
+            "matcher": {
+              "id": "byRegexp",
+              "options": "^(.+ )?opencode$"
+            },
+            "properties": [
+              {
+                "id": "color",
+                "value": {
+                  "mode": "fixed",
+                  "fixedColor": "#c47f33"
+                }
+              }
+            ]
+          },
+          {
+            "matcher": {
+              "id": "byRegexp",
+              "options": "^(.+ )?omp$"
+            },
+            "properties": [
+              {
+                "id": "color",
+                "value": {
+                  "mode": "fixed",
+                  "fixedColor": "#2d9bb9"
+                }
+              }
+            ]
+          },
+          {
+            "matcher": {
+              "id": "byRegexp",
+              "options": "^(.+ )?claude$"
+            },
+            "properties": [
+              {
+                "id": "color",
+                "value": {
+                  "mode": "fixed",
+                  "fixedColor": "#e25d52"
+                }
+              }
+            ]
+          },
+          {
+            "matcher": {
+              "id": "byRegexp",
+              "options": "^(.+ )?cursor$"
+            },
+            "properties": [
+              {
+                "id": "color",
+                "value": {
+                  "mode": "fixed",
+                  "fixedColor": "#9085e9"
+                }
+              }
+            ]
+          },
+          {
+            "matcher": {
+              "id": "byRegexp",
+              "options": "^(.+ )?muse$"
+            },
+            "properties": [
+              {
+                "id": "color",
+                "value": {
+                  "mode": "fixed",
+                  "fixedColor": "#787882"
+                }
+              }
+            ]
+          },
+          {
+            "matcher": {
+              "id": "byRegexp",
+              "options": "^(.+ )?prime$"
+            },
+            "properties": [
+              {
+                "id": "color",
+                "value": {
+                  "mode": "fixed",
+                  "fixedColor": "#8e8e98"
+                }
+              }
+            ]
+          },
+          {
+            "matcher": {
+              "id": "byRegexp",
+              "options": "^(.+ )?pi$"
+            },
+            "properties": [
+              {
+                "id": "color",
+                "value": {
+                  "mode": "fixed",
+                  "fixedColor": "#62626c"
+                }
+              }
+            ]
+          },
+          {
+            "matcher": {
+              "id": "byRegexp",
+              "options": "^(.+ )?grok$"
+            },
+            "properties": [
+              {
+                "id": "color",
+                "value": {
+                  "mode": "fixed",
+                  "fixedColor": "#a4a4ae"
+                }
+              }
+            ]
+          }
+        ]
+      },
+      "options": {
+        "legend": {
+          "displayMode": "list",
+          "placement": "bottom",
+          "showLegend": true
+        },
+        "tooltip": {
+          "mode": "multi",
+          "sort": "desc"
+        }
+      },
+      "id": 4,
+      "gridPos": {
+        "h": 8,
+        "w": 12,
+        "x": 0,
+        "y": 17
+      }
+    },
+    {
+      "type": "timeseries",
+      "title": "Harness share of requests per month",
+      "description": "",
+      "interval": "30d",
+      "datasource": {
+        "type": "grafana-clickhouse-datasource",
+        "uid": "agent-archive"
+      },
+      "targets": [
+        {
+          "refId": "A",
+          "datasource": {
+            "type": "grafana-clickhouse-datasource",
+            "uid": "agent-archive"
+          },
+          "editorType": "sql",
+          "format": 0,
+          "queryType": "timeseries",
+          "rawSql": "SELECT toDateTime(toStartOfMonth(ts)) AS time, tool, count() AS requests\nFROM agents.requests\nWHERE $__timeFilter(ts) AND host IN (${host:singlequote}) AND tool IN (${tool:singlequote})\nGROUP BY time, tool\nORDER BY time"
+        }
+      ],
+      "fieldConfig": {
+        "defaults": {
+          "custom": {
+            "drawStyle": "bars",
+            "fillOpacity": 85,
+            "lineWidth": 1,
+            "pointSize": 4,
+            "showPoints": "never",
+            "spanNulls": false,
+            "stacking": {
+              "mode": "percent",
+              "group": "A"
+            },
+            "axisSoftMin": 0,
+            "axisLabel": ""
+          },
+          "unit": "short",
+          "color": {
+            "mode": "palette-classic"
+          },
+          "displayName": "${__field.labels.__values}"
+        },
+        "overrides": [
+          {
+            "matcher": {
+              "id": "byRegexp",
+              "options": "^(.+ )?omo$"
+            },
+            "properties": [
+              {
+                "id": "color",
+                "value": {
+                  "mode": "fixed",
+                  "fixedColor": "#35a97f"
+                }
+              }
+            ]
+          },
+          {
+            "matcher": {
+              "id": "byRegexp",
+              "options": "^(.+ )?codex$"
+            },
+            "properties": [
+              {
+                "id": "color",
+                "value": {
+                  "mode": "fixed",
+                  "fixedColor": "#4f84c8"
+                }
+              }
+            ]
+          },
+          {
+            "matcher": {
+              "id": "byRegexp",
+              "options": "^(.+ )?opencode$"
+            },
+            "properties": [
+              {
+                "id": "color",
+                "value": {
+                  "mode": "fixed",
+                  "fixedColor": "#c47f33"
+                }
+              }
+            ]
+          },
+          {
+            "matcher": {
+              "id": "byRegexp",
+              "options": "^(.+ )?omp$"
+            },
+            "properties": [
+              {
+                "id": "color",
+                "value": {
+                  "mode": "fixed",
+                  "fixedColor": "#2d9bb9"
+                }
+              }
+            ]
+          },
+          {
+            "matcher": {
+              "id": "byRegexp",
+              "options": "^(.+ )?claude$"
+            },
+            "properties": [
+              {
+                "id": "color",
+                "value": {
+                  "mode": "fixed",
+                  "fixedColor": "#e25d52"
+                }
+              }
+            ]
+          },
+          {
+            "matcher": {
+              "id": "byRegexp",
+              "options": "^(.+ )?cursor$"
+            },
+            "properties": [
+              {
+                "id": "color",
+                "value": {
+                  "mode": "fixed",
+                  "fixedColor": "#9085e9"
+                }
+              }
+            ]
+          },
+          {
+            "matcher": {
+              "id": "byRegexp",
+              "options": "^(.+ )?muse$"
+            },
+            "properties": [
+              {
+                "id": "color",
+                "value": {
+                  "mode": "fixed",
+                  "fixedColor": "#787882"
+                }
+              }
+            ]
+          },
+          {
+            "matcher": {
+              "id": "byRegexp",
+              "options": "^(.+ )?prime$"
+            },
+            "properties": [
+              {
+                "id": "color",
+                "value": {
+                  "mode": "fixed",
+                  "fixedColor": "#8e8e98"
+                }
+              }
+            ]
+          },
+          {
+            "matcher": {
+              "id": "byRegexp",
+              "options": "^(.+ )?pi$"
+            },
+            "properties": [
+              {
+                "id": "color",
+                "value": {
+                  "mode": "fixed",
+                  "fixedColor": "#62626c"
+                }
+              }
+            ]
+          },
+          {
+            "matcher": {
+              "id": "byRegexp",
+              "options": "^(.+ )?grok$"
+            },
+            "properties": [
+              {
+                "id": "color",
+                "value": {
+                  "mode": "fixed",
+                  "fixedColor": "#a4a4ae"
+                }
+              }
+            ]
+          }
+        ]
+      },
+      "options": {
+        "legend": {
+          "displayMode": "list",
+          "placement": "bottom",
+          "showLegend": true
+        },
+        "tooltip": {
+          "mode": "multi",
+          "sort": "desc"
+        }
+      },
+      "id": 5,
+      "gridPos": {
+        "h": 8,
+        "w": 12,
+        "x": 12,
+        "y": 17
+      }
+    },
+    {
+      "type": "timeseries",
+      "title": "Requests per week by model",
+      "description": "The ten models with the most requests in the range; the rest are summed as other.",
+      "interval": "7d",
+      "datasource": {
+        "type": "grafana-clickhouse-datasource",
+        "uid": "agent-archive"
+      },
+      "targets": [
+        {
+          "refId": "A",
+          "datasource": {
+            "type": "grafana-clickhouse-datasource",
+            "uid": "agent-archive"
+          },
+          "editorType": "sql",
+          "format": 0,
+          "queryType": "timeseries",
+          "rawSql": "WITH top AS\n(\n    SELECT model FROM agents.requests\n    WHERE $__timeFilter(ts) AND host IN (${host:singlequote}) AND tool IN (${tool:singlequote}) AND model != ''\n    GROUP BY model ORDER BY count() DESC LIMIT 10\n)\nSELECT toDateTime(toStartOfWeek(ts, 1)) AS time, if(model IN (SELECT model FROM top), model, 'other') AS model_name, count() AS requests\nFROM agents.requests\nWHERE $__timeFilter(ts) AND host IN (${host:singlequote}) AND tool IN (${tool:singlequote})\nGROUP BY time, model_name\nORDER BY time"
+        }
+      ],
+      "fieldConfig": {
+        "defaults": {
+          "custom": {
+            "drawStyle": "bars",
+            "fillOpacity": 85,
+            "lineWidth": 1,
+            "pointSize": 4,
+            "showPoints": "never",
+            "spanNulls": false,
+            "stacking": {
+              "mode": "normal",
+              "group": "A"
+            },
+            "axisSoftMin": 0,
+            "axisLabel": ""
+          },
+          "unit": "short",
+          "color": {
+            "mode": "palette-classic"
+          },
+          "displayName": "${__field.labels.__values}"
+        },
+        "overrides": []
+      },
+      "options": {
+        "legend": {
+          "displayMode": "list",
+          "placement": "bottom",
+          "showLegend": true
+        },
+        "tooltip": {
+          "mode": "multi",
+          "sort": "desc"
+        }
+      },
+      "id": 6,
+      "gridPos": {
+        "h": 8,
+        "w": 12,
+        "x": 0,
+        "y": 25
+      }
+    },
+    {
+      "type": "barchart",
+      "title": "Token composition by harness",
+      "description": "Disjoint token categories per harness. Cursor reports no cache split; Grok records no usage.",
+      "datasource": {
+        "type": "grafana-clickhouse-datasource",
+        "uid": "agent-archive"
+      },
+      "targets": [
+        {
+          "refId": "A",
+          "datasource": {
+            "type": "grafana-clickhouse-datasource",
+            "uid": "agent-archive"
+          },
+          "editorType": "sql",
+          "format": 1,
+          "queryType": "table",
+          "rawSql": "SELECT\n    tool,\n    sum(input_tokens) AS \"Uncached input\",\n    sum(cache_read_tokens) AS \"Cache reads\",\n    sum(cache_write_tokens) AS \"Cache writes\",\n    sum(output_tokens) AS \"Output\"\nFROM agents.requests\nWHERE $__timeFilter(ts) AND host IN (${host:singlequote}) AND tool IN (${tool:singlequote})\nGROUP BY tool\nORDER BY count() DESC"
+        }
+      ],
+      "fieldConfig": {
+        "defaults": {
+          "unit": "percentunit",
+          "custom": {
+            "fillOpacity": 85,
+            "lineWidth": 0
+          },
+          "color": {
+            "mode": "palette-classic"
+          }
+        },
+        "overrides": []
+      },
+      "options": {
+        "xField": "tool",
+        "orientation": "horizontal",
+        "stacking": "percent",
+        "showValue": "never",
+        "barWidth": 0.8,
+        "legend": {
+          "displayMode": "list",
+          "placement": "bottom",
+          "showLegend": true
+        },
+        "tooltip": {
+          "mode": "multi",
+          "sort": "none"
+        }
+      },
+      "id": 7,
+      "gridPos": {
+        "h": 8,
+        "w": 12,
+        "x": 12,
+        "y": 25
+      }
+    },
+    {
+      "type": "table",
+      "title": "Activity by weekday and hour (Europe/Prague)",
+      "description": "Requests per local weekday and hour.",
+      "datasource": {
+        "type": "grafana-clickhouse-datasource",
+        "uid": "agent-archive"
+      },
+      "targets": [
+        {
+          "refId": "A",
+          "datasource": {
+            "type": "grafana-clickhouse-datasource",
+            "uid": "agent-archive"
+          },
+          "editorType": "sql",
+          "format": 1,
+          "queryType": "table",
+          "rawSql": "SELECT\n    arrayElement(['Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat', 'Sun'], toDayOfWeek(t)) AS \"Day\",\n    countIf(toHour(t) = 0) AS \"00\", countIf(toHour(t) = 1) AS \"01\", countIf(toHour(t) = 2) AS \"02\", countIf(toHour(t) = 3) AS \"03\", countIf(toHour(t) = 4) AS \"04\", countIf(toHour(t) = 5) AS \"05\", countIf(toHour(t) = 6) AS \"06\", countIf(toHour(t) = 7) AS \"07\", countIf(toHour(t) = 8) AS \"08\", countIf(toHour(t) = 9) AS \"09\", countIf(toHour(t) = 10) AS \"10\", countIf(toHour(t) = 11) AS \"11\", countIf(toHour(t) = 12) AS \"12\", countIf(toHour(t) = 13) AS \"13\", countIf(toHour(t) = 14) AS \"14\", countIf(toHour(t) = 15) AS \"15\", countIf(toHour(t) = 16) AS \"16\", countIf(toHour(t) = 17) AS \"17\", countIf(toHour(t) = 18) AS \"18\", countIf(toHour(t) = 19) AS \"19\", countIf(toHour(t) = 20) AS \"20\", countIf(toHour(t) = 21) AS \"21\", countIf(toHour(t) = 22) AS \"22\", countIf(toHour(t) = 23) AS \"23\"\nFROM (SELECT toTimeZone(ts, 'Europe/Prague') AS t FROM agents.requests WHERE $__timeFilter(ts) AND host IN (${host:singlequote}) AND tool IN (${tool:singlequote}))\nGROUP BY toDayOfWeek(t)\nORDER BY toDayOfWeek(t)"
+        }
+      ],
+      "fieldConfig": {
+        "defaults": {
+          "custom": {
+            "align": "auto",
+            "cellOptions": {
+              "type": "color-background",
+              "mode": "basic"
+            },
+            "filterable": false,
+            "width": 56
+          },
+          "color": {
+            "mode": "continuous-BlPu"
+          }
+        },
+        "overrides": [
+          {
+            "matcher": {
+              "id": "byName",
+              "options": "Day"
+            },
+            "properties": [
+              {
+                "id": "custom.cellOptions",
+                "value": {
+                  "type": "auto"
+                }
+              },
+              {
+                "id": "custom.width",
+                "value": 60
+              }
+            ]
+          }
+        ]
+      },
+      "options": {
+        "showHeader": true,
+        "cellHeight": "sm",
+        "sortBy": []
+      },
+      "id": 8,
+      "gridPos": {
+        "h": 9,
+        "w": 24,
+        "x": 0,
+        "y": 33
+      }
+    },
+    {
+      "type": "table",
+      "title": "Accounts",
+      "description": ".claude-remote and .codex-remote are the second accounts; .omp/profiles/* are named OMP profiles.",
+      "datasource": {
+        "type": "grafana-clickhouse-datasource",
+        "uid": "agent-archive"
+      },
+      "targets": [
+        {
+          "refId": "A",
+          "datasource": {
+            "type": "grafana-clickhouse-datasource",
+            "uid": "agent-archive"
+          },
+          "editorType": "sql",
+          "format": 1,
+          "queryType": "table",
+          "rawSql": "SELECT\n    host AS \"Host\",\n    tool AS \"Harness\",\n    account AS \"Account\",\n    count() AS \"Requests\",\n    uniq(session_id) AS \"Sessions\",\n    sum(output_tokens) AS \"Output tokens\",\n    min(ts) AS \"First\",\n    max(ts) AS \"Last\"\nFROM agents.requests\nWHERE $__timeFilter(ts) AND host IN (${host:singlequote}) AND tool IN (${tool:singlequote})\nGROUP BY host, tool, account\nORDER BY count() DESC"
+        }
+      ],
+      "fieldConfig": {
+        "defaults": {
+          "custom": {
+            "align": "auto",
+            "cellOptions": {
+              "type": "auto"
+            },
+            "filterable": true
+          }
+        },
+        "overrides": [
+          {
+            "matcher": {
+              "id": "byName",
+              "options": "Output tokens"
+            },
+            "properties": [
+              {
+                "id": "unit",
+                "value": "short"
+              }
+            ]
+          }
+        ]
+      },
+      "options": {
+        "showHeader": true,
+        "cellHeight": "sm",
+        "sortBy": []
+      },
+      "id": 9,
+      "gridPos": {
+        "h": 9,
+        "w": 24,
+        "x": 0,
+        "y": 42
+      }
+    },
+    {
+      "type": "table",
+      "title": "Projects",
+      "description": "Repository from the working directory; branch worktrees fold into their repository. Cursor and Grok record no working directory.",
+      "datasource": {
+        "type": "grafana-clickhouse-datasource",
+        "uid": "agent-archive"
+      },
+      "targets": [
+        {
+          "refId": "A",
+          "datasource": {
+            "type": "grafana-clickhouse-datasource",
+            "uid": "agent-archive"
+          },
+          "editorType": "sql",
+          "format": 1,
+          "queryType": "table",
+          "rawSql": "SELECT\n    multiIf(\n        cwd LIKE '/home/sgiath/nixos%', 'sgiath/nixos',\n        match(cwd, '^/home/sgiath/\\\\.t3/worktrees/[^/]+'), concat('worktree/', extract(cwd, '^/home/sgiath/\\\\.t3/worktrees/([^/]+)')),\n        match(cwd, '^/home/sgiath/develop/[^/]+/[^/]+'), concat(extract(cwd, '^/home/sgiath/develop/([^/]+)/'), '/', extract(cwd, '^/home/sgiath/develop/[^/]+/([^/.]+)')),\n        cwd LIKE '/home/sgiath/.pi/%', 'pi agent home',\n        cwd LIKE '/nas%', 'nas',\n        cwd LIKE '/tmp%' OR cwd LIKE '/home/sgiath/.t3/scratch%', 'scratch',\n        cwd = '', '(no working directory)',\n        'other') AS \"Project\",\n    count() AS \"Requests\",\n    uniq(tool, session_id) AS \"Sessions\",\n    topK(1)(tool)[1] AS \"Main harness\",\n    sum(output_tokens) AS \"Output tokens\"\nFROM agents.requests\nWHERE $__timeFilter(ts) AND host IN (${host:singlequote}) AND tool IN (${tool:singlequote})\nGROUP BY \"Project\"\nORDER BY count() DESC"
+        }
+      ],
+      "fieldConfig": {
+        "defaults": {
+          "custom": {
+            "align": "auto",
+            "cellOptions": {
+              "type": "auto"
+            },
+            "filterable": true
+          }
+        },
+        "overrides": [
+          {
+            "matcher": {
+              "id": "byName",
+              "options": "Output tokens"
+            },
+            "properties": [
+              {
+                "id": "unit",
+                "value": "short"
+              }
+            ]
+          }
+        ]
+      },
+      "options": {
+        "showHeader": true,
+        "cellHeight": "sm",
+        "sortBy": []
+      },
+      "id": 10,
+      "gridPos": {
+        "h": 9,
+        "w": 12,
+        "x": 0,
+        "y": 51
+      }
+    },
+    {
+      "type": "table",
+      "title": "Session shape",
+      "description": "Sessions that started in the range. Length is first to last request.",
+      "datasource": {
+        "type": "grafana-clickhouse-datasource",
+        "uid": "agent-archive"
+      },
+      "targets": [
+        {
+          "refId": "A",
+          "datasource": {
+            "type": "grafana-clickhouse-datasource",
+            "uid": "agent-archive"
+          },
+          "editorType": "sql",
+          "format": 1,
+          "queryType": "table",
+          "rawSql": "SELECT\n    tool AS \"Harness\",\n    count() AS \"Sessions\",\n    countIf(is_subagent) AS \"Subagent sessions\",\n    quantile(0.5)(requests) AS \"Median requests\",\n    quantile(0.9)(requests) AS \"p90 requests\",\n    quantile(0.5)(dateDiff('second', started, last_request)) AS \"Median length\",\n    quantile(0.9)(dateDiff('second', started, last_request)) AS \"p90 length\"\nFROM agents.sessions\nWHERE $__timeFilter(started) AND host IN (${host:singlequote}) AND tool IN (${tool:singlequote})\nGROUP BY tool\nORDER BY count() DESC"
+        }
+      ],
+      "fieldConfig": {
+        "defaults": {
+          "custom": {
+            "align": "auto",
+            "cellOptions": {
+              "type": "auto"
+            },
+            "filterable": true
+          }
+        },
+        "overrides": [
+          {
+            "matcher": {
+              "id": "byName",
+              "options": "Median length"
+            },
+            "properties": [
+              {
+                "id": "unit",
+                "value": "s"
+              }
+            ]
+          },
+          {
+            "matcher": {
+              "id": "byName",
+              "options": "p90 length"
+            },
+            "properties": [
+              {
+                "id": "unit",
+                "value": "s"
+              }
+            ]
+          }
+        ]
+      },
+      "options": {
+        "showHeader": true,
+        "cellHeight": "sm",
+        "sortBy": []
+      },
+      "id": 11,
+      "gridPos": {
+        "h": 9,
+        "w": 12,
+        "x": 12,
+        "y": 51
+      }
+    },
+    {
+      "type": "table",
+      "title": "Recent sessions",
+      "description": "",
+      "datasource": {
+        "type": "grafana-clickhouse-datasource",
+        "uid": "agent-archive"
+      },
+      "targets": [
+        {
+          "refId": "A",
+          "datasource": {
+            "type": "grafana-clickhouse-datasource",
+            "uid": "agent-archive"
+          },
+          "editorType": "sql",
+          "format": 1,
+          "queryType": "table",
+          "rawSql": "SELECT\n    last_request AS \"Last request\",\n    started AS \"Started\",\n    tool AS \"Harness\",\n    host AS \"Host\",\n    account AS \"Account\",\n    model AS \"Model\",\n    cwd AS \"Working directory\",\n    requests AS \"Requests\",\n    output_tokens AS \"Output tokens\",\n    session_id AS \"Session\"\nFROM agents.sessions\nWHERE $__timeFilter(last_request) AND host IN (${host:singlequote}) AND tool IN (${tool:singlequote})\nORDER BY last_request DESC\nLIMIT 200"
+        }
+      ],
+      "fieldConfig": {
+        "defaults": {
+          "custom": {
+            "align": "auto",
+            "cellOptions": {
+              "type": "auto"
+            },
+            "filterable": true
+          }
+        },
+        "overrides": [
+          {
+            "matcher": {
+              "id": "byName",
+              "options": "Output tokens"
+            },
+            "properties": [
+              {
+                "id": "unit",
+                "value": "short"
+              }
+            ]
+          }
+        ]
+      },
+      "options": {
+        "showHeader": true,
+        "cellHeight": "sm",
+        "sortBy": []
+      },
+      "id": 12,
+      "gridPos": {
+        "h": 10,
+        "w": 24,
+        "x": 0,
+        "y": 60
+      }
+    },
+    {
+      "type": "timeseries",
+      "title": "Recovered OpenCode sessions per day",
+      "description": "Sessions from before OpenCode's database was replaced in June 2026, recovered from the oh-my-opencode hook copy. They have prompts and tool calls but no model responses, so they are not in requests.",
+      "interval": "1d",
+      "datasource": {
+        "type": "grafana-clickhouse-datasource",
+        "uid": "agent-archive"
+      },
+      "targets": [
+        {
+          "refId": "A",
+          "datasource": {
+            "type": "grafana-clickhouse-datasource",
+            "uid": "agent-archive"
+          },
+          "editorType": "sql",
+          "format": 0,
+          "queryType": "timeseries",
+          "rawSql": "SELECT $__timeInterval(started) AS time, count() AS sessions, sum(prompts) AS prompts\nFROM agents.opencode_recovered_sessions\nWHERE $__timeFilter(started) AND host IN (${host:singlequote}) AND has([${tool:singlequote}], 'opencode')\nGROUP BY time\nORDER BY time"
+        }
+      ],
+      "fieldConfig": {
+        "defaults": {
+          "custom": {
+            "drawStyle": "bars",
+            "fillOpacity": 85,
+            "lineWidth": 1,
+            "pointSize": 4,
+            "showPoints": "never",
+            "spanNulls": false,
+            "stacking": {
+              "mode": "none",
+              "group": "A"
+            },
+            "axisSoftMin": 0,
+            "axisLabel": ""
+          },
+          "unit": "short",
+          "color": {
+            "mode": "palette-classic"
+          },
+          "displayName": "${__field.labels.__values}"
+        },
+        "overrides": []
+      },
+      "options": {
+        "legend": {
+          "displayMode": "list",
+          "placement": "bottom",
+          "showLegend": true
+        },
+        "tooltip": {
+          "mode": "multi",
+          "sort": "desc"
+        }
+      },
+      "id": 13,
+      "gridPos": {
+        "h": 6,
+        "w": 24,
+        "x": 0,
+        "y": 70
+      }
+    }
+  ]
+}

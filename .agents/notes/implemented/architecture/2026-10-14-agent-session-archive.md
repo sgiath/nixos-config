@@ -54,6 +54,11 @@ host with agents (`modules/home/agents/archive.nix`) ships records to it.
   stats, Goose, OmO memory transcripts, Cursor CLI transcripts, fx).
 - **Nebula is the auth.** The `default` user is read-only for analysis; the
   `archive` user writes.
+- **Live views in Grafana.** Grafana on Vesta (`grafana.sgiath.dev`) reads
+  the `agents` tables through the ClickHouse plugin as the read-only user.
+  Its dashboards (usage, model comparison, tool calls and commands) are JSON
+  files in the repository, provisioned read-only, so the queries are reviewed
+  and deployed like the SQL they read.
 
 Source discovery, field paths and dedup rules came from a read-only survey of
 every store on Ceres and Vesta; the derived counts were reconciled against it
@@ -70,6 +75,11 @@ cumulative totals per rollout).
 - **Normalizing in the shipper.** Testable in Python, but every parser change
   would need the original files again; verbatim raw plus SQL views keeps
   re-derivation server-side.
+- **A custom analysis app.** Could show what Grafana renders poorly (session
+  drill-down, transcripts, the static report's parsed shell commands), but
+  needs its own code, build and release cycle. Grafana covers live querying
+  and comparison with configuration only; a separate repository is the place
+  for an app if specific views turn out to need one.
 - **Incremental materialized views.** Cheaper per hour, but duplicates and
   updates across ingest partitions make them wrong without careful dedup;
   a full refresh takes seconds at the current size.
@@ -96,5 +106,8 @@ cumulative totals per rollout).
   usage, which that copy never recorded.
 - The static Hermes migration store on Vesta is root-only: archive it with a
   one-time root run of `agent-archive-ship`.
+- Grafana's command figures (programs, grep versus rg, head/tail pipes) are
+  text matches on the command; the static report's shell parser also follows
+  pipes, heredocs and wrappers, so the two differ slightly.
 - Remaining sources, binary assets and an offsite backup are tracked in
   [agent archive follow-ups](../../proposed/feature/2026-10-14-agent-archive-follow-ups.md).

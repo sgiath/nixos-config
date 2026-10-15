@@ -261,6 +261,39 @@ in
         };
       };
 
+      # Live dashboards over the derived tables (grafana.nix runs Grafana).
+      # The dashboards are provisioned read-only from the repository: change
+      # them in the UI, then replace the JSON file with the exported model.
+      services.grafana = lib.mkIf config.services.grafana.enable {
+        declarativePlugins = [ pkgs.grafanaPlugins.grafana-clickhouse-datasource ];
+        provision = {
+          enable = true;
+          datasources.settings.datasources = [
+            {
+              name = "Agent archive";
+              uid = "agent-archive";
+              type = "grafana-clickhouse-datasource";
+              isDefault = true;
+              jsonData = {
+                host = "127.0.0.1";
+                port = tcpPort;
+                protocol = "native";
+                username = "default";
+                defaultDatabase = "agents";
+              };
+            }
+          ];
+          dashboards.settings.providers = [
+            {
+              name = "agent-archive";
+              folder = "Agents";
+              allowUiUpdates = false;
+              options.path = ./agent-archive/dashboards;
+            }
+          ];
+        };
+      };
+
       services.nginx.virtualHosts.${otelHost} = {
         # SSL
         onlySSL = true;
