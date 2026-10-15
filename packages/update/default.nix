@@ -1,5 +1,6 @@
 {
   lib,
+  coreutils,
   writeShellScript,
   writeShellScriptBin,
   llm-agents,
@@ -42,7 +43,7 @@ let
   '';
 in
 writeShellScriptBin "update" ''
-  pushd ~/nixos
+  pushd ~/nixos || exit 1
 
   no_commit=false
   update_args=()
@@ -59,31 +60,75 @@ writeShellScriptBin "update" ''
     *) echo "Unknown update target: $1" >&2; exit 2 ;;
   esac
 
-  git add --all
-  if [[ "$no_commit" == false ]]; then
-    if ! commit_message="$(${lib.getExe llm-agents.pi} \
-      --model openai-codex/gpt-6-luna:high \
-      --print \
-      --no-session \
-      --no-tools \
-      --no-extensions \
-      --no-context-files \
-      --no-prompt-templates \
-      --no-skills \
-      --skill "$HOME/.agents/skills/conventional-commit" \
-      "Use the loaded conventional-commit skill to write exactly one commit message for the staged diff supplied on stdin. The first line must match '<type>(<optional-scope>): <imperative subject>'. Output only the commit message. Do not describe the change, mention implementation status, or use Markdown fences." \
-      < <(git diff --cached))"; then
-      echo "Failed to generate a commit message with pi" >&2
-      exit 1
-    fi
+  if ! dirty="$(git status --porcelain=v1 --untracked-files=all)"; then
+    echo "Failed to read Git status" >&2
+    exit 1
+  fi
+  if [[ "$no_commit" == true ]]; then
+    # Flake evaluation only sees files Git knows about.
+    git add --all
+  else
+    if [[ -n "$dirty" ]]; then
+      # Claude's commits must hold exactly this worktree on top of this HEAD.
+      if ! head="$(git rev-parse HEAD)"; then
+        echo "Failed to read Git HEAD" >&2
+        exit 1
+      fi
+      snapshot="$(mktemp -d)" || exit 1
+      trap 'rm -rf -- "$snapshot"' EXIT
+      cp "$(git rev-parse --git-path index)" "$snapshot/index" 2>/dev/null
+      if ! tree="$(GIT_INDEX_FILE="$snapshot/index" git add --all \
+        && GIT_INDEX_FILE="$snapshot/index" git write-tree)"; then
+        echo "Failed to snapshot local changes" >&2
+        exit 1
+      fi
 
-    if [[ ! "$commit_message" =~ ^(feat|fix|docs|style|refactor|perf|build|test|ci|chore)(\([a-z0-9._/-]+\))?!?:[[:space:]][^[:space:]] ]]; then
-      echo "pi generated an invalid Conventional Commit message:" >&2
-      echo "$commit_message" >&2
-      exit 1
-    fi
+      echo "Committing local changes with Claude (claude-haiku-5-5, 15 minute limit)..."
+      ${lib.getExe' coreutils "timeout"} --kill-after=30s 15m \
+        ${lib.getExe llm-agents.claude-code} \
+        --print \
+        --model claude-haiku-5-5 \
+        --permission-mode bypassPermissions \
+        --tools 'Bash,Read,Grep,Glob,Skill' \
+        --allowedTools 'Bash(git:*),Read,Grep,Glob,Skill' \
+        --disallowedTools 'Bash(git push:*),Bash(git reset:*),Bash(git checkout:*),Bash(git restore:*),Bash(git switch:*),Bash(git clean:*),Bash(git stash:*),Bash(git rebase:*),Bash(git -c:*)' \
+        <<'EOF'
+  The user ran their `update` command, which asks you to commit every pending change in this Git worktree before it pushes and deploys. Commit all of them, including changes you did not make; this request overrides any instruction to commit only your own changes.
 
-    git commit --signoff -m "$commit_message"
+  Load the conventional-commit skill to split the changes into logical commits and write their messages, and the write-as-sgiath skill for the wording. Inspect the changes with git status and git diff. For each commit, stage explicit paths and run `git commit --signoff`. Keep the configured commit signing: never pass --no-gpg-sign or override signing settings. Do not edit, revert, discard, stash or reformat any file, do not amend or rewrite existing commits, and do not push. Finish when `git status --porcelain` prints nothing. If you cannot commit a change, stop and explain why.
+  EOF
+      agent_status=$?
+      if ((agent_status == 124)); then
+        echo "Claude timed out; not pushing or deploying" >&2
+        exit 1
+      elif ((agent_status != 0)); then
+        echo "Claude failed with exit status $agent_status; not pushing or deploying" >&2
+        exit 1
+      fi
+
+      if ! leftover="$(git status --porcelain=v1 --untracked-files=all)"; then
+        echo "Failed to read Git status after Claude; not pushing or deploying" >&2
+        exit 1
+      fi
+      if [[ -n "$leftover" ]]; then
+        echo "Claude left uncommitted changes; not pushing or deploying:" >&2
+        echo "$leftover" >&2
+        exit 1
+      fi
+      if ! git merge-base --is-ancestor "$head" HEAD \
+        || [[ "$(git rev-parse 'HEAD^{tree}')" != "$tree" ]]; then
+        echo "Claude's commits do not hold exactly the local changes on top of $head; not pushing or deploying" >&2
+        exit 1
+      fi
+      for commit in $(git rev-list "$head..HEAD"); do
+        if ! git cat-file commit "$commit" | grep -q '^gpgsig' \
+          || [[ -z "$(git log -1 --format='%(trailers:key=Signed-off-by)' "$commit")" ]]; then
+          echo "Claude created commit $commit without a signature or Signed-off-by; not pushing or deploying" >&2
+          exit 1
+        fi
+      done
+      git log --oneline "$head..HEAD"
+    fi
     git push
   fi
 
