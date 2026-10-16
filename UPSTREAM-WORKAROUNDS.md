@@ -118,6 +118,7 @@ Runtime checks in records are required future checks unless the record's
 | [`comfyui-rocm-platform-guard`](#comfyui-rocm-platform-guard) | compatibility | required | ceres, juno1 |
 | [`comfyui-qwen-memory-policy`](#comfyui-qwen-memory-policy) | compatibility | required | ceres |
 | [`desktop-hyprland-mesa-abi`](#desktop-hyprland-mesa-abi) | ABI | required | desktop |
+| [`desktop-hyprland-elf-wrapper`](#desktop-hyprland-elf-wrapper) | temporary fix | required | desktop |
 | [`portal-qt-theme-isolation`](#portal-qt-theme-isolation) | compatibility | unverified | desktop |
 | [`legacy-wlroots-session-flags`](#legacy-wlroots-session-flags) | compatibility | unverified | desktop |
 | [`satty-floating-hack`](#satty-floating-hack) | compatibility | required | desktop |
@@ -250,6 +251,14 @@ Common runtime check for every ComfyUI record: `systemctl show comfyui.service -
 - **Upstream:** [Hyprland on NixOS (0.54)](https://wiki.hypr.land/0.54.0/Nix/Hyprland-on-NixOS/) still recommends Mesa from Hyprland's nixpkgs. [hyprwm/Hyprland#5148](https://github.com/hyprwm/Hyprland/issues/5148) is closed (2024-03-17), not proof for the current pins.
 - **Remove when:** compositor, portal and 64/32-bit Mesa share a coherent package universe (e.g. Hyprland follows root nixpkgs, or its nixpkgs equals root) and the session runs without the override.
 - **Validate:** `desktop`; runtime: running Hyprland and `/run/opengl-driver` paths, no loader/GLIBC errors in journal, accelerated rendering, screen sharing; on Ceres a 32-bit Steam/Proton game.
+
+#### `desktop-hyprland-elf-wrapper`
+
+- **Where:** `modules/nixos/desktop/wayland.nix` (`programs.hyprland.package` overrides `makeWrapper` with `makeBinaryWrapper` from Hyprland's own nixpkgs).
+- **Why:** nixpkgs gives Hyprland `cap_sys_nice+ep` through a security wrapper whose target must be ELF. The selected Hyprland v0.56.1 source (`5c9377c1`, `nix/default.nix`) uses `makeWrapper`, so `bin/Hyprland` is a Bash script and `ensure-wrapper-integrity` fails.
+- **Upstream:** [Hyprland 6cc0822e24](https://github.com/hyprwm/Hyprland/commit/6cc0822e24) switches to `makeBinaryWrapper`. The selected release lacks that change; the local override applies the same substitution and keeps the runtime PATH dependencies.
+- **Remove when:** the selected Hyprland package uses `makeBinaryWrapper` without the override and the full system's wrapper integrity check passes.
+- **Validate:** build the full Ceres NixOS system; `ensure-wrapper-integrity` must accept the ELF launcher and validate its capabilities. Confirm the launcher retains binutils, hyprland-guiutils, pciutils and pkgconf on PATH and the session entries remain available. Runtime after switching: launch through greetd's `start-hyprland` and check compositor startup and screen sharing.
 
 #### `portal-qt-theme-isolation`
 

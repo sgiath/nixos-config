@@ -71,8 +71,15 @@ in
       "QT_STYLE_OVERRIDE"
     ];
 
-    programs = {
-      hyprland.enable = true;
+    programs.hyprland = {
+      enable = true;
+      # FIXME: Hyprland v0.56.x wraps bin/Hyprland in a shell script, and the nixpkgs
+      # cap_sys_nice security wrapper rejects non-ELF targets. Upstream switched to
+      # makeBinaryWrapper in 6cc0822e24 after v0.56.2; drop this override once the
+      # pinned release includes that commit.
+      package = inputs.hyprland.packages.${pkgs.stdenv.hostPlatform.system}.hyprland.override {
+        makeWrapper = hyprlandPkgs.makeBinaryWrapper;
+      };
     };
   };
 }
