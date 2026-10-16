@@ -55,6 +55,14 @@ single-caller test is too low when the failure needs several callers or a longer
 either the bug is in the wiring, or the layer that owns the behavior has no usable interface. Treat the second
 case as a design finding for skill://codebase-design rather than adding another slow test.
 
+## Keep assertions when moving tests
+
+Moving a test to another layer must not weaken it. Before deleting the old test, map each of its assertions to
+one in the replacement: the exact outcome (which record, which error), not just success or failure, plus its
+boundary and edge cases. Then show the replacement discriminates: break the behavior with a focused throwaway
+mutation and see the new test fail at its intended layer. A replacement that passes against the mutation lost
+coverage, even when the whole suite is green.
+
 ## State the laws before examples
 
 Types establish the shape of a result, not its value. Before picking examples, write down what the code must
