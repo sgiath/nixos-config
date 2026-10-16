@@ -7,12 +7,12 @@
   ffmpeg,
 }:
 let
-  version = "4.13.1";
+  version = "4.13.2";
   src = fetchFromGitHub {
     owner = "samuelgursky";
     repo = "davinci-resolve-mcp";
     tag = "v${version}";
-    hash = "sha256-Ite16xGTk7OZ4LQC8kv8OBXzfE4KhSpJE/8l+vsBp9Y=";
+    hash = "sha256-uuIaDhKxKBA24MMaqZzdPtfKWT2jPGkRwcS9pKAIbh8=";
   };
 
   # FIXME: Resolve MCP requires SDK >=1.30,<2. Remove this override when
