@@ -43,7 +43,7 @@ publication as a completed implementation. A recorded limitation does not waive 
 
 - Follow repository patterns and relevant domain skills. Keep the implementation direct and scoped. Include all affected consumers, cross-app configuration, migrations and necessary companion-repository changes; no unfinished compatibility shim or isolated server change with missing clients.
 - Delegate genuinely independent evidence, reproduction, implementation or verification tasks where useful, with verified-work's handoff record and exact worktree/path ownership. The owning thread collects findings and coordinates fixes and reverification without user relay. Do not let delegates mutate the original checkout.
-- Apply verified-work's role routing: Codex investigates and verifies; Claude Opus 5.5 judges and implements production changes. If the owner runs Codex, delegate production design/implementation to Claude rather than treating delegation as optional for that phase.
+- Apply verified-work's role routing: Claude Opus 5.5 judges and implements production changes and may do supporting work itself; Codex `gpt-6.1-sol` on the fast tier takes delegated investigation and verification, and the independent review of a complicated change at high effort. If the owner runs Codex, delegate production design/implementation to Claude rather than treating delegation as optional for that phase.
 - Validate the reproduction/check before the fix, then run it against the change. Use skill://diagnosing-bugs when the cause is uncertain and skill://tdd for behavioral tests. Exercise the actual UI for visual changes, new API/CLI behavior and the final integration gate; distinguish injected mechanisms from confirmed natural triggers.
 - For UI verification in T3, prefer its collaborative preview: inspect status, open if needed, and use
   snapshot-provided locators and focused interaction tools. Use evaluation only where the tool's contract
@@ -61,7 +61,9 @@ publication as a completed implementation. A recorded limitation does not waive 
 
 ## 4. Babysit until ready
 
-Read and execute skill://babysit-pr on every required PR and companion. In T3, a successful persistent watch followed
+Read and execute skill://babysit-pr on every required GitHub PR and companion. For a GitLab MR, use the
+repository's MR skill (such as babysit-mr) instead, and never `watch_pull_request`: T3 cannot read GitLab MRs.
+In T3, a successful persistent watch followed
 by ending the turn is a waiting state of this workflow. Resume from the recorded PRs on a notification; do not
 recreate the worktree or PRs. Subagents return monitoring ownership to their parent as babysit-pr requires.
 

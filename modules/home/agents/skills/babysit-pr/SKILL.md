@@ -14,6 +14,10 @@ cannot be established or met, ask the user how to proceed, preserve the blocker 
 
 ## Establish the target
 
+This skill is for GitHub only. For a GitLab MR, stop here and use the repository's MR skill (such as babysit-mr);
+never call `watch_pull_request` for it, because T3 cannot read GitLab MRs.
+<!-- FIXME: revisit when a T3 update can watch GitLab MRs (2026-10-16: every GitLab watch still failed). -->
+
 1. Resolve repository, authenticated user, PR, base branch, head repository/branch/SHA and its worktree. Read the
    PR description and diff. Do not assume origin, main/master, or that a supplied PR belongs to this checkout.
    Preserve unrelated user work and reuse the task checkout. If isolation is needed in T3, inspect its binding and
@@ -44,6 +48,9 @@ When `watch_pull_request` is available, use it instead of shell watches, polling
 - On a wake, re-read the current head, all applicable check/reviewer jobs and full review conversations. T3's
   required-check notification is a prompt to verify the finish gate, not proof that optional reviewers finished.
   If work remains external, keep watching and yield again. Do not restart a watcher already active for this thread.
+  A wake is not a reason to post: when the head, checks and review conversations are unchanged, or the only news is
+  a bot processing notice or your own reply, yield without a message. Write to the user only for actionable work
+  you did, a changed state, a blocker or the hand-back.
 - When T3 reports it stopped watching or could not read the PR, re-arm the watch once. If that fails too, use
   the fallback watch below for this PR and report the T3 limitation; do not keep re-arming.
 - Subagents cannot watch. Return their PR URLs, head SHAs, remaining findings and verification to the owning parent;
