@@ -37,6 +37,18 @@ in
       skills = ./skills;
     };
 
+    # Whiteboard ships only an amd64 build (base.nix), so other hosts skip the
+    # plugin. This runs before claudeAttribution, which then normalizes the
+    # settings.json Claude rewrote, keeping later activations byte-identical.
+    home.activation.claudeWhiteboard = lib.mkIf pkgs.stdenv.hostPlatform.isx86_64 (
+      lib.hm.dag.entryBetween [ "claudeAttribution" ] [ "writeBoundary" ] ''
+        run ${lib.getExe (pkgs.callPackage ./whiteboard-plugin.nix { })} claude \
+          ${lib.getExe config.programs.claude-code.package} \
+          ${lib.escapeShellArg "${config.home.profileDirectory}/bin/whiteboard"} \
+          "$HOME/.claude" "$HOME/.claude-remote"
+      ''
+    );
+
     # Claude rewrites settings.json itself (theme, plugins), so merge the
     # attribution policy into both config dirs instead of owning the file.
     # Without cleanupPeriodDays Claude deletes transcripts after 30 days.
