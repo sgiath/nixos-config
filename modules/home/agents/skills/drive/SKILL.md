@@ -63,7 +63,7 @@ worker's persistent watcher. End the turn after the tick; do not keep a shell sl
 
 ## Tick
 
-1. Run `scripts/plan-status <absolute-plan-dir>` from the skill directory and read `plan.md`. The script chooses `gh` or `glab` from origin and uses explicit slice `branch` values when present. Find worker threads with `t3_thread_list` (`titleContains: "<topic> NN"`). Apply verified-work's role routing: production workers and production-design reviews use Claude Opus 5.5; evidence/reproduction/verification delegates use Codex `gpt-6.1-sol`. Honor task-specific overrides and the user's effort choice for workers and descendants.
+1. Run `scripts/plan-status <absolute-plan-dir>` from the skill directory and read `plan.md`. The script chooses `gh` or `glab` from origin and uses explicit slice `branch` values when present. Find worker threads with `t3_thread_list` (`titleContains: "<topic> NN"`). Apply verified-work's role routing: production workers use Claude Opus 5.5; evidence/reproduction/verification delegates and independent reviews of complicated fixes or PRs (including design judgments) use Codex `gpt-6.1-sol` on the fast tier, reviews at high effort; Fable only for new UI designs. Honor task-specific overrides and the user's effort choice for workers and descendants.
    Read `gates/NN.md` for every slice with a worker, PR or delivered dependency, regardless of its delivery status.
    Refresh records from relevant worker messages/artifacts. For an older plan without records, recover applicable
    evidence from its owners rather than assuming a merge proves the gate or rerunning valid checks blindly.

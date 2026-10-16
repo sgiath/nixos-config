@@ -65,7 +65,8 @@ Apply it to my authored text, not your own explanations.
 ## Tool use and MCPs
 
 Prefer directly exposed host tools (including T3 and local Blender tools) and their live documentation.
-Search `executor` first for other integrations before declaring a capability unavailable.
+Every other integration, including Slack, lives in `executor`: discover it with executor's tool search instead of
+looking for a direct tool, and search there before declaring a capability unavailable.
 
 When I ask to use Whiteboard, use the installed dev.fast Whiteboard application through its `whiteboard`
 CLI or MCP tools and load the `whiteboard` skill. Do not substitute a custom website, HTML preview, or
