@@ -65,8 +65,10 @@ if [[ ! -f "${HOSTS_FILE}" ]]; then
   sops -e -i "${HOSTS_FILE}"
 fi
 
-sops set "${HOSTS_FILE}" "[\"${host}_cert\"]" "$(jq -Rs . <"${tmp}/host.crt")"
-sops set "${HOSTS_FILE}" "[\"${host}_key\"]" "$(jq -Rs . <"${tmp}/host.key")"
+cert_json="$(jq -Rs . <"${tmp}/host.crt")"
+key_json="$(jq -Rs . <"${tmp}/host.key")"
+sops set "${HOSTS_FILE}" "[\"${host}_cert\"]" "${cert_json}"
+sops set "${HOSTS_FILE}" "[\"${host}_key\"]" "${key_json}"
 
 echo "==> Signed ${host} (${networks}${groups:+, groups: ${groups}})"
 echo "    Add '${host} = { ip4 = \"${ip4}\"; ip6 = \"${ip6}\"; };' to peers in modules/nixos/common/nebula.nix if missing."

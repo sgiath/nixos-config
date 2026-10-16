@@ -40,7 +40,8 @@ duration() {
 sha256sum --check --status <<<"$src_hash" || fail "source was modified"
 written=$(find . -type f ! -name "$src")
 [[ -f "$out" ]] || fail "expected $out, found: ${written:-nothing}"
-[[ $(wc -l <<<"$written") -eq 1 ]] || fail "expected one new file, found: $written"
+written_count=$(wc -l <<<"$written")
+[[ $written_count -eq 1 ]] || fail "expected one new file, found: $written"
 # Check whatever was written so a wrong name does not hide other failures.
 result=$(head -n 1 <<<"$written")
 [[ -n $result ]] || {
@@ -50,15 +51,19 @@ result=$(head -n 1 <<<"$written")
 
 # One H.264 yuv420p video stream with the source's size, rate and frame count, and
 # one 48 kHz AAC audio stream (the source's first track is 44.1 kHz ALAC).
-jq -e -n --argjson src "$(streams "$src")" --argjson out "$(streams "$result")" '
+src_streams=$(streams "$src")
+out_streams=$(streams "$result")
+jq -e -n --argjson src "$src_streams" --argjson out "$out_streams" '
   ($src.streams[0] | {width, height, r_frame_rate, nb_read_frames}) as $v
   | $v.nb_read_frames == "360"
   and ($out.streams | map(.codec_type)) == ["video", "audio"]
   and ($out.streams[0] | {codec_name, pix_fmt, width, height, r_frame_rate, nb_read_frames})
     == {codec_name: "h264", pix_fmt: "yuv420p"} + $v
   and ($out.streams[1] | [.codec_name, .sample_rate]) == ["aac", "48000"]' >/dev/null ||
-  fail "unexpected streams: $(streams "$result" | jq -c .streams)"
-awk -v a="$(duration "$src")" -v b="$(duration "$result")" \
+  fail "unexpected streams: $out_streams"
+src_duration=$(duration "$src")
+out_duration=$(duration "$result")
+awk -v a="$src_duration" -v b="$out_duration" \
   'BEGIN { exit !((a - b) ^ 2 < 0.05 ^ 2) }' || fail "duration changed"
 
 levels=$(ffmpeg -nostdin -hide_banner -nostats -i "file:$result" -map 0:a:0 \
@@ -70,8 +75,11 @@ jq -e '(.input_i | tonumber) >= -16.5 and (.input_i | tonumber) <= -15.5
 # A rerun over the shell glob also matches the output; it must not process it again.
 out_hash=$(sha256sum -- "$result")
 "$cmd" ./*.mp4 || fail "second run exited $?"
-[[ $(find . -type f | wc -l) -eq 2 ]] || fail "second run added files: $(find . -type f)"
+files=$(find . -type f)
+file_count=$(wc -l <<<"$files")
+[[ $file_count -eq 2 ]] || fail "second run added files: $files"
 sha256sum --check --status <<<"$out_hash" || fail "second run rewrote $result"
 
 ((failures == 0)) || exit 1
-echo "PASS: $out at $(jq -r '.input_i + " LUFS, " + .input_tp + " dBTP"' <<<"$levels")"
+summary=$(jq -r '.input_i + " LUFS, " + .input_tp + " dBTP"' <<<"$levels")
+echo "PASS: $out at $summary"

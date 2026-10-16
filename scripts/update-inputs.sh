@@ -5,15 +5,12 @@ SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
 REPO_DIR="$(cd "${SCRIPT_DIR}/.." && pwd)"
 FLAKE_NIX="${REPO_DIR}/flake.nix"
 PACKAGES_DIR="${REPO_DIR}/packages"
-# FIXME: --no-lock is a no-op; nothing below runs `nix flake lock`. Either run
-# it after rewriting flake.nix or drop the flag.
-UPDATE_LOCK=1
 DRY_RUN=0
 RUN_PACKAGE_UPDATERS=1
 
 usage() {
   cat <<EOF
-Usage: $(basename "$0") [--dry-run] [--no-lock] [--no-packages]
+Usage: $(basename "$0") [--dry-run] [--no-packages]
 
 Updates GitHub flake inputs in flake.nix whose refs look like release tags
 to each repository's latest GitHub release tag, then runs package update scripts
@@ -27,7 +24,6 @@ Put one of these comments immediately above an input to pin it instead:
 
 Options:
   --dry-run      Show what would change; do not edit files, open URLs, or run package scripts
-  --no-lock      Update flake.nix only; skip nix flake lock
   --no-packages  Skip packages/*/update.sh scripts and package builds
 EOF
 }
@@ -36,9 +32,6 @@ while [[ $# -gt 0 ]]; do
   case "$1" in
   --dry-run)
     DRY_RUN=1
-    ;;
-  --no-lock)
-    UPDATE_LOCK=0
     ;;
   --no-packages)
     RUN_PACKAGE_UPDATERS=0
@@ -85,13 +78,10 @@ if [[ ! -f "${FLAKE_NIX}" ]]; then
   exit 1
 fi
 
-is_release_ref() {
-  [[ "$1" =~ ^v?[0-9]+([._-][0-9A-Za-z]+)*$ ]]
-}
+RELEASE_REF_RE='^v?[0-9]+([._-][0-9A-Za-z]+)*$'
 
 latest_release_tag() {
   local repo="$1"
-  local response
 
   gh api "repos/${repo}/releases/latest" --jq .tag_name
 }
@@ -118,9 +108,15 @@ open_latest_release_page() {
 
 # Content of a package directory as Nix flake evaluation sees it: tracked and
 # untracked-but-not-ignored files, so `result` links and dirty trees are fine.
+# Deleted tracked files appear in both listings; `uniq -zu` drops them.
 package_fingerprint() {
-  git -C "${REPO_DIR}" ls-files -z -co --exclude-standard -- "packages/$1" |
-    (cd "${REPO_DIR}" && xargs -0r sha256sum) | sha256sum
+  (
+    cd "${REPO_DIR}"
+    {
+      git ls-files -z -co --deduplicate --exclude-standard -- "packages/$1"
+      git ls-files -z -d -- "packages/$1"
+    } | sort -z | uniq -zu | xargs -0r sha256sum | sha256sum
+  )
 }
 
 # Prints `<attr> <dir>` for every `<attr> = pkgs.callPackage ./<dir> { };`.
@@ -131,16 +127,16 @@ registered_packages() {
 
 # Builds each registered package whose directory changed, or whose directory
 # references a changed one (`../<dir>/`, e.g. t3code-nightly-desktop reads
-# t3code-nightly/sources.json). Returns non-zero when any build fails.
+# t3code-nightly/sources.json). Records failed builds in FAILED_BUILDS.
 build_changed_packages() {
   local -n before="$1"
   local -a changed_dirs=()
   local -a targets=()
-  local -a failed_builds=()
-  local dir attr pkg_dir changed
+  local dir attr pkg_dir changed fingerprint registered
 
   for dir in "${!before[@]}"; do
-    if [[ "$(package_fingerprint "${dir}")" != "${before[${dir}]}" ]]; then
+    fingerprint="$(package_fingerprint "${dir}")"
+    if [[ "${fingerprint}" != "${before[${dir}]}" ]]; then
       changed_dirs+=("${dir}")
     fi
   done
@@ -149,6 +145,7 @@ build_changed_packages() {
     return 0
   fi
 
+  registered="$(registered_packages)"
   while read -r attr pkg_dir; do
     for changed in "${changed_dirs[@]}"; do
       if [[ "${pkg_dir}" == "${changed}" ]] ||
@@ -157,7 +154,7 @@ build_changed_packages() {
         break
       fi
     done
-  done < <(registered_packages)
+  done <<<"${registered}"
   if [[ "${#targets[@]}" -eq 0 ]]; then
     echo "==> Changed directories ${changed_dirs[*]} map to no registered package"
     return 0
@@ -167,16 +164,14 @@ build_changed_packages() {
   for attr in "${targets[@]}"; do
     echo "==> ${attr}: nix build '.#${attr}'"
     if ! nix build --no-link "${REPO_DIR}#${attr}"; then
-      failed_builds+=("${attr}")
+      FAILED_BUILDS+=("${attr}")
       echo "ERROR: ${attr}: build failed after update" >&2
     fi
   done
 
-  if [[ "${#failed_builds[@]}" -gt 0 ]]; then
-    echo "ERROR: updated packages failed to build: ${failed_builds[*]}" >&2
-    return 1
+  if [[ "${#FAILED_BUILDS[@]}" -eq 0 ]]; then
+    echo "==> All ${#targets[@]} updated packages build"
   fi
-  echo "==> All ${#targets[@]} updated packages build"
 }
 
 run_package_updaters() {
@@ -194,10 +189,15 @@ run_package_updaters() {
   local package_name
   local package
   local status
-  local -a package_scripts
+  local script
+  local -a package_scripts=()
   local -a failed_packages=()
   local -a succeeded_packages=()
-  mapfile -t package_scripts < <(find "${PACKAGES_DIR}" -mindepth 2 -maxdepth 2 -type f -name update.sh | sort)
+  for script in "${PACKAGES_DIR}"/*/update.sh; do
+    if [[ -f "${script}" ]]; then
+      package_scripts+=("${script}")
+    fi
+  done
   if [[ "${#package_scripts[@]}" -eq 0 ]]; then
     echo "==> No package update scripts found"
     return
@@ -248,18 +248,19 @@ run_package_updaters() {
   build_changed_packages fingerprints
 }
 
+FAILED_BUILDS=()
+
 finish() {
-  local packages_status=0
-  run_package_updaters || packages_status=$?
+  run_package_updaters
   echo "==> Updating Executor image"
   if [[ "${DRY_RUN}" -eq 1 ]]; then
     "${SCRIPT_DIR}/update-executor.sh" --dry-run
   else
     "${SCRIPT_DIR}/update-executor.sh"
   fi
-  if [[ "${packages_status}" -ne 0 ]]; then
-    echo "ERROR: package builds failed; see above" >&2
-    exit "${packages_status}"
+  if [[ "${#FAILED_BUILDS[@]}" -gt 0 ]]; then
+    echo "ERROR: updated packages failed to build: ${FAILED_BUILDS[*]}" >&2
+    exit 1
   fi
   echo "==> Done"
 }
@@ -312,7 +313,7 @@ while IFS= read -r line; do
   if [[ "${url}" =~ ^github:([^/]+)/([^/]+)/([^/?#]+)$ ]]; then
     repo="${BASH_REMATCH[1]}/${BASH_REMATCH[2]}"
     ref="${BASH_REMATCH[3]}"
-    if is_release_ref "${ref}"; then
+    if [[ "${ref}" =~ ${RELEASE_REF_RE} ]]; then
       INPUTS+=("${input_name}")
       REPOS+=("${repo}")
       CURRENT_REFS+=("${ref}")
@@ -345,7 +346,7 @@ for i in "${!INPUTS[@]}"; do
   fi
 
   if [[ -n "${pinned_ref}" ]]; then
-    if ! is_release_ref "${pinned_ref}"; then
+    if [[ ! "${pinned_ref}" =~ ${RELEASE_REF_RE} ]]; then
       echo "ERROR: ${input} has invalid pin ref: ${pinned_ref}" >&2
       exit 1
     fi
@@ -404,7 +405,9 @@ for i in "${!INPUTS[@]}"; do
     continue
   fi
 
+  # shellcheck disable=SC2016 # $ is a literal regex metacharacter
   repo_escaped="$(printf '%s' "${REPOS[$i]}" | sed 's/[.[\*^$()+?{}|\\/]/\\&/g')"
+  # shellcheck disable=SC2016 # $ is a literal regex metacharacter
   current_escaped="$(printf '%s' "${current_ref}" | sed 's/[.[\*^$()+?{}|\\/]/\\&/g')"
   perl -0pi -e 's#github:'"${repo_escaped}"'/'"${current_escaped}"'([\"?])#github:'"${REPOS[$i]}"'/'"${target_ref}"'$1#g' "${tmp_file}"
 done

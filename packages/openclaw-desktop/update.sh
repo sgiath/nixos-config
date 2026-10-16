@@ -18,6 +18,7 @@ deb_asset_name() {
 
 # Prints "<version>" for every stable release whose assets include the deb.
 releases_with_deb() {
+	# shellcheck disable=SC2016 # $tag and $version are jq variables
 	gh api --paginate "repos/${REPO}/releases?per_page=100" --jq '
 		.[]
 		| select((.draft or .prerelease) | not)

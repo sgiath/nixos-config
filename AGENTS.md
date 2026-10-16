@@ -28,7 +28,7 @@ themes/                           # base16 schemes shared by NixOS and HM stylix
 secrets/                          # SOPS files plus public keys (ceres-cache.pub signing key); nebula.yaml (host certs), nebula-ca.yaml (CA key, PGP-only)
 scripts/                          # update-inputs.sh, nebula-sign.sh, nebula-mobile.sh
 packages/                         # custom packages, update/clear-cache commands, updater scripts
-checks/                           # flake checks (Snowfall checks/<name>/default.nix); skill-references runs check-skill-references.py
+checks/                           # flake checks (Snowfall checks/<name>/default.nix); skill-references runs check-skill-references.py; shell-safety runs shellcheck with masked-return checks on every tracked *.sh with a shebang
 overlays/sgiath/default.nix       # selected packages from alternate nixpkgs channels
 shells/default/default.nix        # dev/update toolchain
 ```

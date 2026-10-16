@@ -102,7 +102,11 @@ while [ $# -gt 0 ]; do
     exit 0
     ;;
   -*) die "unknown option: $1" ;;
-  *) [ -z "$input" ] && input="$1" && shift || die "unexpected argument: $1" ;;
+  *)
+    [ -z "$input" ] || die "unexpected argument: $1"
+    input="$1"
+    shift
+    ;;
   esac
 done
 

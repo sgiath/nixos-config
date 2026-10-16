@@ -61,7 +61,7 @@ print(next(f["sha512"] for f in feed["files"] if f["url"] == sys.argv[2]))
 gh api -H "Accept: application/vnd.github.raw" \
 	"repos/${REPO}/contents/apps/server/src/preview/PreviewBrowser.ts?ref=v${VERSION}" \
 	>"${TMPDIR}/PreviewBrowser.ts"
-read -r HEADLESS_SHELL_VERSION X64_HEADLESS_SHELL_HEX ARM64_HEADLESS_SHELL_HEX < <(python3 -c '
+HEADLESS_SHELL_PINS="$(python3 -c '
 import re, sys
 src = open(sys.argv[1]).read()
 version = re.search(r"const VERSION = \"([0-9.]+)\";", src)
@@ -72,7 +72,8 @@ hashes = [
 if not version or not all(hashes):
     sys.exit("ERROR: Chrome headless shell pin not found in PreviewBrowser.ts")
 print(version[1], *(h[1] for h in hashes))
-' "${TMPDIR}/PreviewBrowser.ts")
+' "${TMPDIR}/PreviewBrowser.ts")"
+read -r HEADLESS_SHELL_VERSION X64_HEADLESS_SHELL_HEX ARM64_HEADLESS_SHELL_HEX <<<"${HEADLESS_SHELL_PINS}"
 X64_HEADLESS_SHELL="$(nix hash convert --hash-algo sha256 --to sri "${X64_HEADLESS_SHELL_HEX}")"
 ARM64_HEADLESS_SHELL="$(nix hash convert --hash-algo sha256 --to sri "${ARM64_HEADLESS_SHELL_HEX}")"
 

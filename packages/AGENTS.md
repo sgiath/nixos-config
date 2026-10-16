@@ -18,6 +18,7 @@ Custom packages exposed through Snowfall as `sgiath.<name>` and registered manua
 - Standard layout: `packages/<name>/default.nix` plus executable `update.sh` when upstream can update.
 - `bird` is the main exception: it comes from flake input `bird-src`, a local absolute path.
 - Updaters start with `#!/usr/bin/env bash` and `set -euo pipefail`.
+- `set -e` does not catch a failing `$(cmd)` or `<(cmd)` used as an argument, or a function called in a condition; assign to a variable first. `nix build .#checks.x86_64-linux.shell-safety` enforces this (shellcheck SC2312/SC2310) on every tracked `*.sh` with a shebang.
 - Define `SCRIPT_DIR` and `DEFAULT_NIX`; scripts must work from any current directory.
 - Accept an optional version when upstream has tags/releases; otherwise derive a pseudo-version from metadata.
 - Read current version from `default.nix`; if unchanged, print already-current and exit before prefetch/build work.
