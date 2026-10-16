@@ -52,7 +52,7 @@
       inputs.hyprland.follows = "hyprland";
     };
 
-    noctalia.url = "github:noctalia-dev/noctalia/v5.2.1";
+    noctalia.url = "github:noctalia-dev/noctalia/v5.3.0";
 
     btc-clients = {
       url = "github:emmanuelrosa/btc-clients-nix";
@@ -119,7 +119,7 @@
     };
 
     hermes-agent = {
-      url = "github:NousResearch/hermes-agent/v0.22.1";
+      url = "github:NousResearch/hermes-agent/v0.22.2";
       inputs.nixpkgs.follows = "nixpkgs";
     };
 
@@ -129,7 +129,7 @@
     };
 
     opencode = {
-      url = "github:anomalyco/opencode/v1.19.0";
+      url = "github:anomalyco/opencode/v1.19.2";
       inputs.nixpkgs.follows = "nixpkgs";
     };
   };
