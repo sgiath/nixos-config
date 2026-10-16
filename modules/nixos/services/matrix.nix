@@ -26,6 +26,10 @@
       coturn.serviceConfig.LoadCredential = [
         "turn-secret:${config.sops.secrets.turn-shared-secret.path}"
       ];
+      # The nixpkgs module has no option for it; lk-jwt-service >= 0.9 refuses
+      # to start without it. Use the Matrix server name for our users.
+      lk-jwt-service.environment.LIVEKIT_FULL_ACCESS_HOMESERVERS =
+        config.services.matrix-continuwuity.settings.global.server_name;
       livekit = {
         serviceConfig = {
           LoadCredential = [ "turn-secret:${config.sops.secrets.turn-shared-secret.path}" ];
@@ -149,6 +153,8 @@
         enable = true;
         keyFile = "/data/matrix-rtc";
         settings = {
+          # FIXME: Set room.auto_create = false to enforce the JWT service's
+          # homeserver restriction on room creation at the SFU too.
           port = 7880;
           rtc = {
             node_ip = "193.165.30.198";
