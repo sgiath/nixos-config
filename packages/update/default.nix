@@ -286,7 +286,9 @@ writeShellScriptBin "update" ''
       ;;
 
     *)
-      nixos-rebuild switch --sudo --store-path "$toplevel" || exit $?
+      # Re-exec would build nixos-rebuild from '<nixpkgs/nixos>', which needs
+      # nixos-config on NIX_PATH; the toplevel is already built and validated.
+      nixos-rebuild switch --sudo --no-reexec --store-path "$toplevel" || exit $?
       ;;
   esac
 
