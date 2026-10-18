@@ -2,7 +2,7 @@
 set -euo pipefail
 
 # Usage:
-#   ./update.sh          # Update to the latest release
+#   ./update.sh          # Update to the latest release shipping the deb
 #   ./update.sh 0.1.5    # Update to a specific version
 #
 # default.nix fetches the Debian revision "-1" asset; a release without it
@@ -16,9 +16,22 @@ if [[ -n "${1:-}" ]]; then
 	VERSION="${1#v}"
 	echo "==> Updating whiteboard to specified version ${VERSION}"
 else
-	echo "==> Fetching latest ${REPO} release..."
-	VERSION="$(gh api "repos/${REPO}/releases/latest" --jq '.tag_name')"
-	VERSION="${VERSION#v}"
+	echo "==> Fetching latest ${REPO} release with a Debian package..."
+	# releases/latest can be a platform-only release (v0.3.2 is Windows-only)
+	# or an unrelated tag (diffr/*); take the newest release shipping the deb.
+	# shellcheck disable=SC2016 # $v is a jq variable
+	RELEASES="$(gh api "repos/${REPO}/releases?per_page=100" --paginate --jq '
+		.[]
+		| select(.draft == false and .prerelease == false and (.tag_name | startswith("v")))
+		| (.tag_name | ltrimstr("v")) as $v
+		| select(any(.assets[]; .name == "whiteboard_\($v)-1_amd64.deb"))
+		| $v
+	')"
+	VERSION="${RELEASES%%$'\n'*}"
+	if [[ -z "${VERSION}" ]]; then
+		echo "ERROR: no ${REPO} release ships whiteboard_<version>-1_amd64.deb" >&2
+		exit 1
+	fi
 	echo "    Latest version: ${VERSION}"
 fi
 
