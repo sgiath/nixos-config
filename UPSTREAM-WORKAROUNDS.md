@@ -107,6 +107,9 @@ Runtime checks in records are required future checks unless the record's
 | ID | Kind | Status | Profile |
 | --- | --- | --- | --- |
 | [`pihole-ftl-gcc16-unused-counter`](#pihole-ftl-gcc16-unused-counter) | temporary fix | required | vesta |
+| [`zenpower-kbuild-module-install`](#zenpower-kbuild-module-install) | temporary fix | required | ceres, pallas, vesta |
+| [`chatgpt-tpm2-tss-build-inputs`](#chatgpt-tpm2-tss-build-inputs) | temporary fix | required | desktop |
+| [`hermes-agent-exact-pin-relax`](#hermes-agent-exact-pin-relax) | compatibility | required | all |
 | [`snowfall-flake-utils-plus-deferred-config`](#snowfall-flake-utils-plus-deferred-config) | vendored fork | required | all |
 | [`hyprland-glaze-release-freeze`](#hyprland-glaze-release-freeze) | input pin | required | desktop |
 | [`ksa-unmerged-nixpkgs-package`](#ksa-unmerged-nixpkgs-package) | input fork | required | ceres |
@@ -141,6 +144,7 @@ Runtime checks in records are required future checks unless the record's
 | [`openclaw-desktop-asset-aware-updater`](#openclaw-desktop-asset-aware-updater) | updater constraint | required | desktop |
 | [`nak-network-check-disable`](#nak-network-check-disable) | test exception | required | package only (not installed) |
 | [`davinci-resolve-mcp-sdk-version`](#davinci-resolve-mcp-sdk-version) | compatibility | required | ceres |
+| [`t3code-nightly-sea-patchelf`](#t3code-nightly-sea-patchelf) | temporary fix | required | ceres, vesta |
 | [`cross-architecture-nixos-rebuild-no-reexec`](#cross-architecture-nixos-rebuild-no-reexec) | compatibility | required | ceres, juno1 |
 | [`burn-iso-hybrid-mbr-key-partition`](#burn-iso-hybrid-mbr-key-partition) | compatibility | required | iso |
 | [`whiteboard-bundled-electron`](#whiteboard-bundled-electron) | security exception | watch (2027-01-05) | desktop |
@@ -156,6 +160,36 @@ Runtime checks in records are required future checks unless the record's
 - **Remove when:** the FTL source selected by root nixpkgs lacks the counter or carries the upstream correction. Remove overlay attr and patch together; never by disabling `-Werror`.
 - **Validate:** `vesta`; runtime: `pihole-ftl` healthy, local `dns.hosts` names and public DNS still answer.
 - **Exercised:** focused package build, IPv4/IPv6 sanitizer smoke and full Vesta evaluation succeeded when the backport landed.
+
+#### `zenpower-kbuild-module-install`
+
+- **Where:** `overlays/sgiath/default.nix` (`kernelPackagesExtensions` override of `zenpower`).
+- **Why:** since [NixOS/nixpkgs#571181](https://github.com/NixOS/nixpkgs/pull/571181) Kbuild signs every module with kmodigest during `modules_install` and writes `<module>.ko.cer` next to it, and `aggregateModules` concatenates the certificates of all external modules into `modules.cer`. zenpower copies `zenpower.ko` by hand, so there is no certificate and the `linux-*-modules` build fails with `cat: kernel/drivers/hwmon/zenpower/zenpower.ko.cer: No such file or directory`. The override adds `kernelModuleMakeFlags` and installs through the kernel's `modules_install` (same path, stripped, `DEPMOD=true`), which also compresses the module.
+- **Upstream:** [NixOS/nixpkgs#575192](https://github.com/NixOS/nixpkgs/issues/575192) open; the maintainer comment there describes this exact fix for zenpower. No zenpower PR yet (checked 2026-10-20); sibling fixes are open for `system76`, `framework-laptop-kmod` and `lenovo-legion-module`.
+- **Selected pin:** root nixpkgs 09063bd1 has kmodigest signing and the certificate merge in `pkgs/os-specific/linux/kmod/aggregator.nix`; `pkgs/os-specific/linux/zenpower/default.nix` still has the hand-written `installPhase` without `kernelModuleMakeFlags`.
+- **Remove when:** the selected zenpower package installs through `modules_install` and its output has `zenpower.ko.cer`. Remove the whole `kernelPackagesExtensions` entry.
+- **Validate:** `ceres`, `pallas`, `vesta`; also `nix build .#nixosConfigurations.<host>.config.system.modulesTree` and check that `modules.dep` lists `zenpower.ko.xz` and `modules.cer` ends with `zenpower.ko.cer`. Runtime: `sensors` shows `zenpower-pci-*` after boot.
+- **Exercised (2026-10-20):** without the override the Ceres modules tree failed with the error above; with it zenpower builds as `zenpower.ko.xz` plus a 260-byte `zenpower.ko.cer`, the Ceres modules tree builds, `modules.cer` is the kernel certificates followed by exactly that certificate, and `modinfo` reports the same PKCS#7 signature and vermagic as in-tree `k10temp`. The Vesta modules tree also builds with the merged certificate. On Pallas zenpower now builds with its certificate, but the modules tree still fails on the openrazer modules, which have the same problem.
+
+#### `chatgpt-tpm2-tss-build-inputs`
+
+- **Where:** `overlays/sgiath/default.nix` (`llm-agents.chatgpt` with `chatgpt-unwrapped` overridden).
+- **Why:** since 26.1013.40934 ChatGPT ships `resources/native/remote-control-device-key.node`, which links `libtss2-esys.so.0`, `libtss2-mu.so.0`, `libtss2-tcti-device.so.0` and `libcrypto.so.3`. llm-agents doesn't list tpm2-tss or OpenSSL in `chatgpt-unwrapped`; auto-formatelf only found them by following the RUNPATH of `libnss_myhostname.so.2`/`libnss_systemd.so.2` in systemd 261.3. systemd 262 libraries don't carry that RUNPATH anymore, so with our nixpkgs the build fails with `auto-formatelf: libtss2-esys.so.0 not found`. The override adds `openssl` and `tpm2-tss` to `buildInputs`, nothing else.
+- **Upstream:** no issue or PR in numtide/llm-agents.nix; `packages/chatgpt/unwrapped.nix` on main c31c0e89 still lists neither (checked 2026-10-20). Upstream's own build of 26.1013.40934 is cached because its nixpkgs still has systemd 261.3.
+- **Selected pin:** llm-agents 6831eed9 through `overlays.shared-nixpkgs`, so `chatgpt-unwrapped` builds against root nixpkgs 09063bd1 with systemd 262.
+- **Remove when:** the selected `chatgpt-unwrapped` has tpm2-tss and OpenSSL in its own inputs, or ChatGPT stops shipping the module. Remove the whole `llm-agents` attr.
+- **Validate:** `ceres`, `pallas`; `ldd lib/chatgpt/resources/native/remote-control-device-key.node` in `.llm-agents.chatgpt.unwrapped` has no `not found`. Runtime: ChatGPT Remote Control still pairs the device.
+- **Exercised (2026-10-20):** without the override the full Ceres build failed in `chatgpt-unwrapped` with the error above. With it `chatgpt-unwrapped` and `chatgpt` build, the module RUNPATH points at tpm2-tss 4.2.0, OpenSSL 3.5.9 and gcc-lib, `ldd` resolves everything and the bundled Node loads the module (`getDeviceKeyPublic`, `signDeviceKey`). Remote Control itself wasn't tried.
+
+#### `hermes-agent-exact-pin-relax`
+
+- **Where:** `overlays/sgiath/default.nix` (`llm-agents.hermes-agent` adds `prompt_toolkit` and `markdown` to `pythonRelaxDeps`, spelled as in the wheel metadata because the relax hook matches names literally (case-insensitive only); `llm-agents.hermes-desktop` gets the overridden `hermes-agent`).
+- **Why:** Hermes 0.22.2 pins `prompt_toolkit==3.0.52` and `Markdown==3.10.2` in `pyproject.toml`. Root nixpkgs 09063bd1 has prompt-toolkit 3.0.53 and Markdown 3.10.3, so `pythonRuntimeDepsCheck` fails with `prompt-toolkit==3.0.52 not satisfied by version 3.0.53` and `markdown==3.10.2 not satisfied by version 3.10.3`. llm-agents already relaxes the other `==` pins nixpkgs moved past (`rich`, `pillow`, `croniter`, `exa-py`); this adds the same for these two patch releases.
+- **Upstream:** no issue or PR in numtide/llm-agents.nix; `packages/hermes-agent/package.nix` on main c31c0e89 has the same `pythonRelaxDeps` (checked 2026-10-20). Upstream's own build passes because its nixpkgs f20cd90e still has the pinned versions.
+- **Selected pin:** llm-agents 6831eed9 through `overlays.shared-nixpkgs`, so `hermes-agent` builds against root nixpkgs 09063bd1.
+- **Remove when:** the selected `hermes-agent` relaxes or accepts both versions itself. Remove both attrs; keep `hermes-desktop` only while `hermes-agent` is overridden.
+- **Validate:** `ceres`, `pallas`, `vesta`, `juno1`; `nix build --no-link .#nixosConfigurations.ceres.pkgs.llm-agents.hermes-agent .#nixosConfigurations.ceres.pkgs.llm-agents.hermes-desktop` (runs its imports and version checks). Runtime: `hermes` starts its interactive CLI and Markdown formatting still renders.
+- **Exercised (2026-10-20):** without the override the full Ceres build failed in `hermes-agent` with the errors above. With it `hermes-agent` and `hermes-desktop` build (import, version and install checks pass), `hermes --version` runs, its Python env imports `cli` with prompt_toolkit 3.0.53 and renders Markdown with 3.10.3, and the full Ceres build passes. The interactive CLI wasn't started.
 
 #### `snowfall-flake-utils-plus-deferred-config`
 
@@ -362,13 +396,25 @@ Also covers audit ID `executor-root-to-nonroot-state-migration`.
 - **Validate:** `ceres` and `nix build --no-link .#davinci-resolve-mcp`; import Resolve's native scripting module inside its FHS environment, reject unauthenticated HTTP requests, initialize an authenticated MCP session, list tools, and query the running Resolve version through Executor.
 - **Exercised:** 2026-10-10: SDK checks (1212 passed), full Ceres and Vesta builds, Juno1 system evaluation, native scripting import, HTTP authentication and Host rejection, authenticated discovery of 37 tools, quiet journald logging, and a live Resolve Studio 21.1.0.17 version query through Executor passed.
 
+#### `t3code-nightly-sea-patchelf`
+
+- **Where:** `packages/t3code-nightly/default.nix` (`patchelfForSea`, put first on `PATH` for the explicit `autoPatchelf` in `postFixup`).
+- **Why:** patchelf 0.18+ moves `.interp`, `.gnu.hash`, `.dynsym`, `.dynstr` and `.dynamic` of the T3 Node SEA into a new RW `PT_LOAD` at `0x3ff000`, but the next read-only `PT_LOAD` (`0x4003b0`-`0x811f38`) still overlaps it. The kernel maps the later segment over the earlier one, so `.dynamic` ends up `r--p` and ld.so dies with `SIGSEGV`/`SEGV_ACCERR` in `dl_main` when it writes `DT_DEBUG`. The build then fails on `t3 --completions` with exit 139. patchelf 0.15 keeps `.dynamic` in its own RW page, so the package runs autoPatchelf with patchelf 0.15.5.
+- **Upstream:** no issue for this exact layout; it is the same failure class as [NixOS/patchelf#146](https://github.com/NixOS/patchelf/issues/146) and [#446](https://github.com/NixOS/patchelf/issues/446) (`PT_DYNAMIC` ends up in a non-writable segment), both open. patchelf master has no commits after 0.19.2 (checked 2026-10-20).
+- **Selected pin:** root nixpkgs 09063bd1 has patchelf 0.19.2 as `patchelf` and 0.18.0-unstable-2025-08-13 as `patchelfUnstable`; both produce the crash. The previous lock used patchelf 0.15.2.
+- **Remove when:** nixpkgs `patchelf` patches the selected SEA (`--set-interpreter` then `--set-rpath`, like auto-patchelf) into a binary where `t3 --version` runs. Remove `patchelfForSea` and the `PATH` prefix.
+- **Validate:** `nix build --no-link .#t3code-nightly` (completions and install check run the SEA); `readelf -lW libexec/t3code/t3` shows `DYNAMIC` inside a RW `LOAD` that no other `LOAD` overlaps.
+- **Exercised (2026-10-20):** on 0.1.1-nightly.20261020.3386 with the same stdenv, the package failed with exit 139 on patchelf 0.19.2 and built with patchelf 0.15.5. The same nightly built with the previous lock. Patching the pristine SEA by hand with only the patchelf version changed: 0.15.2 and 0.15.5 run, 0.18.0-unstable and 0.19.2 segfault. The fixed build runs `--version`, `--help`, writes all three completions, and every bundled native helper resolves its libraries.
+
 #### `katrain-kivy-cython-long`
 
-- **Where:** `packages/katrain/default.nix` (Kivy `postPatch` replacing Python 2 `long` in `weakproxy.pyx`, `context_instructions.pyx`, `opengl.pyx`).
-- **Why:** Kivy 2.3.1 does not build with current Cython.
-- **Upstream:** fixed on Kivy HEAD 9bd35c59 ([weakproxy.pyx](https://github.com/kivy/kivy/blob/9bd35c595760fe6909e6889b9aefe659a57f9eae/kivy/weakproxy.pyx#L250)), not in release 2.3.1 which is selected.
+- **Where:** `packages/katrain/default.nix` (Kivy `postPatch` replacing Python 2 `long` in `weakproxy.pyx`, `context_instructions.pyx`, `opengl.pyx`, and the PY2 `dict_keys` assignment in `instructions.pyx`).
+- **Why:** Kivy 2.3.1 does not build with current Cython. Cython 3.2 dropped the `long` builtin. Cython 3.3 also type-checks the dead `if PY2:` branch of `RenderContext.apply` and fails with `instructions.pyx:899:41: Cannot assign type 'dict_keys object' to 'list object'`, so that branch now uses the same `list(self.state_stacks.keys())` as the Python 3 one.
+- **Upstream:** fixed on Kivy HEAD 9bd35c59 ([weakproxy.pyx](https://github.com/kivy/kivy/blob/9bd35c595760fe6909e6889b9aefe659a57f9eae/kivy/weakproxy.pyx#L250)); the `instructions.pyx` branch went away in [kivy#8610](https://github.com/kivy/kivy/pull/8610) (dcd8fb2a), which removed all Python 2 compatibility code. Neither is in release 2.3.1, which is selected.
+- **Selected pin:** root nixpkgs Cython 3.3.0 for the package-local Python 3.13 set.
 - **Remove when:** the selected Kivy contains these fixes and satisfies KaTrain; remove the replacements before `--replace-fail` breaks.
-- **Validate:** `ceres`; runtime: KaTrain renders and analyzes a board.
+- **Validate:** `ceres` and `nix build --no-link .#katrain`; runtime: KaTrain renders and analyzes a board.
+- **Exercised (2026-10-20):** without the `instructions.pyx` replacement the full Ceres build failed in Kivy with the Cython 3.3 error above. With it Kivy and KaTrain build (35 KaTrain tests pass, the GPU test stays deselected), the full Ceres build passes, and headless imports of `kivy.graphics.instructions`, `kivy.core.audio` and `katrain.core.game` work. The UI wasn't started.
 
 #### `katrain-chardet-major-version`
 
