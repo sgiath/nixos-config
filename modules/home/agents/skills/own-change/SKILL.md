@@ -38,6 +38,9 @@ publication as a completed implementation. A recorded limitation does not waive 
   and selected apps' environment before testing. Follow repository cache-copy rules; do not copy stale formatter
   descriptors or race dependency setup. Do not guess paths, use `--clobber` or bypass hook approval.
 - Make a task list through implementation, behavioral verification, publication and PR babysitting. Record the source checkout, new worktree, branch and base. On resuming this already-started workflow, reuse its recorded task worktree rather than creating another one.
+- When waits or handoffs need durable state, use verified-work's [local record](../verified-work/references/run-record.md).
+  Keep scope, decisions, gate evidence, findings and next action there; reuse an invoking Drive plan's state instead
+  of making another record. Read it and verify the live checkout before resuming.
 
 ## 2. Implement and verify the complete change
 
@@ -45,12 +48,18 @@ publication as a completed implementation. A recorded limitation does not waive 
 - Delegate genuinely independent evidence, reproduction, implementation or verification tasks where useful, with verified-work's handoff record and exact worktree/path ownership. The owning thread collects findings and coordinates fixes and reverification without user relay. Do not let delegates mutate the original checkout.
 - Apply verified-work's role routing: Claude Opus 5.5 judges and implements production changes and may do supporting work itself; Codex `gpt-6.1-sol` on the fast tier takes delegated investigation and verification, and the independent review of a complicated change at high effort. If the owner runs Codex, delegate production design/implementation to Claude rather than treating delegation as optional for that phase.
 - Validate the reproduction/check before the fix, then run it against the change. Use skill://diagnosing-bugs when the cause is uncertain and skill://tdd for behavioral tests. Exercise the actual UI for visual changes, new API/CLI behavior and the final integration gate; distinguish injected mechanisms from confirmed natural triggers.
+- Apply verified-work's [runtime contract](../verified-work/references/runtime-checks.md): confirm what code the process
+  loaded, preserve agreed checks in verifier briefs, and rerun repaired attempts from a controlled starting state.
+  For data-writing tools, validate consequential input assumptions and prove triggered effects as well as row changes.
 - For UI verification in T3, prefer its collaborative preview: inspect status, open if needed, and use
   snapshot-provided locators and focused interaction tools. Use evaluation only where the tool's contract
   supports it. Diagnose a failed call and correct actionable arguments before switching tools; use a fallback
   when the preview tools are absent or explicitly unavailable. Keep regression tests for plausible observable
   failures, not tests that merely mirror implementation. Do not claim unrun local e2e or production checks.
 - After behavior is proven, complete in-scope documentation/changelog/generated-artifact updates according to repository conventions and remove throwaway setup. Retain runnable evidence needed for review or handoffs. Review the complete change for missed callers, unnecessary complexity, accidental user edits and secrets.
+- Before publication, obtain an independent read-only review for complicated changes or when repository policy requires
+  it. Use verified-work's [review brief](../verified-work/references/independent-review.md) to examine the request,
+  outcome, design and concrete assumptions before correctness. Give findings dispositions and recheck affected gates.
 
 ## 3. Commit and publish
 

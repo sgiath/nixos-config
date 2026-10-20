@@ -17,6 +17,14 @@ Before changing behavior, identify the requested outcome, acceptance criteria an
 Read the supplied evidence and relevant implementation. Distinguish observations, hypotheses and product decisions.
 Resolve decisions already settled by the request or repository; ask about unresolved decisions that affect correctness.
 
+Name the assumptions the change relies on: input scope, identifier uniqueness, value meanings and existing state.
+Before building on a consequential data assumption, check the producer contract, enforced schema or representative
+real input with bounded read-only queries; a convenient seed is not evidence of the input's actual shape. Record
+the source and any remaining uncertainty. Do not retrieve personal data when counts or distributions suffice.
+For importers, backfills and other data-writing tools, include both intended writes and triggered effects
+(callbacks, jobs, notifications, webhooks, syncs) in the gates; prove them locally as described in
+[runtime checks](references/runtime-checks.md#data-writing-tools).
+
 For each necessary step, identify:
 
 - The observable claim and its independent source of expected results: requirements, captured evidence,
@@ -26,8 +34,10 @@ For each necessary step, identify:
 - What the check cannot establish, including injected conditions and substituted dependencies.
 
 Keep this in the task's existing plan or a short local working record when handoffs/resumption need it.
-Do not create a tracked plan, Agent Note or new framework for every task. Update the record when evidence changes
-the necessary steps; preserve the requested outcome and explain any changed gate.
+Use the [local record format](references/run-record.md) for substantial single changes that need durable state;
+reuse Drive's existing state instead of creating a parallel record. Do not create a tracked plan, Agent Note or
+new framework for every task. Update the record when evidence changes the necessary steps; preserve the requested
+outcome and explain any changed gate.
 
 Validate the check before relying on it. A bug reproduction must reach the relevant production path and match
 the reported symptom, with a normal control where useful. Inject a plausible condition at a dependency boundary,
@@ -119,6 +129,11 @@ raw evidence for an independent verifier to inspect it; a conclusion-only summar
 fixtures and expected outcomes available across revisions. Do not let an implementer redefine success to fit a fix;
 a necessary fixture change must preserve the contract and have its sensitivity rechecked.
 
+For an independent review, use the [review brief](references/independent-review.md): test the reading of the request,
+the usefulness of the outcome, the design and concrete assumptions before code correctness. Give the reviewer
+requirements and raw evidence so it can form its own assessment before reading the implementer's justification.
+This supplies the review contract when a review is needed; it does not require a reviewer for every task.
+
 Collect findings, send valid in-scope failures back to the implementation owner, and rerun affected gates without
 user relay. Ask about scope/product decisions and unachievable gates using the rule above. Reuse completed checks
 when their code, inputs, environment and claim remain applicable; a changed revision invalidates affected evidence.
@@ -128,6 +143,9 @@ when their code, inputs, environment and claim remain applicable; a changed revi
 Check the complete scenario after the individual pieces pass. Choose relevant interactions from the code:
 persisted state, failure/retry, cancellation, concurrent attempts, old payloads or rolling deployment may need
 verification. A unit test of one caller does not establish a multi-caller or asynchronous workflow invariant.
+For running apps, services and CLIs, follow [runtime checks](references/runtime-checks.md): establish what code the
+running process loaded, preserve the agreed checks in verifier briefs, and rerun any attempt interrupted by a
+repair. Exercise plausible adjacent actions separately from acceptance requirements.
 
 Before handing back, account for every required gate as passed, failed, blocked or pending, with commands/results
 and revision where applicable. A required failed, blocked or pending gate prevents a completion claim. Report
@@ -151,3 +169,7 @@ This skill owns gates, blockers and handoffs. Consult other skills for their par
 
 Repository policy supplies local contracts and checks. Do not waive a gate because another skill allows reporting
 a limitation; use the blocker rule unless the user has already accepted that limitation for this task.
+
+When changing these workflow instructions, use the [behavioral evaluations](evals/README.md) to check decisions
+against realistic scenarios, alongside metadata and reference validation. These are bounded tabletop checks,
+not live application verification and not an instruction to evaluate every ordinary implementation task.
