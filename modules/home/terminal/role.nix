@@ -15,8 +15,6 @@
       presenterm
       rclone
       jq
-      # pkgs.${namespace}.nak
-      # pkgs.${namespace}.relay-tester
 
       openssl
       yt-dlp
@@ -43,11 +41,6 @@
       };
       ssh.enable = true;
       starship.enable = true;
-      tmux.enable = true;
-      yazi = {
-        enable = true;
-        shellWrapperName = "y";
-      };
       zsh.enable = true;
       ripgrep.enable = true;
 

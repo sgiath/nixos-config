@@ -7,7 +7,6 @@
     ./herdr.nix
     ./ssh.nix
     ./starship.nix
-    ./tmux.nix
     ./worktrunk.nix
     ./zsh.nix
   ];
