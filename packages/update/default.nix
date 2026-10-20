@@ -93,6 +93,29 @@ writeShellScriptBin "update" ''
   step_start "Locking flake inputs"
   nix flake lock || step_fail
 
+  # Format in place before the snapshot so validation, commits and deployment
+  # hold the formatted files; a parse error aborts.
+  step_start "Formatting changed Nix files"
+  if ! base="$(git rev-parse -q --verify '@{upstream}' || git rev-parse HEAD)" \
+    || ! git diff -z --name-only --diff-filter=d "$base" -- '*.nix' >"$work/nix-files" \
+    || ! git ls-files -z --others --exclude-standard -- '*.nix' >>"$work/nix-files"; then
+    step_fail
+  fi
+  mapfile -d "" -t nix_files <"$work/nix-files"
+  if ((''${#nix_files[@]})); then
+    before="$(git hash-object -- "''${nix_files[@]}")" || step_fail
+    ${lib.getExe nixfmt} -- "''${nix_files[@]}" || step_fail
+    after="$(git hash-object -- "''${nix_files[@]}")" || step_fail
+    mapfile -t before <<<"$before"
+    mapfile -t after <<<"$after"
+    for i in "''${!nix_files[@]}"; do
+      if [[ "''${before[i]}" != "''${after[i]}" ]]; then
+        echo "    formatted ''${nix_files[i]}"
+      fi
+    done
+  fi
+  echo "    checked ''${#nix_files[@]} files ($((SECONDS - step_time))s)"
+
   if ! dirty="$(git status --porcelain=v1 --untracked-files=all)"; then
     echo "Failed to read Git status" >&2
     exit 1
@@ -116,7 +139,6 @@ writeShellScriptBin "update" ''
   fi
   if [[ "$no_commit" == true || "$tree" == "$(git rev-parse 'HEAD^{tree}')" ]]; then
     flake=.
-    src=.
   else
     # A dirty Git flake hides untracked files; evaluate the snapshot itself.
     # Only the flake registry's `self` entry and configurationRevision differ
@@ -127,24 +149,7 @@ writeShellScriptBin "update" ''
       exit 1
     fi
     flake="path:$work/tree"
-    src=$work/tree
   fi
-
-  step_start "Checking formatting of changed Nix files"
-  if ! base="$(git rev-parse -q --verify '@{upstream}' || git rev-parse HEAD)" \
-    || ! changed="$(git diff --name-only --diff-filter=d "$base" "$tree" -- '*.nix')"; then
-    step_fail
-  fi
-  nix_files=()
-  while IFS= read -r file; do
-    if [[ -n "$file" ]]; then
-      nix_files+=("$file")
-    fi
-  done <<<"$changed"
-  if ((''${#nix_files[@]})); then
-    (cd "$src" && ${lib.getExe nixfmt} --check -- "''${nix_files[@]}") || step_fail
-  fi
-  echo "    checked ''${#nix_files[@]} files ($((SECONDS - step_time))s)"
 
   step_start "Building flake checks"
   if ! checks="$(nix eval --no-update-lock-file --raw "$flake#checks.${system}" \
