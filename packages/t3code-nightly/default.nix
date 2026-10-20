@@ -5,6 +5,7 @@
   autoPatchelfHook,
   makeBinaryWrapper,
   installShellFiles,
+  patchelf,
   alsa-lib,
   at-spi2-atk,
   at-spi2-core,
@@ -61,6 +62,20 @@ let
     systemd
   ];
   browserLibraryPath = lib.makeLibraryPath browserLibraries;
+
+  # FIXME: patchelf 0.18+ moves the SEA's .dynamic to a new front segment that
+  # the next read-only LOAD overlaps, so ld.so segfaults writing DT_DEBUG. Drop
+  # this when nixpkgs patchelf leaves the SEA runnable; see
+  # UPSTREAM-WORKAROUNDS.md#t3code-nightly-sea-patchelf.
+  patchelfForSea = patchelf.overrideAttrs (
+    finalAttrs: _: {
+      version = "0.15.5";
+      src = fetchurl {
+        url = "https://github.com/NixOS/patchelf/releases/download/${finalAttrs.version}/patchelf-${finalAttrs.version}.tar.bz2";
+        hash = "sha256-E02LFkLBmE6FYjvAm/pYKayzIs9sgNzGDVcdzcrQng0=";
+      };
+    }
+  );
 in
 stdenv.mkDerivation (finalAttrs: {
   pname = "t3code-nightly";
@@ -109,7 +124,7 @@ stdenv.mkDerivation (finalAttrs: {
   '';
 
   postFixup = ''
-    autoPatchelf $out
+    PATH="${patchelfForSea}/bin:$PATH" autoPatchelf $out
     for shell in bash fish zsh; do
       # Process substitution hides the generator's exit status, accepting
       # partial output even when the executable fails.
