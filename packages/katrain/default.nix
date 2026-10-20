@@ -20,8 +20,9 @@ let
   # KaTrain 1.20 targets the Kivy 2.3 API (kivy.core.audio, ...); nixpkgs ships
   # a Kivy master snapshot that already renamed those modules. Pin the 2.3.1
   # release, which in turn only supports Python <= 3.13. nixpkgs' Cython 3.2
-  # dropped the Py2 `long` builtin, so strip its three remaining uses (already
-  # gone on Kivy master).
+  # dropped the Py2 `long` builtin, so strip its three remaining uses, and
+  # Cython 3.3 rejects the dead PY2 `dict_keys` branch in RenderContext.apply
+  # (all already gone on Kivy master).
   python3Packages = python313Packages.overrideScope (
     _final: prev: {
       kivy = prev.kivy.overridePythonAttrs (old: {
@@ -47,6 +48,8 @@ let
           substituteInPlace kivy/graphics/opengl.pyx \
             --replace-fail "isinstance(indices, (long, int))" "isinstance(indices, int)" \
             --replace-fail "isinstance(data, (long, int))" "isinstance(data, int)"
+          substituteInPlace kivy/graphics/instructions.pyx \
+            --replace-fail "keys = self.state_stacks.keys()" "keys = list(self.state_stacks.keys())"
         '';
         build-system = [
           prev.setuptools
