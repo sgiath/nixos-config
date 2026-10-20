@@ -23,4 +23,58 @@ in
   pihole-ftl = prev.pihole-ftl.overrideAttrs (old: {
     patches = (old.patches or [ ]) ++ [ ./pihole-ftl-unused-counter.patch ];
   });
+
+  llm-agents = prev.llm-agents // {
+    # FIXME: remote-control-device-key.node links tpm2-tss and libcrypto, but
+    # llm-agents only finds them through RUNPATHs of systemd < 262 libraries.
+    # Drop once the selected llm-agents chatgpt-unwrapped lists both itself.
+    chatgpt = prev.llm-agents.chatgpt.override {
+      chatgpt-unwrapped = prev.llm-agents.chatgpt.unwrapped.overrideAttrs (old: {
+        buildInputs = old.buildInputs ++ [
+          final.openssl
+          final.tpm2-tss
+        ];
+      });
+    };
+
+    # FIXME: Hermes pins prompt_toolkit and Markdown with ==, and our nixpkgs
+    # already has newer patch releases than llm-agents' own. Drop once the
+    # selected llm-agents hermes-agent relaxes both itself.
+    hermes-agent = prev.llm-agents.hermes-agent.overridePythonAttrs (old: {
+      pythonRelaxDeps = old.pythonRelaxDeps ++ [
+        "prompt_toolkit"
+        "markdown"
+      ];
+    });
+    hermes-desktop = prev.llm-agents.hermes-desktop.override {
+      inherit (final.llm-agents) hermes-agent;
+    };
+  };
+
+  # FIXME: zenpower copies its module by hand, so Kbuild never writes the
+  # zenpower.ko.cer that aggregateModules now merges into modules.cer. Drop once
+  # pinned nixpkgs installs zenpower through modules_install
+  # (https://github.com/NixOS/nixpkgs/issues/575192).
+  kernelPackagesExtensions = prev.kernelPackagesExtensions ++ [
+    (kfinal: kprev: {
+      zenpower = kprev.zenpower.overrideAttrs (old: {
+        makeFlags =
+          kfinal.kernelModuleMakeFlags
+          ++ old.makeFlags
+          ++ [
+            "INSTALL_MOD_PATH=${placeholder "out"}"
+            "INSTALL_MOD_DIR=kernel/drivers/hwmon/zenpower"
+            "INSTALL_MOD_STRIP=1"
+            "DEPMOD=true"
+          ];
+        installTargets = [ "modules_install" ];
+        installFlags = [
+          "-C"
+          "${kfinal.kernel.dev}/lib/modules/${kfinal.kernel.modDirVersion}/build"
+          "M=$(PWD)"
+        ];
+        installPhase = null;
+      });
+    })
+  ];
 }
