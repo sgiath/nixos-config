@@ -59,6 +59,22 @@
         };
       };
 
+      # Family 1.7.10 (port 25569): vanilla progression with GTNH's tools, from gtnh-ai's
+      # `tools/family-pack`; unpack its server zip into the working directory to install or update it
+      minecraft-family = {
+        enable = true;
+        description = "Minecraft Family 1.7.10 server";
+        after = [ "network.target" ];
+        wantedBy = [ "multi-user.target" ];
+        unitConfig.ConditionPathExists = "/data/minecraft/family/lwjgl3ify-forgePatches.jar";
+        script = "${lib.getExe pkgs.zulu25} -server -Xms6G -Xmx6G -Dfml.readTimeout=180 @java9args.txt -jar lwjgl3ify-forgePatches.jar nogui";
+        serviceConfig = {
+          WorkingDirectory = "/data/minecraft/family";
+          Restart = "on-failure";
+          RestartSec = 30;
+        };
+      };
+
       # All the Mods 10 (port 25568)
       minecraft-atm10 = {
         enable = false;
