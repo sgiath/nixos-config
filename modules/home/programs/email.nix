@@ -13,8 +13,6 @@ in
     home = {
       packages = with pkgs; [
         aspellEnv
-        claws-mail
-        w3m
         protonmail-desktop
         proton-vpn
         proton-pass
@@ -90,47 +88,6 @@ in
       };
     };
 
-    programs.aerc = {
-      enable = true;
-      extraConfig = {
-        general = {
-          unsafe-accounts-conf = true;
-          pgp-provider = "gpg";
-        };
-        ui = {
-          dirlist-tree = true;
-          sort = "-r date";
-        };
-        compose = {
-          editor = lib.getExe pkgs.neovim;
-          empty-subject-warning = true;
-        };
-        filters = {
-          "text/plain" = "colorize";
-          "text/html" = "${lib.getExe pkgs.w3m} -T text/html -dump";
-          "text/calendar" = "calendar";
-          "message/delivery-status" = "colorize";
-          "message/rfc822" = "colorize";
-          "application/pgp-keys" = "gpg --import";
-        };
-      };
-    };
-
-    xdg = {
-      desktopEntries.aerc = {
-        name = "aerc";
-        genericName = "Mail Client";
-        comment = "Terminal mail via Proton Mail Bridge";
-        exec = "${lib.getExe pkgs.kitty} --class aerc -e ${lib.getExe pkgs.aerc}";
-        icon = "utilities-terminal";
-        terminal = false;
-        categories = [
-          "Network"
-          "Email"
-        ];
-      };
-    };
-
     # Launch once per graphical session, never during Home Manager activation.
     systemd.user.timers.protonmail-desktop = {
       Unit = {
@@ -161,15 +118,6 @@ in
 
     wayland.windowManager.hyprland.settings = {
       window_rule = [
-        {
-          match.class = "claws-mail";
-          workspace = "9 silent";
-          no_initial_focus = true;
-        }
-        {
-          match.class = "aerc";
-          workspace = "9 silent";
-        }
         {
           match.title = "Proton Mail";
           workspace = "9 silent";
