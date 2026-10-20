@@ -74,8 +74,12 @@ in
         jq
       ];
 
+      # remotectl only reads and writes ~/.kube/config, so it stays a regular writable file
+      # and the CrazyEgg clusters merge in from their own read-only file.
+      sessionVariables.KUBECONFIG = "${config.home.homeDirectory}/.kube/config:${config.home.homeDirectory}/.kube/crazyegg";
+
       file = {
-        ".kube/config".text = ''
+        ".kube/crazyegg".text = ''
           apiVersion: v1
           clusters:
             - cluster:
