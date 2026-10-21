@@ -47,11 +47,11 @@ let
 in
 stdenv.mkDerivation (finalAttrs: {
   pname = "whiteboard";
-  version = "0.3.3";
+  version = "0.3.4";
 
   src = fetchurl {
     url = "https://github.com/devdotfast/whiteboard/releases/download/v${finalAttrs.version}/whiteboard_${finalAttrs.version}-1_amd64.deb";
-    hash = "sha256-EXBb/RpgQ34uhjFgpFAV3XkDYPic/VJMZxKHPSHLyaU=";
+    hash = "sha256-/uzMLg+7ngDLo7XhYgCDrzqPFotsJmxp0Yb/58m6Xqg=";
   };
 
   sourceRoot = "root";
