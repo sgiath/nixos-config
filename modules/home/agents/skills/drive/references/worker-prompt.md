@@ -20,6 +20,7 @@ The driver launches each slice with this message, filled in. Use absolute plan/s
 - UI changes need the screenshot or recording required by the PR policy. Prefer T3 preview status/open, snapshots and focused interactions; retain the runnable fixture and media needed for review, and label simulated dependencies.
 - Do not merge, deploy, or run migrations; finish at merge-ready.
 - For GitHub, publish through the global pr skill and use babysit-pr. When waiting for CI/review, use T3's persistent watcher and yield; resume on notifications. Do not run `gh run watch` or other shell polling loops.
+- Never end a turn on a background shell wait: T3 settles an idle thread and the background completion does not wake it. Wait for CI/review with the PR watcher; wait for deploys, rollouts or test suites with one foreground command bounded by a timeout.
 - For GitLab, use the repository's gitlab-access/babysit-mr skills, its complete MR template and authenticated-user assignment; override own-change's GitHub publication steps. Wait with the repository's babysit-mr monitor, not `watch_pull_request`: T3 cannot read GitLab MRs yet.
 - Link every PR/MR through T3. Watcher waits are not a completed slice.
 - If a decision outside the answers blocks you, ask it and stop; do not guess.
