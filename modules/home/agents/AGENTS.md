@@ -25,6 +25,9 @@ Think independently, speak candidly, and treat the user as a peer.
   reasoning effort on the `fast` service tier for its thorough review, including production-code correctness
   and design judgments. Production implementation remains with Opus.
 - Always use the `fast` service tier for Codex with `gpt-6.1-sol`, including delegated tasks.
+- Adversarial security reviews go to Codex `gpt-daybreak-blue-latest`. If a review round is refused on cybersecurity
+  grounds, record the refusal and skip that round: do not reword the brief, retry another model, or block the work
+  on it. A required security review that was refused is reported as skipped, not passed.
 - Use Claude with `fable-5-1` at `xhigh` reasoning effort sparingly, for creating and designing new UIs or
   substantial redesigns where its visual and UX judgment adds value, including animations and transitions.
   Limit its work to the design and implementation that requires those choices. Routine UI updates, bug fixes,
@@ -34,6 +37,8 @@ Think independently, speak candidly, and treat the user as a peer.
   failures without noisy routine logging.
 - Every wait has a timeout. Wait on builds and downloads with one blocking command or a monitor that
   fires only on completion, failure or a threshold; do not post status turns that report nothing new.
+- Stop processes by the PID you recorded at launch or by `/proc/<pid>/cmdline`; never `pkill` or
+  `kill $(pgrep -f …)`, which also matches your own shell.
 - Default to an isolated task worktree for changes larger than one immediate commit on the default branch.
   Honor an explicitly named checkout and reuse the task's worktree on resumption. In T3, create worktrees only
   through T3: `t3_worktree_handoff` moves the current thread, `t3_thread_launch` with `workspaceStrategy` starts
