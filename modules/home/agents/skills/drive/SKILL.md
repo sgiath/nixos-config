@@ -34,7 +34,7 @@ question here before yielding and preserve it until answered; initial `answers/N
 ## `/drive plan @<spec-note> [more notes…]`
 
 1. Read the notes and the code they touch. Cut the work into slices: each is one PR-sized, independently deployable deliverable (plus companion PRs such as a db-schemas migration) with an executable acceptance gate and a stop boundary. Apply verified-work within a slice rather than creating a delivery slice for every experiment. Identify the final integration gate that proves the plan's Goal. Put a "local testing with production-like data" slice first when the feature needs one and none exists.
-2. Mark `blocked_by` only for real dependencies, and for every one: a slice that changes code only meaningful after another slice ships (a prompt for a path that slice adds) is blocked by it, so slices that run in parallel each work on master alone. Set `deploy_gate: false` only when later slices do not need the slice running in production. Set `migration: true` for any schema change.
+2. Mark `blocked_by` only for real dependencies, and for every one: a slice that changes code only meaningful after another slice ships (a prompt for a path that slice adds) is blocked by it, so slices that run in parallel each work on master alone. Set `deploy_gate: false` only when later slices do not need the slice running in production. Set `migration: true` for any schema change. Write `parallel: 5` in `plan.md` unless the user asks for a different limit; do not lower it on your own judgment.
 3. Write each slice's "Questions before starting": the decisions the worker must not guess. Leave them unanswered.
    For each question, cite the spec line or gap that leaves it open, and drop questions the spec, standing rules or
    code already decide. Resolve a spec contradiction from existing decisions when possible; otherwise ask the user
@@ -44,7 +44,7 @@ question here before yielding and preserve it until answered; initial `answers/N
    blocked by every other slice so parallel work cannot finalize the notes early. Retain the plan directory as
    delivery scope and question records: `plan-status` needs it to verify completion. Removal is a separate requested
    cleanup after the driver has stopped, not part of the final worker's PR.
-5. Show the user one table (id, title, blocked by, deploy gate, migration) and the open questions per slice. Apply corrections. When the user approves, commit the tracked plan on the default branch and push it. Local plans stay on this machine; pass their absolute paths and slice scope/answers to workers rather than expecting the plan on the remote default branch.
+5. Show the user one table (id, title, blocked by, deploy gate, migration), the `parallel` limit and the open questions per slice. Apply corrections. When the user approves, commit the tracked plan on the default branch and push it. Local plans stay on this machine; pass their absolute paths and slice scope/answers to workers rather than expecting the plan on the remote default branch.
 
 ## `/drive replan [findings]`
 

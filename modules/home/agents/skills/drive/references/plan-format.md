@@ -8,7 +8,7 @@ A plan lives at `.agents/plans/<yyyy-mm-dd>-<topic>/` in the repository that hol
 ---
 topic: support-inbox
 repos: [CrazyEggInc/ce, CrazyEggInc/db-schemas]
-parallel: 1
+parallel: 5
 order: [01, 02, 03, 05, 04]
 deploy_check: "<command that exits 0 when {sha} runs in production>"
 ---
@@ -37,7 +37,7 @@ deploy_check: "<command that exits 0 when {sha} runs in production>"
 | `topic` | required | Short kebab-case name; used in branch names and thread titles. |
 | `branch_prefix` | `<topic>/` | Default slice branch is `<branch_prefix><NN>-<slug>` in every repository; an explicit slice `branch` overrides it. |
 | `repos` | the plan repository | GitHub `owner/name` or GitLab `group[/subgroup]/project` of every repository a slice may open PRs in, on the same host as origin. |
-| `parallel` | `1` | Slices in progress or review at once. A slice with `migration: true` never runs beside another slice. |
+| `parallel` | `5` | Slices in progress or review at once. A slice with `migration: true` never runs beside another slice. |
 | `order` | numeric order | Delivery order by slice id. Slices not listed run after the listed ones. |
 | `deploy_check` | none | Shell command run from the repository root with `{sha}` replaced by the merge commit of the slice's PR in the plan repository. Exit 0 means that commit runs in production. Without it the user reports deploys. |
 

@@ -146,7 +146,7 @@ def main():
     repos = plan.get("repos") or [main_repo]
     if main_repo not in repos:
         repos = [main_repo, *repos]
-    parallel = int(plan.get("parallel", 1))
+    parallel = int(plan.get("parallel", 5))
     deploy_check = plan.get("deploy_check")
 
     state_root = Path(os.environ.get("XDG_STATE_HOME", Path.home() / ".local/state"))
