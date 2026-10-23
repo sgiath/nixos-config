@@ -24,7 +24,7 @@ as a stopped worker to restart, an automatic replan, or a limitation that counts
 - **Spec**: Agent Notes in the repository, as usual. Decisions and architecture only, never progress.
 - **Plan**: `.agents/plans/<yyyy-mm-dd>-<topic>/` with `plan.md` and one `NN-<slug>.md` per slice. Format and templates: [plan format](references/plan-format.md). For tracked plans, only planning (on the default branch) and a slice's own PR edit these files. If the user or plan requires local artifacts, keep the plan, answers and spec unpublished; only the driver edits them and workers read absolute local paths. Do not copy them into implementation commits.
 - **Delivery state**: derived on every wake-up by [`scripts/plan-status <plan-dir>`](scripts/plan-status) from slice files, GitHub PRs or GitLab MRs on the exact slice branches, local branches, and the deploy check. Run it against the original absolute plan directory independently of worker checkouts. It does not read behavioral gate records. Never cache delivery state in the conversation or write progress into the repository.
-- **State directory** (outside the repository, printed by `plan-status` as `state_dir`): `asked/NN.md` (questions and recommendations sent to the user), `answers/NN.md` (initial slice decisions), `deployed/NN` (deploy marker), `gates/NN.md` (driver-owned verification evidence and later gate decisions), `final-gate.md` (plan integration evidence), `traps.md` (friction workers hit, appended by workers).
+- **State directory** (outside the repository, printed by `plan-status` as `state_dir`): `asked/NN.md` (questions and recommendations sent to the user), `answers/NN.md` (initial slice decisions), `deployed/NN` (deploy marker), `gates/NN.md` (driver-owned verification evidence and later gate decisions), `final-gate.md` (plan integration evidence), `traps.md` (friction workers hit, appended by workers), `tick-snapshot.json` (what the last tick saw, written only by `plan-status --record`).
 
 For each gate record, keep the acceptance claim, status (`passed`, `failed`, `blocked` or `pending`), applicable
 revision/environment, artifact paths, exact commands/results, and any pending question or dated user decision.
@@ -63,7 +63,15 @@ worker's persistent watcher. End the turn after the tick; do not keep a shell sl
 
 ## Tick
 
-1. Run `scripts/plan-status <absolute-plan-dir>` from the skill directory and read `plan.md`. The script chooses `gh` or `glab` from origin and uses explicit slice `branch` values when present. Find worker threads with `t3_thread_list` (`titleContains: "<topic> NN"`). Apply verified-work's role routing: production workers use Claude Opus 5.5; evidence/reproduction/verification delegates and independent reviews of complicated fixes or PRs (including design judgments) use Codex `gpt-6.1-sol` on the fast tier, reviews at high effort; Fable only for new UI designs. Honor task-specific overrides and the user's effort choice for workers and descendants.
+1. Run `scripts/plan-status <absolute-plan-dir> --changes` from the skill directory. If it prints
+   `"changed": false`, nothing the tick acts on has moved since the last recorded tick: end the turn with no
+   message, without reading threads or re-checking PRs. Otherwise read `plan.md` and act on the listed `changes`;
+   read only the worker threads they name. The script chooses `gh` or `glab` from origin, uses explicit slice
+   `branch` values when present, and lists each slice's worker threads (`workers`, from `t3 thread list`) with
+   status, latest run and item count. When `workers` is null, find them with `t3_thread_list`
+   (`titleContains: "<topic> NN"`). After the tick has acted on every change, run
+   `scripts/plan-status <absolute-plan-dir> --record`; a tick that stops before recording sees the same changes
+   again. A user message in the driver thread is handled in that turn, followed by a full tick. Apply verified-work's role routing: production workers use Claude Opus 5.5; evidence/reproduction/verification delegates and independent reviews of complicated fixes or PRs (including design judgments) use Codex `gpt-6.1-sol` on the fast tier, reviews at high effort; Fable only for new UI designs. Honor task-specific overrides and the user's effort choice for workers and descendants.
    Read `gates/NN.md` for every slice with a worker, PR or delivered dependency, regardless of its delivery status.
    Refresh records from relevant worker messages/artifacts. For an older plan without records, recover applicable
    evidence from its owners rather than assuming a merge proves the gate or rerunning valid checks blindly.
@@ -120,7 +128,9 @@ worker's persistent watcher. End the turn after the tick; do not keep a shell sl
    `next` list alone is insufficient. Do not launch a slice with its own unresolved gate question. For new work, call `t3_thread_launch`
    in this project with `workspaceStrategy: {type: "worktree", baseRef: "<default-branch>", branch: "<slice-branch>",
    startFromOrigin: true}`, title `<topic> NN: <title>`, and `message` from the [worker prompt](references/worker-prompt.md). Fill in its placeholders and add context, but never
-   drop its steps (review subagent, host workflow, traps).
+   drop its steps (review subagent, host workflow, traps). The external-calls line carries the user's actual
+   credential sources, ceilings and authorizations from answers, Standing rules and later messages; label your own
+   estimates as estimates, not caps.
    To resume an existing task checkout, use `existing_worktree` with its verified absolute path and branch.
    Retain the returned thread ID; a preparing launch is not a failed worker. After a lost/ambiguous response, inspect
    thread inventory before retrying; launch has no retry key. Post one line: `Started NN <title>: <thread link>`.
@@ -134,7 +144,7 @@ worker's persistent watcher. End the turn after the tick; do not keep a shell sl
     post a summary (slices, PRs, user-approved limitations) and the trap proposals. When nothing is running, in review
     or waiting for deploy and the plan only waits for user answers, delete the schedule too; the reply wakes the driver.
 
-Keep driver messages to one line per event. Do not narrate ticks where nothing changed.
+Keep driver messages to one line per event. A tick whose `--changes` output is unchanged posts nothing.
 
 ## Ad hoc work
 
