@@ -127,11 +127,6 @@
       url = "github:herdrdev/herdr/v0.9.5";
       inputs.nixpkgs.follows = "nixpkgs";
     };
-
-    opencode = {
-      url = "github:anomalyco/opencode/v1.19.4";
-      inputs.nixpkgs.follows = "nixpkgs";
-    };
   };
 
   nixConfig = {
@@ -199,7 +194,6 @@
         llm-agents.overlays.shared-nixpkgs
         prismlauncher.overlays.default
         comfyui.overlays.default
-        opencode.overlays.default
         herdr.overlays.default
       ];
 

@@ -1653,27 +1653,6 @@
         "type": "github"
       }
     },
-    "opencode": {
-      "inputs": {
-        "nixpkgs": [
-          "nixpkgs"
-        ]
-      },
-      "locked": {
-        "lastModified": 1792674207,
-        "narHash": "sha256-anAv4xsGIUHY2RTWF08nXSQVyE9ny/mbUWzfUwfpMwM=",
-        "owner": "anomalyco",
-        "repo": "opencode",
-        "rev": "148842ef7cb1bc34192b3fff57d0f9721ab9c801",
-        "type": "github"
-      },
-      "original": {
-        "owner": "anomalyco",
-        "ref": "v1.19.4",
-        "repo": "opencode",
-        "type": "github"
-      }
-    },
     "pre-commit-hooks": {
       "inputs": {
         "flake-compat": "flake-compat_2",
@@ -1812,7 +1791,6 @@
         "nixpkgs-ksa": "nixpkgs-ksa",
         "nixpkgs-master": "nixpkgs-master",
         "noctalia": "noctalia",
-        "opencode": "opencode",
         "prismlauncher": "prismlauncher",
         "snowfall-lib": "snowfall-lib",
         "sops-nix": "sops-nix",
