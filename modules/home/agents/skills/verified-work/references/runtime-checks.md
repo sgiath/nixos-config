@@ -34,7 +34,11 @@ tests are valid actions. Record exploratory failure triggers so the owner can re
 
 Keep runtime code and fixtures stable during a check. Coordinate concurrent writers and hot
 reloads; queue fixes until the attempt ends. If they change underneath it, rerun the affected
-check. Try plausible adjacent actions relevant to the change: refresh/back, another supplied
+check. For an expensive or long gate (real runs, paid evaluations, benchmarks, multi-minute suites,
+queued gates), first finish the reviews that can change its inputs or the code under test and prove
+its conditional assertions on a fixture. Then build and run it from a checkout of one fixed commit
+that nobody edits (a detached worktree or archive copy, not the live task checkout), and record that
+commit when the run starts. A later code change invalidates the measurement. Try plausible adjacent actions relevant to the change: refresh/back, another supplied
 role, invalid input, repeated submission or overlapping requests. Choose from actual behavior;
 this is not an exhaustive checklist for every change.
 

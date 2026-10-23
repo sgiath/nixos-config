@@ -17,6 +17,7 @@ No service, source checkout from a scenario, or external write is available to t
 | [resume-record](prompts/resume-record.md) | Retain compact local evidence and verify it on resumption. |
 | [small-task](prompts/small-task.md) | Avoid imposing this workflow on an immediate metadata edit. |
 | [blocked-gate](prompts/blocked-gate.md) | Preserve the user's authority over unavailable required proof. |
+| [expensive-gate](prompts/expensive-gate.md) | Settle inputs, then measure one fixed commit outside the live checkout. |
 
 ## Run a comparison
 
