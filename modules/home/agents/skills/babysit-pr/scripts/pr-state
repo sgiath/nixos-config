@@ -1,0 +1,140 @@
+#!/usr/bin/env python3
+"""pr-state: tell whether a GitHub PR changed since the last babysit-pr wake.
+
+Usage: pr-state <pr-url> [--record]
+
+Prints `{"changed": false}` when the head, PR state, check conclusions, reviews and
+review conversations are the same as at the last `--record`; otherwise the current
+state plus `changes`. Pending checks count as one state until they complete. Only
+comments and reviews from people other than the authenticated user count: your own
+replies and resolutions, bot conversation comments (summaries, processing notices) and
+edits to an existing comment do not. Bot reviews and inline review comments do count.
+
+A changed state is staged; `--record` (run after acting on the wake) makes the staged
+state the baseline, so a wake that stops early reports the same changes again.
+State lives in $XDG_STATE_HOME/babysit-pr/<owner>-<repo>-<number>.json.
+"""
+
+import json
+import os
+import re
+import subprocess
+import sys
+from pathlib import Path
+
+THREADS = """
+query($owner: String!, $repo: String!, $number: Int!, $cursor: String) {
+  repository(owner: $owner, name: $repo) {
+    pullRequest(number: $number) {
+      reviewThreads(first: 100, after: $cursor) {
+        pageInfo { hasNextPage endCursor }
+        nodes { id comments(last: 20) { nodes { id author { login } } } }
+      }
+    }
+  }
+}
+"""
+
+
+def fail(message):
+    print(f"pr-state: {message}", file=sys.stderr)
+    sys.exit(2)
+
+
+def gh(*args):
+    result = subprocess.run(["gh", *args], capture_output=True, text=True)
+    if result.returncode != 0:
+        fail(f"gh {' '.join(args[:3])} failed: {result.stderr.strip()}")
+    return json.loads(result.stdout)
+
+
+def current_state(owner, repo, number):
+    viewer = gh("api", "user")["login"]
+    pr = gh(
+        "pr", "view", str(number), "--repo", f"{owner}/{repo}", "--json",
+        "state,isDraft,headRefOid,mergeable,reviewDecision,statusCheckRollup,reviews",
+    )
+    # `gh pr view` drops the bot marker from logins; the REST user type keeps it.
+    comments = [c for page in gh("api", f"repos/{owner}/{repo}/issues/{number}/comments", "--paginate", "--slurp")
+                for c in page]
+    checks = {}
+    for check in pr["statusCheckRollup"]:
+        name = check.get("name") or check.get("context")
+        status = check.get("status") or check.get("state")
+        done = status in ("COMPLETED", "SUCCESS", "FAILURE", "ERROR")
+        checks[f"{check.get('workflowName') or ''}/{name}"] = (check.get("conclusion") or status) if done else "PENDING"
+    threads, cursor = {}, None
+    while True:
+        variables = ["-F", f"owner={owner}", "-F", f"repo={repo}", "-F", f"number={number}"]
+        if cursor:
+            variables += ["-F", f"cursor={cursor}"]
+        page = gh("api", "graphql", "-f", f"query={THREADS}", *variables)
+        connection = page["data"]["repository"]["pullRequest"]["reviewThreads"]
+        for thread in connection["nodes"]:
+            others = [c["id"] for c in thread["comments"]["nodes"] if (c["author"] or {}).get("login") != viewer]
+            threads[thread["id"]] = others[-1] if others else None
+        if not connection["pageInfo"]["hasNextPage"]:
+            break
+        cursor = connection["pageInfo"]["endCursor"]
+    return {
+        "state": pr["state"],
+        "draft": pr["isDraft"],
+        "head": pr["headRefOid"],
+        "mergeable": pr["mergeable"],
+        "review_decision": pr["reviewDecision"],
+        "checks": checks,
+        "reviews": sorted(
+            f"{r['id']}:{r['state']}" for r in pr["reviews"] if (r["author"] or {}).get("login") != viewer
+        ),
+        "comments": sorted(
+            c["node_id"] for c in comments if c["user"]["login"] != viewer and c["user"]["type"] != "Bot"
+        ),
+        "threads": threads,
+    }
+
+
+def describe(old, new):
+    if old is None:
+        return ["no recorded state"]
+    changes = [f"{key}: {old.get(key)} -> {new[key]}" for key in ("state", "draft", "head", "mergeable", "review_decision")
+               if old.get(key) != new[key]]
+    for name in sorted(set(old["checks"]) | set(new["checks"])):
+        if old["checks"].get(name) != new["checks"].get(name):
+            changes.append(f"check {name}: {old['checks'].get(name)} -> {new['checks'].get(name)}")
+    if set(new["reviews"]) - set(old["reviews"]):
+        changes.append("new review")
+    if set(new["comments"]) - set(old["comments"]):
+        changes.append("new conversation comment")
+    for thread_id, value in new["threads"].items():
+        if old["threads"].get(thread_id) != value:
+            changes.append(f"review thread {thread_id} changed")
+    return changes
+
+
+def main():
+    args = [arg for arg in sys.argv[1:] if arg != "--record"]
+    if len(args) != 1:
+        fail("usage: pr-state <pr-url> [--record]")
+    match = re.fullmatch(r"https://github\.com/([^/]+)/([^/]+)/pull/(\d+)/?", args[0])
+    if not match:
+        fail(f"{args[0]!r} is not a GitHub pull request URL")
+    owner, repo, number = match.group(1), match.group(2), int(match.group(3))
+    state_root = Path(os.environ.get("XDG_STATE_HOME", Path.home() / ".local/state")) / "babysit-pr"
+    path = state_root / f"{owner}-{repo}-{number}.json".lower()
+    staged = path.with_suffix(".staged.json")
+    if "--record" in sys.argv[1:]:
+        if staged.is_file():
+            staged.replace(path)
+        return
+    new = current_state(owner, repo, number)
+    changes = describe(json.loads(path.read_text()) if path.is_file() else None, new)
+    if not changes:
+        print('{"changed": false}')
+        return
+    state_root.mkdir(parents=True, exist_ok=True)
+    staged.write_text(json.dumps(new))
+    print(json.dumps({"changed": True, "changes": changes, **new}, indent=2))
+
+
+if __name__ == "__main__":
+    main()
