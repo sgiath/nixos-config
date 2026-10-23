@@ -24,6 +24,29 @@ in
     patches = (old.patches or [ ]) ++ [ ./pihole-ftl-unused-counter.patch ];
   });
 
+  # FIXME: patchelf 0.18+ (interpreter, then RPATH) leaves Node 26's .dynamic
+  # in a RW LOAD that the next read-only LOAD overlaps, so ld.so segfaults and
+  # the TUI build dies in `npm config`. Drop once nixpkgs patchelf leaves the
+  # pinned node runnable; see UPSTREAM-WORKAROUNDS.md#hermes-agent-node-patchelf.
+  hermes-agent = prev.hermes-agent.override (old: {
+    pmPackages = old.pmPackages // {
+      node = old.pmPackages.node.overrideAttrs (nodeOld: {
+        nativeBuildInputs = [
+          (final.patchelf.overrideAttrs (
+            patchelfFinal: _: {
+              version = "0.15.5";
+              src = final.fetchurl {
+                url = "https://github.com/NixOS/patchelf/releases/download/${patchelfFinal.version}/patchelf-${patchelfFinal.version}.tar.bz2";
+                hash = "sha256-E02LFkLBmE6FYjvAm/pYKayzIs9sgNzGDVcdzcrQng0=";
+              };
+            }
+          ))
+        ]
+        ++ nodeOld.nativeBuildInputs;
+      });
+    };
+  });
+
   llm-agents = prev.llm-agents // {
     # FIXME: remote-control-device-key.node links tpm2-tss and libcrypto, but
     # llm-agents only finds them through RUNPATHs of systemd < 262 libraries.
