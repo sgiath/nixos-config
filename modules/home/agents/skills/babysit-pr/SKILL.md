@@ -40,17 +40,26 @@ The user's automated reviewers run as CI jobs and publish their comments before 
 
 When `watch_pull_request` is available, use it instead of shell watches, polling or a recurring schedule:
 
-- Read existing review conversations and current CI state first; only comments posted after watching starts
-  trigger a wake. Handle actionable work now, and watch every still-pending task PR before ending the turn.
-- Call `watch_pull_request` with the full PR URL, confirm it succeeded, then end the turn. Record that the workflow
+- Run [`scripts/pr-state <pr-url>`](scripts/pr-state) from this skill's directory first; it stages the state
+  you are about to handle. Then read existing review conversations and current CI state; only comments posted
+  after watching starts trigger a wake. Handle actionable work now, and watch every still-pending task PR before
+  ending the turn.
+- Call `watch_pull_request` with the full PR URL, confirm it succeeded, run `scripts/pr-state <pr-url> --record`
+  (the baseline is the state staged before you read it), then run `scripts/pr-state <pr-url>` once more: T3 does
+  not wake for comments that arrived before the watch started. If it reports changes, handle them as on a wake;
+  otherwise end the turn. Record that the workflow
   is waiting for T3; yielding is continuation, not completion or a handoff to the user. Do not unsettle a thread
   the user deliberately settled; if it is settled unexpectedly, establish whether monitoring should resume.
-- On a wake, re-read the current head, all applicable check/reviewer jobs and full review conversations. T3's
-  required-check notification is a prompt to verify the finish gate, not proof that optional reviewers finished.
-  If work remains external, keep watching and yield again. Do not restart a watcher already active for this thread.
-  A wake is not a reason to post: when the head, checks and review conversations are unchanged, or the only news is
-  a bot processing notice or your own reply, yield without a message. Write to the user only for actionable work
-  you did, a changed state, a blocker or the hand-back.
+- A wake saying T3 stopped watching or could not read the PR is handled by the re-arm rule below first, whatever
+  the PR state. Otherwise start the wake with `scripts/pr-state <pr-url>`. If it prints `{"changed": false}`, end
+  the turn with no message: nothing a reviewer or CI did has moved (bot processing notices, your own replies and
+  comment edits do not count). Otherwise act on its `changes`: re-read the current
+  head, all applicable check/reviewer jobs and full review conversations. T3's required-check notification is a
+  prompt to verify the finish gate, not proof that optional reviewers finished. If work remains external, keep
+  watching and yield again. Do not restart a watcher already active for this thread. Run
+  `scripts/pr-state <pr-url> --record` after acting, before yielding; a wake that stops before recording reports
+  the same changes again. When the only changes are your own push and its checks restarting, record and yield
+  without a message. Write to the user only for actionable work you did, a changed state, a blocker or the hand-back.
 - When T3 reports it stopped watching or could not read the PR, re-arm the watch once. If that fails too, use
   the fallback watch below for this PR and report the T3 limitation; do not keep re-arming.
 - Subagents cannot watch. Return their PR URLs, head SHAs, remaining findings and verification to the owning parent;
