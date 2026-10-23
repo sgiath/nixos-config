@@ -57,7 +57,9 @@ migration: true
 
 ## Acceptance gate
 
-<observable claim, fixture/data, executable check, expected result and verification limits; use skill://verified-work>
+<observable claim, fixture/data, executable check, expected result and verification limits; use skill://verified-work.
+Red evidence names the failing assertion and failure count on the unchanged baseline, never a compile error,
+empty output or a passing run.>
 
 ## Questions before starting
 

@@ -53,7 +53,8 @@ diff and task context. Rewrite the description when later fixes change its scope
 - **Evidence:** gather runtime proof before writing. Every visual change requires embedded media: at least one
   screenshot when a static image demonstrates the result, or a short video when interaction, transitions or timing
   are needed to showcase the feature. Follow the capture guidance below. For behavior, name the
-  failing-before/passing-after test or command and what it proves. For a refactor, cite existing tests or comparison
+  failing-before/passing-after test or command and what it proves; failing-before means the unchanged baseline,
+  and a mutation applied after the fix is reported as a mutation check, not as the failing-before run. For a refactor, cite existing tests or comparison
   output. State verification limits; never invent test runs or manual testing. Existing evidence supplied by the
   user or invoking workflow is usable when it shows the final implementation.
 - **Merge Danger:** follow the template's terms. Without a template, describe **Reversible** (whether reverting

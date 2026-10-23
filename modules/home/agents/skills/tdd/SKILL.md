@@ -44,6 +44,10 @@ When the shape of that interface is itself in question — how deep the module i
 ## Rules of the loop
 
 - **Red before green.** Write the failing test first, then only enough code to pass it. Don't anticipate future tests or add speculative features.
+- **Red means the unchanged baseline.** The red run is the new test failing against the code before this cycle's
+  implementation, on its own assertion (not a compile error, empty output or a setup failure). Record the
+  revision, the failing assertion and the failure count. Mutating code after it is written is a separate
+  sensitivity check: useful, but report it as a mutation, never as the red run.
 - **One slice at a time.** One seam, one test, one minimal implementation per cycle.
 - **Refactor with green tests.** Simplify when the completed slice exposes a concrete problem, then rerun the affected tests. See [refactoring candidates](references/refactoring.md); do not turn the list into a mandatory sweep.
 
