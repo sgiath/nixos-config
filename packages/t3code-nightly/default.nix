@@ -40,7 +40,10 @@ let
     .${stdenv.hostPlatform.system};
 
   # T3 downloads Chrome for Testing into ~/.t3/tools. nix-ld supplies its
-  # interpreter, but the downloaded browser also needs these libraries.
+  # interpreter, but the downloaded browser also needs these libraries. They go
+  # through NIX_LD_LIBRARY_PATH, which only nix-ld (foreign binaries) reads: as
+  # LD_LIBRARY_PATH they reached every Nix program T3 started, and one built
+  # against an older glibc then failed with "GLIBC_2.43 not found".
   browserLibraries = [
     alsa-lib
     at-spi2-atk
@@ -117,7 +120,7 @@ stdenv.mkDerivation (finalAttrs: {
     # otherwise downloads its pinned cloudflared relay client into ~/.t3.
     makeWrapper $out/libexec/t3code/t3 $out/bin/t3 \
       --prefix PATH : ${lib.makeBinPath llm-agents.t3code.providerPackages} \
-      --prefix LD_LIBRARY_PATH : ${browserLibraryPath} \
+      --prefix NIX_LD_LIBRARY_PATH : ${browserLibraryPath} \
       --set-default T3CODE_CLOUDFLARED_PATH ${lib.getExe cloudflared}
 
     runHook postInstall
@@ -134,7 +137,8 @@ stdenv.mkDerivation (finalAttrs: {
   '';
 
   # Preview automation fails with "No preview automation host" when the
-  # downloaded browser misses a library from the wrapper's LD_LIBRARY_PATH.
+  # downloaded browser misses a library from the wrapper's NIX_LD_LIBRARY_PATH.
+  # The sandbox has no nix-ld, so ldd resolves the same list via LD_LIBRARY_PATH.
   doInstallCheck = true;
   nativeInstallCheckInputs = [ unzip ];
   installCheckPhase = ''

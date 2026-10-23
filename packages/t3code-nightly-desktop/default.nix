@@ -121,10 +121,12 @@ stdenv.mkDerivation (finalAttrs: {
     # Same binary name as the stable t3code-desktop, so only one is installed.
     # T3 Connect otherwise downloads its pinned cloudflared relay client.
     # The downloaded Chrome headless shell does not inherit Electron's RPATH;
-    # expose the same libraries to that browser through its environment.
+    # expose the same libraries to that browser through nix-ld's
+    # NIX_LD_LIBRARY_PATH, which Nix programs started by T3 ignore (see
+    # ../t3code-nightly/default.nix).
     makeWrapper $out/libexec/t3code-desktop/t3code $out/bin/t3code-desktop \
       --prefix PATH : ${lib.makeBinPath llm-agents.t3code.providerPackages} \
-      --prefix LD_LIBRARY_PATH : ${finalAttrs.passthru.libraryPath} \
+      --prefix NIX_LD_LIBRARY_PATH : ${finalAttrs.passthru.libraryPath} \
       --set-default T3CODE_CLOUDFLARED_PATH ${lib.getExe cloudflared} \
       --add-flags "\''${NIXOS_OZONE_WL:+\''${WAYLAND_DISPLAY:+--ozone-platform-hint=auto --enable-features=WaylandWindowDecorations --enable-wayland-ime=true}}"
 
