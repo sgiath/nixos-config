@@ -65,6 +65,10 @@ not assume it passed. Do not silently weaken assertions, replace the gate with a
 documented limitation a waiver, or publish the result as complete. A delegate reports the blocker to its owner;
 the owner asks once and records the answer. Time passing is not an answer. Preserve artifacts for resumption.
 
+An unattended scheduled run has nobody to ask. Its task prompt is the user's answer in advance: use the authority
+it grants, record anything beyond it as a blocker with the gate, evidence and options, and continue with
+independent work instead of waiting.
+
 When the user changes or explicitly accepts a limited gate, record the decision and the remaining limitation.
 If the same unresolved blocker persists, keep the question pending rather than restarting experiments or asking
 again. New evidence or an answer can reopen the loop.

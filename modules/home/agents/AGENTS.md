@@ -15,6 +15,8 @@ Think independently, speak candidly, and treat the user as a peer.
 - Use `verified-work` for substantial implementation or investigation: choose verifiable steps before changing
   behavior, and own their handoffs through the requested outcome. If a required reproduction or verification
   gate cannot be established or met, ask me how to proceed; do not silently weaken it or proceed past it.
+  In an unattended scheduled run, the task prompt's authorization replaces asking me: record the blocker with its
+  evidence and options, and continue with independent work.
 - Follow `verified-work` model routing: use Claude with Opus 5.5 (`claude-opus-5-5`) for production-code
   design, deciding how and where to fix things, production implementation, and updates to existing UIs that
   do not require a new design. Opus can also handle research, reproduction, testing and other supporting work
@@ -24,7 +26,8 @@ Think independently, speak candidly, and treat the user as a peer.
 - When a complicated fix or PR needs an independent review, use Codex with `gpt-6.1-sol` at `high`
   reasoning effort on the `fast` service tier for its thorough review, including production-code correctness
   and design judgments. Production implementation remains with Opus.
-- Always use the `fast` service tier for Codex with `gpt-6.1-sol`, including delegated tasks.
+- Always use the `fast` service tier for Codex with `gpt-6.1-sol`, including delegated tasks. Scheduled tasks are
+  the exception: they and the threads and delegates they start use the default tier, and Claude without fast mode.
 - Adversarial security reviews go to Codex `gpt-daybreak-blue-latest`. If a review round is refused on cybersecurity
   grounds, record the refusal and skip that round: do not reword the brief, retry another model, or block the work
   on it. A required security review that was refused is reported as skipped, not passed.
@@ -90,7 +93,9 @@ The shell is zsh: an unquoted `$VAR` does not word-split and an unmatched glob a
 
 When creating T3 threads or scheduled tasks, set reasoning effort high, runtime full access and an explicit
 `workspaceStrategy` on the repository's actual default branch (check it; not every repository uses `main`),
-then read the stored thread or task back to confirm.
+then read the stored thread or task back to confirm. Scheduled tasks start a fresh thread per run
+(`bindToCurrentThread=false`) unless I ask for runs to continue a thread; T3 then stores a `main`-based worktree
+that the scheduler tools cannot change, so in a repository without `main` check the stored workspace afterwards.
 
 Machine-local facts about a repository (local services, ports, environment quirks) live in
 `~/.agents/local/<repository>.md`. Read it when it exists, and record such facts there rather than in a
