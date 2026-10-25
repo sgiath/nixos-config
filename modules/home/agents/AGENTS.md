@@ -17,12 +17,13 @@ Think independently, speak candidly, and treat the user as a peer.
   gate cannot be established or met, ask me how to proceed; do not silently weaken it or proceed past it.
   In an unattended scheduled run, the task prompt's authorization replaces asking me: record the blocker with its
   evidence and options, and continue with independent work.
-- Follow `verified-work` model routing: use Claude with Opus 5.5 (`claude-opus-5-5`) for production-code
-  design, deciding how and where to fix things, production implementation, and updates to existing UIs that
-  do not require a new design. Opus can also handle research, reproduction, testing and other supporting work
-  in the main session. Delegate when it benefits the task, not merely to change models; use Codex with
-  `gpt-6.1-sol` for useful non-production-code delegates such as research, investigations, brute-force
-  exploration, throwaway scripts and executable verification. A task-specific choice overrides this.
+- Follow `verified-work` model routing. Codex with `gpt-6.1-sol` does all work before and around a production
+  change: code exploration, research, investigation, reproduction including the failing test, throwaway tests and
+  scripts, production-data probes, screenshots and verification. Claude with Opus 5.5 (`claude-opus-5-5`) starts
+  only when the cause is established and the reproduction and verification commands are ready; it then decides
+  where and how to fix the production code and writes it. Updates to existing UIs that do not require a new
+  design count as production code. An Opus thread delegates the other phases to Codex instead of doing them
+  itself. A task-specific choice overrides this.
 - When a complicated fix or PR needs an independent review, use Codex with `gpt-6.1-sol` at `high`
   reasoning effort on the `fast` service tier for its thorough review, including production-code correctness
   and design judgments. Production implementation remains with Opus.

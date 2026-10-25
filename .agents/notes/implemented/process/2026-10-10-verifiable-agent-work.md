@@ -32,8 +32,11 @@ stops dependent work. A documented limitation is not a waiver.
 The user's default role split assigns investigations, brute-force exploration,
 throwaway scripts and executable verification to Codex with `gpt-6.1-sol`.
 Claude with Opus 5.5 judges production design and fix placement, writes
-production code and adds durable regression tests. The owner delegates a phase
-when its own model does not match that role. Task-specific choices override
+production code and adds durable regression tests. Claude starts only when the
+cause, the reproduction (including a failing test where one fits) and the
+verification commands are ready. The owner delegates a phase when its own model
+does not match that role, including an Opus owner delegating investigation and
+verification. Task-specific choices override
 these defaults; live discovery resolves provider instances and model IDs.
 Unavailable required routing needs a user decision rather than silent substitution.
 
