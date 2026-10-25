@@ -71,7 +71,9 @@ publication as a completed implementation. A recorded limitation does not waive 
 ## 4. Babysit until ready
 
 Read and execute skill://babysit-pr on every required GitHub PR and companion. For a GitLab MR, use the
-repository's MR skill (such as babysit-mr) instead, and never `watch_pull_request`: T3 cannot read GitLab MRs.
+repository's MR skill (such as babysit-mr) and [GitLab monitoring](../babysit-pr/references/gitlab-monitoring.md).
+T3's watcher supports open GitLab MRs; retain the repository monitor when the task requires stalled-pipeline
+recovery or post-merge CI. Repository rules still govern publication, reviews and allowed actions.
 In T3, a successful persistent watch followed
 by ending the turn is a waiting state of this workflow. Resume from the recorded PRs on a notification; do not
 recreate the worktree or PRs. Subagents return monitoring ownership to their parent as babysit-pr requires.

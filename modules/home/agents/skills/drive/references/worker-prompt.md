@@ -1,8 +1,5 @@
 # Worker prompt
 
-<!-- FIXME: GitLab MRs avoid `watch_pull_request` because T3 cannot read them yet (2026-10-09: 47 of 47 watch
-     notifications in neo failed). Revisit when a T3 update supports GitLab MR watches. -->
-
 The driver launches each slice with this message, filled in. Use absolute plan/state paths; a local plan lives outside the worker checkout. Include its slice scope and answers in the launch context when needed. Select the repository's host workflow. Apply verified-work's role routing and preserve task-specific provider/model/effort overrides for all descendants.
 
 ```text
@@ -23,9 +20,9 @@ The driver launches each slice with this message, filled in. Use absolute plan/s
 - UI changes need the screenshot or recording required by the PR policy. Prefer T3 preview status/open, snapshots and focused interactions; retain the runnable fixture and media needed for review, and label simulated dependencies.
 - Do not merge, deploy, or run migrations; finish at merge-ready.
 - For GitHub, publish through the global pr skill and use babysit-pr. When waiting for CI/review, use T3's persistent watcher and yield; resume on notifications. Do not run `gh run watch` or other shell polling loops.
-- Never end a turn on a background shell wait: T3 settles an idle thread and the background completion does not wake it. Wait for CI/review with the host's monitor (T3's PR watcher on GitHub, the repository's babysit-mr on GitLab); wait for deploys, rollouts or test suites with one foreground command bounded by a timeout.
+- Never end a turn on a background shell wait: T3 settles an idle thread and the background completion does not wake it. Wait for CI/review with T3's persistent PR/MR watcher or the repository's monitor as its required coverage dictates; wait for deploys, rollouts or test suites with one foreground command bounded by a timeout.
 - Start long-lived services a gate needs (dev nodes, gate clients, Xvfb) detached with `setsid` and a recorded PID, not with the tool's background mode, which kills them at its two-hour limit; stop them by that PID.
-- For GitLab, use the repository's gitlab-access/babysit-mr skills, its complete MR template and authenticated-user assignment; override own-change's GitHub publication steps. Wait with the repository's babysit-mr monitor, not `watch_pull_request`: T3 cannot read GitLab MRs yet.
+- For GitLab, use the repository's gitlab-access/babysit-mr skills, its complete MR template and authenticated-user assignment; override own-change's GitHub publication steps. Read the GitLab monitoring reference linked from babysit-pr: T3 can watch open MRs, while stalled-pipeline recovery and post-merge CI require the repository monitor. Do not run two monitors for the same coverage.
 - Link every PR/MR through T3. Watcher waits are not a completed slice.
 - If a decision outside the answers blocks you, ask it and stop; do not guess.
 - When done, append each friction you hit (a failed check you could have predicted, a missing pointer, a repeated workaround) to @<state-dir>/traps.md as `- <date> <NN>: <trap> -> <what would have prevented it>`, once per slice; skip entries already there. Append nothing if there was none.

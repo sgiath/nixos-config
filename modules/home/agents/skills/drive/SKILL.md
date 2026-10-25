@@ -103,8 +103,10 @@ worker's persistent watcher. End the turn after the tick; do not keep a shell sl
      than restarting the slice. If the branch has no checkout, prepare one using native support for existing branches
      when available, otherwise Worktrunk, then bind the replacement to it. Do not create a replacement while another
      owner is active or ownership is uncertain. Apply the same retained-ID/ambiguous-launch recovery rules as step 8.
-4. **Slices in review**: an idle worker with an active T3 PR watch (GitHub) or a running `babysit-mr` monitor
-   (GitLab) is waiting normally, not stopped early. Read
+4. **Slices in review**: an idle worker with an active T3 PR/MR watch or a running repository monitor
+   is waiting normally, not stopped early. For GitLab, use
+   [GitLab monitoring](../babysit-pr/references/gitlab-monitoring.md) to check that the monitor covers the task.
+   Read
    `list_thread_pull_requests` for its thread and its last messages; do not send it back merely because CI/review
    is pending. When every PR is merge-ready (all checks/reviewers complete and green, no unresolved actionable
    threads, Evidence present, the screenshot or recording required by PR policy for UI changes) and the worker handed it back, tell the user once:

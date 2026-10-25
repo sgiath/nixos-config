@@ -14,9 +14,9 @@ cannot be established or met, ask the user how to proceed, preserve the blocker 
 
 ## Establish the target
 
-This skill is for GitHub only. For a GitLab MR, stop here and use the repository's MR skill (such as babysit-mr);
-never call `watch_pull_request` for it, because T3 cannot read GitLab MRs.
-<!-- FIXME: revisit when a T3 update can watch GitLab MRs (2026-10-16: every GitLab watch still failed). -->
+This skill's commands and state helper are for GitHub. For a GitLab MR, use the repository's MR skill
+(such as babysit-mr) and read [GitLab monitoring](references/gitlab-monitoring.md). T3 can now read and watch
+GitLab MRs; choose its watcher or the repository monitor according to the required coverage.
 
 1. Resolve repository, authenticated user, PR, base branch, head repository/branch/SHA and its worktree. Read the
    PR description and diff. Do not assume origin, main/master, or that a supplied PR belongs to this checkout.
