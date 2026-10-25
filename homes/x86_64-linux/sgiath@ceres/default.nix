@@ -9,7 +9,7 @@
     packages = with pkgs; [
       texliveMedium
       # lmstudio
-      davinci-resolve-studio
+      # davinci-resolve-studio
       whisper-cpp-vulkan
       pkgs.${namespace}.katrain
     ];
@@ -20,7 +20,7 @@
     };
   };
 
-  sgiath.programs.blender.enable = true;
+  sgiath.programs.blender.enable = false;
 
   sgiath.work = {
     crazyegg.enable = true;
@@ -45,7 +45,7 @@
   };
 
   services = {
-    davinci-resolve-mcp.enable = true;
+    davinci-resolve-mcp.enable = false;
     openclaw.node = {
       enable = true;
       sshTarget = "sgiath@vesta.local";
