@@ -111,6 +111,7 @@ Runtime checks in records are required future checks unless the record's
 | [`chatgpt-tpm2-tss-build-inputs`](#chatgpt-tpm2-tss-build-inputs) | temporary fix | required | desktop |
 | [`hermes-agent-exact-pin-relax`](#hermes-agent-exact-pin-relax) | compatibility | required | all |
 | [`hermes-agent-node-patchelf`](#hermes-agent-node-patchelf) | temporary fix | required | vesta |
+| [`hermes-agent-home-mode`](#hermes-agent-home-mode) | compatibility | required | vesta |
 | [`snowfall-flake-utils-plus-deferred-config`](#snowfall-flake-utils-plus-deferred-config) | vendored fork | required | all |
 | [`hyprland-glaze-release-freeze`](#hyprland-glaze-release-freeze) | input pin | required | desktop |
 | [`ksa-unmerged-nixpkgs-package`](#ksa-unmerged-nixpkgs-package) | input fork | required | ceres |
@@ -345,6 +346,16 @@ Common runtime check for every ComfyUI record: `systemctl show comfyui.service -
 - **Remove when:** the selected release qualifies the target and the collision scenario passes without the patch. Keep the popup bindings.
 - **Validate:** `all`; runtime: run TMS from the popup in a session containing a window whose name starts with the target session name.
 - **Exercised (2026-10-01):** isolated tmux 3.7c probe: `-t target` failed "index 0 in use", `-t target:` created the window in the right session.
+
+#### `hermes-agent-home-mode`
+
+- **Where:** `modules/nixos/services/hermes-agent.nix` (activation script `hermes-agent-home-mode` after `hermes-agent-setup`, tmpfiles `z` rule; both set `/home/sgiath/hermes/.hermes` to 0700).
+- **Why:** the upstream NixOS module makes HERMES_HOME 2770 owned by `sgiath:hermes`, in `hermes-agent-setup` on every activation and in its tmpfiles `d` rule on boot and switch. Hermes' own gateway discovery (`home_mode_unsafe` in `hermes_cli/gateway_runtime_discovery.py`) only accepts a group-writable home when the group is the owner's private group, so `connect_gateway()` fails with `unsafe_control_permissions` and cron jobs that need the gateway (the Oct 24 and 25 screenshot runs) die with `GatewayUnavailableError`. Both services run as `sgiath` and nothing else needs group access to the home, so 0700 is enough. `stateDir`, `workspace` and the state subdirectories stay 2770; discovery doesn't check them.
+- **Upstream:** no issue or PR filed for this workaround. Main still sets the tmpfiles rule and the activation `chmod 2770` ([nixosModules.nix](https://github.com/NousResearch/hermes-agent/blob/main/nix/nixosModules.nix), checked 2026-10-25).
+- **Selected pin:** hermes-agent bf0203a7, [nixosModules.nix#L446](https://github.com/NousResearch/hermes-agent/blob/bf0203a794a07aac3ff764972ab9087baa4e4f4e/nix/nixosModules.nix#L446) (tmpfiles `d ... 2770`) and [#L466](https://github.com/NousResearch/hermes-agent/blob/bf0203a794a07aac3ff764972ab9087baa4e4f4e/nix/nixosModules.nix#L466) (`chmod 2770`); [gateway_runtime_discovery.py#L50](https://github.com/NousResearch/hermes-agent/blob/bf0203a794a07aac3ff764972ab9087baa4e4f4e/hermes_cli/gateway_runtime_discovery.py#L50) rejects the result.
+- **Remove when:** the selected module leaves HERMES_HOME in a mode discovery accepts (or discovery accepts the module's mode) in both activation and tmpfiles. Remove the activation script and the `z` rule together.
+- **Validate:** `vesta`; after switch and after boot `stat -c %a /home/sgiath/hermes/.hermes` is `700` and `connect_gateway()` reaches the gateway. Runtime: authenticate with `connect_gateway()` and query `cron.recover` for a nonexistent job/request; expect `status: missing` without submitting a job or sending a message.
+- **Exercised (2026-10-25):** on the pinned module the activation mode commands and the tmpfiles rule both left the fixture home 2770, which the deployed discovery policy rejected with `unsafe_control_permissions`. The full Vesta NixOS build passed and was deployed as `/nix/store/yrdnwi92nz026jc7g7dg8a9j1mx1plnm-nixos-system-vesta-26.11.20261023.3ec6363`. Its ordered activation and two tmpfiles fixture runs passed the real discovery policy. On Vesta, `.hermes` stayed 0700 after switch and another tmpfiles run, the same gateway PID remained active, and an authenticated `cron.recover` probe returned `status: missing` without submitting work. All six job schedules matched their pre-switch fingerprint. Scheduled digest execution itself was not replayed.
 
 #### `pihole-first-run-setup-retry`
 

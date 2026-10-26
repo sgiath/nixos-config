@@ -59,6 +59,15 @@ in
         };
       };
 
+      # Upstream makes HERMES_HOME 2770 for the hermes group, but gateway discovery refuses a
+      # home that another user can write, so cron and CLI clients cannot reach the gateway.
+      # Both services run as sgiath. See UPSTREAM-WORKAROUNDS.md#hermes-agent-home-mode.
+      system.activationScripts.hermes-agent-home-mode = lib.stringAfter [ "hermes-agent-setup" ] ''
+        chmod 0700 ${stateDir}/.hermes
+      '';
+      # tmpfiles applies `z` after the upstream `d` rule for the same path.
+      systemd.tmpfiles.rules = [ "z ${stateDir}/.hermes 0700 - - - -" ];
+
       systemd.services = {
         hermes-agent.after = [ "continuwuity.service" ];
         hermes-dashboard = {
