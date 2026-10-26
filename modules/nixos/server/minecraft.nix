@@ -21,6 +21,30 @@
     # for starting new packs on the server and testing
     environment.systemPackages = with pkgs; [ zulu25 ];
 
+    users.groups.minecraft-family = { };
+    users.users.minecraft-family = {
+      isSystemUser = true;
+      group = "minecraft-family";
+      home = "/data/minecraft/family";
+    };
+    systemd.tmpfiles.rules = [
+      "d /data/minecraft/family 0750 minecraft-family minecraft-family -"
+      "Z /data/minecraft/family - minecraft-family minecraft-family -"
+    ];
+
+    # The family server's console, so stopping it can type `stop` (as nixpkgs' minecraft-server does)
+    systemd.sockets.minecraft-family = {
+      bindsTo = [ "minecraft-family.service" ];
+      socketConfig = {
+        ListenFIFO = "/run/minecraft-family.stdin";
+        SocketMode = "0600";
+        SocketUser = "minecraft-family";
+        SocketGroup = "minecraft-family";
+        RemoveOnStop = true;
+        FlushPending = true;
+      };
+    };
+
     systemd.services = {
 
       # vanilla (port 25565)
@@ -64,12 +88,36 @@
       minecraft-family = {
         enable = true;
         description = "Minecraft Family 1.7.10 server";
-        after = [ "network.target" ];
+        after = [
+          "network.target"
+          "minecraft-family.socket"
+        ];
+        requires = [ "minecraft-family.socket" ];
         wantedBy = [ "multi-user.target" ];
-        unitConfig.ConditionPathExists = "/data/minecraft/family/lwjgl3ify-forgePatches.jar";
-        script = "${lib.getExe pkgs.zulu25} -server -Xms6G -Xmx6G -Dfml.readTimeout=180 @java9args.txt -jar lwjgl3ify-forgePatches.jar nogui";
+        unitConfig = {
+          ConditionPathExists = "/data/minecraft/family/lwjgl3ify-forgePatches.jar";
+          # A server that keeps crashing at start stops retrying
+          StartLimitIntervalSec = "15min";
+          StartLimitBurst = 3;
+        };
+        script = "exec ${lib.getExe pkgs.zulu25} -server -Xms6G -Xmx6G -Dfml.readTimeout=180 @java9args.txt -jar lwjgl3ify-forgePatches.jar nogui";
+        # SIGTERM races the server thread (no "Saving worlds", an empty crash report): type `stop` and wait
+        # for Java to save and exit
+        preStop = ''
+          if [ -n "''${MAINPID:-}" ] && kill -0 "$MAINPID" 2>/dev/null; then
+            echo stop > /run/minecraft-family.stdin
+            while kill -0 "$MAINPID" 2>/dev/null; do sleep 1; done
+          fi
+        '';
         serviceConfig = {
+          User = "minecraft-family";
+          Group = "minecraft-family";
           WorkingDirectory = "/data/minecraft/family";
+          StandardInput = "socket";
+          StandardOutput = "journal";
+          StandardError = "journal";
+          # The global 5 s default is too short for saving a modded world with Distant Horizons
+          TimeoutStopSec = "10min";
           Restart = "on-failure";
           RestartSec = 30;
         };
