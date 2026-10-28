@@ -102,6 +102,12 @@ Machine-local facts about a repository (local services, ports, environment quirk
 `~/.agents/local/<repository>.md`. Read it when it exists, and record such facts there rather than in a
 harness-specific memory.
 
+CrazyEgg AWS: bare `aws` (default credential chain) is already an MFA session; I never need to run anything for
+it. `awsp` does not exist here, so ignore repository docs that ask for `awsp crazyegg`, and never pass
+`--profile crazyegg` (long-term keys, denied without MFA). An AccessDenied with "no identity-based policy allows"
+means the session is older than 8 h: run `systemctl --user start aws-secrets`, then retry before reporting a
+blocker (`~/nixos/modules/home/work/aws.nix`).
+
 ## Writing density
 
 Use plain, literal language. Avoid decorative metaphors and phrases that display the writer rather than convey
