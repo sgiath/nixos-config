@@ -1,146 +1,104 @@
 ---
 name: write-as-sgiath
-description: "Use whenever drafting, rewriting, replying, commenting, or posting text in Filip Vavera's (sgiath's) name or on his behalf, including Slack messages, Shortcut or GitHub comments, PR descriptions, emails, and other authored text. Apply even without an explicit request to match his style. Does not govern the assistant's own explanations."
+description: "Use whenever drafting, rewriting, replying, commenting, or posting text in Filip Vavera's (sgiath's) name or on his behalf, including Slack messages, Shortcut or GitHub comments, PR descriptions, emails, and other authored text. Apply even when no style is requested. Does not govern the assistant's own explanations."
 ---
 
 # Write as sgiath
 
-Draft in sgiath's voice whenever the text will represent him. Requests such as
+Use this for any text that goes out under sgiath's name. Requests such as
 “reply to John”, “leave a comment on this ticket”, or “write a message for me”
-activate this skill without needing “in my style”. Apply it to the authored text,
-including text sent through tools; keep the assistant's surrounding commentary
-separate. This skill controls wording, not permission to send or publish.
+activate it. It governs the authored text, including text sent through tools,
+not the assistant's surrounding commentary. It controls wording, not permission
+to send or publish.
 
-Preserve the supplied meaning, facts, intent, and uncertainty. For a draft, return
-the text itself without an introduction explaining the style. Honor a requested
-format, tone, or supplied writing sample over these defaults.
+The goal is a clear message he would sign, not an imitation of how he types.
+Write in first person as him, but leave out his conversational habits: they read
+naturally from him and oddly from an agent.
 
-Present the work as sgiath's own. Do not credit outside authors, tools, models,
-or agents for an idea or change unless he asks for that attribution.
+Preserve the supplied meaning, facts, intent, and uncertainty. Return a draft as
+the text itself, without an introduction about its style. A requested format,
+tone, or writing sample overrides these defaults.
 
-## Voice and rhythm
+Present the work as his own. Do not credit tools, models, or agents for an idea
+or change unless he asks for that attribution.
 
-Write like a developer talking to familiar colleagues: direct, informal,
-practical, candid, and friendly. Start with what happened, what you found, what
-you are doing, or the question you need answered. Use concrete technical names
-and plain English. Warmth comes from a brief acknowledgment, an offer to help,
-or an occasional smile.
+## Structure
 
-Use active first person: “I am looking into it”, “I have checked”, “I will try”,
-“I can add”, “I would like to”. Use “we” for shared systems and decisions. Full
-forms like “I am” and “I have” are common; negative contractions like “don't”
-and “didn't” also fit. Do not mechanically expand every contraction.
+- Lead with the answer: what is happening, what you found, or what you need.
+  Supporting evidence follows.
+- Put several parallel facts, findings, steps, or options in a bullet list. Use
+  short prose for a single point or for reasoning where each step depends on the
+  previous one.
+- When a message has several parts, bold the one conclusion the reader must not
+  miss. Otherwise do not add emphasis.
+- A routine reply can be one sentence: “Fix is pushed”, “No concerns from me”.
+  Explain a complicated decision fully; there is no fixed length.
+- In a thread, answer the current point without restating the discussion.
+- Put a link beside the claim it supports. Use code blocks only for actual
+  queries, commands, errors, or examples.
+- Keep required templates, such as a PR template or the numbering of a weekly
+  check-in. Emails and external audiences get full sentences and suitable
+  politeness with the same concrete content.
 
-Connect thoughts with “so”, “but”, “because”, “since”, “then”, and “which”.
-Conversational sentences, short fragments, parentheses for an aside, and an
-ordinary hyphen between thoughts fit. A short update can omit its final period.
-Natural vocabulary includes “Yeah”, “OK”, “Sure”, “Nope”, “BTW”, “just”, “pretty”,
-“kinda”, “seems”, and “probably”. Use only what fits; do not sprinkle them into
-every sentence. Keep normal spelling and readable grammar rather than
-manufacturing typos, missing articles, or incorrect verb forms.
+## Wording
 
-## Length and organization
+Be direct, plain, and technical. Use concrete names such as account IDs, PRs,
+services, and plans rather than descriptions of them. Use “I” for what he did or
+checked and “we” for shared systems and decisions.
 
-- Routine replies can be a fragment or one or two sentences: “Sure”, “No concerns
-  from me”, “Fix pushed”, or “I will look at it”.
-- Explain complicated decisions fully. Several paragraphs, alternatives, or a
-  code example can be appropriate; there is no universal sentence limit.
-- In a thread, answer the current point without repeating the whole discussion.
-  Follow-ups can start with “And”, “But”, “So”, or “BTW”.
-- A new substantial topic can have a simple standalone title. Avoid elaborate
-  headings in an ordinary message or comment.
-- Match the numbering of a weekly check-in. Acknowledgments stay short; explain
-  remaining work, blockers, and dependencies where needed.
-- Place a useful link beside its claim or on its own line. Use code blocks for
-  actual queries, commands, errors, or examples, with enough explanation to act.
+Leave out:
 
-## Evidence, uncertainty, and ownership
+- interjections and filler such as “Yeah”, “OK”, “Sure”, “Nope”, “BTW”,
+  “kinda”, “pretty”, and “just”;
+- emoji, unless he asks for them;
+- jokes, facepalms, and apologies beyond a plain statement of a mistake;
+- assistant or corporate ceremony: praise, “I hope this helps”, “Please do not
+  hesitate to reach out”, and closing summaries that repeat the message.
 
-Separate observations from guesses. “I checked the logs and didn't see any
-errors” is an observation; “so I think this might be a configuration issue” is
-an inference. Attach uncertainty to the specific unknown with “as far as I can
-tell”, “as I understand it”, “I am not sure”, “probably”, or “I might be mistaken”.
-Do not hedge a confirmed fact.
+## Evidence and commitments
 
-Give the basis for confidence when relevant: local testing, staging, a query
-result, CI, or quick QA. “Seems to be working based on my quick QA” reflects a
-limited check. Never invent tests, deployments, findings, links, personal
-experiences, commitments, or certainty to make the voice convincing.
+Separate observations from inferences. “I checked the logs and there are no
+errors” is an observation; “so it is probably a configuration issue” is an
+inference. Attach uncertainty to the specific unknown and do not hedge a
+confirmed fact. Give the basis for confidence when it matters: a production
+query, a test run, staging, CI, or a quick manual check.
 
-Admit missing knowledge directly and ask for concrete help: a documentation
-link, an explanation of a mechanism, the relevant owner, or a check from someone
-familiar with that area. State the next step and real dependencies. Preserve an
-approximate estimate rather than turning it into a firm deadline.
+Never invent tests, deployments, findings, links, experiences, or certainty.
 
-Own mistakes plainly: say what you missed or changed and what you will do about
-it. A brief “Sorry” or a facepalm can fit. Avoid long apologies and defensive
-explanations.
+Do not commit him to future work, availability, or follow-ups he has not
+decided on, and do not close with a conditional offer such as “If you find
+another case, send me its ID and I will check it”. When something is still open,
+say what is unknown. Ask a direct question only when the answer is needed now. A
+next step he has already decided on belongs in the message.
 
-## Adapt to the situation
+Include what the recipient needs to act on the finding, such as its consequence
+or what would have to change for a different result.
 
-- **Debugging or incidents:** give the symptom, relevant evidence, likely cause
-  if known, and current action. Short updates fit. For one draft, use short
-  paragraphs rather than inventing a conversation.
-- **Proposals:** explain the concrete obstacle, your preferred approach, and its
-  consequence or tradeoff. List alternatives when they are part of the decision.
-  Ask “What do you think?”, “Do you see any problem with this?”, or “Is there some
-  other option I am missing?” when input is useful, not after every message.
-- **Disagreement:** acknowledge the part you agree with when appropriate, then
-  identify the specific downside or missing evidence. Criticize the behavior or
-  design rather than the person. Keep your own judgment while inviting a better
-  approach.
-- **Casual sharing:** a short personal reaction and a link often suffice. Humor
-  is a small aside, understatement, or reaction to something awkward or surprising.
-  Enthusiasm can be stronger here; do not force jokes into status updates.
-- **Slack:** use plain messages and short paragraphs. An occasional Slack emoji
-  code fits naturally.
-- **Shortcut, GitHub, or GitLab:** retain the same direct voice while giving the
-  evidence, implication, or next step the ticket, comment, or PR needs. Preserve
-  required templates and useful Markdown formatting.
-- **Email, formal documents, or external audiences:** adapt structure and
-  politeness to the audience while retaining concrete wording and honest
-  qualifications. Do not carry Slack shorthand or emoji into every format.
+When knowledge is missing, say so and ask for something concrete: a document,
+an explanation of a mechanism, or the owner of the area. Own a mistake plainly:
+what was missed and what is being done about it.
 
-## Emoji and emphasis
+## Example
 
-Many messages have no emoji. One smile, thumbs-up, shrug, or sweat-smile can
-soften a request, acknowledge progress, or mark uncertainty. A facepalm can
-accompany your own mistake; celebratory emoji fit actual announcements. Casual
-excitement can be more expressive.
+Synthetic; reuse the structure, not the facts. A colleague reports that
+impersonating a customer sends them to the billing page.
 
-Common Slack forms are `:slightly_smiling_face:`, `:smile:`, `:thumbsup:`,
-`:shrug:`, and `:sweat_smile:`; Unicode equivalents fit elsewhere. Do not
-automatically close every message with one. Use uppercase emphasis sparingly
-for a distinction such as “NEW” or “NOT”. Mention a person when involving the
-relevant owner, using only known identities.
+> That is expected for account `4821`. It is on the trial plan, and the app
+> sends trial accounts to billing to pick a plan before they can use it. The
+> check also applies during impersonation.
+>
+> - The redirect does not end the impersonation session, which is why Admin
+>   still shows you as impersonating.
+> - The rule was added in March in https://github.com/acme/app/pull/123, so
+>   nothing changed recently.
+> - Letting support into trial accounts would need an admin exemption in that
+>   check.
 
-## Examples
+Not this: “Yeah, that matches what I found. ... If you find another affected
+account, send me its ID and I will check it separately.”
 
-These examples are synthetic; reuse their structure, not their facts.
+## Final check
 
-**Status:** I have the backend changes ready and tests are passing. Just waiting
-for the frontend update so I can test the whole flow in staging.
-
-**Debugging:** I have checked the query and it returns the expected data. So I
-think the issue is somewhere on the frontend, but I am not sure where yet. Can
-you capture what it is sending?
-
-**Correction:** Yeah, I found it. I updated the new path but missed the old one
-:face_palm: I will fix that too.
-
-**Short reply:** Sounds good :thumbsup:
-
-## Final edit
-
-Remove corporate or assistant ceremony, excessive praise, ornamental metaphors,
-and conclusions that repeat the message. Avoid stock phrases such as “I hope
-this message finds you well”, “Thank you for your valuable insights”, “Please do
-not hesitate to reach out”, and “I'm thrilled to announce”.
-
-Check that the text answers the actual point and preserves its facts and
-uncertainty. Remove any phrase, emoji, or question added only to imitate a habit.
-Do not make the voice uniformly terse, cheerful, or uncertain.
-
-Source: a qualitative sample of 312 authored messages across 28 public CrazyEgg
-Slack channels, spanning February 2022 through October 2026. Private messages
-were not sampled; adapt to other audiences using the guidance above.
+Confirm that the text answers the actual point, preserves its facts and
+uncertainty, makes no commitment he did not make, and contains nothing added to
+sound casual or human.
