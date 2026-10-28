@@ -30,8 +30,20 @@ let
     trap - EXIT
     echo "AWS credentials updated"
   '';
+  refreshMinute = config.sgiath.work.crazyegg.awsRefreshMinute;
 in
 {
+  # Every host with CrazyEgg work enabled refreshes from the same OTP secret, and AWS
+  # accepts each code only once, so hosts refreshing in the same 30 s window keep
+  # failing each other. AdminMFA only allows sessions under 8 h of MFA age (the
+  # session itself lasts 12 h), so a host that keeps losing gets AccessDenied while
+  # `aws sts get-caller-identity` still works.
+  options.sgiath.work.crazyegg.awsRefreshMinute = lib.mkOption {
+    type = lib.types.ints.between 0 59;
+    default = 0;
+    description = "Minute of each hour the AWS session refresh runs; must differ between hosts.";
+  };
+
   config = lib.mkIf config.sgiath.work.crazyegg.enable {
     programs.awscli = {
       enable = true;
@@ -60,7 +72,7 @@ in
         Unit.Description = "Refresh AWS session credentials hourly";
         Timer = {
           OnBootSec = "1min";
-          OnCalendar = "hourly";
+          OnCalendar = "*:${toString refreshMinute}:00";
           Persistent = true;
           Unit = "aws-secrets.service";
         };
