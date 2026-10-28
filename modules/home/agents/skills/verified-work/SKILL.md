@@ -81,15 +81,14 @@ verification to Codex, and a Codex thread delegates the production change to Cla
 
 | Work | Provider/model |
 | --- | --- |
-| Everything that is not production code: code exploration, research, investigation, evidence gathering, causal experiments, brute-force exploration, fuzzing/bisection, reproductions including the failing test that captures the defect, throwaway tests and scripts, production-data probes, screenshots, executable verification, and CI or review-failure triage | Codex with `gpt-6.1-sol` on the `fast` service tier |
-| Independent review of a complicated fix or PR, including production-code correctness and design judgments | Codex with `gpt-6.1-sol` at `high` reasoning effort on the `fast` service tier |
+| Everything that is not production code: code exploration, research, investigation, evidence gathering, causal experiments, brute-force exploration, fuzzing/bisection, reproductions including the failing test that captures the defect, throwaway tests and scripts, production-data probes, screenshots, executable verification, and CI or review-failure triage | Codex with `gpt-6.1-sol` |
+| Independent review of a complicated fix or PR, including production-code correctness and design judgments | Codex with `gpt-6.1-sol` at `high` reasoning effort |
 | Once the handoff is ready: deciding where and how to fix the production code, production design and seam placement, production code, refactoring, existing UI changes that do not require a new design, and turning the handed-over failing test into the committed regression test | Claude with Opus 5.5 (`claude-opus-5-5` in the live catalog) |
 | Creating and designing new UIs or substantial redesigns where visual and UX judgment adds value, including animations and transitions | Claude with `fable-5-1` at `xhigh` reasoning effort |
 
 Use Fable sparingly because it is expensive. Limit its scope to design and implementation that requires those
 design choices. Routine UI updates, bug fixes, investigation, testing, screenshots, review and verification use
 the general Opus/Codex routing; touching a UI does not route a phase or its descendants to Fable.
-Always use the `fast` service tier for Codex with `gpt-6.1-sol`, including every delegated phase and descendant.
 
 Codex establishes causes and compares measured alternatives; Claude judges the production change from that
 evidence. Hand work to Claude only when it is ready: the cause is established with evidence, the reproduction

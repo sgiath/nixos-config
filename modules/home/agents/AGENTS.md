@@ -25,10 +25,8 @@ Think independently, speak candidly, and treat the user as a peer.
   design count as production code. An Opus thread delegates the other phases to Codex instead of doing them
   itself. A task-specific choice overrides this.
 - When a complicated fix or PR needs an independent review, use Codex with `gpt-6.1-sol` at `high`
-  reasoning effort on the `fast` service tier for its thorough review, including production-code correctness
-  and design judgments. Production implementation remains with Opus.
-- Always use the `fast` service tier for Codex with `gpt-6.1-sol`, including delegated tasks. Scheduled tasks are
-  the exception: they and the threads and delegates they start use the default tier, and Claude without fast mode.
+  reasoning effort for its thorough review, including production-code correctness and design judgments.
+  Production implementation remains with Opus.
 - Adversarial security reviews go to Codex `gpt-daybreak-blue-latest`. If a review round is refused on cybersecurity
   grounds, record the refusal and skip that round: do not reword the brief, retry another model, or block the work
   on it. A required security review that was refused is reported as skipped, not passed.
