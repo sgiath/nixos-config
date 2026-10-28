@@ -7,6 +7,19 @@
 let
   aspellEnv = pkgs.aspellWithDicts (dicts: [ dicts.en ]);
   passBin = lib.getExe config.programs.password-store.package;
+
+  # Upstream defaults to the kernel keyring, which denies access here; use the
+  # Secret Service (pass-secret-service from common/base.nix) instead.
+  protonPassCli = pkgs.symlinkJoin {
+    pname = "proton-pass-cli";
+    inherit (pkgs.proton-pass-cli) version;
+    paths = [ pkgs.proton-pass-cli ];
+    nativeBuildInputs = [ pkgs.makeWrapper ];
+    postBuild = ''
+      wrapProgram $out/bin/pass-cli --set-default PROTON_PASS_LINUX_KEYRING dbus
+    '';
+    meta.mainProgram = "pass-cli";
+  };
 in
 {
   config = lib.mkIf config.sgiath.programs.email.enable {
@@ -16,7 +29,7 @@ in
         protonmail-desktop
         proton-vpn
         proton-pass
-        proton-pass-cli
+        protonPassCli
         proton-authenticator
       ];
 
