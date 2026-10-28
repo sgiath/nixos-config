@@ -86,9 +86,10 @@ in
         jq
       ];
 
-      # remotectl only reads and writes ~/.kube/config, so it stays a regular writable file
-      # and the CrazyEgg clusters merge in from their own read-only file.
-      sessionVariables.KUBECONFIG = "${config.home.homeDirectory}/.kube/config:${config.home.homeDirectory}/.kube/crazyegg";
+      # Only the CrazyEgg clusters by default. remotectl reads and writes only ~/.kube/config
+      # (Remote's production-eu-01), and Neo's .envrc points KUBECONFIG there. Merging both
+      # let ~/.kube/config's current-context send CrazyEgg kubectl commands to Remote's cluster.
+      sessionVariables.KUBECONFIG = "${config.home.homeDirectory}/.kube/crazyegg";
 
       file = {
         ".kube/crazyegg".text = ''
