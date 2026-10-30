@@ -17,11 +17,15 @@ in
   ksa = pkgs-ksa.ksa;
   factorio-space-age-experimental = pkgs-master.factorio-space-age-experimental;
 
-  # FIXME: FTL 6.7.1 fails under GCC 16 -Werror (unused counter in
-  # sanitize_dns_hosts). Drop once pinned nixpkgs ships FTL with
-  # https://github.com/pi-hole/FTL/pull/2939.
-  pihole-ftl = prev.pihole-ftl.overrideAttrs (old: {
-    patches = (old.patches or [ ]) ++ [ ./pihole-ftl-unused-counter.patch ];
+  # FIXME: Cinny's WebKit aborts in createAudioSink because nixpkgs only
+  # gives it gst-plugins-base (no autoaudiosink, fakevideosink or WebVTT).
+  # Drop once the selected cinny-desktop lists gst-plugins-good and -bad
+  # itself; see UPSTREAM-WORKAROUNDS.md#cinny-desktop-gst-plugins.
+  cinny-desktop = prev.cinny-desktop.overrideAttrs (old: {
+    buildInputs = old.buildInputs ++ [
+      final.gst_all_1.gst-plugins-good
+      final.gst_all_1.gst-plugins-bad
+    ];
   });
 
   # FIXME: patchelf 0.18+ (interpreter, then RPATH) leaves Node 26's .dynamic
