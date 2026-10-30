@@ -11,6 +11,7 @@
     home.packages = [
       pkgs.tor-browser
       inputs.zen-browser.packages.${pkgs.stdenv.hostPlatform.system}.default
+      inputs.helium.packages.${pkgs.stdenv.hostPlatform.system}.default
     ];
 
     programs = {
