@@ -61,6 +61,10 @@ migration: true
 Red evidence names the failing assertion and failure count on the unchanged baseline, never a compile error,
 empty output or a passing run.>
 
+- Phase: <before publication | after migration | after deployment>
+- Prerequisites, each demonstrated during planning: <credential source and how it is obtained, authentication
+  factors, the role and surface that can reach the check, the data the check selects>
+
 ## Questions before starting
 
 1. <decision the worker must not guess> (open because: <spec line or gap>)
@@ -78,5 +82,6 @@ empty output or a passing run.>
 | `blocked_by` | `[]` | Slice ids that must be done (merged, and deployed when they are deploy-gated) first. Two slices that may run in parallel must each work on master alone: when a slice changes code that only makes sense after another slice ships, it is blocked by that slice. |
 | `deploy_gate` | `true` | `false` when dependants only need the slice merged. |
 | `migration` | `false` | `true` for any schema change; serializes the slice. |
+| `repos` | the plan repository | Repositories this slice delivers to. Each needs a merged PR before the slice leaves `in_progress`; a slice that ships in a companion repository must list every repository it delivers to. When resuming an older plan, add this key to such slices before the next tick. |
 
 For tracked artifacts, the slice's own PR records the user's answers under "Questions before starting" and moves any resulting decision into the spec note. When the user or plan requires local artifacts, only the driver updates them locally; workers read the absolute local plan and answers without including them in implementation MRs. Nothing records progress in the plan; `plan-status` derives it.

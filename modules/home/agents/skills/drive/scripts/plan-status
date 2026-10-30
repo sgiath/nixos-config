@@ -1,19 +1,22 @@
 #!/usr/bin/env python3
 """plan-status: derive the state of every slice in a drive plan.
 
-Usage: plan-status <plan-dir> [--no-deploy-check] [--changes | --record]
+Usage: plan-status <plan-dir> [--no-deploy-check] [--full | --record]
 
 Reads <plan-dir>/plan.md and <plan-dir>/NN-*.md, looks up the slice branches
 on GitHub with `gh` or GitLab with `glab`, finds each slice's worker threads with
-`t3 thread list`, and prints one JSON document on stdout. Without a flag it writes
-nothing except what `deploy_check` itself does. See ../references/plan-format.md.
+`t3 thread list`, and prints one JSON document on stdout. `--full` prints the whole
+status and writes nothing except what `deploy_check` itself does.
+See ../references/plan-format.md.
 
-Ticks: `--changes` compares slice states, PRs, worker threads, plan and slice files,
+Ticks: by default it compares slice states, PRs, worker threads, plan and slice files,
 state-directory files and the launch/ask lists with the snapshot recorded by the
-last `--record`. When nothing changed it
-prints only `{"changed": false, ...}`; otherwise the full status plus `changes`, and
-it stages the new snapshot. `--record` (run once the tick has acted) makes the staged
-snapshot the baseline, so a tick that stops early reports the same changes again.
+last `--record`. When nothing changed it prints only `{"changed": false, ...}` and the
+step that ends the tick; otherwise the full status plus `changes`, and it stages the
+new snapshot. `--record` (run once the tick has acted) makes the staged snapshot the
+baseline, so a tick that stops early reports the same changes again. A worker's item
+count is reported but not compared: tool traffic alone is not a change. Its pending
+requests are compared, since a question changes nothing else a running worker reports.
 
 Questions: `asked/NN.md` in the state directory records questions sent to the user;
 `answers/NN.md` records the answers. Asked-but-unanswered slices are listed in
@@ -22,7 +25,8 @@ Questions: `asked/NN.md` in the state directory records questions sent to the us
 Slice states:
   blocked      a blocker is not done yet
   ready        blockers done, no branch or PR yet
-  in_progress  a local branch exists in the plan repository, no PR yet
+  in_progress  a local branch exists in the plan repository, no PR yet, or a slice
+               repository still lacks a merged PR (`missing_repos`)
   in_review    at least one open PR for the slice branch
   closed       at least one required PR closed without merging, none open
   merged       all PRs merged, waiting for deploy (deploy_gate: true)
@@ -139,6 +143,18 @@ def pull_requests(repo, branches, host):
     return prs
 
 
+def pending_requests(thread_id):
+    """Open questions and approvals on a thread; `t3 thread list` omits them. None when unavailable."""
+    try:
+        result = subprocess.run(
+            ["t3", "thread", "show", thread_id, "--json"],
+            capture_output=True, text=True, timeout=30,
+        )
+        return json.loads(result.stdout)["thread"]["pendingRequestCount"] if result.returncode == 0 else None
+    except (OSError, subprocess.TimeoutExpired, json.JSONDecodeError, KeyError):
+        return None
+
+
 def worker_threads(root, topic):
     """Worker threads per slice id, from the T3 server's own CLI; None when unavailable."""
     try:
@@ -157,8 +173,8 @@ def worker_threads(root, topic):
         match = title.match(thread.get("title") or "")
         if match and not thread.get("parentThreadId"):
             workers.setdefault(match.group(1), []).append({
-                key: thread.get(key)
-                for key in ("threadId", "title", "status", "latestRunId", "itemCount", "settled")
+                **{key: thread.get(key) for key in ("threadId", "title", "status", "latestRunId", "itemCount", "settled")},
+                "pendingRequests": 0 if thread.get("settled") else pending_requests(thread["threadId"]),
             })
     return workers
 
@@ -181,7 +197,7 @@ def snapshot(status, state_dir, plan_dir):
                 "state": item["state"],
                 "prs": {pr["url"]: [pr["state"], pr["draft"], pr["head"], pr["updated_at"]] for pr in item["prs"]},
                 "workers": None if item["workers"] is None else {
-                    w["threadId"]: [w["status"], w["latestRunId"], w["itemCount"], w["settled"]]
+                    w["threadId"]: [w["status"], w["latestRunId"], w["pendingRequests"], w["settled"]]
                     for w in item["workers"]
                 },
             }
@@ -226,8 +242,8 @@ def main():
     args = sys.argv[1:]
     flags = {arg for arg in args if arg.startswith("--")}
     args = [arg for arg in args if not arg.startswith("--")]
-    if len(args) != 1 or flags - {"--no-deploy-check", "--changes", "--record"} or {"--changes", "--record"} <= flags:
-        fail("usage: plan-status <plan-dir> [--no-deploy-check] [--changes | --record]")
+    if len(args) != 1 or flags - {"--no-deploy-check", "--full", "--record"} or {"--full", "--record"} <= flags:
+        fail("usage: plan-status <plan-dir> [--no-deploy-check] [--full | --record]")
     skip_deploy_check = "--no-deploy-check" in flags
 
     plan_dir = Path(args[0]).resolve()
@@ -251,7 +267,7 @@ def main():
     if "--record" in flags:
         staged = state_dir / "tick-snapshot.staged.json"
         if not staged.is_file():
-            fail(f"{staged} does not exist; run --changes first")
+            fail(f"{staged} does not exist; run plan-status without --record first")
         staged.replace(state_dir / "tick-snapshot.json")
         return
 
@@ -262,6 +278,10 @@ def main():
             continue
         meta = frontmatter(path)
         slice_id = match.group(1)
+        slice_repos = meta.get("repos") or [main_repo]
+        slice_repos = [slice_repos] if isinstance(slice_repos, str) else slice_repos
+        if set(slice_repos) - set(repos):
+            fail(f"slice {slice_id} names repos missing from plan.md repos: {sorted(set(slice_repos) - set(repos))}")
         slices[slice_id] = {
             "id": slice_id,
             "file": str(path),
@@ -271,6 +291,8 @@ def main():
             "migration": bool(meta.get("migration", False)),
             "branch": meta.get("branch", f"{prefix}{slice_id}-{match.group(2)}"),
             "linear_issue": meta.get("linear_issue"),
+            "repos": slice_repos,
+            "missing_repos": [],
             "prs": [],
             "answered": (state_dir / "answers" / f"{slice_id}.md").is_file(),
             "asked": (state_dir / "asked" / f"{slice_id}.md").is_file(),
@@ -322,8 +344,13 @@ def main():
             item["state"] = "in_review"
         elif "closed" in states:
             item["state"] = "closed"
-        elif item["prs"] and states == {"merged"}:
-            if not item["deploy_gate"] or deployed(item):
+        elif states == {"merged"}:
+            item["missing_repos"] = [
+                repo for repo in item["repos"] if not any(pr["repo"] == repo for pr in item["prs"])
+            ]
+            if item["missing_repos"]:
+                item["state"] = "in_progress"
+            elif not item["deploy_gate"] or deployed(item):
                 item["state"] = "done"
             else:
                 item["state"] = "merged"
@@ -388,12 +415,16 @@ def main():
         "complete": all(s["state"] == "done" for s in slices.values()),
         "slices": [slices[i] for i in order],
     }
-    if "--changes" in flags:
+    if "--full" not in flags:
         current = snapshot(status, state_dir, plan_dir)
         recorded = state_dir / "tick-snapshot.json"
         changes = describe_changes(json.loads(recorded.read_text()) if recorded.is_file() else None, current)
         if not changes:
-            print(json.dumps({"changed": False, "state_dir": str(state_dir)}))
+            print(json.dumps({
+                "changed": False,
+                "state_dir": str(state_dir),
+                "next_step": "Nothing changed: end the turn now with no message and no further tool calls.",
+            }))
             return
         state_dir.mkdir(parents=True, exist_ok=True)
         (state_dir / "tick-snapshot.staged.json").write_text(json.dumps(current))

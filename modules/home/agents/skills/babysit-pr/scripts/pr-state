@@ -3,9 +3,10 @@
 
 Usage: pr-state <pr-url> [--record]
 
-Prints `{"changed": false}` when the head, PR state, check conclusions, reviews and
-review conversations are the same as at the last `--record`; otherwise the current
-state plus `changes`. Pending checks count as one state until they complete. Only
+Prints the current state with `changed` and `changes`. `changed` is false when the
+head, PR state, check conclusions, reviews and review conversations are the same as at
+the last `--record`; the output then adds the step that ends the wake. Pending checks
+count as one state until they complete. Only
 comments and reviews from people other than the authenticated user count: your own
 replies and resolutions, bot conversation comments (summaries, processing notices) and
 edits to an existing comment do not. Bot reviews and inline review comments do count.
@@ -129,7 +130,8 @@ def main():
     new = current_state(owner, repo, number)
     changes = describe(json.loads(path.read_text()) if path.is_file() else None, new)
     if not changes:
-        print('{"changed": false}')
+        next_step = "Nothing changed: end the turn now with no message and no further tool calls."
+        print(json.dumps({"changed": False, "changes": [], "next_step": next_step, **new}, indent=2))
         return
     state_root.mkdir(parents=True, exist_ok=True)
     staged.write_text(json.dumps(new))

@@ -56,22 +56,23 @@ The thread where this runs is the driver thread. It holds no implementation code
 the state directory so a fresh thread with the same command continues correctly. Run one tick, then only if its finish step still requires future coordination,
 create or retain a `schedule_task` bound to this thread, structured
 `schedule: {type: "interval", everyMs: 900000}`, with the prompt `Run one drive tick for @<plan-dir> (skill drive,
-section Tick).` Keep exactly one schedule per plan: list scheduled tasks first and reuse an existing one. Retain
+section Tick). If plan-status reports "changed": false, end the turn at once with no text.` Keep exactly one schedule per plan: list scheduled tasks first and reuse an existing one. Retain
 its ID, use a stable creation retry key, and report the returned cadence and next run time when creating it. Do not
 recreate a schedule after the tick stopped for completion or user answers. PR waits belong to each
 worker's persistent watcher. End the turn after the tick; do not keep a shell sleep/poll loop alive.
 
 ## Tick
 
-1. Run `scripts/plan-status <absolute-plan-dir> --changes` from the skill directory. If it prints
-   `"changed": false`, nothing the tick acts on has moved since the last recorded tick: end the turn with no
-   message, without reading threads or re-checking PRs. Otherwise read `plan.md` and act on the listed `changes`;
+1. Run `scripts/plan-status <absolute-plan-dir>` from the skill directory, without piping it through a parser. If
+   it prints `"changed": false`, nothing the tick acts on has moved since the last recorded tick: end the turn with no
+   message, without reading threads or re-checking PRs. A summary of what is still waiting is a message; the user
+   already has it. Otherwise read `plan.md` and act on the listed `changes`;
    read only the worker threads they name. The script chooses `gh` or `glab` from origin, uses explicit slice
    `branch` values when present, and lists each slice's worker threads (`workers`, from `t3 thread list`) with
-   status, latest run and item count. When `workers` is null, find them with `t3_thread_list`
+   status, latest run, item count and pending requests. When `workers` is null, find them with `t3_thread_list`
    (`titleContains: "<topic> NN"`). After the tick has acted on every change, run
    `scripts/plan-status <absolute-plan-dir> --record`; a tick that stops before recording sees the same changes
-   again. A user message in the driver thread is handled in that turn, followed by a full tick. Apply verified-work's role routing: production workers use Claude Opus 5.5; evidence/reproduction/verification delegates and independent reviews of complicated fixes or PRs (including design judgments) use Codex `gpt-6.1-sol` on the fast tier, reviews at high effort; Fable only for new UI designs. Honor task-specific overrides and the user's effort choice for workers and descendants.
+   again. A user message in the driver thread is handled in that turn, followed by a tick. That tick does not end on `"changed": false`: read `scripts/plan-status <absolute-plan-dir> --full` instead and skip `--record`. Apply verified-work's role routing: production workers use Claude Opus 5.5; evidence/reproduction/verification delegates and independent reviews of complicated fixes or PRs (including design judgments) use Codex `gpt-6.1-sol` on the fast tier, reviews at high effort; Fable only for new UI designs. Honor task-specific overrides and the user's effort choice for workers and descendants.
    Read `gates/NN.md` for every slice with a worker, PR or delivered dependency, regardless of its delivery status.
    Refresh records from relevant worker messages/artifacts. For an older plan without records, recover applicable
    evidence from its owners rather than assuming a merge proves the gate or rerunning valid checks blindly.
@@ -79,13 +80,17 @@ worker's persistent watcher. End the turn after the tick; do not keep a shell sl
    relay an unachievable gate once under verified-work, recording the question here. Pending/blocked gates remain
    unresolved even when the script reports `merged`, `done` or `complete`.
 2. **Closed slices**: a slice with an unmerged closed required PR and none open needs the user. Ask once whether to relaunch, replan or drop it; a merged companion does not complete it.
-3. **Workers that stopped early** (`in_progress`, thread no longer running, no PR): read recent thread messages,
+3. **Workers that stopped early or are waiting** (`in_progress`, thread no longer running, and no PR or a non-empty
+   `missing_repos`; or `pendingRequests` above zero on any worker). Null `pendingRequests` means the count was unavailable:
+   read that worker, and leave it alone if it is running with no question. A
+   repository in `missing_repos` that the slice never delivers to means its `repos` key is wrong or missing, as in plans written
+   before that key existed. Fix the key instead of opening a PR. Otherwise read recent thread messages,
    queued follow-ups and pending user questions. Workspace preparation, queued work or live delegated children are
    waiting states, not stopped work. If a question is already answered in `answers/NN.md` or current user context,
    respond through `t3_pending_request_respond` when available; otherwise relay it once with the thread link. Never
    infer an answer or approve permissions. An unachievable reproduction/verification gate is a blocker even if no
    host question card exists: read the worker's gate/attempts/options, relay the decision once, and preserve its
-   pending question. Do not resend or replace that worker until the user answers. If no wait/blocker exists, send the worker back once naming the unmet
+   pending question. Do not resend or replace that worker until the user answers. If the worker has stopped and no wait/blocker exists, send it back once naming the unmet
    step, with a stable `clientRequestId`; if it stops again, hand it to the user. Before sending back or replacing
    a failed or cancelled worker, list provider processes whose working directory is the slice worktree (`pgrep`,
    `/proc/<pid>/cwd`) and compare them with `recentRuns`; a cancelled run can still be running.
@@ -146,7 +151,7 @@ worker's persistent watcher. End the turn after the tick; do not keep a shell sl
     post a summary (slices, PRs, user-approved limitations) and the trap proposals. When nothing is running, in review
     or waiting for deploy and the plan only waits for user answers, delete the schedule too; the reply wakes the driver.
 
-Keep driver messages to one line per event. A tick whose `--changes` output is unchanged posts nothing.
+Keep driver messages to one line per event. A tick whose `plan-status` output is unchanged posts nothing.
 
 ## Ad hoc work
 

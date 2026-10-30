@@ -52,7 +52,7 @@ If the tool is unavailable, report that with the current PR state and stop inste
   is waiting for T3; yielding is continuation, not completion or a handoff to the user. Do not unsettle a thread
   the user deliberately settled; if it is settled unexpectedly, establish whether monitoring should resume.
 - A wake saying T3 stopped watching or could not read the PR is handled by the re-arm rule below first, whatever
-  the PR state. Otherwise start the wake with `scripts/pr-state <pr-url>`. If it prints `{"changed": false}`, end
+  the PR state. Otherwise start the wake with `scripts/pr-state <pr-url>`. If `changed` is false, end
   the turn with no message: nothing a reviewer or CI did has moved (bot processing notices, your own replies and
   comment edits do not count). Otherwise act on its `changes`: re-read the current
   head, all applicable check/reviewer jobs and full review conversations. T3's required-check notification is a
