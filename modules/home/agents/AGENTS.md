@@ -88,7 +88,9 @@ Never use Codegraph when working on Elixir, including Elixir code in mixed-langu
 Use `rg` and read the source directly instead; Codegraph does not support Elixir.
 
 The shell is zsh: an unquoted `$VAR` does not word-split and an unmatched glob aborts the command. Use arrays
-(`files=(a.ex b.ex); mix credo $files`) or `${=VAR}`, and quote glob arguments such as `--include='*.ex'`.
+(`files=(a.ex b.ex); mix credo $files`) or `${=VAR}`, and quote glob arguments such as `--include='*.ex'`. Do not
+use `${(f)...}` in a tool command: it stops on a permission prompt even with full access. List the paths in one
+command and pass them literally in the next.
 
 When creating T3 threads or scheduled tasks, set reasoning effort high, runtime full access and an explicit
 `workspaceStrategy` on the repository's actual default branch (check it; not every repository uses `main`),

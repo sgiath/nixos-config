@@ -109,7 +109,9 @@ Re-fetch the PR immediately before declaring success. Require all of the followi
 - Open, non-draft PR with a mergeable diff and no conflicts; unknown mergeability must settle. Required base updates and branch-protection requirements satisfied.
 - Merge state is not `BEHIND` or `DIRTY`; T3's watcher reports conflicts only, so check this yourself after
   `git fetch`. If base commits that landed after the last green run touch files in this PR, rebase, push and wait
-  for green again even when the repository does not require an up-to-date branch.
+  for green again even when the repository does not require an up-to-date branch. A conflict report can be stale,
+  especially right after a push: confirm it with `gh pr view --json mergeable,baseRefOid` and `git fetch` before
+  rebasing.
 - All applicable CI and automated review jobs completed successfully. CodeRabbit is not required: when it
   reports a rate limit, the review was skipped, not failed. Do not wait for it, retry it or request a new review;
   note the skipped review in the hand-back. Investigate failed, cancelled, missing, pending or unexpected skipped checks; accept intentional not-applicable skips only with configuration evidence. Do not treat neutral/skipped as proof that behavior was tested.
