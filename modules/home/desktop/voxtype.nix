@@ -8,8 +8,7 @@
 
 let
   voxtype = inputs.voxtype.packages.${pkgs.stdenv.hostPlatform.system}.vulkan;
-  startCommand = "${lib.getExe voxtype} record start";
-  stopCommand = "${lib.getExe voxtype} record stop";
+  toggleCommand = "${lib.getExe voxtype} record toggle";
 in
 {
   config = lib.mkIf config.programs.voxtype.enable {
@@ -23,6 +22,7 @@ in
       service.enable = true;
       settings = {
         hotkey.enabled = false;
+        audio.max_duration_secs = 600;
         whisper.language = "en";
         osd.frontend = "native";
         meeting = {
@@ -37,14 +37,7 @@ in
         {
           _args = [
             "SUPER + B"
-            (lib.generators.mkLuaInline "hl.dsp.exec_cmd(${builtins.toJSON startCommand})")
-          ];
-        }
-        {
-          _args = [
-            "SUPER + B"
-            (lib.generators.mkLuaInline "hl.dsp.exec_cmd(${builtins.toJSON stopCommand})")
-            { release = true; }
+            (lib.generators.mkLuaInline "hl.dsp.exec_cmd(${builtins.toJSON toggleCommand})")
           ];
         }
       ];
