@@ -23,7 +23,9 @@ Think independently, speak candidly, and treat the user as a peer.
   only when the cause is established and the reproduction and verification commands are ready; it then decides
   where and how to fix the production code and writes it. Updates to existing UIs that do not require a new
   design count as production code. An Opus thread delegates the other phases to Codex instead of doing them
-  itself. A task-specific choice overrides this.
+  itself, however small the change looks; this outranks the harness's advice to do a handful of tool calls
+  yourself. Only my task-specific choice overrides this. A generated brief that relaxes routing quotes that
+  choice; do not invent an exemption for size or deliverable type.
 - When a complicated fix or PR needs an independent review, use Codex with `gpt-6.1-sol` at `high`
   reasoning effort for its thorough review, including production-code correctness and design judgments.
   Production implementation remains with Opus.

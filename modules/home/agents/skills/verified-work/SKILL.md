@@ -1,13 +1,14 @@
 ---
 name: verified-work
-description: "Use for substantial implementation or investigation to split work into verifiable steps, validate the checks, and coordinate completion. A trivial edit or narrow lookup does not need this workflow."
+description: "Use for substantial implementation or investigation, and for any bug fix or behavior change however small, including one-line and existing-UI fixes, to split work into verifiable steps, validate the checks, and coordinate completion. A metadata or instruction edit or a narrow lookup does not need this workflow."
 ---
 
 # Work through verifiable steps
 
 Own the requested outcome, including evidence gathering, handoffs and verification. Choose the steps from the
 uncertainties and observable contracts of the task; there is no universal sequence or required number of agents.
-Select this skill automatically when substantial implementation or investigation is requested; no explicit invocation is needed.
+Select this skill automatically when substantial implementation or investigation, or any bug fix or behavior change, is
+requested; no explicit invocation is needed.
 Use a single check for a small task. For larger work, separate claims that can be checked independently, then
 check their integration. Do not split by files or frontend/backend layers when neither piece proves useful behavior.
 
@@ -77,7 +78,9 @@ again. New evidence or an answer can reopen the loop.
 
 Unless the user chooses differently for this task, use these provider/model pairs. Route by role even when the
 current thread could do a phase itself: an Opus thread delegates exploration, investigation, reproduction and
-verification to Codex, and a Codex thread delegates the production change to Claude.
+verification to Codex, and a Codex thread delegates the production change to Claude. Size is no exemption: a one-line
+fix, a small UI change and a documentation change that needs code tracing route the same way. A generated brief that
+relaxes routing quotes the user's instruction; a coordinator must not add its own exemption.
 
 | Work | Provider/model |
 | --- | --- |

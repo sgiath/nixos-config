@@ -1,6 +1,6 @@
 ---
 name: tdd
-description: "Use when implementing bug fixes or new behavior with test-first verification, or when asked for a red-green-refactor workflow."
+description: "Use when implementing bug fixes or new behavior, including one-line and existing-UI fixes, with test-first verification, or when asked for a red-green-refactor workflow."
 ---
 
 # Test-Driven Development
