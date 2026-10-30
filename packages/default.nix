@@ -7,6 +7,7 @@ pkgs: {
   dnd5etools = pkgs.callPackage ./dnd5etools { };
   fix-images = pkgs.callPackage ./fix-images { };
   fix-video = pkgs.callPackage ./fix-video { };
+  hokum = pkgs.callPackage ./hokum { };
   katrain = pkgs.callPackage ./katrain { };
   live-install = pkgs.callPackage ./live-install { };
   nak = pkgs.callPackage ./nak { };
