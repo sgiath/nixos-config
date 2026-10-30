@@ -35,3 +35,36 @@ evidence, outside scope with a reason, or awaiting a decision. Send valid failur
 the implementation owner and rerun affected gates. A review with no code findings does not waive
 an unproven acceptance gate. Further rounds carry prior findings, responses and unresolved
 objections using the host's delegation lifecycle.
+
+## Run review rounds
+
+Fix known issues, address outstanding PR comments and run the covering checks before the first round, so the
+reviewer sees the current implementation; report missing or already failing checks in the brief. Fix the reviewed
+change once: run `git status --short`, never stash, discard or include unrelated work, and take the base from
+`git merge-base HEAD origin/<base-branch>` after `git fetch`. The change is base to working tree including untracked
+files; use the same diff command in every round.
+
+Each reviewer is read-only: it does not edit, commit, push, comment on PRs or start subagents. Do not edit the
+reviewed paths while a round runs. A timeout, error or empty reply is not approval. Ask for a verdict, `APPROVE` or
+`CHANGES`, and for findings with stable ids, each labeled:
+
+- `blocker`: the intended case is wrong.
+- `should`: a real bug callers will hit within the intended scope.
+- `nit`: everything else, including other paths, rare cases, small performance costs, extra compatibility, and
+  code, tests or guards the intent does not need.
+
+Check every finding and its severity yourself. Another path, a rare case or a small cost is a nit whatever label
+it came with. Fix agreed findings with the smallest change, preferring deletion or narrowing over a new lock, cache,
+helper or option. Disagree with evidence (file:line, test, output). Decline out-of-scope findings and nits in one
+line and list them as follow-ups. Do not agree just to end the loop. If review grew the diff, cut it first.
+
+Keep a ledger of id, severity and disposition across rounds. The budget is three rounds; extend it to five only
+while an evidenced blocker or should stays open in security, permissions, data loss or state/concurrency, or when
+the user asks. Start another round only when a blocker or should is open or behavior changed since the reviewer
+last approved; comment, documentation and format-only fixes need none. A later round gets the original brief,
+the ledger with responses and the change since the last round, and checks open ids and changed code only.
+
+Stop when every reviewer approves the current behavior diff, no blocker or should is open and you have no concern
+of your own. When an item stays disputed after two replies, or the budget ends, show both sides in two or three
+lines each and let the user decide; an exhausted budget is not approval. Report the rounds, models, fixed and
+declined findings with reasons, and the diff size before and after.

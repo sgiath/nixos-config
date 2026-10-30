@@ -171,6 +171,7 @@ This skill owns gates, blockers and handoffs. Consult other skills for their par
 - skill://research applies when a source-cited repository research note is requested, not to every evidence lookup.
 - skill://pr owns requested publication; skill://babysit-pr owns GitHub CI/review waiting and readiness.
   Read-only reviews and description-only edits use existing evidence and do not authorize implementation.
+- skill://sol-loop and skill://council run the review rounds from the review brief when the user asks for them.
 - skill://own-change and skill://drive own their explicitly invoked execution/publication scope. Keep them manual;
   this skill neither invokes them implicitly nor grants commit, push, merge, deploy or production-mutation authority.
 
