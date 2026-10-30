@@ -1,7 +1,7 @@
 ---
 name: own-change
 disable-model-invocation: true
-description: "Manual only: invoke /skill:own-change or explicitly request own-change to implement a change in a new worktree, commit and publish it, then babysit all required PRs until merge-ready. Never auto-trigger."
+description: "Manual only: invoke /skill:own-change or explicitly request own-change to implement a change in a new worktree, commit and publish it, then babysit all required PRs until merge-ready, or merged in merge mode. Never auto-trigger."
 ---
 
 # Own a change through merge readiness
@@ -10,7 +10,14 @@ description: "Manual only: invoke /skill:own-change or explicitly request own-ch
 
 Run ONLY when the user invokes /skill:own-change or explicitly asks to use own-change. Never select this skill automatically for a generic implementation, bug-fix, commit or PR request. Do not invoke it just because its description or another document mentions it. Preserve disable-model-invocation: true in this skill's frontmatter when maintaining it.
 
-The invocation authorizes creating a task worktree/branch, implementing the requested change, committing all intended task work, pushing, creating PRs, and running skill://babysit-pr until merge-ready. It does not authorize merging, enabling auto-merge, deployment, destructive cleanup, inclusion of unrelated work or bypassing repository protections.
+The invocation authorizes creating a task worktree/branch, implementing the requested change, committing all intended task work, pushing, creating PRs, and running skill://babysit-pr until merge-ready. It does not authorize merging, enabling auto-merge, deployment, destructive cleanup, inclusion of unrelated work or bypassing repository protections. [Merge mode](#merge-mode) adds merging when the invocation asks for it.
+
+Assume the user is not watching the thread. Decide everything that is not a blocker yourself with sensible defaults
+and list those decisions in the delivery. To ask the user something, use the harness's question tool
+(`AskUserQuestion` in Claude Code, `request_user_input` in Codex) so the thread shows that it is waiting; a question
+in an ordinary message reads as a finished thread. Put the PR link, the blocker and the options with your
+recommendation first into the question itself. Unwatch the task's PRs before asking. If no question tool is
+available or it returns no answer, leave the PRs open and unmerged and start the final message with the question.
 
 Use skill://verified-work for acceptance gates, validated checks, handoffs and blockers throughout this workflow.
 This skill owns workspace, publication and readiness scope; do not start a second plan for each phase. If a required
@@ -80,12 +87,34 @@ recreate the worktree or PRs. Subagents return monitoring ownership to their par
 
 The babysit-pr skill owns the CI/review state machine: wait for all CI including reviewer jobs, read every review conversation, fix failures, reply with evidence, resolve addressed concerns, push and repeat for the current head. Follow its full finish gate, including mergeability, required approvals and unchanged head SHA.
 
+Outside merge mode, if a task PR has auto-merge enabled or sits in a merge queue, turn that off before pushing
+and report it; this workflow never lets a PR merge without the user.
+
 Stay with the task while work remains actionable. Yield to T3 when waiting for CI/review; do not declare completion
 at implementation, PR creation, first green check or first review round. Required human approvals, unavailable access
 or a genuine external decision can block completion; ask how to proceed for an unachievable required gate,
 unwatch before handing back and preserve the exact unmet condition and resumption evidence.
 Do not fabricate approval or bypass protections to satisfy the goal.
 
+## Merge mode
+
+Merge mode applies only when the invocation asks for it, such as `/own-change merge <task>`, or the user explicitly
+asks own-change to merge. It additionally authorizes merging the task's GitHub PRs once babysit-pr's finish gate
+passes, and `git push --force-with-lease` on the task's own branch after a rebase. It still does not authorize
+deployment, bypassing branch protection (`--admin` or equivalent), approving the task's own PRs, closing PRs,
+pushing the default branch, or merging another branch.
+
+Immediately before each merge, `git fetch`, re-fetch the PR and confirm the finish gate on the current head,
+including that the merge state is not `BEHIND` or `DIRTY` and no base commits after the last green run touch the
+PR's files; otherwise rebase, push and babysit again. Merge with the method the repository uses, from its allowed
+methods and recent merged PRs. With a merge queue or auto-merge, stay until GitHub reports the PR merged. Merge
+companion PRs in their documented order; when that order needs a deploy between merges, stop and ask. A missing
+required human approval is a blocker to ask about, not something to work around. For a GitLab MR, stop at
+merge-ready unless the repository's MR skill defines agent merging.
+
 ## Delivery
 
-Return the PR URL(s), worktree/branch, concise change summary, verification/CI result, review status and merge readiness. On an external blocker, include what is needed to resume. Leave branches/worktrees available for review and leave PRs open. The user decides when to merge.
+Return the PR URL(s), worktree/branch, concise change summary, verification/CI result, review status, merge readiness
+and the decisions you made for the user. In merge mode, include the merge commit for each merged PR. On an external
+blocker, include what is needed to resume. Leave branches/worktrees available for review. Outside merge mode, leave
+PRs open; the user decides when to merge.

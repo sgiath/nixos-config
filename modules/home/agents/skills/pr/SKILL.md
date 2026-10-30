@@ -46,6 +46,11 @@ Do not inject a second set of risk fields into a template that already defines t
 Lead with the concrete problem and resulting behavior. Ground the title, motivation, links and risk in the final
 diff and task context. Rewrite the description when later fixes change its scope.
 
+- **Title:** follow the repository's convention from recently merged PRs and history; titles often become commit
+  messages. Say what the change achieves, not its mechanism: `perf(server): cut websocket frame size by 70% with
+  compression`, not `perf(server): negotiate permessage-deflate on the websocket`. Do not open the body with an
+  inventory of changed functions and entry points; that belongs in the diff.
+
 - **Summary:** one or two sentences explaining the concrete trigger and resulting behavior. For a change with
   meaningful branching, multiple steps or component interactions, add a rendered flowchart or sequence diagram
   when it makes the change easier to review. Follow the diagram guidance below; do not use an arrow-filled text
@@ -111,6 +116,14 @@ must work, and diagram labels must be readable without clipping or horizontal sc
 Use the available host API or CLI. With `gh`, write the exact multiline body to a temporary file and pass
 `--body-file`; use explicit repository, base and head when creating. Set the authenticated user as assignee and
 all repository-required labels at creation. Resolve unmerged schema dependencies before publishing.
+Before publishing, check the title, body, captions and attachments for secrets and for private details that do not
+belong in front of the PR's audience.
+
+`gh pr create` and `gh pr edit` use GraphQL. If one fails because the GraphQL limit is used up
+(`gh api rate_limit --jq .resources.graphql`), create the PR through REST with
+`gh api repos/<owner>/<repo>/pulls -f title=... -f head=... -f base=... -F body=@<file>` and set the assignee and
+labels through the REST issues endpoints. Media upload with `--attach` waits until the limit resets; the description
+stays incomplete until then.
 
 For creation, finish authorized task commits and push the intended branch explicitly to the verified remote with
 upstream tracking. Confirm the remote head contains the intended commits before opening the PR. Never push task
