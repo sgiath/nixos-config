@@ -39,20 +39,13 @@
       inputs.nixpkgs.follows = "nixpkgs";
     };
 
-    # Unpinned from v0.56.2: that release requires glaze 7, but nixpkgs ships glaze 8.
-    # Its CMakeLists.txt has `find_package(glaze 7...<8 QUIET)`, which then fails.
-    # CMake falls back to FetchContent, and the build sandbox has no network access.
-    # Upstream removed the version limit on main in 91f29f2 (2026-08-04), code unchanged.
-    # Pin the tag again when a release contains that commit (v0.56.3 or later).
-
-    # pin to v0.56.1
-    hyprland.url = "github:hyprwm/Hyprland/v0.56.1";
+    hyprland.url = "github:hyprwm/Hyprland/v0.57.0";
     hyprland-plugins = {
       url = "github:hyprwm/hyprland-plugins";
       inputs.hyprland.follows = "hyprland";
     };
 
-    noctalia.url = "github:noctalia-dev/noctalia/v5.4.0";
+    noctalia.url = "github:noctalia-dev/noctalia/v5.4.1";
 
     btc-clients = {
       url = "github:emmanuelrosa/btc-clients-nix";
@@ -88,6 +81,11 @@
 
     zen-browser = {
       url = "github:0xc000022070/zen-browser-flake";
+      inputs.nixpkgs.follows = "nixpkgs";
+    };
+
+    helium = {
+      url = "github:oxcl/nix-flake-helium-browser";
       inputs.nixpkgs.follows = "nixpkgs";
     };
 
