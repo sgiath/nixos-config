@@ -106,9 +106,9 @@ Runtime checks in records are required future checks unless the record's
 
 | ID | Kind | Status | Profile |
 | --- | --- | --- | --- |
-| [`pihole-ftl-gcc16-unused-counter`](#pihole-ftl-gcc16-unused-counter) | temporary fix | required | vesta |
 | [`zenpower-kbuild-module-install`](#zenpower-kbuild-module-install) | temporary fix | required | ceres, pallas, vesta |
 | [`chatgpt-tpm2-tss-build-inputs`](#chatgpt-tpm2-tss-build-inputs) | temporary fix | required | desktop |
+| [`cinny-desktop-gst-plugins`](#cinny-desktop-gst-plugins) | temporary fix | required | desktop |
 | [`hermes-agent-exact-pin-relax`](#hermes-agent-exact-pin-relax) | compatibility | required | all |
 | [`hermes-agent-node-patchelf`](#hermes-agent-node-patchelf) | temporary fix | required | vesta |
 | [`hermes-agent-home-mode`](#hermes-agent-home-mode) | compatibility | required | vesta |
@@ -123,7 +123,6 @@ Runtime checks in records are required future checks unless the record's
 | [`comfyui-rocm-platform-guard`](#comfyui-rocm-platform-guard) | compatibility | required | ceres, juno1 |
 | [`comfyui-qwen-memory-policy`](#comfyui-qwen-memory-policy) | compatibility | required | ceres |
 | [`desktop-hyprland-mesa-abi`](#desktop-hyprland-mesa-abi) | ABI | required | desktop |
-| [`desktop-hyprland-elf-wrapper`](#desktop-hyprland-elf-wrapper) | temporary fix | required | desktop |
 | [`portal-qt-theme-isolation`](#portal-qt-theme-isolation) | compatibility | unverified | desktop |
 | [`legacy-wlroots-session-flags`](#legacy-wlroots-session-flags) | compatibility | unverified | desktop |
 | [`satty-floating-hack`](#satty-floating-hack) | compatibility | required | desktop |
@@ -153,16 +152,6 @@ Runtime checks in records are required future checks unless the record's
 
 ### Flake inputs, overlays and vendoring
 
-#### `pihole-ftl-gcc16-unused-counter`
-
-- **Where:** `overlays/sgiath/default.nix` (`pihole-ftl`), `overlays/sgiath/pihole-ftl-unused-counter.patch`.
-- **Why:** FTL 6.7.1 fails under GCC 16 `-Werror=unused-but-set-variable` (unused `i` in `sanitize_dns_hosts`). The patch deletes only that counter; traversal and sanitization are unchanged, `-Werror` stays on.
-- **Upstream:** [pi-hole/FTL#2939](https://github.com/pi-hole/FTL/pull/2939) merged 2026-07-07 into `development` (c184294f). Latest release still v6.7.1 (2026-09-19); release and development diverge, so merge ancestry is misleading.
-- **Selected pin:** root nixpkgs packages FTL 6.7.1; v6.7.1 `src/config/validator.c:824-825` still has `int i = 0` / `i++`.
-- **Remove when:** the FTL source selected by root nixpkgs lacks the counter or carries the upstream correction. Remove overlay attr and patch together; never by disabling `-Werror`.
-- **Validate:** `vesta`; runtime: `pihole-ftl` healthy, local `dns.hosts` names and public DNS still answer.
-- **Exercised:** focused package build, IPv4/IPv6 sanitizer smoke and full Vesta evaluation succeeded when the backport landed.
-
 #### `zenpower-kbuild-module-install`
 
 - **Where:** `overlays/sgiath/default.nix` (`kernelPackagesExtensions` override of `zenpower`).
@@ -182,6 +171,16 @@ Runtime checks in records are required future checks unless the record's
 - **Remove when:** the selected `chatgpt-unwrapped` has tpm2-tss and OpenSSL in its own inputs, or ChatGPT stops shipping the module. Remove the whole `llm-agents` attr.
 - **Validate:** `ceres`, `pallas`; `ldd lib/chatgpt/resources/native/remote-control-device-key.node` in `.llm-agents.chatgpt.unwrapped` has no `not found`. Runtime: ChatGPT Remote Control still pairs the device.
 - **Exercised (2026-10-20):** without the override the full Ceres build failed in `chatgpt-unwrapped` with the error above. With it `chatgpt-unwrapped` and `chatgpt` build, the module RUNPATH points at tpm2-tss 4.2.0, OpenSSL 3.5.9 and gcc-lib, `ldd` resolves everything and the bundled Node loads the module (`getDeviceKeyPublic`, `signDeviceKey`). Remote Control itself wasn't tried.
+
+#### `cinny-desktop-gst-plugins`
+
+- **Where:** `overlays/sgiath/default.nix` (`cinny-desktop` adds `gst_all_1.gst-plugins-good` and `gst_all_1.gst-plugins-bad` to `buildInputs`; `wrapGAppsHook3` puts them on the launcher's `GST_PLUGIN_SYSTEM_PATH_1_0`, so the desktop entry and the `cinny-desktop` user service in `modules/home/programs/chat.nix` both get them).
+- **Why:** nixpkgs gives Cinny only `gstreamer` and `gst-plugins-base`. WebKitGTK 2.54.1 aborts the web process in `MediaPlayerPrivateGStreamer::createAudioSink` when audio plays (`GStreamer element autoaudiosink not found`), which crashed Cinny on Ceres. `autoaudiosink` is in Good; playback then still fails without Bad's `fakevideosink` and WebVTT encoder. gst-libav was not needed for the reproduction and is not added.
+- **Upstream:** no nixpkgs issue or PR (searched 2026-10-29). [NixOS/nixpkgs#549174](https://github.com/NixOS/nixpkgs/pull/549174) added only `gstreamer` and `gst-plugins-base`; open update [NixOS/nixpkgs#578827](https://github.com/NixOS/nixpkgs/pull/578827) (4.12.8) does not touch GStreamer inputs, and `pkgs/by-name/ci/cinny-desktop/package.nix` on master still lists only base.
+- **Selected pin:** root nixpkgs 31ecbaca, `cinny-desktop` 4.12.7 with WebKitGTK 2.54.1 and GStreamer 1.28.7; its `buildInputs` have no Good or Bad plugins.
+- **Remove when:** the selected `cinny-desktop` puts Good and Bad on its launcher's plugin path itself (or WebKit no longer needs them for audio playback). Remove the overlay attr only.
+- **Validate:** `desktop`; the launcher's embedded `GST_PLUGIN_SYSTEM_PATH_1_0` lists gst-plugins-good and gst-plugins-bad. Runtime: Cinny plays an audio message without the web process crashing and the journal has no `autoaudiosink not found`.
+- **Exercised (2026-10-29):** a throwaway harness loading a silent WAV `<audio>` in the same WebKitGTK library crashed the web process with the natural log line under the unfixed plugin path, and reached `ended` (PASS) under the fixed launcher's plugin path. Good alone avoided the crash but timed out without `fakevideosink`. Full Ceres and Pallas toplevel builds passed. Activated the Ceres system and reopened Cinny on the fixed package; the same harness reached `ended` with the running app's actual plugin environment, and the app stayed running with no new audio errors. No login or chat data was changed.
 
 #### `hermes-agent-exact-pin-relax`
 
@@ -297,14 +296,6 @@ Common runtime check for every ComfyUI record: `systemctl show comfyui.service -
 - **Upstream:** [Hyprland on NixOS (0.54)](https://wiki.hypr.land/0.54.0/Nix/Hyprland-on-NixOS/) still recommends Mesa from Hyprland's nixpkgs. [hyprwm/Hyprland#5148](https://github.com/hyprwm/Hyprland/issues/5148) is closed (2024-03-17), not proof for the current pins.
 - **Remove when:** compositor, portal and 64/32-bit Mesa share a coherent package universe (e.g. Hyprland follows root nixpkgs, or its nixpkgs equals root) and the session runs without the override.
 - **Validate:** `desktop`; runtime: running Hyprland and `/run/opengl-driver` paths, no loader/GLIBC errors in journal, accelerated rendering, screen sharing; on Ceres a 32-bit Steam/Proton game.
-
-#### `desktop-hyprland-elf-wrapper`
-
-- **Where:** `modules/nixos/desktop/wayland.nix` (`programs.hyprland.package` overrides `makeWrapper` with `makeBinaryWrapper` from Hyprland's own nixpkgs).
-- **Why:** nixpkgs gives Hyprland `cap_sys_nice+ep` through a security wrapper whose target must be ELF. The selected Hyprland v0.56.1 source (`5c9377c1`, `nix/default.nix`) uses `makeWrapper`, so `bin/Hyprland` is a Bash script and `ensure-wrapper-integrity` fails.
-- **Upstream:** [Hyprland 6cc0822e24](https://github.com/hyprwm/Hyprland/commit/6cc0822e24) switches to `makeBinaryWrapper`. The selected release lacks that change; the local override applies the same substitution and keeps the runtime PATH dependencies.
-- **Remove when:** the selected Hyprland package uses `makeBinaryWrapper` without the override and the full system's wrapper integrity check passes.
-- **Validate:** build the full Ceres NixOS system; `ensure-wrapper-integrity` must accept the ELF launcher and validate its capabilities. Confirm the launcher retains binutils, hyprland-guiutils, pciutils and pkgconf on PATH and the session entries remain available. Runtime after switching: launch through greetd's `start-hyprland` and check compositor startup and screen sharing.
 
 #### `portal-qt-theme-isolation`
 
@@ -587,3 +578,5 @@ Fix together with the next change touching the file; behavior must not change.
 | `amd-radv-nofibril` | 2026-10-10 | Flag removed: selected Mesa 26.1.5 `radv_perftest_options` has no `nofibril`, so it was a no-op. Owner compares a game/shader-compilation workload on Ceres after removal. |
 | `davinci-resolve-21-1-republished-hash` | 2026-10-10 | Overlay removed: root nixpkgs contains NixOS/nixpkgs#562336 (748f45f3) and its corrected hashes; upstream `davinci-resolve-studio` is used. The only consumer stays commented out in `homes/x86_64-linux/sgiath@ceres/default.nix`. Owner validates the package and licensed runtime on enablement. |
 | `sops-nix-build-go126-fork` | 2026-10-10 | Input moved to `github:Mic92/sops-nix`, locked at the same 16954c1c (identical narHash; Mic92 master contains it). Owner validates `all` and sops activation after removal. |
+| `pihole-ftl-gcc16-unused-counter` | 2026-10-28 | Overlay and patch removed: root nixpkgs selects FTL 6.8, whose `src/config/validator.c` `sanitize_dns_hosts` (lines 1016-1024) already lacks the counter ([pi-hole/FTL#2939](https://github.com/pi-hole/FTL/pull/2939), merged 2026-07-07), so the backport failed to apply (`Reversed (or previously applied) patch detected!`). The unchanged package build reproduced that failure; after removal the upstream cached package and full Vesta toplevel build pass. Runtime checks remain for deployment: `pihole-ftl` healthy, local `dns.hosts` names and public DNS answer. |
+| `desktop-hyprland-elf-wrapper` | 2026-10-29 | Override removed: selected Hyprland v0.57.0 (0aa6745f) `nix/default.nix` takes `makeBinaryWrapper` directly (lines 7, 167) and wraps `bin/Hyprland` with `wrapProgram` adding binutils, hyprland-guiutils, pciutils and pkgconf to PATH (lines 255-263), so the stale `makeWrapper` override failed evaluation (`unexpected argument 'makeWrapper'`). After removal `programs.hyprland.package` is the unmodified upstream derivation and the full Ceres toplevel builds; `ensure-wrapper-integrity` accepts the ELF launcher and validates all capabilities. Runtime launch through greetd's `start-hyprland` with screen sharing remains unchecked pending activation. |
