@@ -63,8 +63,8 @@ Singleton {
         return list;
     }
 
-    // Where single-instance surfaces go (notifications, usage panel, crash
-    // drawer): the configured output, else the widest screen.
+    // Where single-instance surfaces go (usage panel, crash drawer): the
+    // configured output, else the widest screen.
     readonly property var mainScreen: {
         let best = null;
         for (let i = 0; i < screens.length; i++) {

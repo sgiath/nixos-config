@@ -45,7 +45,6 @@
           center = [ "workspaces" ];
           end = [
             "group:system-monitor"
-            "notifications"
             "battery"
             "volume"
             "clock"
@@ -107,7 +106,12 @@
           reserve_space = false;
         };
 
-        notification.monitors = [ "DP-1" ];
+        notification = {
+          # Hokum owns org.freedesktop.Notifications; Noctalia keeps only its
+          # own internal toasts.
+          enable_daemon = false;
+          monitors = [ "DP-1" ];
+        };
       };
     };
 

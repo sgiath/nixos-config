@@ -4,6 +4,7 @@
     ./role.nix
     ./chromium.nix
     ./clipboard.nix
+    ./hokum.nix
     ./hyprland.nix
     ./noctalia.nix
     ./quickshell.nix
@@ -62,8 +63,8 @@
           example = "DP-1";
           description = ''
             Output that hosts the `sgiath` shell's single-instance surfaces:
-            notifications, usage panel, crash drawer. Falls back to the widest
-            non-ignored screen when unset or unplugged.
+            usage panel and crash drawer. Falls back to the widest non-ignored
+            screen when unset or unplugged.
           '';
         };
 
