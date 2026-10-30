@@ -38,7 +38,12 @@ check. For an expensive or long gate (real runs, paid evaluations, benchmarks, m
 queued gates), first finish the reviews that can change its inputs or the code under test and prove
 its conditional assertions on a fixture. Then build and run it from a checkout of one fixed commit
 that nobody edits (a detached worktree or archive copy, not the live task checkout), and record that
-commit when the run starts. A later code change invalidates the measurement. Try plausible adjacent actions relevant to the change: refresh/back, another supplied
+commit when the run starts. A later code change invalidates the measurement. Before the first paid run,
+exercise the whole harness on disposable controls, including inherited analyzers and any new environment probes: a
+completed call, a refused or failed call, a genuine mismatch, and a healthy run the harness must not reject. Inspect each
+control's captured output before calling it positive, and keep budget ceilings in one named input.
+
+Try plausible adjacent actions relevant to the change: refresh/back, another supplied
 role, invalid input, repeated submission or overlapping requests. Choose from actual behavior;
 this is not an exhaustive checklist for every change.
 
