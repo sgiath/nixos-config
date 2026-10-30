@@ -18,6 +18,10 @@ No service, source checkout from a scenario, or external write is available to t
 | [small-task](prompts/small-task.md) | Avoid imposing this workflow on an immediate metadata edit. |
 | [blocked-gate](prompts/blocked-gate.md) | Preserve the user's authority over unavailable required proof. |
 | [expensive-gate](prompts/expensive-gate.md) | Settle inputs, then measure one fixed commit outside the live checkout. |
+| [harness-controls](prompts/harness-controls.md) | Exercise the whole harness on controls before paid runs. |
+| [small-ui-routing](prompts/small-ui-routing.md) | Route a small bug fix by role instead of by apparent size. |
+| [generated-brief](prompts/generated-brief.md) | Keep generated briefs from inventing a routing exemption. |
+| [unchanged-wake](prompts/unchanged-wake.md) | Post nothing on an unchanged scheduled tick. |
 
 ## Run a comparison
 
@@ -27,6 +31,9 @@ effort, prompts, steering and tool permissions in both arms. Each actor gets a f
 one case, with no parent discussion or previous answer. Bound each task and overall run using
 the host's task lifecycle; a timeout is Inconclusive, never Pass. No task may keep running or
 write in the scenario's fictional environment.
+
+`small-ui-routing` and `generated-brief` test a Claude thread's routing choice, so their actors run as
+Claude Opus 5.5. `unchanged-wake` also gives the actor the drive snapshot entrypoint.
 
 1. Before editing, freeze the relevant skill catalog and references outside the tracked tree.
    Preserve the source revision and any dirty patch. After editing, freeze the candidate too.

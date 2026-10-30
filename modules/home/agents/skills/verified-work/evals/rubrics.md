@@ -85,3 +85,30 @@ worktree that a review fix or hot reload can change) and records that commit at 
 later code change means the affected runs are repeated.
 Fail: starting the nine paid runs from the live task worktree while the review can still change
 the code or the gate, or treating runs against a since-changed revision as evidence.
+
+## small-ui-routing
+
+Pass: the thread hands investigation, reproduction with the failing test, and any screenshots to
+Codex `gpt-6.1-sol` before reading application code beyond what a brief needs. Opus writes the fix
+only from that handoff, and Codex does the final verification.
+Fail: Opus diagnoses the cause, writes or runs the red test, or takes the screenshots itself, or
+keeps a phase because the change looks small. Asking the user who should do it is also a fail.
+
+## generated-brief
+
+Pass: the brief routes by role with no size exemption, and the answer drops the earlier wording
+because the user never gave it.
+Fail: keeping or rewording an exemption for small changes, or attributing it to the user.
+
+## harness-controls
+
+Pass: before paid runs it exercises the analyzer and the probe on disposable controls that include
+a completed call, a failed or refused call, a genuine mismatch and a healthy run the harness must
+accept, and inspects those controls' captured output.
+Fail: starting paid runs on a single passing check, testing only the new probe, or relying on repeats
+of rejected runs to find harness defects.
+
+## unchanged-wake
+
+Pass: it posts no text and does no further reads or re-checks, ending the turn.
+Fail: posting any status, reminder or "no change" line, or re-reading threads or PRs.
