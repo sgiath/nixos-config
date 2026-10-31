@@ -148,6 +148,7 @@ Runtime checks in records are required future checks unless the record's
 | [`t3code-nightly-sea-patchelf`](#t3code-nightly-sea-patchelf) | temporary fix | required | ceres, vesta |
 | [`cross-architecture-nixos-rebuild-no-reexec`](#cross-architecture-nixos-rebuild-no-reexec) | compatibility | required | ceres, juno1 |
 | [`burn-iso-hybrid-mbr-key-partition`](#burn-iso-hybrid-mbr-key-partition) | compatibility | required | iso |
+| [`dgx-spark-nvidia-kernel-cve-2026-98432`](#dgx-spark-nvidia-kernel-cve-2026-98432) | security backport | required | juno1 |
 | [`whiteboard-bundled-electron`](#whiteboard-bundled-electron) | security exception | watch (2027-01-05) | desktop |
 
 ### Flake inputs, overlays and vendoring
@@ -517,6 +518,18 @@ Also covers audit ID `package-nak-network-tests`.
 - **Upstream:** no external fix/issue is identified: this is a local hybrid-ISO layout adaptation, not a package bug. Recheck the generated image geometry when its pinned inputs change.
 - **Remove/change when:** the generated ISO geometry supports another strategy, proven on disposable media.
 - **Validate:** `iso`; runtime: loop device/VM or expendable USB with fake keys boots and exposes the key partition.
+
+### Kernels
+
+#### `dgx-spark-nvidia-kernel-cve-2026-98432`
+
+- **Where:** `modules/nixos/hardware/dgx-spark.nix` (`boot.kernelPatches`), `modules/nixos/hardware/cve-2026-98432-ipv4-opt-rcu.patch` (the upstream commit, unmodified).
+- **Why:** CVE-2026-98432 is a use-after-free. `inet_sock_destruct()` and `tcp_v4_reqsk_destructor()` free IPv4 options with plain `kfree()` while the SYNACK paths read them under `rcu_read_lock()` only. The patch changes both to `kfree_rcu(..., rcu)`. It goes through `boot.kernelPatches` because the kernel is built inside the upstream module; NixOS appends the patch in the `.override` of `boot.kernelPackages`.
+- **Upstream:** [torvalds/linux e3f33b0a](https://github.com/torvalds/linux/commit/e3f33b0a1d89d738e2b913dab519226eaf76e15b), committed 2026-10-05. NV-Kernels `24.04_linux-nvidia-7.0-next` (58b5de53) and `24.04_linux-nvidia-bos-7.0-next` (e01bfd69) still use plain `kfree()` in both destructors, and [graham33/nixos-dgx-spark](https://github.com/graham33/nixos-dgx-spark) main is still the selected c646a19a (checked 2026-10-30).
+- **Selected pin:** `dgx-spark` c646a19a selects NV-Kernels ae07646a (`7.0.14-nvidia`, tag `Ubuntu-nvidia-7.0-7.0.0-1019.19_24.04.2`), with plain `kfree()` at [af_inet.c#L165](https://github.com/NVIDIA/NV-Kernels/blob/ae07646a606b3f18707246b0762464452cb40cbe/net/ipv4/af_inet.c#L165) and [tcp_ipv4.c#L1232](https://github.com/NVIDIA/NV-Kernels/blob/ae07646a606b3f18707246b0762464452cb40cbe/net/ipv4/tcp_ipv4.c#L1232).
+- **Remove when:** the NV-Kernels source selected by `inputs.dgx-spark` has `kfree_rcu(..., rcu)` in both destructors. The patch then stops applying and fails the kernel build, which is the prompt to check. Remove the `boot.kernelPatches` entry and the patch file together.
+- **Validate:** `juno1`, including the native build. `nix derivation show` on `.#nixosConfigurations.juno1.config.boot.kernelPackages.kernel.drvPath` lists the patch in `patches`, and patching runs without fuzz. Runtime: after `update --juno1` and a reboot, `/run/booted-system/kernel` and `/run/current-system/kernel` resolve to the same rebuilt kernel, and the host boots with Nebula, RoCE and the GPU working. A switch without a reboot leaves the old kernel running.
+- **Exercised (2026-10-30):** static only. The patches of the evaluated `linux-7.0.14-nvidia` derivation were applied with `--fuzz=0` to the pinned `af_inet.c` and `tcp_ipv4.c`: the unpatched derivation (s5jj8l7a) failed the destructor check and the patched one (rp8zlrpx) passed. The Juno1 toplevel evaluates, its derivation closure selects the patched kernel, the NVIDIA module derivation depends on it, and the upstream module's `overrideAttrs` reference scrubbing is unchanged. The kernel was not built or booted and the bug was not reproduced; Juno1 must be treated as vulnerable until this is deployed and rebooted.
 
 ### Security exceptions
 

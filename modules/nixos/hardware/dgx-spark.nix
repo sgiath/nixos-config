@@ -7,6 +7,14 @@
     # It sets boot.kernelPackages; hosts using it must not set their own kernel.
     hardware.dgx-spark.enable = true;
 
+    # `dgx-spark-nvidia-kernel-cve-2026-98432` in UPSTREAM-WORKAROUNDS.md.
+    boot.kernelPatches = [
+      {
+        name = "cve-2026-98432-ipv4-opt-rcu";
+        patch = ./cve-2026-98432-ipv4-opt-rcu.patch;
+      }
+    ];
+
     # Identical on every Spark: single NVMe, USB boot media.
     boot.initrd.availableKernelModules = [
       "nvme"
