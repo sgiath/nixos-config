@@ -81,7 +81,7 @@ in
       ghostty.enable = true;
 
       # utils
-      voxtype.enable = true;
+      hex.enable = true;
       pandoc.enable = true;
       vscode.enable = false;
       obs-studio = {

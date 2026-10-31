@@ -4,13 +4,13 @@
     ./role.nix
     ./chromium.nix
     ./clipboard.nix
+    ./hex.nix
     ./hokum.nix
     ./hyprland.nix
     ./noctalia.nix
     ./quickshell.nix
     ./shell.nix
     ./stylix.nix
-    ./voxtype.nix
     ./wayscriber.nix
     ./yazi.nix
   ];

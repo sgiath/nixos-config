@@ -94,7 +94,13 @@
       inputs.nixpkgs.follows = "nixpkgs";
     };
 
-    voxtype.url = "github:peteonrails/voxtype/v1.1.1";
+    # Default branch: the v3.0.0 tag's Home Manager module lacks model and installModel.
+    hex = {
+      url = "github:anomalyco/hex";
+      inputs.nixpkgs.follows = "nixpkgs";
+      inputs.home-manager.follows = "home-manager";
+    };
+
     comfyui.url = "github:utensils/comfyui-nix/v0.37.0-r1";
 
     # NVIDIA DGX Spark (GB10, aarch64): NVIDIA 6.17 kernel, open driver, CUDA, ConnectX-7.
@@ -214,7 +220,7 @@
         sops-nix.homeManagerModules.sops
         nix-index-database.homeModules.nix-index
         stylix.homeModules.stylix
-        voxtype.homeManagerModules.default
+        hex.homeManagerModules.default
         worktrunk.homeModules.default
       ];
     };

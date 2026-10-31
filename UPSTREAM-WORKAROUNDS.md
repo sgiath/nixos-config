@@ -127,6 +127,7 @@ Runtime checks in records are required future checks unless the record's
 | [`legacy-wlroots-session-flags`](#legacy-wlroots-session-flags) | compatibility | unverified | desktop |
 | [`satty-floating-hack`](#satty-floating-hack) | compatibility | required | desktop |
 | [`quickshell-store-theme-restart`](#quickshell-store-theme-restart) | compatibility | required | desktop |
+| [`hex-model-service-selection`](#hex-model-service-selection) | temporary fix | required | desktop |
 | [`tmux-sessionizer-session-target`](#tmux-sessionizer-session-target) | temporary fix | required | all |
 | [`pihole-first-run-setup-retry`](#pihole-first-run-setup-retry) | temporary fix | required | vesta |
 | [`searx-json-secret-interpolation`](#searx-json-secret-interpolation) | temporary fix | required | vesta |
@@ -327,6 +328,16 @@ Common runtime check for every ComfyUI record: `systemctl show comfyui.service -
 - **Why:** the file watcher does not notice the store theme symlink target changing during a switch ([QFileSystemWatcher](https://doc.qt.io/qt-6/qfilesystemwatcher.html) stops watching renamed files; exact case not reproduced).
 - **Remove when:** the selected watcher picks up an atomic symlink replacement in live and packaged modes.
 - **Validate:** `desktop`; runtime: change theme in a disposable branch, switch, verify colors/fonts/wallpaper update without losing app windows.
+
+#### `hex-model-service-selection`
+
+- **Where:** `modules/home/desktop/hex.nix` (`systemd.user.services.hex-model.Service.ExecStart` forced to `hex model install <model> --language <language>` from `programs.hex.model` and `programs.hex.language`).
+- **Why:** upstream's `hex-install-model` runs a bare `hex model install`, which reads the model from settings. The `hex-model` service starts during `reloadSystemd`, but `home.activation.hexSettings` applies `programs.hex.model` only after it, so a first install with no settings file downloads Hex's default Parakeet Unified English (731 MB) instead of the declared model. The override names the model and language, so ordering no longer matters. It drops upstream's two-minute wait for `network-online.target`; `Restart=on-failure` with `RestartSec=60` stays, so a login without network retries.
+- **Upstream:** no issue or PR (searched 2026-10-31; `docs/nix.md` promises the "selected model"). `dev` b16587bc still runs the bare command in `nix/hm-module.nix` (line 31).
+- **Selected pin:** hex 154b4d40, the same bare command in `nix/hm-module.nix` with `hexSettings` at `entryAfter [ "reloadSystemd" ]`; `src/control/cli.rs` `install_model` takes the optional model and `--language`.
+- **Remove when:** the selected module's generated `hex-model` command requests the declared model on an empty support directory, or applies settings before the service starts. Remove the `ExecStart` override and the `inherit` entries only it uses.
+- **Validate:** `desktop`; evaluate `home-manager.users.sgiath.systemd.user.services.hex-model.Service.ExecStart` through `nixosConfigurations.ceres`, then run it with an empty `HEX_APPLICATION_SUPPORT_DIR` and a blocked `HTTPS_PROXY`: it must print `Installing Whisper large-v3-turbo` and exit non-zero. Runtime: on a first activation `hex-model` installs that model and `hex model status` reports it installed.
+- **Exercised (2026-10-31):** with an empty support directory and a proxy on `127.0.0.1:9`, upstream's generated `hex-install-model` printed `Installing Parakeet Unified English (731 MB)`; the evaluated Ceres command printed `Installing Whisper large-v3-turbo` and failed at the proxy with a non-zero exit, which is what `Restart=on-failure` retries. No model was downloaded and the unit was not activated.
 
 ### Terminal, agents and services
 

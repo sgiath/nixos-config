@@ -10,7 +10,7 @@ Home Manager modules for user `sgiath`, split by role. Snowfall imports every `<
 | --- | --- | --- |
 | Baseline packages, direnv, pass, API-key secrets | `common/` | `sgiath.enable` |
 | CLI stack: git, gpg, ssh, zsh, starship, tmux, worktrunk, agents | `terminal/` | `sgiath.roles.terminal.enable` |
-| Hyprland, stylix, terminals, clipboard, voxtype, chromium | `desktop/` | `sgiath.roles.desktop.enable` |
+| Hyprland, stylix, terminals, clipboard, hex, chromium | `desktop/` | `sgiath.roles.desktop.enable` |
 | Desktop shell choice (Noctalia vs in-repo Quickshell), `desktop-shell` CLI, shell keybinds | `desktop/shell.nix` | `sgiath.desktop.shell`; both units installed, `Conflicts` each other |
 | Own Quickshell config (QML in `desktop/quickshell/`, Stylix theme JSON, qmlls) | `desktop/quickshell.nix` | `programs.quickshell.enable`; `sgiath.desktop.quickshell.live` symlinks `~/nixos/.../quickshell` for hot reload |
 | Noctalia settings and layer rules | `desktop/noctalia.nix` | `programs.noctalia.enable` |
