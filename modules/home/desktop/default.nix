@@ -9,6 +9,7 @@
     ./hyprland.nix
     ./noctalia.nix
     ./quickshell.nix
+    ./share-picker.nix
     ./shell.nix
     ./stylix.nix
     ./wayscriber.nix

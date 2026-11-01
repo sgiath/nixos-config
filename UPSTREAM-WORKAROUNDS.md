@@ -128,6 +128,7 @@ Runtime checks in records are required future checks unless the record's
 | [`satty-floating-hack`](#satty-floating-hack) | compatibility | required | desktop |
 | [`quickshell-store-theme-restart`](#quickshell-store-theme-restart) | compatibility | required | desktop |
 | [`hex-model-service-selection`](#hex-model-service-selection) | temporary fix | required | desktop |
+| [`preview-share-picker-region-coordinates`](#preview-share-picker-region-coordinates) | temporary fix | required | desktop |
 | [`tmux-sessionizer-session-target`](#tmux-sessionizer-session-target) | temporary fix | required | all |
 | [`pihole-first-run-setup-retry`](#pihole-first-run-setup-retry) | temporary fix | required | vesta |
 | [`searx-json-secret-interpolation`](#searx-json-secret-interpolation) | temporary fix | required | vesta |
@@ -338,6 +339,15 @@ Common runtime check for every ComfyUI record: `systemctl show comfyui.service -
 - **Remove when:** the selected module's generated `hex-model` command requests the declared model on an empty support directory, or applies settings before the service starts. Remove the `ExecStart` override and the `inherit` entries only it uses.
 - **Validate:** `desktop`; evaluate `home-manager.users.sgiath.systemd.user.services.hex-model.Service.ExecStart` through `nixosConfigurations.ceres`, then run it with an empty `HEX_APPLICATION_SUPPORT_DIR` and a blocked `HTTPS_PROXY`: it must print `Installing Whisper large-v3-turbo` and exit non-zero. Runtime: on a first activation `hex-model` installs that model and `hex model status` reports it installed.
 - **Exercised (2026-10-31):** with an empty support directory and a proxy on `127.0.0.1:9`, upstream's generated `hex-install-model` printed `Installing Parakeet Unified English (731 MB)`; the evaluated Ceres command printed `Installing Whisper large-v3-turbo` and failed at the proxy with a non-zero exit, which is what `Restart=on-failure` retries. No model was downloaded and the unit was not activated.
+
+#### `preview-share-picker-region-coordinates`
+
+- **Where:** `modules/home/desktop/share-picker.nix` (`region.command` in `hyprland-preview-share-picker/config.yaml`, format `%o@%X,%Y,%W,%H`).
+- **Why:** the picker's default region command prints global coordinates, while the portal passes them unchanged to `capture_output_region`, which takes coordinates relative to the output. Any monitor away from the layout origin captures the wrong area, and a negative global coordinate is rejected. Ceres has three monitors.
+- **Upstream:** fixed by [PR #26](https://github.com/WhySoBad/hyprland-preview-share-picker/pull/26) (3c344a6d, 2026-08-24) on the default branch; unreleased, latest release v0.2.1 (checked 2026-10-31).
+- **Selected pin:** nixpkgs `hyprland-preview-share-picker` 0.2.1, `src/config.rs` default `slurp -f '%o@%x,%y,%w,%h'`; `xdg-desktop-portal-hyprland` 1.4.1 parses unsigned values and its own `hyprland-share-picker` uses `%X %Y %W %H`.
+- **Remove when:** the selected picker's default prints output-relative coordinates. The setting stays for its absolute `slurp` path, because the portal's `PATH` has no `slurp`; delete this record and shorten the comment.
+- **Validate:** `desktop`; evaluate `home-manager.users.sgiath.xdg.configFile."hyprland-preview-share-picker/config.yaml".text` through `nixosConfigurations.ceres`. Runtime: select a region on a monitor away from the layout origin through a ScreenCast request; the stream shows that region.
 
 ### Terminal, agents and services
 
