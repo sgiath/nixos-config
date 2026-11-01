@@ -3,6 +3,7 @@ set -euo pipefail
 
 SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
 SOURCES_JSON="${SCRIPT_DIR}/sources.json"
+DEVICE_TOOLS_UPDATE="${SCRIPT_DIR}/../t3code-nightly-device-tools/update.sh"
 REPO="pingdotgg/t3code"
 
 if [[ -n "${1:-}" ]]; then
@@ -22,7 +23,8 @@ fi
 
 CURRENT_VERSION="$(jq -r '.version' "${SOURCES_JSON}")"
 if [[ "${VERSION}" == "${CURRENT_VERSION}" ]]; then
-	echo "==> Already at version ${VERSION}, nothing to do"
+	echo "==> Already at version ${VERSION}, checking device tools"
+	"${DEVICE_TOOLS_UPDATE}" "${VERSION}"
 	exit 0
 fi
 
@@ -98,7 +100,7 @@ jq -n \
 		"aarch64-linux": { cli: $arm64Cli, appimage: $arm64AppImage, headlessShell: $arm64HeadlessShell }
 	}' >"${SOURCES_JSON}"
 
-"${SCRIPT_DIR}/../t3code-nightly-device-tools/update.sh" "${VERSION}"
+"${DEVICE_TOOLS_UPDATE}" "${VERSION}"
 
 echo "==> Done! Updated t3code-nightly to ${VERSION}"
 echo "Next step: nix build '.#t3code-nightly' '.#t3code-nightly-desktop' '.#t3code-nightly-device-tools'"

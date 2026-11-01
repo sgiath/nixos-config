@@ -1,40 +1,18 @@
 {
   lib,
   stdenv,
-  fetchurl,
   importNpmLock,
   nodejs,
 }:
 
 let
-  sources = lib.importJSON ./sources.json;
-  locked =
-    root: name: (lib.importJSON ./${root}/package-lock.json).packages."node_modules/${name}".version;
-
-  # node-datachannel's install script downloads this prebuilt, falling back to
-  # a cmake build; neither works in the sandbox.
-  datachannelVersion = locked "expo-device-hub" "node-datachannel";
-  datachannel =
-    assert lib.assertMsg (datachannelVersion == sources.node-datachannel.version)
-      "t3code-nightly-device-tools: sources.json pins node-datachannel ${sources.node-datachannel.version}, the lockfile ${datachannelVersion}; rerun update.sh";
-    fetchurl {
-      url = "https://github.com/murat-dogan/node-datachannel/releases/download/v${datachannelVersion}/node-datachannel-v${datachannelVersion}-napi-v8-linux-${
-        {
-          x86_64-linux = "x64";
-          aarch64-linux = "arm64";
-        }
-        .${stdenv.hostPlatform.system}
-      }.tar.gz";
-      hash = sources.node-datachannel.${stdenv.hostPlatform.system};
-    };
-
   # Same tree `npm install --prefix` leaves under ~/.t3/tools/<name>/<version>,
   # including the sentinel T3 checks before it would install the tool itself.
   tool =
     name: entry:
     stdenv.mkDerivation (finalAttrs: {
       pname = name;
-      version = locked name name;
+      version = (lib.importJSON ./${name}/package-lock.json).packages."node_modules/${name}".version;
       src = ./${name};
 
       npmDeps = importNpmLock { npmRoot = ./${name}; };
@@ -49,9 +27,6 @@ let
       installPhase = ''
         runHook preInstall
 
-        if [ -d node_modules/node-datachannel ]; then
-          tar -xzf ${datachannel} -C node_modules/node-datachannel
-        fi
         test -e node_modules/${name}/${entry}
         echo ${finalAttrs.version} > .install-complete
 
@@ -59,6 +34,22 @@ let
         cp -r . $out/${name}/${finalAttrs.version}
 
         runHook postInstall
+      '';
+
+      doInstallCheck = true;
+      installCheckPhase = ''
+        runHook preInstallCheck
+
+        cd $out/${name}/${finalAttrs.version}
+        if [ -d node_modules/node-datachannel ]; then
+          timeout 30 node -e '
+            const { PeerConnection, cleanup } = require("node-datachannel");
+            new PeerConnection("check", { iceServers: [] }).close();
+            cleanup();
+          '
+        fi
+
+        runHook postInstallCheck
       '';
     });
 
