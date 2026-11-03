@@ -65,7 +65,10 @@
         description = "Minecraft Nomifactory server";
         after = [ "network.target" ];
         wantedBy = [ "multi-user.target" ];
-        script = "${lib.getExe pkgs.zulu8} -server -Xms4G -Xmx4G -jar forge-1.12.2-14.23.5.2860.jar nogui";
+        # headless server: zulu8 defaults to GTK2 (marked broken in nixpkgs) for the Swing look and feel
+        script = "${
+          lib.getExe (pkgs.zulu8.override { gtkSupport = false; })
+        } -server -Xms4G -Xmx4G -jar forge-1.12.2-14.23.5.2860.jar nogui";
         serviceConfig = {
           WorkingDirectory = "/data/minecraft/nomi";
         };

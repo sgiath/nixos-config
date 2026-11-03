@@ -6,6 +6,11 @@
 }:
 {
   config = lib.mkIf config.sgiath.roles.gaming.enable {
+    # FIXME: nixpkgs marks GTK2 broken ahead of its removal; Lutris's FHS env and
+    # Prism's zulu8 still need it. Drop once they stop requiring it.
+    # UPSTREAM-WORKAROUNDS.md#gaming-gtk2-broken-allowance
+    nixpkgs.config.problems.handlers."gtk+".broken = "warn";
+
     environment.systemPackages = with pkgs; [
       protonplus
       winetricks
