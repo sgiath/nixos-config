@@ -8,16 +8,16 @@
 
 buildGoModule rec {
   pname = "nak";
-  version = "0.22.1";
+  version = "0.22.2";
 
   src = fetchFromGitHub {
     owner = "fiatjaf";
     repo = "nak";
     rev = "v${version}";
-    hash = "sha256-5Qp8AS6vOtn/XG3fMLPXp945KVlACe2tDlBAYWS/c+g=";
+    hash = "sha256-4AWnPig/UlrXzyANFSaL955X1Z6XyxwlL3OZ4FfkBkA=";
   };
 
-  vendorHash = "sha256-5Y4K4J8Lm/qJ1xLYHaGIWMDkXeLHHAn2gX6jo3iG4wE=";
+  vendorHash = "sha256-s2/OtbzLOnCZnBMRqCWdKy1NdXjZ8LLlqoxetd+PYio=";
 
   buildInputs = [
     lmdb
