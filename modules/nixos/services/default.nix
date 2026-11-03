@@ -23,6 +23,5 @@
     ./searx.nix
     ./t3code.nix
     ./transmission.nix
-    ./xmpp.nix
   ];
 }
