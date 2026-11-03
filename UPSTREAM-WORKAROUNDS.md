@@ -127,8 +127,10 @@ Runtime checks in records are required future checks unless the record's
 | [`legacy-wlroots-session-flags`](#legacy-wlroots-session-flags) | compatibility | unverified | desktop |
 | [`satty-floating-hack`](#satty-floating-hack) | compatibility | required | desktop |
 | [`quickshell-store-theme-restart`](#quickshell-store-theme-restart) | compatibility | required | desktop |
+| [`quickshell-hyprland-workspace-address`](#quickshell-hyprland-workspace-address) | compatibility | required | desktop |
 | [`hex-model-service-selection`](#hex-model-service-selection) | temporary fix | required | desktop |
 | [`preview-share-picker-region-coordinates`](#preview-share-picker-region-coordinates) | temporary fix | required | desktop |
+| [`gaming-gtk2-broken-allowance`](#gaming-gtk2-broken-allowance) | compatibility | required | ceres |
 | [`tmux-sessionizer-session-target`](#tmux-sessionizer-session-target) | temporary fix | required | all |
 | [`pihole-first-run-setup-retry`](#pihole-first-run-setup-retry) | temporary fix | required | vesta |
 | [`searx-json-secret-interpolation`](#searx-json-secret-interpolation) | temporary fix | required | vesta |
@@ -330,6 +332,17 @@ Common runtime check for every ComfyUI record: `systemctl show comfyui.service -
 - **Remove when:** the selected watcher picks up an atomic symlink replacement in live and packaged modes.
 - **Validate:** `desktop`; runtime: change theme in a disposable branch, switch, verify colors/fonts/wallpaper update without losing app windows.
 
+#### `quickshell-hyprland-workspace-address`
+
+- **Where:** `packages/quickshell/default.nix` (`overrideAttrs` under the multimedia wrapper), `packages/quickshell/hyprland-workspace-address.patch`.
+- **Why:** Hyprland 0.57 separates a workspace's address from its display name: workspace 8 has address `8` and name `firefox`. Quickshell's `HyprlandWorkspace.activate()` dispatches the name, which Hyprland resolves to a new workspace with address `firefox`. `focusedmon` and `openwindow` carry the address, but Quickshell looks it up among names, so a named workspace loses its focus state after a monitor change and a new window on it has a null workspace. The patch dispatches the same selector as Hyprland's `Workspace::selector()` and looks both events up by address. QML can't repair the built-in `HyprlandToplevel.workspace`, so the fix is in the package. It rebuilds Quickshell instead of using the binary cache.
+- **Not changed:** `movewindowv2`, `createworkspacev2` and `j/clients` still match on the name; moved windows and startup pass with distinct names, and duplicate names are untested. Selected 0.3.2 ignores `changeworkspaceid`, so `activate()` uses the old address after an id change until Quickshell restarts; master handles that event.
+- **Upstream:** [quickshell-mirror/quickshell#1119](https://github.com/quickshell-mirror/quickshell/issues/1119) (closed 2026-09-21) added address tracking. No issue or PR for these three defects (searched 2026-11-01). Master 9b0f339b has the same `activate()`, `focusedmon` and `openwindow` code.
+- **Selected pin:** root nixpkgs 1c89083e, Quickshell v0.3.2 (latest release), Hyprland v0.57.0. Hyprland posts `addressableName()` in `focusedmon` (`src/desktop/state/FocusState.cpp`) and `openwindow` (`src/desktop/view/window/Window.cpp`).
+- **Remove when:** the selected Quickshell's `activate()` dispatches an address-based selector and both events resolve by address. Remove the patch and `overrideAttrs`; keep the multimedia wrapper. A patch that no longer applies fails the build and means this review is due.
+- **Validate:** `desktop`; `nix build --no-link --no-update-lock-file .#quickshell`. Runtime: activating a renamed workspace selects its numeric address and creates no workspace; after a monitor focus round trip the renamed workspace stays focused; a new window on it reports that workspace.
+- **Exercised (2026-11-01):** against live Hyprland 0.57.0, production `rail/Workspaces.qml` under unpatched Quickshell failed all three checks (selected address `firefox`, highlight false, workspace null); moved-window, scratchpad, unnamed-click and rail checks passed. All seven pass on the patched package with no workspace left behind. Full Ceres and Pallas system builds passed. Activated Ceres and verified its installed service runs the patched executable; rails, ignored-output behavior and launcher open/close on both configured monitors passed. Returned to Noctalia after testing; Pallas was not activated.
+
 #### `hex-model-service-selection`
 
 - **Where:** `modules/home/desktop/hex.nix` (`systemd.user.services.hex-model.Service.ExecStart` forced to `hex model install <model> --language <language>` from `programs.hex.model` and `programs.hex.language`).
@@ -348,6 +361,17 @@ Common runtime check for every ComfyUI record: `systemctl show comfyui.service -
 - **Selected pin:** nixpkgs `hyprland-preview-share-picker` 0.2.1, `src/config.rs` default `slurp -f '%o@%x,%y,%w,%h'`; `xdg-desktop-portal-hyprland` 1.4.1 parses unsigned values and its own `hyprland-share-picker` uses `%X %Y %W %H`.
 - **Remove when:** the selected picker's default prints output-relative coordinates. The setting stays for its absolute `slurp` path, because the portal's `PATH` has no `slurp`; delete this record and shorten the comment.
 - **Validate:** `desktop`; evaluate `home-manager.users.sgiath.xdg.configFile."hyprland-preview-share-picker/config.yaml".text` through `nixosConfigurations.ceres`. Runtime: select a region on a monitor away from the layout origin through a ScreenCast request; the stream shows that region.
+
+### Gaming (Ceres)
+
+#### `gaming-gtk2-broken-allowance`
+
+- **Where:** `modules/nixos/gaming/role.nix` (`nixpkgs.config.problems.handlers."gtk+".broken = "warn"`), so only hosts with the gaming role get it.
+- **Why:** selected nixpkgs marks GTK2 `problems.broken` as a removal notice, not a build failure (`pkgs/by-name/gt/gtk2/package.nix` lines 178-184: final release 2.24.33, migrate before NixOS 27.05). Lutris's FHS env lists `gtk2` and `gtk3` in `multiPkgs` (`pkgs/by-name/lu/lutris/package.nix` lines 256-257) for games that load legacy GTK, and Prism Launcher's `zulu8` (Nomifactory) adds `gtk2` because `gtkSupport` defaults on for JDK < 17 (`pkgs/development/compilers/zulu/common.nix` lines 26, 60-61). Without the handler, Ceres evaluation stops on `gtk+-2.24.33` in `lutris-0.5.22-fhsenv-rootfs`. The handler matches only package `gtk+` and problem `broken`; every other broken package still fails, and each evaluation prints the GTK2 warning. Not an `allowBroken` or insecure-package exemption. Vesta's headless Nomifactory server avoids GTK2 with `zulu8.override { gtkSupport = false; }` instead (`modules/nixos/server/minecraft.nix`).
+- **Upstream:** [NixOS/nixpkgs#410814](https://github.com/NixOS/nixpkgs/issues/410814) (GTK2 removal tracking) open on 2026-11-03.
+- **Selected pin:** root nixpkgs 0bb2eedc; Lutris 0.5.22, `gtk+` 2.24.33.
+- **Remove when:** neither the selected Lutris FHS env nor Prism's `zulu8` pulls `gtk+` (Lutris drops `gtk2` from `multiPkgs`, and `zulu8` is dropped, built without GTK, or no longer needed). If nixpkgs removes `gtk2` first, this handler stops helping and Ceres evaluation fails on the missing attribute; replace the dependency then.
+- **Validate:** `all` (toplevel drvPath evaluation for every host proves the scope; Ceres must evaluate with only the GTK2 warning); `ceres` build. Runtime: start Lutris and a Nomifactory instance in Prism with `zulu8`.
 
 ### Terminal, agents and services
 
