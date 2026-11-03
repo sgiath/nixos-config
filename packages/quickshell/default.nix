@@ -4,15 +4,22 @@
   quickshell,
   qt6,
 }:
+let
+  # Upstream workaround `quickshell-hyprland-workspace-address`. Both `qs` and
+  # `quickshell` come from this build.
+  patched = quickshell.overrideAttrs (old: {
+    patches = (old.patches or [ ]) ++ [ ./hyprland-workspace-address.patch ];
+  });
+in
 # Nixpkgs' quickshell only bundles the Qt modules it links against. The
 # sgiath shell's video wallpaper needs QtMultimedia (QML module + ffmpeg
 # backend plugin), so prefix the same variables wrapQtAppsHook uses instead
-# of rebuilding quickshell from source and losing the binary cache.
+# of adding it to the build.
 #
 # Home Manager's unit runs bin/quickshell; `qs` is the CLI alias.
 symlinkJoin {
-  name = "${quickshell.name}-multimedia";
-  paths = [ quickshell ];
+  name = "${patched.name}-multimedia";
+  paths = [ patched ];
   nativeBuildInputs = [ makeWrapper ];
   postBuild = ''
     for bin in quickshell qs; do
@@ -22,5 +29,5 @@ symlinkJoin {
     done
   '';
   passthru.qtmultimedia = qt6.qtmultimedia;
-  inherit (quickshell) meta;
+  inherit (patched) meta;
 }

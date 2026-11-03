@@ -1,0 +1,118 @@
+--- a/src/wayland/hyprland/ipc/connection.cpp
++++ b/src/wayland/hyprland/ipc/connection.cpp
+@@ -401,11 +401,11 @@
+ 	} else if (event->name == "focusedmon") {
+ 		auto args = event->parseView(2);
+ 		auto name = QString::fromUtf8(args.at(0));
+-		auto workspaceName = QString::fromUtf8(args.at(1));
++		auto workspaceAddress = QString::fromUtf8(args.at(1));
+ 
+ 		HyprlandWorkspace* workspace = nullptr;
+-		if (workspaceName != "?") { // what the fuck
+-			workspace = this->findWorkspaceByName(workspaceName, false);
++		if (workspaceAddress != "?") { // what the fuck
++			workspace = this->findWorkspaceByName(QString(), false, workspaceAddress);
+ 		}
+ 
+ 		auto* monitor = this->findMonitorByName(name, true);
+@@ -468,13 +468,13 @@
+ 
+ 		if (!ok) return;
+ 
+-		auto workspaceName = QString::fromUtf8(args.at(1));
++		auto workspaceAddress = QString::fromUtf8(args.at(1));
+ 		auto windowClass = QString::fromUtf8(args.at(2));
+ 		auto windowTitle = QString::fromUtf8(args.at(3));
+ 
+-		auto* workspace = this->findWorkspaceByName(workspaceName, false);
++		auto* workspace = this->findWorkspaceByName(QString(), false, workspaceAddress);
+ 		if (!workspace) {
+-			qCWarning(logHyprlandIpc) << "Got openwindow for workspace" << workspaceName
++			qCWarning(logHyprlandIpc) << "Got openwindow for workspace" << workspaceAddress
+ 			                          << "which was not previously tracked.";
+ 			return;
+ 		}
+@@ -483,14 +483,14 @@
+ 		const bool existed = toplevel != nullptr;
+ 
+ 		if (!toplevel) toplevel = new HyprlandToplevel(this);
+-		toplevel->updateInitial(windowAddress, windowTitle, workspaceName);
++		toplevel->updateInitial(windowAddress, windowTitle, workspace);
+ 
+ 		workspace->insertToplevel(toplevel);
+ 
+ 		if (!existed) {
+ 			this->mToplevels.insertObject(toplevel);
+ 			qCDebug(logHyprlandIpc) << "New toplevel created with address" << windowAddress << ", title"
+-			                        << windowTitle << ", workspace" << workspaceName;
++			                        << windowTitle << ", workspace" << workspaceAddress;
+ 		}
+ 	} else if (event->name == "closewindow") {
+ 		auto args = event->parseView(1);
+@@ -714,7 +714,7 @@
+ 		                        << "requested before creation, performing early init";
+ 
+ 		toplevel = new HyprlandToplevel(this);
+-		toplevel->updateInitial(address, "", "");
++		toplevel->updateInitial(address, "", nullptr);
+ 		this->mToplevels.insertObject(toplevel);
+ 	}
+ 
+--- a/src/wayland/hyprland/ipc/hyprland_toplevel.cpp
++++ b/src/wayland/hyprland/ipc/hyprland_toplevel.cpp
+@@ -60,9 +60,8 @@
+ void HyprlandToplevel::updateInitial(
+     quint64 address,
+     const QString& title,
+-    const QString& workspaceName
++    HyprlandWorkspace* workspace
+ ) {
+-	auto* workspace = this->ipc->findWorkspaceByName(workspaceName, false);
+ 	Qt::beginPropertyUpdateGroup();
+ 	this->setAddress(address);
+ 	this->bTitle = title;
+--- a/src/wayland/hyprland/ipc/hyprland_toplevel.hpp
++++ b/src/wayland/hyprland/ipc/hyprland_toplevel.hpp
+@@ -57,7 +57,7 @@
+ 
+ 	static HyprlandToplevel* qmlAttachedProperties(QObject* object);
+ 
+-	void updateInitial(quint64 address, const QString& title, const QString& workspaceName);
++	void updateInitial(quint64 address, const QString& title, HyprlandWorkspace* workspace);
+ 
+ 	void updateFromObject(const QVariantMap& object);
+ 
+--- a/src/wayland/hyprland/ipc/workspace.cpp
++++ b/src/wayland/hyprland/ipc/workspace.cpp
+@@ -163,19 +163,24 @@
+ }
+ 
+ void HyprlandWorkspace::activate() {
++	// bName is a mutable label: a selector built from it opens a new workspace with that address.
++	// Same form as Hyprland's Workspace::selector().
++	auto selector = this->bAddress.value();
++	if (this->bId.value() == -1 && !selector.startsWith("special:")) selector.prepend("name:");
++
+ 	if (this->ipc->bindableUsingLua().value()) {
+-		QString name;
+-		for (const auto c: this->bName.value()) {
++		QString escaped;
++		for (const auto c: selector) {
+ 			switch (c.toLatin1()) {
+-			case '"': name.append("\\\""); break;
+-			case '\\': name.append("\\\\"); break;
+-			default: name.append(c); break;
++			case '"': escaped.append("\\\""); break;
++			case '\\': escaped.append("\\\\"); break;
++			default: escaped.append(c); break;
+ 			}
+ 		}
+ 
+-		this->ipc->dispatch(QString("hl.dsp.focus({ workspace = \"%1\" })").arg(name));
++		this->ipc->dispatch(QString("hl.dsp.focus({ workspace = \"%1\" })").arg(escaped));
+ 	} else {
+-		this->ipc->dispatch(QString("workspace %1").arg(this->bName.value()));
++		this->ipc->dispatch(QString("workspace %1").arg(selector));
+ 	}
+ }
+ 
