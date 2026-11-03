@@ -109,10 +109,12 @@ stdenv.mkDerivation (finalAttrs: {
   dontAutoPatchelf = true;
 
   # The SEA resolves client/, node_modules/ and resource-monitor/ next to its
-  # real path, so keep the tarball layout intact under libexec.
+  # real path, so keep the tarball layout intact under libexec. ffi-rs picks its
+  # gnu build on glibc, so the musl one would only fail autoPatchelf.
   installPhase = ''
     runHook preInstall
 
+    rm -r node_modules/@yuuang/ffi-rs-linux-*-musl
     mkdir -p $out/libexec $out/bin
     cp -r . $out/libexec/t3code
 
