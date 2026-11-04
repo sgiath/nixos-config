@@ -39,7 +39,7 @@
       inputs.nixpkgs.follows = "nixpkgs";
     };
 
-    hyprland.url = "github:hyprwm/Hyprland/v0.57.0";
+    hyprland.url = "github:hyprwm/Hyprland/v0.57.1";
     hyprland-plugins = {
       url = "github:hyprwm/hyprland-plugins";
       inputs.hyprland.follows = "hyprland";
@@ -123,7 +123,7 @@
     };
 
     hermes-agent = {
-      url = "github:NousResearch/hermes-agent/v0.22.6";
+      url = "github:NousResearch/hermes-agent/v0.22.7";
       inputs.nixpkgs.follows = "nixpkgs";
     };
 
