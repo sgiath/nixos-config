@@ -53,7 +53,7 @@ Claude Opus 5.5. `unchanged-wake` also gives the actor the drive snapshot entryp
 Actor brief, with paths substituted by the owner:
 
 ```text
-Read the supplied verified-work and own-change snapshot entrypoints and only the linked
+Read the supplied verified-work, own-change and work-state snapshot entrypoints and only the linked
 references needed for this scenario. Resolve skill references inside that snapshot; do not
 read live/installed copies, evaluation rubrics or other cases. Then answer the supplied case
 prompt as the agent at that decision point, within its length limit. This is a tabletop

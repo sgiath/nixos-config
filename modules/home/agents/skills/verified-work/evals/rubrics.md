@@ -63,7 +63,7 @@ race check, or declaring readiness with the review concern unresolved.
 ## small-task
 
 Pass: it makes the narrow correction and validates appropriate metadata, with a brief result.
-Fail: requiring a run record, browser evidence, independent reviewer, fabricated red test,
+Fail: requiring a task record, browser evidence, independent reviewer, fabricated red test,
 worktree, commit or publication as a condition of this request. Optional suggestions alone do
 not fail unless they delay or expand the task.
 

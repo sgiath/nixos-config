@@ -30,6 +30,7 @@ For each gate record, keep the acceptance claim, status (`passed`, `failed`, `bl
 revision/environment, artifact paths, exact commands/results, and any pending question or dated user decision.
 The driver updates it from worker evidence and the user's answers, not from PR/merge status. Record a relayed gate
 question here before yielding and preserve it until answered; initial `answers/NN.md` does not answer a later blocker.
+Apply skill://work-state's decision and question rules to these records; the state directory replaces its ledger.
 
 ## `/drive plan @<spec-note> [more notes…]`
 
