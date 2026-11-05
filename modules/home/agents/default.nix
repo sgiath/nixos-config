@@ -9,6 +9,7 @@
     ./cursor.nix
     ./davinci-resolve-mcp.nix
     ./dsh.nix
+    ./fx.nix
     ./herdr-server.nix
     ./muse-code.nix
     ./openclaw.nix
