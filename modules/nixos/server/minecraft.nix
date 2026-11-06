@@ -34,6 +34,7 @@
 
     # The family server's console, so stopping it can type `stop` (as nixpkgs' minecraft-server does)
     systemd.sockets.minecraft-family = {
+      enable = false;
       bindsTo = [ "minecraft-family.service" ];
       socketConfig = {
         ListenFIFO = "/run/minecraft-family.stdin";
@@ -88,8 +89,9 @@
 
       # Family 1.7.10 (port 25569): vanilla progression with GTNH's tools, from gtnh-ai's
       # `tools/family-pack`; unpack its server zip into the working directory to install or update it
+      # Turned off; the world stays in /data/minecraft/family.
       minecraft-family = {
-        enable = true;
+        enable = false;
         description = "Minecraft Family 1.7.10 server";
         after = [
           "network.target"
