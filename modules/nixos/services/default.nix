@@ -2,6 +2,7 @@
   imports = [
     ./agent-archive.nix
     ./audiobookshelf.nix
+    ./cliproxyapi.nix
     ./comfyui.nix
     ./dnd5etools.nix
     ./docker.nix

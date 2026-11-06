@@ -21,6 +21,7 @@
     agent-archive.enable = true;
     grafana.enable = true;
     hermes-agent.enable = true;
+    cliproxyapi.enable = true;
     executor.enable = true;
     opencode.enable = true;
     t3code.enable = true;
