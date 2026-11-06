@@ -1,4 +1,5 @@
 pkgs: {
+  auto-review = pkgs.callPackage ./auto-review { };
   bird = pkgs.callPackage ./bird { };
   blender-mcp = pkgs.callPackage ./blender-mcp { };
   burn-iso = pkgs.callPackage ./burn-iso { };

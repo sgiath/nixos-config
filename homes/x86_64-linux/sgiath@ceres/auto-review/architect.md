@@ -1,0 +1,1 @@
+This is an Architect MR. Also read, as they are at the target-branch start commit, `AGENTS.md` and every `AGENTS.md` in the directories the diff touches, and any review rules they point to. Check the change against its Linear issue, then trace callers, callees and the tests.

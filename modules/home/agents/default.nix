@@ -2,6 +2,7 @@
 {
   imports = [
     ./archive.nix
+    ./auto-review.nix
     ./base.nix
     ./claude.nix
     ./cli-proxy-api.nix
