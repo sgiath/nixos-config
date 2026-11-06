@@ -20,8 +20,9 @@ It replaces the Spain G2N sprint poller in `~/.agents/local/spain-review/`, whic
 3. **Launch.** When a slot is free (`max_concurrent`, the daily launch cap, quiet hours, pause, provider limits), the
    head and target are fetched into the repo's checkout (`refs/auto-review/<number>`), the MR evidence is written to
    `runs/<review id>-<attempt>/`, and a T3 thread is launched with the repo's reviewer provider, model and effort in
-   one call. The launch carries `clientRequestId = auto-review:<review id>:<attempt>`, so a launch whose reply was
-   lost is replayed by T3 instead of creating a second thread.
+   one call. Its title ends with `(review <database id>.<review id>.<attempt>)`, and a launch whose reply was lost
+   adopts the thread carrying that tag instead of creating a second one. The MR/PR is linked to the thread, so T3
+   shows its state there and settles the thread when it merges.
 4. **Monitor.** Each poll reads the thread. A thread stopped by a provider usage limit becomes *limited* until the
    reset T3 reports (or the reset parsed from the message, with its date). New launches on that provider wait for the
    reset; afterwards the service sends "continue" to the stopped thread itself. Limited time does not count toward
