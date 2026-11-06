@@ -5,16 +5,21 @@
   ...
 }:
 let
-  # Inside Remote projects (`use remote_agents`, cliproxy.nix) plain `codex`
-  # runs with the remote profile. Codex has no environment variable for a
-  # profile, and app-server (what T3 runs; T3 picks the model itself)
-  # rejects --profile.
+  # Inside Remote projects (`use remote_agents`, cliproxy.nix) Codex's
+  # session commands run with the remote profile. Codex has no environment
+  # variable for a profile, and its other subcommands (login, app-server,
+  # which T3 runs and passes the model itself, ...) reject --profile.
   codex = pkgs.symlinkJoin {
     name = "codex-cliproxy";
     paths = [
       (pkgs.writeShellScriptBin "codex" ''
-        if [ "''${REMOTE_AGENTS:-}" = 1 ] && [ "''${1:-}" != app-server ]; then
-          exec ${pkgs.llm-agents.codex}/bin/codex --profile remote "$@"
+        if [ "''${REMOTE_AGENTS:-}" = 1 ]; then
+          case "''${1:-}" in
+            agents | login | logout | mcp | plugin | app-server | remote-control | completion \
+              | update | doctor | sandbox | debug | apply | a | queue | archive | delete \
+              | migrate-* | unarchive | cloud | exec-server | features | help) ;;
+            *) exec ${pkgs.llm-agents.codex}/bin/codex --profile remote "$@" ;;
+          esac
         fi
         exec ${pkgs.llm-agents.codex}/bin/codex "$@"
       '')
