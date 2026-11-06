@@ -83,9 +83,10 @@ in
 
       # Vesta sets isLighthouse/isRelay in its host config; everyone else
       # discovers peers through it and falls back to relaying when hole
-      # punching fails. nebula.sgiath.dev is a DNS-only record for the home
-      # public address (UDP cannot traverse the Cloudflare proxy); at home the
-      # networking.nix hosts entry resolves it to the LAN address instead.
+      # punching fails. The lighthouse endpoint is the numeric public address
+      # so bootstrapping never depends on DNS, which itself runs over the
+      # tunnel. The phone (scripts/nebula-mobile.sh) uses the DNS-only
+      # nebula.sgiath.dev record instead, which must match sgiath.publicIPv4.
       lighthouses = lib.mkIf (!net.isLighthouse) [
         lighthouse.ip4
         lighthouse.ip6
@@ -95,8 +96,8 @@ in
         lighthouse.ip6
       ];
       staticHostMap = {
-        ${lighthouse.ip4} = [ "${cfg.domain}:4242" ];
-        ${lighthouse.ip6} = [ "${cfg.domain}:4242" ];
+        ${lighthouse.ip4} = [ "${config.sgiath.publicIPv4}:4242" ];
+        ${lighthouse.ip6} = [ "${config.sgiath.publicIPv4}:4242" ];
       };
       listen.host = "[::]";
 

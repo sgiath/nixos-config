@@ -126,15 +126,16 @@
         use-auth-secret = true;
         static-auth-secret-file = "/run/credentials/coturn.service/turn-secret";
         realm = "turn.sgiath.dev";
-        relay-ips = [
-          "193.165.30.198"
-        ];
+        # Vesta sits behind the router's NAT: relay on the LAN address the
+        # default route uses and advertise the public one.
+        relay-ips = [ "192.168.1.2" ];
         no-tcp-relay = true;
-        extraConfig = "
-          cipher-list=\"HIGH\"
+        extraConfig = ''
+          external-ip=${config.sgiath.publicIPv4}/192.168.1.2
+          cipher-list="HIGH"
           no-loopback-peers
           no-multicast-peers
-        ";
+        '';
         secure-stun = true;
         cert = "/var/lib/acme/turn.sgiath.dev/fullchain.pem";
         pkey = "/var/lib/acme/turn.sgiath.dev/key.pem";
@@ -157,7 +158,7 @@
           # homeserver restriction on room creation at the SFU too.
           port = 7880;
           rtc = {
-            node_ip = "193.165.30.198";
+            node_ip = config.sgiath.publicIPv4;
             tcp_port = 7881;
             port_range_start = 50000;
             port_range_end = 51000;
