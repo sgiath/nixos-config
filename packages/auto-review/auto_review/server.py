@@ -24,7 +24,7 @@ log = logging.getLogger("auto-review")
 UI = Path(__file__).parent / "ui"
 SAMPLE = {
     "reviewer": "filip.vavera1", "provider": "claudeAgent_claude_remote", "model": "claude-opus-5-5",
-    "effort": "high", "harness": "Claude Code harness in T3", "repo": "remote-com/neo-payroll/neo",
+    "effort": "high", "harness": "Claude Code harness", "repo": "remote-com/neo-payroll/neo",
     "number": "7627", "head_sha": "8a036c0ca011fe041c6a8b4d6d111f69c78710f7", "head_short": "8a036c0c",
     "finding_id": "SR-1", "title": "Retry re-sends the whole batch", "frequency": "3", "severity": "4",
     "score": "12", "threshold": "5", "disposition": "open",

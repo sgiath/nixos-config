@@ -205,10 +205,10 @@ def _values(row: dict, repo: dict, finding: Finding, me: str) -> dict:
 
 def harness(provider: str) -> str:
     if provider.startswith("claudeAgent"):
-        return "Claude Code harness in T3"
+        return "Claude Code harness"
     if provider.startswith("codex"):
-        return "Codex harness in T3"
-    return f"{provider} in T3"
+        return "Codex harness"
+    return provider
 
 
 def _note_url(forge: str, url: str, note_id: str) -> str:
