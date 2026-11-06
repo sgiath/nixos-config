@@ -64,9 +64,10 @@ Score honestly. Do not raise a score to get a finding posted or lower it to let 
 
 ## Step 4: write the findings
 
-A finding that scores ${threshold} or more becomes one review comment on its line, posted in Filip's name.
+A finding that scores ${threshold} or more becomes one review comment on its line, posted in Filip's name. Its `title` appears in bold at the top of the comment and its `body` below it.
 
-- Write its `body` with the `write-as-sgiath` skill. State what goes wrong, the input or path that triggers it, the consequence, and what would fix it, in a few sentences of plain Markdown. Do not claim that Filip checked anything himself, and do not add a greeting, a severity label, a score or an AI note: the automation adds the attribution note and the score.
+- Load the `write-as-sgiath` skill before you write any finding, and write both `title` and `body` of every finding with it, including findings below ${threshold}. The `title` is one plain sentence a reader understands without the code open: no internal shorthand, check codes or symbol lists.
+- In the `body`, state what goes wrong, the input or path that triggers it, the consequence, and what would fix it, in a few sentences of plain Markdown. Do not claim that Filip checked anything himself, and do not add a greeting, a severity label, a score or an AI note: the automation adds the attribution note and the score.
 - Anchor it on one line of `diff.patch`: `"side": "new"` with the new line number for an added line or an unchanged context line inside a hunk, `"side": "old"` with the old line number for a removed line. `file` is the file's new path (its old path for a deleted file). If the cause lies outside the diff, anchor on the changed line that creates or reaches the path, and name the other location in the body. If it spans several lines, anchor on the most telling one and name the range in the body.
 - If an existing thread, open or resolved, by anyone, already raises the finding, set `existing_thread_id` to that thread's `id` from `discussions.json`; it will not be posted again.
 
