@@ -48,7 +48,7 @@
     davinci-resolve-mcp.enable = false;
     openclaw.node = {
       enable = true;
-      sshTarget = "sgiath@vesta.local";
+      sshTarget = "sgiath@vesta.nebula.sgiath.dev";
     };
     herdr-server.enable = true;
     # Settings changed in its UI (http://127.0.0.1:8787) override these.
@@ -88,6 +88,11 @@
             checkout = "${dev}/crazyegg/core_v2";
             t3Project = "d0a53fe2-efca-47c4-82cc-714cd179caf1";
             context = builtins.readFile ./auto-review/ce.md;
+            reviewer = {
+              provider = "claudeAgent";
+              model = "claude-opus-5-5";
+              effort = "high";
+            };
           };
         };
     };
