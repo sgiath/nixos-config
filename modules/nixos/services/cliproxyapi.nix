@@ -11,25 +11,29 @@ let
   authDir = "/data/cliproxyapi";
 
   # API-key upstreams. CLIProxyAPI does not discover their models, so each
-  # one is listed, and exposed as <name>/<model> so it never shares a name
-  # with a model of a logged-in account (requests would round-robin between
-  # them). Both upstreams are called as OpenAI chat completions; CLIProxyAPI
+  # one is listed. With routing.force-model-prefix every credential that has
+  # a prefix serves only <prefix>/<model>, so these never share a name with a
+  # model of a logged-in account (requests would round-robin between them).
+  # Both upstreams are called as OpenAI chat completions; CLIProxyAPI
   # translates Responses and Messages requests.
   compat =
     {
       name,
+      prefix,
       base-url,
       secret,
       models,
       headers ? { },
     }:
     {
-      inherit name base-url headers;
+      inherit
+        name
+        prefix
+        base-url
+        headers
+        ;
       keys = [ { api-key._secret = config.sops.secrets.${secret}.path; } ];
-      models = map (model: {
-        name = model;
-        alias = "${name}/${model}";
-      }) models;
+      models = map (name: { inherit name; }) models;
     };
 in
 {
@@ -66,6 +70,14 @@ in
           # allow-remote stays off; the management key is still required.
           management.secret-key._secret = config.sops.secrets.cliproxyapi_management.path;
 
+          # Work accounts are kept apart by prefix: Remote LiteLLM below and
+          # the Remote Claude login (claude-…-filip.vavera@remote.com.json,
+          # `"prefix": "remote"` set once through the management API, stored
+          # in the auth file) serve only remote/<model>. Bare model names
+          # reach only the personal accounts. A new work login needs the
+          # same prefix before bare names are safe again.
+          routing.force-model-prefix = true;
+
           api-keys.openai-compatibility = [
             # OpenCode Go subscription (opencode.ai/console API key). Go asks
             # for an identifying User-Agent and a stable session ID per
@@ -74,6 +86,7 @@ in
             # settings and are left out.
             (compat {
               name = "opencode-go";
+              prefix = "opencode-go";
               base-url = "https://opencode.ai/inference/go/openai/v1";
               secret = "opencode_go_api_key";
               headers = {
@@ -114,7 +127,8 @@ in
             # Remote's LiteLLM gateway. Only the chat models this key may call
             # directly (`direct_access` in /v1/model/info); the others 403.
             (compat {
-              name = "litellm";
+              name = "Remote LiteLLM";
+              prefix = "remote";
               base-url = "https://ai-gateway-internal.eu-west-1.remote.com/v1";
               secret = "litellm_api_key";
               models = [
