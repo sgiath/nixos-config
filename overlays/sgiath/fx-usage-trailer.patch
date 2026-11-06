@@ -1,0 +1,15 @@
+--- a/src/gateway/chat_completions_protocol.zig
++++ b/src/gateway/chat_completions_protocol.zig
+@@ -723,8 +723,10 @@
+         if (try index_value(choice.get("index") orelse return error.InvalidChunk) != 0) return error.InvalidChunk;
+         const delta = try object(choice.get("delta") orelse return error.InvalidChunk);
+         if (self.phase == .finished) {
+-            const reason = try string(non_null(choice, "finish_reason") orelse return error.InconsistentFinishReason);
+-            if (!std.mem.eql(u8, reason, @tagName(self.finish_reason.?))) return error.InconsistentFinishReason;
++            // LiteLLM sends its usage trailer as an empty choice without a finish reason.
++            if (non_null(choice, "finish_reason")) |value| {
++                if (!std.mem.eql(u8, try string(value), @tagName(self.finish_reason.?))) return error.InconsistentFinishReason;
++            }
+             var fields = delta.iterator();
+             while (fields.next()) |field| {
+                 if (std.mem.eql(u8, field.key_ptr.*, "role")) {
