@@ -27,18 +27,43 @@ or change unless he asks for that attribution.
 - Lead with the answer: what is happening, what you found, or what you need.
   Supporting evidence follows.
 - Put several parallel facts, findings, steps, or options in a bullet list. Use
-  short prose for a single point or for reasoning where each step depends on the
-  previous one.
+  short prose for a single point or for a short chain of reasoning.
 - When a message has several parts, bold the one conclusion the reader must not
-  miss. Otherwise do not add emphasis.
+  miss, and the section labels described under Density. Otherwise do not add
+  emphasis.
 - A routine reply can be one sentence: “Fix is pushed”, “No concerns from me”.
-  Explain a complicated decision fully; there is no fixed length.
+  A complicated decision gets its full explanation where it is recorded: the PR
+  description, the ticket, or a document. A message that points there stays
+  short.
 - In a thread, answer the current point without restating the discussion.
 - Put a link beside the claim it supports. Use code blocks only for actual
   queries, commands, errors, or examples.
 - Keep required templates, such as a PR template or the numbering of a weekly
   check-in. Emails and external audiences get full sentences and suitable
   politeness with the same concrete content.
+
+## Density
+
+Chat messages and comments are skimmed between other work. A reader should find
+the ask and the main point in a ten-second skim.
+
+- When the detail already lives in a PR, ticket, or document, link it and do not
+  restate it. The message carries what the reader needs to decide what to do:
+  the ask, the points that need their judgment, and the risk. Evidence shrinks
+  to one line, such as “the new tests fail without the fix; CI is green”.
+  Renames, FIXMEs, and follow-ups stay in the linked text unless they are the
+  question.
+- One idea per paragraph, at most three sentences. Split a sentence that chains
+  more than two causes. A mechanism with more than three steps becomes a
+  numbered list, or is cut to its cause and effect with the steps left in the
+  linked text.
+- When a message has more than two sections, start each with a bold label such
+  as **Why:** or **What changes:**. A plain “The problem:” prefix does not stand
+  out in Slack.
+- Format as code only identifiers the reader will search for or copy. Name
+  everything else by what it is: “the full-page loader”, not the component that
+  renders it. More than one code span in a sentence makes chat text hard to
+  read.
 
 ## Wording
 
@@ -97,6 +122,38 @@ impersonating a customer sends them to the billing page.
 Not this: “Yeah, that matches what I found. ... If you find another affected
 account, send me its ID and I will check it separately.”
 
+## Asking for a review
+
+The PR description holds the detail. The message gets the reviewer to the
+question you need them to answer.
+
+1. The link and the question in bold: the decision you want their judgment on,
+   specific enough to answer.
+2. **Why:** one or two sentences on the problem the change fixes.
+3. **What changes:** two to four bullets about behavior, not code.
+4. The risk you want them to weigh, when it is not already the question.
+5. Evidence in one line, or a pointer to the PR.
+
+Synthetic; reuse the structure, not the facts:
+
+> Hi Dana, I added you as a reviewer on https://github.com/acme/app/pull/482.
+> **Should the billing worker retry a soft-declined card before marking the
+> invoice unpaid?**
+>
+> **Why:** a temporary bank outage currently locks the account until support
+> unlocks it. That happened to 14 accounts last month.
+>
+> **What changes:**
+> - A soft decline is retried once after 10 minutes. Hard declines are
+>   unchanged.
+> - The invoice stays pending during the retry, so the dunning email goes out
+>   10 minutes later.
+>
+> **What I'd like you to check:** whether a second charge attempt can trip the
+> bank's fraud limits for the customer.
+>
+> Tests and a staging run are in the PR.
+
 ## Briefing someone outside the topic
 
 Use this shape when the reader has to act on, or pass on, something they don't
@@ -151,4 +208,6 @@ Synthetic; reuse the structure, not the facts:
 
 Confirm that the text answers the actual point, preserves its facts and
 uncertainty, makes no commitment he did not make, and contains nothing added to
-sound casual or human.
+sound casual or human. Skim it once as the recipient: the ask and the main point
+should stand out, and nothing should repeat a PR, ticket, or document the
+message links to.
