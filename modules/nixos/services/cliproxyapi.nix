@@ -48,7 +48,10 @@ in
 
     (lib.mkIf (config.sgiath.roles.server.enable && cfg.enable) {
       sops.secrets = {
-        cliproxyapi_management.restartUnits = [ "cliproxyapi.service" ];
+        cliproxyapi_management.restartUnits = [
+          "cliproxyapi.service"
+          "cliproxy-usage.service"
+        ];
         cliproxy_api_key.restartUnits = [ "cliproxyapi.service" ];
         opencode_go_api_key = {
           sopsFile = ../../../secrets/vesta.yaml;
@@ -77,6 +80,13 @@ in
           # reach only the personal accounts. A new work login needs the
           # same prefix before bare names are safe again.
           routing.force-model-prefix = true;
+
+          # One usage record per upstream execution, held up to an hour for
+          # cliproxy-usage below.
+          observability.usage = {
+            usage-statistics-enabled = true;
+            redis-usage-queue-retention-seconds = 3600;
+          };
 
           api-keys.openai-compatibility = [
             # OpenCode Go subscription (opencode.ai/console API key). Go asks
@@ -155,9 +165,50 @@ in
       environment.systemPackages = [ cfg.package ];
 
       systemd.tmpfiles.rules = [ "d ${authDir} 0700 cliproxyapi cliproxyapi -" ];
-      systemd.services.cliproxyapi = {
-        unitConfig.RequiresMountsFor = [ authDir ];
-        serviceConfig.ReadWritePaths = [ authDir ];
+      systemd.services = {
+        cliproxyapi = {
+          unitConfig.RequiresMountsFor = [ authDir ];
+          serviceConfig.ReadWritePaths = [ authDir ];
+        };
+
+        # Copies the usage queue into the agent archive (archive.cliproxy,
+        # agents.cliproxy_requests): metadata only, see usage.py.
+        cliproxy-usage = lib.mkIf config.services.agent-archive.enable {
+          description = "CLIProxyAPI usage export to ClickHouse";
+          wantedBy = [ "multi-user.target" ];
+          wants = [
+            "cliproxyapi.service"
+            "agent-archive-schema.service"
+          ];
+          after = [
+            "cliproxyapi.service"
+            "agent-archive-schema.service"
+          ];
+          serviceConfig = {
+            ExecStart = "${lib.getExe pkgs.python3} ${./cliproxyapi/usage.py}";
+            LoadCredential = [ "management:${config.sops.secrets.cliproxyapi_management.path}" ];
+            Restart = "on-failure";
+            RestartSec = 10;
+            DynamicUser = true;
+            NoNewPrivileges = true;
+            ProtectSystem = "strict";
+            ProtectHome = true;
+            PrivateTmp = true;
+            PrivateDevices = true;
+            ProtectKernelTunables = true;
+            ProtectKernelModules = true;
+            ProtectControlGroups = true;
+            RestrictSUIDSGID = true;
+            LockPersonality = true;
+            CapabilityBoundingSet = "";
+            RestrictAddressFamilies = [
+              "AF_INET"
+              "AF_INET6"
+            ];
+            IPAddressDeny = "any";
+            IPAddressAllow = "localhost";
+          };
+        };
       };
 
       services.nginx.virtualHosts.${host} = {

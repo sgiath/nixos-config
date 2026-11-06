@@ -27,3 +27,18 @@ ENGINE = ReplacingMergeTree(position)
 -- latest version with argMax rather than relying on FINAL.
 PARTITION BY toYYYYMM(ingested_at)
 ORDER BY (tool, host, source, generation, key);
+
+-- CLIProxyAPI usage metadata, one record per upstream execution, written by
+-- cliproxy-usage on Vesta (modules/nixos/services/cliproxyapi/usage.py): an
+-- allowlisted copy of the proxy's usage record (no keys, bodies or headers)
+-- plus `credential`, the account's name. event_id hashes the record.
+CREATE TABLE IF NOT EXISTS archive.cliproxy
+(
+    host LowCardinality(String),
+    event_id String,
+    record String CODEC(ZSTD(6)),
+    ingested_at DateTime64(3) DEFAULT now64(3)
+)
+ENGINE = ReplacingMergeTree
+PARTITION BY toYYYYMM(ingested_at)
+ORDER BY (host, event_id);

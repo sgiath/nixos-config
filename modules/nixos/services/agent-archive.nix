@@ -30,6 +30,7 @@ let
     ./agent-archive/cursor.sql
     ./agent-archive/muse.sql
     ./agent-archive/grok.sql
+    ./agent-archive/cliproxy.sql
     ./agent-archive/tables.sql
   ];
 in
@@ -187,8 +188,8 @@ in
         '';
       };
 
-      # One Parquet file per ingest month of archive.raw, rewritten only when
-      # that partition changed. The files are self-contained (readable by
+      # One Parquet file per ingest month of archive.raw and archive.cliproxy,
+      # rewritten only when that partition changed. The files are self-contained (readable by
       # ClickHouse, DuckDB, pandas); restore with
       #   clickhouse-client --port 9001 --user archive \
       #     --query 'INSERT INTO archive.raw FORMAT Parquet' < raw-YYYYMM.parquet
@@ -207,22 +208,27 @@ in
         script = ''
           set -euo pipefail
           cd ${backupDir}
-          ${client} --format TSV --query "
-            SELECT _partition_id, count(), max(ingested_at)
-            FROM archive.raw GROUP BY _partition_id ORDER BY _partition_id
-          " | while IFS=$'\t' read -r part rows newest; do
-            stamp="$rows $newest"
-            if [ "$(cat "raw-$part.stamp" 2>/dev/null)" = "$stamp" ]; then
-              continue
-            fi
-            ${client} --query "
-              SELECT * FROM archive.raw WHERE _partition_id = '$part'
-              ORDER BY tool, host, source, key FORMAT Parquet
-            " > "raw-$part.parquet.tmp"
-            mv "raw-$part.parquet.tmp" "raw-$part.parquet"
-            echo "$stamp" > "raw-$part.stamp"
-            echo "raw-$part.parquet: $rows rows"
-          done
+          backup() {
+            table=$1 order=$2
+            ${client} --format TSV --query "
+              SELECT _partition_id, count(), max(ingested_at)
+              FROM archive.$table GROUP BY _partition_id ORDER BY _partition_id
+            " | while IFS=$'\t' read -r part rows newest; do
+              stamp="$rows $newest"
+              if [ "$(cat "$table-$part.stamp" 2>/dev/null)" = "$stamp" ]; then
+                continue
+              fi
+              ${client} --query "
+                SELECT * FROM archive.$table WHERE _partition_id = '$part'
+                ORDER BY $order FORMAT Parquet
+              " > "$table-$part.parquet.tmp"
+              mv "$table-$part.parquet.tmp" "$table-$part.parquet"
+              echo "$stamp" > "$table-$part.stamp"
+              echo "$table-$part.parquet: $rows rows"
+            done
+          }
+          backup raw 'tool, host, source, key'
+          backup cliproxy 'host, event_id'
         '';
       };
       systemd.timers.agent-archive-backup = {
