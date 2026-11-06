@@ -58,6 +58,8 @@ Filip's rule: "Rate each bug from 1 to 10 on how often it would happen and how b
 - 9: silently wrong money reaching people or authorities, data loss, personal data in logs or error output, one customer's data reaching another;
 - 10: irreversible damage to production data, or a security breach.
 
+Never report or suggest anything about the title or description: missing, outdated or inaccurate wording there is not a finding, at any score, and does not belong in the verdict.
+
 Score honestly. Do not raise a score to get a finding posted or lower it to let the change through. Style and maintainability points score severity 1; a missing test is scored by the bug it hides, if any. Put every finding in the verdict, including those below ${threshold}: Filip reads them in his dashboard and may post them himself.
 
 ## Step 4: write the findings
