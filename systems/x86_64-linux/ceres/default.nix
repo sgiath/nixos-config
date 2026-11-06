@@ -22,11 +22,6 @@
 
   services = {
     ollama.enable = false;
-
-    yggdrasil.settings.Peers = [
-      "quic://192.168.1.2:56088"
-      "quic://192.168.1.3:56088"
-    ];
   };
 
   # Build-signing key for closures pushed to the servers; the public half is

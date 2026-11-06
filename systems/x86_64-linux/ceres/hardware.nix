@@ -42,8 +42,6 @@
     fstrim.enable = true;
   };
 
-  sgiath.nas.enable = true;
-
   networking = {
     useDHCP = false;
     interfaces = {
