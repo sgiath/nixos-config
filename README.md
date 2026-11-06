@@ -68,12 +68,33 @@ rerun the default destructive `live-install` to apply the recipient change.
 # update branch inputs
 nix flake update
 
-# switch current system
+# validate, commit and push once, then switch every online host
 update
 
-# switch server
+# limit the run to one host, or build the installer ISO
+update --ceres
 update --vesta
+update --juno1
+update --iso
 ```
+
+Plain `update` switches this machine and every other host in
+`nixosConfigurations` that answers a non-interactive SSH probe at
+`<host>.nebula.sgiath.dev` (20 s limit). Hosts that do not answer are skipped
+and listed in the summary. Deploy Vesta from Ceres, which holds its signing
+key; a missing key stops validation before anything is committed or deployed.
+
+Validation runs once for the whole run. It evaluates every host and builds
+the selected local and Vesta toplevels; if validation fails, nothing is
+committed, pushed or deployed. Remote hosts switch first, one at a time, and
+this machine switches last. Vesta gets the signed closure built here. Other
+remote hosts build their own system from the same validated source, because
+they do not trust Ceres's signing key. A failed host does not stop the others:
+the summary lists every host and `update` exits non-zero.
+
+A host flag limits the run to that host. Arguments after it go to the builds,
+`--no-commit` skips the commit and push, and `--iso` builds the installer image
+into `result`.
 
 ## Agent session archive
 
@@ -188,7 +209,7 @@ nixos-rebuild switch --sudo --flake '.#ceres'
 update --vesta
 ```
 
-Both `update --vesta` build on Ceres, sign the exact
+`update` and `update --vesta` build on Ceres, sign the exact
 selected system closure, and pass it to `nixos-rebuild --store-path` for SSH
 transfer and activation. Neither command changes the existing `result` link.
 Vesta trusts Ceres's public key; it never receives the private key. Signature
