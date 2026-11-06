@@ -59,5 +59,5 @@ Role-based NixOS modules. Snowfall imports every `<dir>/default.nix` into every 
 ```bash
 nixfmt modules/nixos/<dir>/<file>.nix
 nixos-rebuild switch --sudo --flake '.#ceres'
-NIX_SSHOPTS="-o IdentityAgent=$SSH_AUTH_SOCK" nixos-rebuild switch --sudo --flake '.#vesta' --target-host 'vesta.local'
+NIX_SSHOPTS="-o IdentityAgent=$SSH_AUTH_SOCK" nixos-rebuild switch --sudo --flake '.#vesta' --target-host 'vesta.nebula.sgiath.dev'
 ```
