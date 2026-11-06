@@ -81,7 +81,7 @@ in
           api-keys.openai-compatibility = [
             # OpenCode Go subscription (opencode.ai/console API key). Go asks
             # for an identifying User-Agent and a stable session ID per
-            # conversation; pass through whichever one the client sends.
+            # conversation (see x-opencode-session below).
             # Free, contributor and DeepSeek models need workspace privacy
             # settings and are left out.
             (compat {
@@ -91,7 +91,11 @@ in
               secret = "opencode_go_api_key";
               headers = {
                 "User-Agent" = "cliproxyapi/${cfg.package.version}";
-                "x-opencode-session" = "$x-opencode-session";
+                # Go rejects requests without a session ID. CLIProxyAPI's own
+                # session identity covers clients that send none (Pi, fx) and
+                # derives from OpenCode's, Codex's and Claude Code's headers;
+                # Grok's header it ignores, so Grok gets a content-derived one.
+                "x-opencode-session" = "$CPA-SESSION-ID";
                 "Session_id" = "$Session_id";
                 "Session-Id" = "$Session-Id";
                 "X-Claude-Code-Session-Id" = "$X-Claude-Code-Session-Id";

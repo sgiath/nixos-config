@@ -159,9 +159,14 @@ in
         path = ".config/opencode/opencode.json";
         overlay = opencode;
         # Proxy only: deny every provider, allow cliproxy, keep the rest of
-        # the user's policies after them.
+        # the user's policies after them. The native OpenAI/ChatGPT provider
+        # plugins would still refresh their saved logins at startup.
         filter = ''
           .providers.cliproxy = $proxy
+          | .update = "disable"
+          | .share = "disabled"
+          | .plugins = ((.plugins // []) - ["-opencode.provider.openai", "-opencode.provider.chatgpt"]
+              + ["-opencode.provider.openai", "-opencode.provider.chatgpt"])
           | .model |= (if type == "string" and startswith("cliproxy/") then . else "cliproxy/${defaultModel}" end)
           | .policies = [
               {action: "provider.use", resource: "*", effect: "deny"},
