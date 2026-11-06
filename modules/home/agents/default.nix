@@ -5,6 +5,7 @@
     ./auto-review.nix
     ./base.nix
     ./claude.nix
+    ./cliproxy.nix
     ./codex.nix
     ./cursor.nix
     ./davinci-resolve-mcp.nix
