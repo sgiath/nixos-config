@@ -54,3 +54,15 @@ class LaunchIdentityTest(unittest.TestCase):
         [launch] = [c for c in call.call_args_list if c.args[0] == "t3_thread_launch"]
         self.assertEqual(launch.args[1]["title"], f"Review MR 7 {self.tag}")
         self.assertEqual(launch.args[1]["clientRequestId"], self.request_id)
+
+
+class LinkTest(unittest.TestCase):
+    def test_link_attaches_review_url_and_accepts_already_linked_response(self):
+        client = T3Client()
+        for already_linked in (False, True):
+            with self.subTest(already_linked=already_linked):
+                with patch.object(client, "_call", return_value={"alreadyLinked": already_linked}) as call:
+                    self.assertIsNone(client.link("thread-7", "https://forge.invalid/7"))
+                call.assert_called_once_with("link_pull_request", {
+                    "threadId": "thread-7", "url": "https://forge.invalid/7",
+                })

@@ -155,6 +155,8 @@ class T3:
         self.launches, self.reads, self.sends, self.stops, self.settles = [], [], [], [], []
         self.launch_results, self.states, self.pending_verdicts = {}, {}, {}
         self.settle_failures = 0
+        self.links = []
+        self.link_failures = 0
 
     def launch(self, *, project, title, message, selection, client_request_id):
         self.launches.append(dict(project=project, title=title, message=message,
@@ -201,6 +203,13 @@ class T3:
         self.settles.append(thread_id)
         self.journal.append(("settle", thread_id))
         self.states[thread_id] = replace(self.states[thread_id], settled=True)
+
+    def link(self, thread_id, url):
+        self.links.append((thread_id, url))
+        self.journal.append(("link", thread_id, url))
+        if self.link_failures:
+            self.link_failures -= 1
+            raise T3Error("link unavailable")
 
     def catalog(self):
         return []

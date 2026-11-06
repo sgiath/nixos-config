@@ -66,6 +66,7 @@ class Engine:
         self._discovered_at: datetime | None = None
         self._launch_failures: dict[int, int] = {}
         self._settle_warned: set[int] = set()
+        self._linked: set[str] = set()  # threads this process attached their MR/PR to
         self.publisher = Publisher(self)
 
     # The poll
@@ -229,6 +230,8 @@ class Engine:
     # Advancing a review
 
     def _advance(self, row: dict, settings: dict) -> None:
+        if row["thread_id"] and row["thread_id"] not in self._linked:
+            self._link(row, row["thread_id"])
         status = row["status"]
         if status == "launching":
             return self._relaunch(row, settings)
@@ -441,6 +444,7 @@ class Engine:
             dry_run=settings["dry_run"],
         )
         self.record("info", f"launched {row['model']}/{row['effort']} thread {launched['thread_id']}", review_id=row["id"])
+        self._link(row, launched["thread_id"])
         return True
 
     # Helpers
@@ -450,6 +454,16 @@ class Engine:
         if row is None:
             raise ActionError(f"no review {review_id}")
         return row
+
+    def _link(self, row: dict, thread_id: str) -> None:
+        """Attach the MR/PR to its review thread, so the thread links straight to it. Idempotent in T3; a failure
+        only warns and is retried on the next tick."""
+        try:
+            self.t3.link(thread_id, row["url"])
+        except T3Error as error:
+            self.record("warn", f"linking the MR to its thread failed, will retry: {error}", review_id=row["id"])
+            return
+        self._linked.add(thread_id)
 
     def _stop(self, row: dict, reason: str) -> None:
         try:

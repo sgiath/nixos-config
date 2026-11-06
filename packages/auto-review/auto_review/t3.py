@@ -54,6 +54,9 @@ class T3(Protocol):
 
     def settle(self, thread_id: str) -> None: ...
 
+    def link(self, thread_id: str, url: str) -> None:
+        """Attach the MR/PR at `url` to the thread; linking it again is a no-op."""
+
     def catalog(self) -> list[dict]:
         """README `GET /api/catalog` shape."""
 
@@ -124,6 +127,9 @@ class T3Client:
 
     def settle(self, thread_id: str) -> None:
         self._call("t3_thread_organize", {"threadId": thread_id, "action": "settle"})
+
+    def link(self, thread_id: str, url: str) -> None:
+        self._call("link_pull_request", {"threadId": thread_id, "url": url})
 
     def catalog(self) -> list[dict]:
         return [
