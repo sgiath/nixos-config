@@ -1,12 +1,13 @@
 #!/usr/bin/env python3
 """Subscription usage for the Quickshell usage panel.
 
-Asks each native agent app for its own quota: Codex through `codex
-app-server`, Claude through the CLI's `get_usage` control request, Grok
-through the billing endpoint its CLI uses, Muse through the usage frame of a
-minimal model response made with its CLI's key. Credentials stay with the apps:
-nothing here refreshes or writes them, so an expired login shows up as that
-provider's error until its app renews it.
+Codex, Claude and Grok accounts are read through CLIProxyAPI's management
+API: its credential list names every logged-in account, and its api-call
+forwards a fixed usage GET with that account's token, which the proxy keeps
+fresh. Nothing here refreshes, mints or writes credentials. Muse keeps its own
+native login (it is not routed through the proxy, and the proxy can only get
+its quota by minting a key), read through the usage frame of a minimal
+response made with its CLI's key.
 
 Prints one JSON document: {generatedAt, reports: [{provider, metadata,
 limits, error?}]}. A limit's `amount.used` is null when the provider names a
@@ -16,10 +17,7 @@ window without saying how much of it is used; that is unknown, not zero.
 import json
 import os
 import re
-import select
-import subprocess
 import sys
-import tempfile
 import threading
 import time
 import urllib.error
@@ -35,95 +33,33 @@ class ProviderError(Exception):
     """A provider failure whose message is safe to show in the panel."""
 
 
-class Session:
-    """A child speaking JSON lines on stdio, abandoned at one shared deadline."""
-
-    def __init__(self, command, env, timeout, cwd=None):
-        self.command, self.env, self.cwd = command, env, cwd
-        self.name = os.path.basename(command[0])
-        self.deadline = time.monotonic() + timeout
-        self.buffer = b""
-
-    def __enter__(self):
-        try:
-            self.process = subprocess.Popen(
-                self.command,
-                stdin=subprocess.PIPE,
-                stdout=subprocess.PIPE,
-                stderr=subprocess.DEVNULL,
-                env=self.env,
-                cwd=self.cwd,
-            )
-        except FileNotFoundError:
-            raise ProviderError(f"{self.name} not found") from None
-        return self
-
-    def __exit__(self, *exc):
-        if self.process.poll() is None:
-            self.process.terminate()
-            try:
-                self.process.wait(timeout=3)
-            except subprocess.TimeoutExpired:
-                self.process.kill()
-                try:
-                    self.process.wait(timeout=3)
-                except subprocess.TimeoutExpired:
-                    pass  # Stuck in uninterruptible I/O; leave it rather than hang the panel.
-        self.process.stdin.close()
-        self.process.stdout.close()
-
-    def send(self, message):
-        try:
-            self.process.stdin.write(json.dumps(message).encode() + b"\n")
-            self.process.stdin.flush()
-        except BrokenPipeError:
-            raise ProviderError(f"{self.name} exited") from None
-
-    def receive(self, match):
-        """First message `match` accepts; anything else on the stream is skipped."""
-        stdout = self.process.stdout
-        while True:
-            while b"\n" in self.buffer:
-                line, self.buffer = self.buffer.split(b"\n", 1)
-                try:
-                    message = json.loads(line)
-                except ValueError:
-                    continue
-                if isinstance(message, dict) and match(message):
-                    return message
-            remaining = self.deadline - time.monotonic()
-            if remaining <= 0 or not select.select([stdout], [], [], remaining)[0]:
-                raise ProviderError(f"{self.name} timed out")
-            chunk = os.read(stdout.fileno(), 65536)
-            if not chunk:
-                raise ProviderError(f"{self.name} exited")
-            self.buffer += chunk
-
-
 def failed(provider, error):
     return {"provider": provider, "metadata": {}, "limits": [], "error": error}
 
 
 def collect(fetchers, env, timeout=40):
-    """Run every `(provider, fetch)` at once; a failure only empties its own report."""
+    """Run every `(provider, fetch)` at once; a failure only empties its own report.
+
+    One provider can have several accounts, so results are kept by position.
+    """
     results = {}
 
-    def run(provider, fetch):
+    def run(index, provider, fetch):
         try:
-            results[provider] = fetch(env)
+            results[index] = fetch(env)
         except ProviderError as error:
-            results[provider] = failed(provider, str(error))
+            results[index] = failed(provider, str(error))
         except Exception as error:
             # Messages of unexpected errors may quote file or response contents.
-            results[provider] = failed(provider, type(error).__name__)
+            results[index] = failed(provider, type(error).__name__)
 
-    threads = [threading.Thread(target=run, args=fetcher, daemon=True) for fetcher in fetchers]
+    threads = [threading.Thread(target=run, args=(i, *fetcher), daemon=True) for i, fetcher in enumerate(fetchers)]
     for thread in threads:
         thread.start()
     deadline = time.monotonic() + timeout
     for thread in threads:
         thread.join(max(0, deadline - time.monotonic()))
-    reports = [results.get(provider) or failed(provider, "timed out") for provider, _ in fetchers]
+    reports = [results.get(i) or failed(provider, "timed out") for i, (provider, _) in enumerate(fetchers)]
     return {"generatedAt": int(time.time() * 1000), "reports": reports}
 
 
@@ -167,51 +103,32 @@ def slug(text):
 # Codex
 
 
-def codex_report(account, limits):
-    """`account/read` and `account/rateLimits/read` results from `codex app-server`."""
-    info = account.get("account") or {}
-    buckets = limits.get("rateLimitsByLimitId") or {}
-    if not buckets and limits.get("rateLimits"):
-        buckets = {"codex": limits["rateLimits"]}
-    rows = []
-    for limit_id, bucket in buckets.items():
+def codex_report(email, usage):
+    """Body of chatgpt.com/backend-api/wham/usage for one account."""
+
+    def rows(rate, id_prefix, name):
+        out = []
         for slot in ("primary", "secondary"):
-            entry = bucket.get(slot)
-            mins = number((entry or {}).get("windowDurationMins"))
-            if not mins:
+            entry = (rate or {}).get(f"{slot}_window")
+            seconds = number((entry or {}).get("limit_window_seconds"))
+            if not seconds:
                 continue
-            resets = number(entry.get("resetsAt"))
-            win = window(int(mins) * MINUTE_MS, int(resets * 1000) if resets else 0)
-            if limit_id == "codex":
-                id, label = f"openai-codex:{slot}", win["label"]
-            else:
-                id = f"openai-codex:{slug(limit_id)}:{slot}"
-                label = f"{bucket.get('limitName') or limit_id} {win['label']}"
-            rows.append(limit(id, label, win, percent(number(entry.get("usedPercent")))))
+            resets = number(entry.get("reset_at"))
+            win = window(int(seconds) * 1000, int(resets * 1000) if resets else 0)
+            label = win["label"] if name is None else f"{name} {win['label']}"
+            out.append(limit(f"{id_prefix}:{slot}", label, win, percent(number(entry.get("used_percent")))))
+        return out
+
+    limits = rows(usage.get("rate_limit"), "openai-codex", None)
+    for extra in usage.get("additional_rate_limits") or []:
+        name = (extra.get("limit_name") or extra.get("metered_feature")) if isinstance(extra, dict) else None
+        if isinstance(name, str) and slug(name):
+            limits += rows(extra.get("rate_limit"), f"openai-codex:{slug(name)}", name)
     return {
         "provider": "openai-codex",
-        "metadata": {"email": info.get("email"), "planType": info.get("planType")},
-        "limits": rows,
+        "metadata": {"email": email, "planType": usage.get("plan_type")},
+        "limits": limits,
     }
-
-
-def codex_fetch(env):
-    """Asks `codex app-server`, which reads and renews Codex's own login (CODEX_HOME)."""
-    with Session(["codex", "app-server", "--listen", "stdio://"], env, timeout=20) as codex:
-
-        def call(id, method, params=None):
-            codex.send({"id": id, "method": method, **({} if params is None else {"params": params})})
-            reply = codex.receive(lambda message: message.get("id") == id and "method" not in message)
-            if "error" in reply:
-                raise ProviderError(f"{method}: {str((reply['error'] or {}).get('message'))[:120]}")
-            return reply.get("result") or {}
-
-        call(1, "initialize", {"clientInfo": {"name": "sgiath_usage", "version": "1.0"}})
-        codex.send({"method": "initialized"})
-        account = call(2, "account/read", {"refreshToken": False})
-        if not account.get("account"):
-            raise ProviderError("not logged in")
-        return codex_report(account, call(3, "account/rateLimits/read"))
 
 
 # Claude
@@ -233,11 +150,11 @@ CLAUDE_SHARED = [
 
 
 def claude_report(account, response):
-    """The `account` from the CLI's initialize response and its `get_usage` response.
-
-    `rate_limits` matches the body of api.anthropic.com/api/oauth/usage plus
-    `model_scoped`. Null buckets are omitted, never zero; `is_active` only
-    marks the binding limit, so inactive scoped rows stay.
+    """`account` ({email}) and `response` ({rate_limits_available, rate_limits,
+    subscription_type}), where `rate_limits` is the body of
+    api.anthropic.com/api/oauth/usage (optionally with `model_scoped`).
+    Null buckets are omitted, never zero; `is_active` only marks the binding
+    limit, so inactive scoped rows stay.
     """
     report = {
         "provider": "anthropic",
@@ -277,99 +194,9 @@ def claude_report(account, response):
     return report
 
 
-# Control-protocol session only: no prompt is sent, so nothing reaches a model.
-CLAUDE_COMMAND = [
-    "claude",
-    "--print",
-    "--input-format",
-    "stream-json",
-    "--output-format",
-    "stream-json",
-    "--verbose",
-    "--no-session-persistence",
-    "--settings",
-    '{"disableAllHooks":true}',
-    "--strict-mcp-config",
-    "--mcp-config",
-    '{"mcpServers":{}}',
-    "--tools",
-    "",
-]
-CLAUDE_ENV = {
-    "DISABLE_NON_ESSENTIAL_MODEL_CALLS": "1",
-    "ENABLE_CLAUDEAI_MCP_SERVERS": "false",
-    "CLAUDE_CODE_AUTO_CONNECT_IDE": "0",
-    "CLAUDE_CODE_IDE_SKIP_AUTO_INSTALL": "1",
-}
-
-
-def claude_fetch(env):
-    """Asks the Claude CLI over its stream-json control protocol (`get_usage`)."""
-    env = {key: value for key, value in env.items() if key not in ("CLAUDECODE", "CLAUDE_CODE_ENTRYPOINT")}
-    with tempfile.TemporaryDirectory() as cwd, Session(CLAUDE_COMMAND, env | CLAUDE_ENV, 20, cwd) as claude:
-
-        def control(id, request):
-            claude.send({"type": "control_request", "request_id": id, "request": request})
-            reply = claude.receive(
-                lambda message: message.get("type") == "control_response"
-                and (message.get("response") or {}).get("request_id") == id
-            )["response"]
-            if reply.get("subtype") != "success":
-                raise ProviderError(f"{request['subtype']}: {str(reply.get('error'))[:120]}")
-            return reply.get("response") or {}
-
-        init = control("init", {"subtype": "initialize"})
-        return claude_report(init.get("account") or {}, control("usage", {"subtype": "get_usage", "skip_behaviors": True}))
-
-
 # Grok
 
-GROK_BILLING = "https://cli-chat-proxy.grok.com/v1/billing?format=credits"
-GROK_DEFAULT_LOGINS = ["https://auth.x.ai::b1a00492-073a-47ea-816f-4c329264a828", "https://accounts.x.ai/sign-in"]
-# Settings that point the CLI at another account or endpoint; its default
-# grok.com login would then not be the account the CLI actually uses.
-GROK_OVERRIDES = [
-    "GROK_OIDC_ISSUER",
-    "GROK_OIDC_CLIENT_ID",
-    "GROK_OAUTH2_ISSUER",
-    "GROK_OAUTH2_CLIENT_ID",
-    "GROK_OAUTH2_PRINCIPAL_TYPE",
-    "GROK_OAUTH2_PRINCIPAL_ID",
-    "GROK_AUTH_PROVIDER_COMMAND",
-    "GROK_LOCAL_AUTH",
-    "GROK_CLI_CHAT_PROXY_BASE_URL",
-    "GROK_MODELS_BASE_URL",
-    "GROK_CONFIG",
-    "GROK_CONFIG_PATH",
-]
-GROK_OVERRIDE_SECTION = re.compile(r"""^\s*(?:\[\[?\s*)?["']?(?:auth|grok_com_config|endpoints)["']?\s*[.\]=]""", re.M)
 GROK_PRODUCTS = {"GrokBuild": "Grok Build", "Api": "API"}
-
-
-def grok_credential(env):
-    """(access token, email) of the default grok.com login, as the CLI stores it."""
-    # The CLI then uses the API key's account, not the grok.com login.
-    if env.get("XAI_API_KEY", "").strip():
-        raise ProviderError("grok uses an API key")
-    if any(env.get(name, "").strip() for name in GROK_OVERRIDES):
-        raise ProviderError("custom grok deployment")
-    home = Path(env.get("GROK_HOME", "").strip() or Path(env.get("HOME", "~"), ".grok")).expanduser()
-    configs = [home / "config.toml", home / "managed_config.toml", home / "requirements.toml"]
-    for config in configs + [Path("/etc/grok/managed_config.toml"), Path("/etc/grok/requirements.toml")]:
-        if config.is_file() and GROK_OVERRIDE_SECTION.search(config.read_text()):
-            raise ProviderError("custom grok deployment")
-    contents = env.get("GROK_AUTH", "").strip()
-    if not contents:
-        try:
-            contents = (home / "auth.json").read_text()
-        except FileNotFoundError:
-            raise ProviderError("not logged in") from None
-    entries = json.loads(contents)
-    entry = next((entries[key] for key in GROK_DEFAULT_LOGINS if isinstance(entries.get(key), dict)), None)
-    token = (entry or {}).get("key")
-    if entry is None or entry.get("auth_mode") == "api_key" or not isinstance(token, str) or not token.strip():
-        raise ProviderError("not logged in")
-    return token.strip(), entry.get("email")
 
 
 def grok_report(email, billing):
@@ -403,26 +230,106 @@ def grok_report(email, billing):
 
 
 class NoRedirect(urllib.request.HTTPRedirectHandler):
-    """The bearer token must not follow a redirect to another host."""
+    """A bearer token must not follow a redirect to another host."""
 
     def redirect_request(self, *args):
         return None
 
 
-def grok_fetch(env):
-    token, email = grok_credential(env)
-    request = urllib.request.Request(
-        GROK_BILLING,
-        headers={"Authorization": f"Bearer {token}", "Accept": "application/json", "X-XAI-Token-Auth": "xai-grok-cli"},
-    )
+# CLIProxyAPI
+
+CLIPROXY_URL = "https://cliproxy.sgiath.dev"
+CLIPROXY_KEY_FILE = "/run/secrets/cliproxyapi_management"
+
+# Proxy provider -> (report provider, fixed usage GET, its headers, report).
+# Only these URLs are ever sent through api-call: it attaches the account's
+# token to whatever it is given.
+USAGE = {
+    "codex": (
+        "openai-codex",
+        "https://chatgpt.com/backend-api/wham/usage",
+        {"Authorization": "Bearer $TOKEN$", "Accept": "application/json"},
+        lambda email, body: codex_report(email, body),
+    ),
+    "claude": (
+        "anthropic",
+        "https://api.anthropic.com/api/oauth/usage",
+        {"Authorization": "Bearer $TOKEN$", "Accept": "application/json", "anthropic-beta": "oauth-2025-04-20"},
+        lambda email, body: claude_report({"email": email}, {"rate_limits_available": True, "rate_limits": body}),
+    ),
+    "xai": (
+        "xai-oauth",
+        "https://cli-chat-proxy.grok.com/v1/billing?format=credits",
+        {"Authorization": "Bearer $TOKEN$", "Accept": "application/json", "X-XAI-Token-Auth": "xai-grok-cli"},
+        lambda email, body: grok_report(email, body),
+    ),
+}
+
+
+class CLIProxy:
+    """CLIProxyAPI's management API, authenticated with the management key."""
+
+    def __init__(self, env):
+        self.url = (env.get("CLIPROXY_MANAGEMENT_URL") or CLIPROXY_URL).rstrip("/")
+        path = env.get("CLIPROXY_MANAGEMENT_KEY_FILE") or CLIPROXY_KEY_FILE
+        try:
+            self.key = Path(path).read_text().strip()
+        except OSError:
+            raise ProviderError("no cliproxy management key") from None
+
+    def request(self, path, body=None):
+        request = urllib.request.Request(
+            self.url + path,
+            data=None if body is None else json.dumps(body).encode(),
+            headers={"Authorization": f"Bearer {self.key}", "Content-Type": "application/json"},
+        )
+        try:
+            with urllib.request.build_opener(NoRedirect).open(request, timeout=20) as response:
+                return json.load(response)
+        except urllib.error.HTTPError as error:
+            raise ProviderError(f"cliproxy HTTP {error.code}") from None
+        except (urllib.error.URLError, OSError):
+            raise ProviderError("cliproxy unreachable") from None
+
+    def accounts(self):
+        """(proxy provider, email, auth_index) of every enabled login with a usage reader."""
+        files = self.request("/v8/management/credentials").get("files") or []
+        return [
+            (f["provider"], f.get("email") or f.get("label"), f["auth_index"])
+            for f in files
+            if isinstance(f, dict) and f.get("provider") in USAGE and isinstance(f.get("auth_index"), str) and not f.get("disabled")
+        ]
+
+    def usage(self, provider, auth_index):
+        _, url, headers, _ = USAGE[provider]
+        reply = self.request("/v8/management/requests/api-call", {"auth_index": auth_index, "method": "GET", "url": url, "header": headers})
+        status = reply.get("status_code")
+        if status in (401, 403):
+            raise ProviderError("login expired")
+        if status != 200:
+            raise ProviderError(f"usage HTTP {status}")
+        return json.loads(reply.get("body") or "null") or {}
+
+
+def cliproxy_fetchers(env):
+    """One fetcher per proxied account; a failed listing keeps one failed card per provider."""
+
+    def unavailable(error):
+        def fetch(env):
+            raise ProviderError(error)
+
+        return fetch
+
     try:
-        with urllib.request.build_opener(NoRedirect).open(request, timeout=15) as response:
-            body = json.load(response)
-    except urllib.error.HTTPError as error:
-        raise ProviderError("login expired" if error.code in (401, 403) else f"billing HTTP {error.code}") from None
-    except (urllib.error.URLError, OSError):
-        raise ProviderError("billing unreachable") from None
-    return grok_report(email, body)
+        proxy = CLIProxy(env)
+        accounts = proxy.accounts()
+    except ProviderError as error:
+        return [(USAGE[p][0], unavailable(str(error))) for p in USAGE]
+
+    def fetcher(provider, email, auth_index):
+        return lambda env: USAGE[provider][3](email, proxy.usage(provider, auth_index))
+
+    return [(USAGE[p][0], fetcher(p, email, index)) for p, email, index in accounts]
 
 
 # Muse
@@ -503,13 +410,9 @@ def muse_fetch(env):
 
 
 def main():
-    fetchers = [
-        ("openai-codex", codex_fetch),
-        ("anthropic", claude_fetch),
-        ("xai-oauth", grok_fetch),
-        ("meta-muse", muse_fetch),
-    ]
-    json.dump(collect(fetchers, dict(os.environ)), sys.stdout)
+    env = dict(os.environ)
+    fetchers = cliproxy_fetchers(env) + [("meta-muse", muse_fetch)]
+    json.dump(collect(fetchers, env), sys.stdout)
     sys.stdout.write("\n")
 
 

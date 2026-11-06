@@ -1,7 +1,7 @@
+import http.server
 import json
-import sys
 import tempfile
-import time
+import threading
 import unittest
 from pathlib import Path
 
@@ -11,20 +11,17 @@ WEEK_MS = 7 * 24 * 60 * 60 * 1000
 
 
 class CodexReportTest(unittest.TestCase):
-    def test_normalizes_native_rate_limit_buckets(self):
-        account = {
-            "account": {"type": "chatgpt", "email": "me@example.com", "planType": "pro"},
-            "requiresOpenaiAuth": True,
+    def test_normalizes_wham_usage_windows(self):
+        body = {
+            "plan_type": "pro",
+            "rate_limit": {
+                "primary_window": {"used_percent": 6, "limit_window_seconds": 604800, "reset_at": 1792305018},
+                "secondary_window": {"used_percent": 100, "limit_window_seconds": 18000, "reset_at": 1792000000},
+            },
+            "additional_rate_limits": None,
         }
-        bucket = {
-            "limitId": "codex",
-            "limitName": None,
-            "primary": {"usedPercent": 6, "windowDurationMins": 10080, "resetsAt": 1792305018},
-            "secondary": {"usedPercent": 100, "windowDurationMins": 300, "resetsAt": 1792000000},
-        }
-        limits = {"rateLimits": bucket, "rateLimitsByLimitId": {"codex": bucket}}
 
-        report = usage.codex_report(account, limits)
+        report = usage.codex_report("me@example.com", body)
 
         self.assertEqual(report["provider"], "openai-codex")
         self.assertEqual(report["metadata"], {"email": "me@example.com", "planType": "pro"})
@@ -152,43 +149,6 @@ class GrokReportTest(unittest.TestCase):
         self.assertIn("error", report)
 
 
-class GrokCredentialTest(unittest.TestCase):
-    def setUp(self):
-        self.home = Path(tempfile.mkdtemp())
-        self.env = {"GROK_HOME": str(self.home)}
-
-    def write_auth(self, entries):
-        (self.home / "auth.json").write_text(json.dumps(entries))
-
-    def test_reads_the_default_grok_login_from_grok_home(self):
-        self.write_auth(
-            {
-                "https://custom.example::other": {"auth_mode": "oidc", "key": "custom-token", "email": "x@example.com"},
-                "https://auth.x.ai::b1a00492-073a-47ea-816f-4c329264a828": {
-                    "auth_mode": "oidc",
-                    "key": "default-token",
-                    "email": "me@example.com",
-                },
-            }
-        )
-
-        self.assertEqual(usage.grok_credential(self.env), ("default-token", "me@example.com"))
-
-    def test_never_falls_back_to_another_deployment_or_override(self):
-        self.write_auth({"https://custom.example::other": {"auth_mode": "oidc", "key": "custom-token"}})
-        with self.assertRaises(usage.ProviderError):
-            usage.grok_credential(self.env)
-
-        self.write_auth({"https://accounts.x.ai/sign-in": {"auth_mode": "oidc", "key": "default-token"}})
-        with self.assertRaises(usage.ProviderError):
-            usage.grok_credential({**self.env, "XAI_API_KEY": "different-api-account"})
-        with self.assertRaises(usage.ProviderError):
-            usage.grok_credential({**self.env, "GROK_CLI_CHAT_PROXY_BASE_URL": "https://proxy.example"})
-        (self.home / "config.toml").write_text('[endpoints]\nchat = "https://proxy.example"\n')
-        with self.assertRaises(usage.ProviderError):
-            usage.grok_credential(self.env)
-
-
 class MuseReportTest(unittest.TestCase):
     def test_reads_the_subscription_frame_that_ends_a_response_stream(self):
         stream = [
@@ -241,14 +201,72 @@ class CollectTest(unittest.TestCase):
             ],
         )
 
-    def test_a_silent_app_is_abandoned_at_its_deadline(self):
-        start = time.monotonic()
-        with self.assertRaisesRegex(usage.ProviderError, "timed out"):
-            with usage.Session([sys.executable, "-c", "import time; time.sleep(30)"], {}, timeout=0.5) as session:
-                session.send({"id": 1, "method": "initialize"})
-                session.receive(lambda message: message.get("id") == 1)
-        self.assertLess(time.monotonic() - start, 5)
-        self.assertIsNotNone(session.process.returncode)
+
+
+class CLIProxyTest(unittest.TestCase):
+    """Against a local stand-in for CLIProxyAPI's management API."""
+
+    def serve(self, routes):
+        requests = []
+
+        class Handler(http.server.BaseHTTPRequestHandler):
+            def do_GET(self):
+                self.reply(None)
+
+            def do_POST(self):
+                self.reply(json.loads(self.rfile.read(int(self.headers["Content-Length"]))))
+
+            def reply(self, body):
+                requests.append((self.command, self.path, self.headers.get("Authorization"), body))
+                status, payload = routes(self.path, body)
+                self.send_response(status)
+                self.end_headers()
+                self.wfile.write(json.dumps(payload).encode())
+
+            def log_message(self, *args):
+                pass
+
+        server = http.server.ThreadingHTTPServer(("127.0.0.1", 0), Handler)
+        threading.Thread(target=server.serve_forever, daemon=True).start()
+        self.addCleanup(server.server_close)
+        self.addCleanup(server.shutdown)
+        key = Path(tempfile.mkdtemp()) / "key"
+        key.write_text("management-key\n")
+        env = {"CLIPROXY_MANAGEMENT_URL": f"http://127.0.0.1:{server.server_port}", "CLIPROXY_MANAGEMENT_KEY_FILE": str(key)}
+        return env, requests
+
+    def test_every_account_gets_a_card_from_its_fixed_usage_url(self):
+        files = [
+            {"provider": "claude", "email": "work@example.com", "auth_index": "a1"},
+            {"provider": "claude", "email": "me@example.com", "auth_index": "a2"},
+            {"provider": "codex", "email": "me@example.com", "auth_index": "c1", "disabled": True},
+            {"provider": "meta", "email": "me@example.com", "auth_index": "m1"},
+        ]
+        claude = {"seven_day": {"utilization": 19.0, "resets_at": "2026-11-09T10:00:00+00:00"}}
+
+        def routes(path, body):
+            if path == "/v8/management/credentials":
+                return 200, {"files": files}
+            return 200, {"status_code": 200, "body": json.dumps(claude)}
+
+        env, requests = self.serve(routes)
+        reports = usage.collect(usage.cliproxy_fetchers(env), env)["reports"]
+
+        self.assertEqual([(r["provider"], r["metadata"]["email"]) for r in reports], [("anthropic", "work@example.com"), ("anthropic", "me@example.com")])
+        self.assertEqual(reports[0]["limits"][0]["amount"]["usedFraction"], 0.19)
+        self.assertTrue(all(auth == "Bearer management-key" for _, _, auth, _ in requests))
+        calls = [body for _, path, _, body in requests if path == "/v8/management/requests/api-call"]
+        self.assertEqual(sorted(c["auth_index"] for c in calls), ["a1", "a2"])
+        self.assertTrue(all(c["url"] == "https://api.anthropic.com/api/oauth/usage" and c["method"] == "GET" for c in calls))
+
+    def test_an_expired_login_or_unreachable_proxy_keeps_the_cards(self):
+        files = [{"provider": "xai", "email": "me@example.com", "auth_index": "x1"}]
+        env, _ = self.serve(lambda path, body: (200, {"files": files}) if "credentials" in path else (200, {"status_code": 401, "body": "{}"}))
+        self.assertEqual(usage.collect(usage.cliproxy_fetchers(env), env)["reports"], [usage.failed("xai-oauth", "login expired")])
+
+        down = {"CLIPROXY_MANAGEMENT_URL": "http://127.0.0.1:9", "CLIPROXY_MANAGEMENT_KEY_FILE": env["CLIPROXY_MANAGEMENT_KEY_FILE"]}
+        reports = usage.collect(usage.cliproxy_fetchers(down), down)["reports"]
+        self.assertEqual(reports, [usage.failed(p, "cliproxy unreachable") for p in ("openai-codex", "anthropic", "xai-oauth")])
 
 
 if __name__ == "__main__":

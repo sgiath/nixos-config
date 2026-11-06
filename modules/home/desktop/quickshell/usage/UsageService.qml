@@ -3,9 +3,10 @@ import QtQuick
 import Quickshell
 import Quickshell.Io
 
-// Polls `sgiath-usage` (desktop/usage-collector) and flattens its reports
-// into one entry per account: provider, who it belongs to, its limits, and
-// the weekly limit as the account's headline fraction. Fractions are null
+// Polls `sgiath-usage` (desktop/usage-collector, which reads limits through
+// CLIProxyAPI) and flattens its reports into one entry per account: provider,
+// who it belongs to, its limits, and the weekly limit as the account's
+// headline fraction. Fractions are null
 // where a provider names a window but not its usage; a provider that failed
 // keeps its card with an error.
 Singleton {

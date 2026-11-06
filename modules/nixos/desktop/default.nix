@@ -15,5 +15,13 @@
     # Proton Mail Bridge self-signed CA for 127.0.0.1. aerc uses the
     # system bundle; `trust anchor` does not persist on NixOS.
     security.pki.certificateFiles = [ ./protonmail-bridge.crt ];
+    # CLIProxyAPI's management key for the Quickshell usage panel
+    # (modules/home/desktop/usage-collector), which reads account limits
+    # through it. sgiath already has passwordless sudo on Vesta, so this
+    # grants nothing new.
+    sops.secrets.cliproxyapi_management = {
+      owner = "sgiath";
+      mode = "0400";
+    };
   };
 }
