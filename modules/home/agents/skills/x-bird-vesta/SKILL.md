@@ -11,6 +11,6 @@ Use `bird --cookie-source chromium --plain --timeout 20000 search "from:OpenAI" 
 
 Until the system is rebuilt, run `nix shell /home/sgiath/nixos#bird -c bird --cookie-source chromium ...`, or build with `nix build /home/sgiath/nixos#bird --no-link --print-out-paths` and invoke bin/bird from that output. Native Node CLI, Bun binary and Nix package whoami verified locally as @sgiath with credential environment variables unset.
 
-Existing remote alternative: `ssh -o BatchMode=yes -o ConnectTimeout=10 sgiath@vesta.local 'bird-vesta --plain --timeout 20000 search "from:OpenAI" -n 5 --json'`. Substitute `whoami`, `read TWEET_ID --json`, or `help COMMAND` as needed. Hermes’s wrapper loads runtime SOPS credentials on Vesta; never copy or print them. Its user-tweets command has custom behavior: inspect modules/nixos/services/hermes-bird-vesta.sh before use.
+Existing remote alternative: `ssh -o BatchMode=yes -o ConnectTimeout=10 sgiath@vesta.nebula.sgiath.dev 'bird-vesta --plain --timeout 20000 search "from:OpenAI" -n 5 --json'`. Substitute `whoami`, `read TWEET_ID --json`, or `help COMMAND` as needed. Hermes’s wrapper loads runtime SOPS credentials on Vesta; never copy or print them. Its user-tweets command has custom behavior: inspect modules/nixos/services/hermes-bird-vesta.sh before use.
 
 Quote user inputs safely, including remote shell quoting. Keep queries bounded. Never run Bird check in tool output: it prints cookie prefixes. Read/search access does not authorize posting, replies, follows, bookmark modifications, or other account writes.

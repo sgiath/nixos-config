@@ -30,10 +30,23 @@
           IdentityFile = "~/.ssh/remote_pgp.pub";
         };
 
-        # servers
-        "vesta.sgiath.dev" = {
-          HostName = "193.165.30.198";
-          Port = 2200;
+        # hosts reachable over Nebula from anywhere; the NAS is not a
+        # Nebula peer, so it is reached through Vesta on its LAN
+        "ceres" = {
+          HostName = "ceres.nebula.sgiath.dev";
+          IdentityFile = "~/.ssh/personal_pgp.pub";
+          IdentitiesOnly = "yes";
+        };
+        "vesta" = {
+          HostName = "vesta.nebula.sgiath.dev";
+          IdentityFile = "~/.ssh/personal_pgp.pub";
+          IdentitiesOnly = "yes";
+        };
+        "nas" = {
+          HostName = "192.168.1.4";
+          ProxyJump = "vesta";
+          IdentityFile = "~/.ssh/personal_pgp.pub";
+          IdentitiesOnly = "yes";
         };
 
         # local network
@@ -43,17 +56,6 @@
           IdentityFile = "~/.ssh/personal_pgp.pub";
           IdentitiesOnly = "yes";
         };
-        "vesta.local" = {
-          HostName = "192.168.1.2";
-          IdentityFile = "~/.ssh/personal_pgp.pub";
-          IdentitiesOnly = "yes";
-        };
-        "nas.local" = {
-          HostName = "192.168.1.4";
-          IdentityFile = "~/.ssh/personal_pgp.pub";
-          IdentitiesOnly = "yes";
-        };
-        "ceres.local".HostName = "192.168.1.6";
 
         # CrazyEgg
         "scramble.crazyegg.com" = {

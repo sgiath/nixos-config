@@ -78,18 +78,13 @@ writeShellScriptBin "update" ''
     --ceres) deploy[ceres]=local ;;
   esac
 
-  # Fleet discovery uses Nebula so hosts are reachable away from the LAN.
-  # Explicit targets retain their existing SSH addresses.
+  # Hosts are reached over Nebula; an explicit --juno<N> keeps its LAN name.
   ssh_address() {
-    if [[ -z "$target" ]]; then
+    if [[ -n "$target" && "$1" == juno[1-9] ]]; then
+      echo "$1.sgiath"
+    else
       echo "$1.nebula.sgiath.dev"
-      return
     fi
-    case "$1" in
-      vesta) echo vesta.local ;;
-      juno[1-9]) echo "$1.sgiath" ;;
-      *) echo "$1.nebula.sgiath.dev" ;;
-    esac
   }
 
   work="$(mktemp -d)" || exit 1
