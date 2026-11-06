@@ -70,6 +70,11 @@
             t3Project = "mcp:d4ad1cbf-7018-4e8e-918a-9130573c335a";
             context = builtins.readFile ./auto-review/tiger.md;
           };
+          "gitlab:remote-com/employ-starbase/dragon" = {
+            checkout = "${dev}/remote/dragon";
+            t3Project = "mcp:7e27a2a0-c09b-4fc5-a9bd-df76ea56f48f";
+            context = builtins.readFile ./auto-review/dragon.md;
+          };
           "gitlab:remote-com/neo-payroll/architect" = {
             checkout = "${dev}/remote/neo-payroll/architect";
             t3Project = "3f2dd0df-b80d-4b35-96c6-6bd09c5f3dba";
