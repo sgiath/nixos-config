@@ -111,6 +111,8 @@ in
               allow ::1;
               deny 192.168.1.1;
               allow 192.168.1.0/24;
+              allow ${nebula.cidr4};
+              allow ${nebula.cidr6};
               deny all;
             '';
           };

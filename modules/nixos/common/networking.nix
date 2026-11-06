@@ -6,17 +6,8 @@
         networking = {
           hosts = {
             "192.168.1.1" = [ "router.sgiath" ];
-            "192.168.1.2" = [
-              "vesta.sgiath.dev"
-              "matrix.sgiath.dev"
-              "matrix-rtc.sgiath.dev"
-              "turn.sgiath.dev"
-              "nebula.sgiath.dev"
-
-              "dns.sgiath"
-            ];
-            "192.168.1.4" = [ "nas.sgiath" ];
-            "192.168.1.5" = [ "nas.sgiath" ];
+            # Pi-hole web UI, reached over Nebula wherever the host is.
+            ${config.sgiath.nebula.peers.vesta.ip4} = [ "dns.sgiath" ];
             "192.168.1.11" = [ "juno1.sgiath" ];
           };
           firewall.enable = false;
@@ -44,11 +35,13 @@
           };
         };
 
+        # Pi-hole over Nebula first; public resolvers answer within a second
+        # while the tunnel is down. glibc reads at most three nameservers.
         environment.etc."resolv.conf".text = ''
           search sgiath.dev
+          options timeout:1 attempts:1
 
-          nameserver 192.168.1.2
-          nameserver 192.168.1.1
+          nameserver ${config.sgiath.nebula.peers.vesta.ip4}
           nameserver 1.1.1.1
           nameserver 8.8.8.8
         '';
