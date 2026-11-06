@@ -25,6 +25,7 @@
   nss,
   systemd,
   unzip,
+  vulkan-loader,
   callPackage,
   cloudflared,
   llm-agents,
@@ -97,8 +98,12 @@ stdenv.mkDerivation (finalAttrs: {
     installShellFiles
   ];
 
-  # libstdc++ for node-pty, libatomic for the SEA itself.
-  buildInputs = [ (lib.getLib stdenv.cc.cc) ];
+  # libstdc++ for node-pty, libatomic for the SEA itself, libvulkan for the
+  # transcribe-cpp ggml Vulkan backend.
+  buildInputs = [
+    (lib.getLib stdenv.cc.cc)
+    vulkan-loader
+  ];
 
   dontConfigure = true;
   dontBuild = true;
@@ -109,12 +114,15 @@ stdenv.mkDerivation (finalAttrs: {
   dontAutoPatchelf = true;
 
   # The SEA resolves client/, node_modules/ and resource-monitor/ next to its
-  # real path, so keep the tarball layout intact under libexec. ffi-rs picks its
-  # gnu build on glibc, so the musl one would only fail autoPatchelf.
+  # real path, so keep the tarball layout intact under libexec. ffi-rs and Koffi
+  # pick their glibc builds on glibc, so the musl ones would only fail
+  # autoPatchelf.
+  # FIXME: ARM CLI tarballs omit ffi-rs's musl build. Make cleanup tolerate
+  # its absence before building this package natively on aarch64.
   installPhase = ''
     runHook preInstall
 
-    rm -r node_modules/@yuuang/ffi-rs-linux-*-musl
+    rm -r node_modules/@yuuang/ffi-rs-linux-*-musl node_modules/@koromix/koffi-linux-*/musl_*
     mkdir -p $out/libexec $out/bin
     cp -r . $out/libexec/t3code
 

@@ -104,8 +104,9 @@ stdenv.mkDerivation (finalAttrs: {
 
   # The extracted root keeps electron-builder's layout: the app resolves
   # resources/ next to the executable. usr/lib carries the AppImage's legacy
-  # gtk2 tray libraries, which Electron does not load; the musl ffi-rs build
-  # is never selected on glibc.
+  # gtk2 tray libraries, which Electron does not load; the musl ffi-rs and Koffi
+  # builds are never selected on glibc. transcribe-cpp's Vulkan backend links
+  # Electron's bundled libvulkan.so.1.
   installPhase = ''
     runHook preInstall
 
@@ -113,7 +114,9 @@ stdenv.mkDerivation (finalAttrs: {
     cp -r . $out/libexec/t3code-desktop
     chmod -R u+w $out/libexec/t3code-desktop
     cd $out/libexec/t3code-desktop
-    rm -r usr/lib AppRun .DirIcon t3code.png resources/app.asar.unpacked/node_modules/@yuuang/ffi-rs-linux-*-musl
+    rm -r usr/lib AppRun .DirIcon t3code.png \
+      resources/app.asar.unpacked/node_modules/@yuuang/ffi-rs-linux-*-musl \
+      resources/app.asar.unpacked/node_modules/@koromix/koffi-linux-*/musl_*
     mv usr/share/icons $out/share/
     rm -r usr
     mv t3code.desktop $out/share/applications/
