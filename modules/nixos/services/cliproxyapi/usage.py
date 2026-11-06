@@ -36,12 +36,16 @@ SCALARS = {
     "stream", "generate", "failed", "latency_ms", "ttft_ms", "accounting_version",
     "reasoning_effort", "service_tier", "effective_service_tier",
     "response_service_tier", "upstream_service_tier",
+    "speed", "inference_geo", "web_search_requests",
 }
 # Never stored, and not reported as unknown.
-SECRET = {"api_key", "source", "access_token_sha256", "response_headers", "client_ip", "resolved_client_ip"}
+SECRET = {
+    "api_key", "source", "access_token_sha256", "response_headers",
+    "client_ip", "resolved_client_ip", "x_forwarded_for",
+}
 # Nested objects whose numeric/boolean leaves (and these string leaves) are kept.
-NESTED = {"tokens", "token_breakdown"}
-NESTED_STRINGS = {"schema_version", "quality"}
+NESTED = {"tokens", "token_breakdown", "cache_details", "tool_usage_details"}
+NESTED_STRINGS = {"schema_version", "quality", "mode", "ttl", "retention", "type", "model"}
 
 unknown = set()
 
@@ -90,6 +94,8 @@ def clean(record):
                 out[key] = v
         elif key in NESTED and isinstance(value, dict):
             out[key] = numbers(value, key)
+        elif key == "iterations" and isinstance(value, list):
+            out[key] = [numbers(i, key) for i in value if isinstance(i, dict)]
         elif key == "fail" and isinstance(value, dict):
             # The upstream error body stays behind.
             out["fail"] = {k: scalar(value[k]) for k in ("status_code", "code") if scalar(value.get(k)) is not None}
