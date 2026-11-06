@@ -34,6 +34,10 @@ class Forge(Protocol):
     def mark_reviewed(self, path: str, change: Change) -> None:
         """GitLab: set `me`'s reviewer state to "left comments" unless `me` has unpublished drafts. GitHub: nothing."""
 
+    def request_changes(self, path: str, change: Change) -> None:
+        """GitLab: set `me`'s reviewer state to "requested changes", with the same drafts guard. GitHub: nothing (a
+        REQUEST_CHANGES review needs a top-level body)."""
+
     def approve(self, path: str, change: Change) -> None:
         """Approve as `me`, pinned to `change.head_sha`; nothing when `me` already approved."""
 

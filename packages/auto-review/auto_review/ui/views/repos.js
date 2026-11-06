@@ -56,6 +56,15 @@ export function reposSection({ onSaved }) {
           help: "minimum frequency × severity that gets posted; empty uses the global value",
         }),
         form.field({
+          path: "request_changes_threshold",
+          label: "request changes",
+          type: "number",
+          min: 1,
+          nullable: true,
+          placeholder: (s) => `global (${s.effective.request_changes_threshold})`,
+          help: "a posted or open finding scoring this much requests changes on gitlab; empty uses the global value",
+        }),
+        form.field({
           path: "approval",
           label: "approval",
           type: "select",

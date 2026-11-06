@@ -90,6 +90,7 @@ class Forge:
         self.discussions = {}
         self.file_diffs = {}
         self.posts, self.post_attempts, self.approvals, self.marked = [], [], [], []
+        self.change_requests = []
         self.fail_after = None  # Persist this many comments, then lose the response once.
 
     def add(self, item):
@@ -140,6 +141,10 @@ class Forge:
     def mark_reviewed(self, path, change):
         self.marked.append((path, change))
         self.journal.append(("mark_reviewed", self.name, change.number))
+
+    def request_changes(self, path, change):
+        self.change_requests.append((path, change))
+        self.journal.append(("request_changes", self.name, change.number))
 
     def approve(self, path, change):
         self.approvals.append((path, change))

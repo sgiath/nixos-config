@@ -117,6 +117,11 @@ class GitHub:
     def mark_reviewed(self, path: str, change: Change) -> None:
         return None
 
+    def request_changes(self, path: str, change: Change) -> None:
+        # FIXME: GitHub requires a review body for REQUEST_CHANGES, which would be a floating comment; the inline
+        # comments stand alone. Change this only if GitHub accepts a body-less REQUEST_CHANGES review.
+        return None
+
     def approve(self, path: str, change: Change) -> None:
         me = self.whoami().lower()
         for review in self._get_all(f"repos/{path}/pulls/{change.number}/reviews?per_page=100"):

@@ -51,6 +51,11 @@ let
         default = null;
         description = "Per-repo posting threshold; null uses the global one.";
       };
+      requestChangesThreshold = mkOption {
+        type = types.nullOr types.ints.positive;
+        default = null;
+        description = "Per-repo request-changes threshold; null uses the global one.";
+      };
       reviewer = mkOption {
         type = types.nullOr reviewer;
         default = null;
@@ -95,6 +100,7 @@ let
       approval
       ;
     t3_project = r.t3Project;
+    request_changes_threshold = r.requestChangesThreshold;
     rules = {
       review_requested = r.rules.reviewRequested;
       include_authors = r.rules.includeAuthors;
@@ -112,6 +118,7 @@ let
       dry_run = cfg.dryRun;
       poll_interval_seconds = cfg.pollIntervalSeconds;
       inherit (cfg) threshold reviewer timezone;
+      request_changes_threshold = cfg.requestChangesThreshold;
       auto_settle = cfg.autoSettle;
       note_template = cfg.noteTemplate;
       max_concurrent = cfg.maxConcurrent;
@@ -152,6 +159,11 @@ in
       type = types.ints.positive;
       default = 5;
       description = "Minimum frequency × severity that gets posted.";
+    };
+    requestChangesThreshold = mkOption {
+      type = types.ints.positive;
+      default = 30;
+      description = "Minimum frequency × severity of a posted or already open finding that sets the GitLab review state to requested changes instead of left comments.";
     };
     autoSettle = mkOption {
       type = types.bool;

@@ -48,6 +48,7 @@ export const settings = {
           form.field({ path: "dry_run", label: "dry run", type: "checkbox", help: "review, but write nothing to gitlab or github; post anyway still posts" }),
           form.field({ path: "auto_settle", label: "auto settle", type: "checkbox", help: "settle the t3 thread after posting, or when nothing is posted" }),
           form.field({ path: "threshold", label: "threshold", type: "number", min: 1, help: "minimum frequency × severity that gets posted" }),
+          form.field({ path: "request_changes_threshold", label: "request changes", type: "number", min: 1, help: "a posted or open finding scoring this much requests changes on gitlab instead of leaving comments" }),
           form.field({ path: "poll_interval_seconds", label: "poll interval", type: "number", min: 15, help: "seconds between polls, at least 15" }),
           form.field({ path: "max_concurrent", label: "max concurrent", type: "number", min: 1, help: "reviews running at once" }),
           form.field({

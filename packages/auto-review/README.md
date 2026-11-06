@@ -32,9 +32,12 @@ It replaces the Spain G2N sprint poller in `~/.agents/local/spain-review/`, whic
    `frequency × severity`; a finding reaches the threshold when the product is at least the repo's threshold.
 6. **Post.** Just before writing, the MR is re-read: it must still be open, at the same head and base, and still
    eligible. Each finding at or above the threshold is posted as one inline discussion on its diff line (GitLab) or
-   as one review with inline comments (GitHub), topped by the note template. A finding the agent ties to an
+   as one review comment on its diff line (GitHub), topped by the note template. A finding the agent ties to an
    existing open thread is not posted again. A finding without a valid diff line is never posted; it is shown in the
-   UI as *unanchored*. Nothing is ever posted as a general MR comment.
+   UI as *unanchored*. Nothing is ever posted as a general MR comment. On GitLab, Filip's reviewer state then
+   becomes *requested changes* when a posted or already open finding scores at least `request_changes_threshold`,
+   else *left comments* when anything was posted (skipped while he has unpublished drafts). GitHub gets no review
+   state: a `REQUEST_CHANGES` review needs a top-level body, which would be a general comment.
 7. **Approve.** Only under the repo's `approval: when_clean` policy, and only when the verdict is complete, no finding
    reaches the threshold (posted, already open or unanchored), every changed file was read and no prompt injection
    was found. The approval is pinned to the reviewed head SHA.
@@ -59,6 +62,7 @@ Nix changes take effect when Home Manager restarts the service.
 | `dry_run` | `false` | Review, but write nothing to GitLab/GitHub (*Post anyway* still posts). |
 | `poll_interval_seconds` | `60` | Time between polls (minimum 15). |
 | `threshold` | `5` | Minimum `frequency × severity` that gets posted. |
+| `request_changes_threshold` | `30` | Minimum score of a posted or already open finding that requests changes (GitLab). |
 | `auto_settle` | `true` | Settle the T3 thread after posting or when nothing is posted. |
 | `note_template` | see `auto_review/note.py` | Top of every posted comment; variables below. |
 | `reviewer` | `claudeAgent_claude_remote` / `claude-opus-5-5` / `high` | Provider instance, model, effort. |
@@ -78,6 +82,7 @@ Per repo (`repos.<id>`, id is `gitlab:<path>` or `github:<owner>/<repo>`):
 | `t3_project` | required | T3 project the review threads start in. |
 | `context` | `""` | Repo-specific review instructions inserted into the brief. |
 | `threshold` | `null` (global) | Per-repo threshold. |
+| `request_changes_threshold` | `null` (global) | Per-repo request-changes threshold. |
 | `reviewer` | `null` (global) | Per-repo provider/model/effort. |
 | `approval` | `when_clean` | `never` or `when_clean`. |
 | `rules.review_requested` | `true` | Review MRs that request your review. |

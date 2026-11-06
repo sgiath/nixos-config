@@ -58,8 +58,11 @@ class Publisher:
         store.save_findings(row["id"], row["attempt"], rows)
         store.update(row["id"], summary=verdict.summary, not_reviewed=list(verdict.not_reviewed),
                      injection_attempts=list(verdict.injection_attempts), outcome=decision.outcome, dry_run=dry_run)
+        blocking = _blocking(decision, repo)
         if held or dry_run:
             note = f"not posted: {held}" if held else "dry run: nothing posted"
+            if dry_run and not held and blocking:
+                note += f", would request changes ({blocking})"
             return self._done(row, decision.outcome, note)
 
         if self._changed(settings, row["repo"]):
@@ -69,9 +72,13 @@ class Publisher:
         if pending and not self._post(row, repo, change, threads, me, pending):
             return
         posted = any(f["state"] == "posted" for f in store.findings(row["id"], row["attempt"]))
-        if posted:
+        if posted or blocking:
             try:
-                forge.mark_reviewed(row["path"], change)
+                if blocking:
+                    forge.request_changes(row["path"], change)
+                    engine.record("info", f"requested changes: {blocking}", review_id=row["id"])
+                else:
+                    forge.mark_reviewed(row["path"], change)
             except ForgeError as error:
                 engine.record("warn", f"setting the review state failed: {error}", review_id=row["id"])
         if repo["approval"] == "when_clean" and decision.approvable and not row["approved"]:
@@ -201,6 +208,14 @@ def _values(row: dict, repo: dict, finding: Finding, me: str) -> dict:
         "title": finding.title, "frequency": finding.frequency, "severity": finding.severity,
         "score": finding.score, "threshold": repo["threshold"], "disposition": "open",
     }
+
+
+def _blocking(decision, repo: dict) -> str:
+    """The findings that request changes: posted (or about to be) or already open, scoring at least the repo's
+    `request_changes_threshold`, as "SR-1 (30), SR-3 (42)"; empty when none does."""
+    found = [p.finding for p in decision.placed if p.state in ("post", "already_open")
+             and p.finding.score >= repo["request_changes_threshold"]]
+    return ", ".join(f"{f.id} ({f.score})" for f in found)
 
 
 def harness(provider: str) -> str:

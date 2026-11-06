@@ -18,6 +18,7 @@ GLOBAL_DEFAULTS = {
     "dry_run": False,
     "poll_interval_seconds": 60,
     "threshold": 5,
+    "request_changes_threshold": 30,
     "auto_settle": True,
     "note_template": None,  # None: note.DEFAULT_TEMPLATE, filled in by `effective`
     "reviewer": {"provider": "claudeAgent_claude_remote", "model": "claude-opus-5-5", "effort": "high"},
@@ -46,6 +47,7 @@ REPO_DEFAULTS = {
     "t3_project": None,
     "context": "",
     "threshold": None,
+    "request_changes_threshold": None,
     "reviewer": None,
     "approval": "when_clean",
     "rules": RULE_DEFAULTS,
@@ -88,6 +90,7 @@ def validate(settings: dict) -> None:
     for name in ("paused", "dry_run", "auto_settle"):
         _check(name, isinstance(settings[name], bool), "must be true or false")
     _positive("threshold", settings["threshold"])
+    _positive("request_changes_threshold", settings["request_changes_threshold"])
     _check("poll_interval_seconds", _int(settings["poll_interval_seconds"]) and settings["poll_interval_seconds"] >= 15,
            "must be at least 15")
     _positive("max_concurrent", settings["max_concurrent"])
@@ -115,10 +118,11 @@ def validate(settings: dict) -> None:
 
 
 def repo_view(settings: dict, repo_id: str) -> dict:
-    """One repo with `threshold` and `reviewer` resolved against the globals."""
+    """One repo with `threshold`, `request_changes_threshold` and `reviewer` resolved against the globals."""
     repo = deepcopy(settings["repos"][repo_id])
-    if repo["threshold"] is None:
-        repo["threshold"] = settings["threshold"]
+    for name in ("threshold", "request_changes_threshold"):
+        if repo[name] is None:
+            repo[name] = settings[name]
     if repo["reviewer"] is None:
         repo["reviewer"] = deepcopy(settings["reviewer"])
     return repo
@@ -178,8 +182,9 @@ def _repo(field: str, repo_id: str, repo: dict) -> None:
     for name in ("checkout", "t3_project"):
         _check(f"{field}.{name}", isinstance(repo[name], str) and bool(repo[name].strip()), "is required")
     _check(f"{field}.context", isinstance(repo["context"], str), "must be text")
-    if repo["threshold"] is not None:
-        _positive(f"{field}.threshold", repo["threshold"])
+    for name in ("threshold", "request_changes_threshold"):
+        if repo[name] is not None:
+            _positive(f"{field}.{name}", repo[name])
     if repo["reviewer"] is not None:
         _reviewer(f"{field}.reviewer", repo["reviewer"])
     _check(f"{field}.approval", repo["approval"] in APPROVALS, f"must be one of {', '.join(APPROVALS)}")
