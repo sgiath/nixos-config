@@ -49,6 +49,8 @@ Filip's rule: "Rate each bug from 1 to 10 on how often it would happen and how b
 - 7-9: most requests or runs;
 - 10: every call.
 
+Before you score a bug, name the supported caller, input or stored state that produces its trigger, and trace the validation and earlier refusals on that path. If nothing current produces it and no compatibility requirement says old data or callers must keep working, drop the bug: frequency 1 means rare, not impossible. A missing defensive check is a finding only when a contract requires it. State the producer in `reasoning`.
+
 **Severity** is how bad one occurrence is:
 - 1: no effect on behaviour: style, naming, structure, comments, documentation wording, a missing test by itself;
 - 2: confusing but harmless: a misleading log line or error message, a test that proves less than its name says;
