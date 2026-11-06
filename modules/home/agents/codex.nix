@@ -4,11 +4,29 @@
   lib,
   ...
 }:
+let
+  # Inside Remote projects (`use remote_agents`, cliproxy.nix) plain `codex`
+  # runs with the remote profile. Codex has no environment variable for a
+  # profile, and app-server (what T3 runs; T3 picks the model itself)
+  # rejects --profile.
+  codex = pkgs.symlinkJoin {
+    name = "codex-cliproxy";
+    paths = [
+      (pkgs.writeShellScriptBin "codex" ''
+        if [ "''${REMOTE_AGENTS:-}" = 1 ] && [ "''${1:-}" != app-server ]; then
+          exec ${pkgs.llm-agents.codex}/bin/codex --profile remote "$@"
+        fi
+        exec ${pkgs.llm-agents.codex}/bin/codex "$@"
+      '')
+      pkgs.llm-agents.codex
+    ];
+  };
+in
 {
   config = lib.mkIf config.sgiath.agents.enable {
     home = {
       packages = [
-        pkgs.llm-agents.codex
+        codex
       ]
       ++ (lib.optionals config.sgiath.roles.desktop.enable [ pkgs.llm-agents.chatgpt ]);
       file.".codex/AGENTS.md".source = ./AGENTS.md;
