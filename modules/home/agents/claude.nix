@@ -2,6 +2,7 @@
   config,
   lib,
   pkgs,
+  apiKeyWrapper,
   ...
 }:
 let
@@ -17,6 +18,13 @@ let
     OTEL_LOG_USER_PROMPTS = "1";
     OTEL_LOG_TOOL_DETAILS = "1";
     CLAUDE_CODE_EVEN_MORE_DANGEROUSLY_SKIP_PERMISSIONS = "1";
+  };
+
+  # Inference through CLIProxyAPI with the shared proxy key. The helper wins
+  # over the saved claude.ai login, which stays in place for rollback.
+  proxySettings = builtins.toJSON {
+    env.ANTHROPIC_BASE_URL = config.sgiath.agents.cliproxyUrl;
+    apiKeyHelper = "${lib.getExe apiKeyWrapper} ${pkgs.coreutils}/bin/printenv CLIPROXY_API_KEY";
   };
 
 in
@@ -78,6 +86,19 @@ in
           run ${pkgs.coreutils}/bin/tee "$f" <<<"$new" >/dev/null
         fi
       done
+    '';
+
+    # ~/.claude only: ~/.claude-remote keeps its own Remote login until the
+    # Remote projects select remote/<model> through the proxy instead.
+    home.activation.claudeProxy = lib.hm.dag.entryAfter [ "claudeAttribution" ] ''
+      f="$HOME/.claude/settings.json"
+      old=$(cat "$f" 2>/dev/null || true)
+      new=$(printf '%s' "''${old:-"{}"}" | ${lib.getExe pkgs.jq} --argjson proxy ${lib.escapeShellArg proxySettings} \
+        '.apiKeyHelper = $proxy.apiKeyHelper | .env = ((.env // {}) + $proxy.env)')
+      if [ "$new" != "$old" ]; then
+        run mkdir -p "$(dirname "$f")"
+        run ${pkgs.coreutils}/bin/tee "$f" <<<"$new" >/dev/null
+      fi
     '';
   };
 }
