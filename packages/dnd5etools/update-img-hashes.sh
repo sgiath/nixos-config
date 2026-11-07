@@ -22,7 +22,7 @@ if [[ -z "${VERSION}" ]]; then
   exit 1
 fi
 
-NAMES=(z01 z02 z03 z04 z05 z06 z07 z08 z09 z10 z11 z12 zip)
+NAMES=(z01 z02 z03 z04 z05 z06 z07 z08 z09 z10 z11 z12 z13 zip)
 
 # Create temp directory for results
 TMPDIR="$(mktemp -d)"
