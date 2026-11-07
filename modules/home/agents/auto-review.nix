@@ -178,10 +178,10 @@ in
     reviewer = mkOption {
       type = reviewer;
       default = {
-        # The Remote Claude login through CLIProxyAPI; repos outside Remote
-        # set a personal reviewer.
-        provider = "claudeAgent_claude_remote";
-        model = "remote/claude-opus-5-5";
+        # The only Claude provider; it reaches the Remote subscription
+        # through CLIProxyAPI.
+        provider = "claudeAgent";
+        model = "claude-opus-5-5";
         effort = "high";
       };
     };
