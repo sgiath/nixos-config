@@ -178,10 +178,8 @@ in
     reviewer = mkOption {
       type = reviewer;
       default = {
-        # The only Claude provider; it reaches the Remote subscription
-        # through CLIProxyAPI.
-        provider = "claudeAgent";
-        model = "claude-opus-5-5";
+        provider = "codex";
+        model = "gpt-6.1-sol";
         effort = "high";
       };
     };

@@ -65,7 +65,7 @@ Nix changes take effect when Home Manager restarts the service.
 | `request_changes_threshold` | `30` | Minimum score of a posted or already open finding that requests changes (GitLab). |
 | `auto_settle` | `true` | Settle the T3 thread after posting or when nothing is posted. |
 | `note_template` | see `auto_review/note.py` | Top of every posted comment; variables below. |
-| `reviewer` | `claudeAgent` / `claude-opus-5-5` / `high` | Provider instance, model, effort. |
+| `reviewer` | `codex` / `gpt-6.1-sol` / `high` | Provider instance, model, effort. |
 | `max_concurrent` | `3` | Reviews running at once. |
 | `max_launches_per_day` | `null` | Launch cap per local day; `null` is unlimited. |
 | `review_timeout_minutes` | `120` | Active running time before a review fails. |
@@ -137,7 +137,7 @@ Timestamps are ISO 8601 UTC strings (`2026-11-05T22:08:00Z`); durations are seco
   "dry_run": false,
   "poll": {"last_at": "…", "next_at": "…", "last_error": null, "running": false},
   "identities": {"gitlab": "filip.vavera1", "github": "sgiath"},
-  "limits": [{"provider": "claudeAgent", "until": "…", "reason": "weekly limit"}],
+  "limits": [{"provider": "codex", "until": "…", "reason": "weekly limit"}],
   "quiet": {"enabled": false, "active": false, "until": null},
   "budget": {"running": 1, "max_concurrent": 3, "launched_today": 4, "max_launches_per_day": null},
   "counts": {"queued": 2, "running": 1, "limited": 0, "failed": 1, "waiting": 3}
@@ -163,7 +163,7 @@ Body `{"template": "…"}`; renders it with a sample finding. Answers `{"markdow
 ### `GET /api/catalog`
 
 Provider instances, models and efforts T3 offers, for the reviewer pickers:
-`[{"provider": "claudeAgent", "label": "Claude", "models": [{"id": "claude-opus-5-5", "label": "Claude Opus 5.5", "efforts": ["low", "medium", "high", "xhigh", "max"]}]}]`.
+`[{"provider": "codex", "label": "Codex", "models": [{"id": "gpt-6.1-sol", "label": "gpt-6.1-sol", "efforts": ["low", "medium", "high", "xhigh", "max", "ultra"]}]}]`.
 
 ### `GET /api/reviews?view=active|history|failed&repo=<id>&limit=50&before=<id>`
 
@@ -177,7 +177,7 @@ superseded (newest first). `failed`: failed (newest first). Each item:
   "title": "…", "url": "https://gitlab.com/…/merge_requests/7627", "author": "someone",
   "head_sha": "…40 hex…", "base_sha": "…", "target": "main",
   "status": "running", "outcome": null,
-  "reviewer": {"provider": "claudeAgent", "model": "claude-opus-5-5", "effort": "high"},
+  "reviewer": {"provider": "codex", "model": "gpt-6.1-sol", "effort": "high"},
   "thread_url": "t3-thread://…", "dry_run": false,
   "queued_at": "…", "started_at": "…", "finished_at": null, "elapsed_seconds": 512,
   "limited_until": null, "error": null,
