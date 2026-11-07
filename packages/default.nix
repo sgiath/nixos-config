@@ -2,6 +2,7 @@ pkgs: {
   auto-review = pkgs.callPackage ./auto-review { };
   bird = pkgs.callPackage ./bird { };
   blender-mcp = pkgs.callPackage ./blender-mcp { };
+  browse = pkgs.callPackage ./browse { };
   burn-iso = pkgs.callPackage ./burn-iso { };
   clear-cache = pkgs.callPackage ./clear-cache { };
   davinci-resolve-mcp = pkgs.callPackage ./davinci-resolve-mcp { };

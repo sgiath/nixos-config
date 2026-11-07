@@ -49,12 +49,19 @@
       pkgs.llm-agents.hermes-desktop
       pkgs.llm-agents.grok-bot
       pkgs.${namespace}.openclaw-desktop
+      # Drives the desktop Chromium through the browse extension; `browse
+      # install` adopts this package and configures agents Nix does not manage.
+      pkgs.${namespace}.browse
     ]);
 
     programs.mcp = {
       enable = true;
       servers = {
         executor.url = "https://executor.sgiath.dev/mcp";
+        browse = lib.mkIf config.sgiath.roles.desktop.enable {
+          command = lib.getExe pkgs.${namespace}.browse;
+          args = [ "mcp" ];
+        };
       };
     };
   };

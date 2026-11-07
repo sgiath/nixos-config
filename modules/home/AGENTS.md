@@ -34,6 +34,7 @@ Themes referenced by `desktop/stylix.nix` live in `themes/` at the repo root.
   pass project `.agents/skills/` directories as additional arguments when checking cross-catalog references.
   `nix flake check` (check `skill-references`) runs it too, over the shared catalog and `.agents/skills`.
 - Shared MCP servers go in `programs.mcp.servers`; Claude Code and OpenCode read them through `enableMcpIntegration`. Codex's `~/.codex/config.toml` is unmanaged.
+- `agents/base.nix` installs `packages/browse` (the browse extension's CLI and MCP server) and registers the `browse` MCP server on desktop agent hosts. Nix owns its version: the wrapper turns off its auto-update and points `npm_config_prefix` at the package, so `browse install` adopts the store copy instead of running `npm install -g`; use it to pair Chromium and configure unmanaged agents.
 - Every agent harness's sessions are archived (`agents/archive.nix`, `agents/archive/ship.py`). Adding a harness or
   a new profile of one means adding its store to `SOURCES` (or `IGNORED` with a reason) and, if it records usage,
   a normalizer; follow "Adding an agent harness" in the root `README.md`. The daily `agent-archive-discover` check
