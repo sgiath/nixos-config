@@ -1,6 +1,7 @@
 """Everything a review thread reads about one change, written to its own run directory before the thread starts."""
 
 import json
+import re
 from dataclasses import asdict
 from pathlib import Path
 from string import Template
@@ -13,6 +14,9 @@ FORGES = {
     "gitlab": {"forge_name": "GitLab", "kind": "merge request", "kind_title": "MR", "read_cli": "glab", "sep": "!"},
     "github": {"forge_name": "GitHub", "kind": "pull request", "kind_title": "PR", "read_cli": "gh", "sep": "#"},
 }
+# CodeRabbit repeats each comment as a prompt for the author's coding agent. The review reads it as text aimed at AI
+# reviewers and holds every finding as an injection, and it adds nothing the comment above it does not say.
+AGENT_PROMPT = re.compile(r"<!-- ai-agent-prompt:start -->.*?<!-- ai-agent-prompt:end -->\n*", re.DOTALL)
 
 
 def ref(forge: str, path: str, number: int) -> str:
@@ -37,7 +41,7 @@ def write(run_dir: Path, change: Change, diffs: list[FileDiff], threads: list[Th
             "resolved": t.resolved,
             "path": t.path,
             "line": t.line,
-            "notes": [{"author": n.author, "body": n.body} for n in t.notes],
+            "notes": [{"author": n.author, "body": AGENT_PROMPT.sub("", n.body)} for n in t.notes],
         }
         for t in threads
     ])

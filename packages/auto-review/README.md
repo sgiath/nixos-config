@@ -19,7 +19,8 @@ It replaces the Spain G2N sprint poller in `~/.agents/local/spain-review/`, whic
    *Retry* or *Review again* starts another attempt of an existing key.
 3. **Launch.** When a slot is free (`max_concurrent`, the daily launch cap, quiet hours, pause, provider limits), the
    head and target are fetched into the repo's checkout (`refs/auto-review/<number>`), the MR evidence is written to
-   `runs/<review id>-<attempt>/`, and a T3 thread is launched with the repo's reviewer provider, model and effort in
+   `runs/<review id>-<attempt>/` (with CodeRabbit's "Prompt for AI Agents" blocks removed from discussions, since
+   the review would hold every finding as a prompt injection over them), and a T3 thread is launched with the repo's reviewer provider, model and effort in
    one call. Its title ends with `(review <database id>.<review id>.<attempt>)`, and a launch whose reply was lost
    adopts the thread carrying that tag instead of creating a second one. The MR/PR is linked to the thread, so T3
    shows its state there and settles the thread when it merges.
