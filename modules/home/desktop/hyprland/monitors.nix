@@ -7,12 +7,15 @@
         mode = "5120x1440@240";
         position = "0x2560";
         scale = 1;
+        bitdepth = 10;
       }
       {
         output = "DP-3";
-        mode = "3440x1440@165";
+        # 165 Hz at 10-bit exceeds the DP HBR3 link bandwidth; 120 Hz fits.
+        mode = "3440x1440@120";
         position = "0x1120";
         scale = 1;
+        bitdepth = 10;
       }
       {
         output = "DP-2";
