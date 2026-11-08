@@ -8,13 +8,13 @@
 
 buildGoModule rec {
   pname = "nak";
-  version = "0.22.2";
+  version = "0.22.3";
 
   src = fetchFromGitHub {
     owner = "fiatjaf";
     repo = "nak";
     rev = "v${version}";
-    hash = "sha256-4AWnPig/UlrXzyANFSaL955X1Z6XyxwlL3OZ4FfkBkA=";
+    hash = "sha256-gsEgPpMjooqlqGEKaxqH+bLOfs1yFxwJV5TRWf5ix0c=";
   };
 
   vendorHash = "sha256-s2/OtbzLOnCZnBMRqCWdKy1NdXjZ8LLlqoxetd+PYio=";
