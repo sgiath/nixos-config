@@ -445,14 +445,16 @@ class Engine:
             self.fail(row, f"checkout: {error}")
             return False
         run_dir = self.run_dir(row)
-        threads = forge.threads(row["path"], row["number"])
-        own, settled = self.threads.snapshot(row, threads, me)
-        if follow_up and not own:
-            self._finish(row, "cancelled", error="before launch: no open thread left to judge")
-            self.record("info", "cancelled before launch: no open thread left to judge", review_id=row["id"])
-            return False
-        bundle.write(run_dir, change, forge.diffs(row["path"], change), threads)
-        write_threads(run_dir, own, settled)
+        # A retried launch may adopt a thread T3 already started on the first bundle: keep what that agent read.
+        if not (run_dir / "mr/own_threads.json").exists():
+            threads = forge.threads(row["path"], row["number"])
+            own, settled = self.threads.snapshot(row, threads, me)
+            if follow_up and not own:
+                self._finish(row, "cancelled", error="before launch: no open thread left to judge")
+                self.record("info", "cancelled before launch: no open thread left to judge", review_id=row["id"])
+                return False
+            bundle.write(run_dir, change, forge.diffs(row["path"], change), threads)
+            write_threads(run_dir, own, settled)
         message = bundle.brief(row=row, repo=repo, change=change, run_dir=run_dir, me=me, threshold=repo["threshold"])
         title = (f"{'Follow-up' if follow_up else 'Review'} {bundle.ref(row['forge'], row['path'], row['number'])}"
                  f" @{row['head_sha'][:8]}")

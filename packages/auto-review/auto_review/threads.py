@@ -79,7 +79,7 @@ class Threads:
             if thread is None:
                 continue
             if thread.resolved:
-                settled = self._resolved(item) or settled
+                settled = self._resolved(item, thread, me) or settled
                 continue
             others = [n for n in notes(thread, me) if n.author.casefold() != me.casefold()]
             if digest(others) == (item["seen"] or ""):
@@ -87,7 +87,8 @@ class Threads:
             if not others:  # the replies were deleted
                 store.update_thread(repo_id, number, item["marker"], seen=None, updated_at=self._now())
             elif not active:
-                pending.append(f"{others[-1].id}@{digest(others)[:8]}")
+                # Keyed by every note and the status: a follow-up left stale by Filip's note or decision is redone.
+                pending.append(f"{others[-1].id}@{digest(notes(thread, me), item['status'])[:8]}")
         if settled:
             self.reconsider(repo_id, number)
         # A pushed fix with nobody replying: discovery reviews the new head only while a review is requested.
@@ -104,12 +105,13 @@ class Threads:
             engine.record("info", f"queued a follow-up on {reason} in {bundle.ref(repo['forge'], repo['path'], number)}",
                           review_id=review_id)
 
-    def _resolved(self, item: dict) -> bool:
-        """Resolved on the forge: by the service itself when a settling write was in flight (its answer was lost;
-        True: settled), else by someone else, and no longer watched."""
+    def _resolved(self, item: dict, thread: Thread, me: str) -> bool:
+        """Resolved on the forge: by the service itself when a settling write was in flight on the notes the thread
+        still has (its answer was lost; True: settled), else by someone else, and no longer watched."""
         store = self.engine.store
-        if item["pending"]:
-            store.update_thread(item["repo"], item["number"], item["marker"], status=item["pending"], pending=None,
+        status, _, version = (item["pending"] or "").partition("@")
+        if status and version == digest(notes(thread, me)):
+            store.update_thread(item["repo"], item["number"], item["marker"], status=status, pending=None,
                                 proposed_reply=None, updated_at=self._now())
             return True
         store.update_thread(item["repo"], item["number"], item["marker"], status="resolved_elsewhere",
@@ -190,7 +192,7 @@ class Threads:
             seen = digest([n for n in notes(thread, me) if n.author.casefold() != me.casefold()]) or None
             if judgment.status in ("fixed", "answered"):
                 operation = f"{judgment.thread_id}:{version[:12]}"  # the same notes never get two replies
-                update(pending=judgment.status)
+                update(pending=f"{judgment.status}@{version}")
                 try:
                     if not replied(thread, operation, me):
                         forge.reply(row["path"], row["number"], judgment.thread_id,
@@ -220,13 +222,17 @@ class Threads:
         found no injection, and each of its findings reaching the threshold now sits in a fixed, answered or accepted
         thread, with no thread of the MR still open or disputed: approve under `when_clean` if the MR is still ready
         under the repo's rules (draft, pipeline; the review request is not needed), else mark the MR reviewed
-        (clears an earlier "requested changes" on GitLab). An approval waiting for a draft or pipeline is rechecked
-        every poll."""
+        (clears an earlier "requested changes" on GitLab). Writes wait out pause, dry run, quiet hours and a disabled
+        repo; while they wait, or the MR waits for a draft or pipeline, or a read or write failed, the MR is
+        rechecked every poll."""
         engine, store = self.engine, self.engine.store
         key = (repo_id, number)
+        deferred = key in self._deferred
+        self._deferred.add(key)  # until a decision below; a failed read or write is retried on the next poll
         settings = engine.settings()
-        if settings["dry_run"] or settings["paused"]:
-            return  # a deferred approval waits for them
+        repo = settings["repos"].get(repo_id)
+        if settings["dry_run"] or settings["paused"] or engine.quiet(engine.now())[0] or (repo and not repo["enabled"]):
+            return
         row = self._settled_review(settings, repo_id, number)
         if row is None:
             self._deferred.discard(key)
@@ -234,22 +240,24 @@ class Threads:
         repo = repo_view(settings, repo_id)
         forge, me = engine.forges[row["forge"]], engine.me(row["forge"])
         change = forge.change(row["path"], row["number"], me)
-        deferred = key in self._deferred
-        self._deferred.discard(key)
         if moved(row, change):
+            self._deferred.discard(key)
             return
         if repo["approval"] != "when_clean":
             forge.mark_reviewed(row["path"], change)
+            self._deferred.discard(key)
             return
         ready = eligibility(replace(change, review_requested=True), repo["rules"], me)
         if row["approved"] or ready.action != "review":
             if not row["approved"] and ready.action == "wait":
                 if not deferred:
                     engine.record("info", f"not approving yet: {ready.reason}", review_id=row["id"])
-                self._deferred.add(key)
+                return
+            self._deferred.discard(key)
             return
         forge.approve(row["path"], change)
         store.update(row["id"], approved=True)
+        self._deferred.discard(key)
         engine.record("info", f"approved at @{row['head_sha'][:8]}: every comment is fixed or answered",
                       review_id=row["id"])
 
@@ -285,7 +293,8 @@ class Threads:
     def accept(self, key: tuple, reply: str | None) -> None:
         """Accept the author's answer: reply if text is given (once), resolve, and count the thread as fixed."""
         item, forge, thread = self._disputed(key, write=True)
-        self.engine.store.update_thread(*key, pending="accepted")  # a resolve whose answer is lost still counts
+        if thread:  # a resolve whose answer is lost still counts, while the notes are those Filip accepted
+            self.engine.store.update_thread(*key, pending=f"accepted@{digest(notes(thread, self._me(item)))}")
         if reply and reply.strip():
             operation = f"{item['thread_id']}:accept:{(item['seen'] or '')[:12]}"
             if not replied(thread, operation, self._me(item)):
@@ -365,11 +374,11 @@ def notes(thread: Thread, me: str) -> list[Note]:
     return found or list(thread.notes[:1])
 
 
-def digest(items: list[Note]) -> str:
-    """Names `items` by id, author and body; "" for none."""
+def digest(items: list[Note], *extra: str) -> str:
+    """Names `items` by id, author and body (and `extra`); "" for none."""
     if not items:
         return ""
-    data = json.dumps([[n.id, n.author, n.body] for n in items], ensure_ascii=False)
+    data = json.dumps([[n.id, n.author, n.body] for n in items] + list(extra), ensure_ascii=False)
     return hashlib.sha256(data.encode()).hexdigest()[:16]
 
 

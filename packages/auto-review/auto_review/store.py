@@ -81,7 +81,8 @@ class Store:
     finding_id, thread_id (null until known: GitHub posts return a comment id, the thread is found by marker),
     status (`open`, `disputed`, `fixed`, `answered`, `accepted`, `resolved_elsewhere`, `closed`), seen (digest of
     the other people's notes already judged; null: none), reasoning, proposed_reply, updated_at, pending
-    (`fixed`/`answered`/`accepted` while the settling reply/resolve is in flight, or after it failed).
+    (`fixed@<notes digest>`, `answered@…` or `accepted@…` while the settling reply/resolve is in flight, or after it
+    failed).
     """
 
     def __init__(self, path: Path):

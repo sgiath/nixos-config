@@ -8,6 +8,7 @@ from dataclasses import replace
 from auto_review.forge.base import ForgeError
 from auto_review.models import Note, Posted
 from auto_review.note import REPLY_MARK
+from auto_review.t3 import T3Error
 from tests.fakes import REPO, change, raw_finding
 from tests.thread_case import ThreadCase
 
@@ -262,3 +263,79 @@ class ThreadSafetyTest(ThreadCase):
         self.forge.add(change(review_requested=False, reviewers=(), pipeline="success"))
         self.engine.tick()
         self.assertEqual(len(self.forge.approvals), 1)
+
+    def deferred(self):
+        """A sufficient answer settled while the pipeline runs: the approval waits."""
+        self.config["repos"][REPO]["approval"] = "when_clean"
+        _, review_id = self.follow_up(pipeline="running")
+        self.judged(review_id)
+        self.assertEqual(self.forge.approvals, [])
+        self.forge.add(change(review_requested=False, reviewers=(), pipeline="success"))
+
+    def test_deferred_approval_waits_out_quiet_hours(self):
+        self.deferred()
+        self.config["quiet_hours"] = {"enabled": True, "start": "00:00", "end": "23:59"}
+        self.engine.tick()
+        self.assertEqual(self.forge.approvals, [])
+        self.config["quiet_hours"] = {"enabled": False, "start": "00:00", "end": "23:59"}
+        self.engine.tick()
+        self.assertEqual(len(self.forge.approvals), 1)
+
+    def test_deferred_approval_skips_a_disabled_repo(self):
+        self.deferred()
+        self.config["repos"][REPO]["enabled"] = False
+        self.engine.tick()
+        self.assertEqual(self.forge.approvals, [])
+
+    def test_deferred_approval_survives_a_failed_write(self):
+        self.deferred()
+        working = self.forge.approve
+
+        def approve(*args):
+            raise ForgeError("temporary outage")
+
+        self.forge.approve = approve
+        self.engine.tick()
+        self.forge.approve = working
+        self.engine.tick()
+        self.assertEqual(len(self.forge.approvals), 1)
+
+    def test_retraction_before_a_manual_resolve_is_not_settled(self):
+        self.config["repos"][REPO]["approval"] = "when_clean"
+        _, review_id = self.follow_up()
+
+        def resolve(*args):
+            raise ForgeError("temporary outage")
+
+        working, self.forge.resolve = self.forge.resolve, resolve
+        self.judged(review_id)
+        self.add_note("alice", "author-4", "I retract that; the bug exists.")
+        working("team/service", 7, self.forge.discussions[KEY][0].id)
+        self.engine.tick()
+        self.assertEqual((self.tracked()["status"], self.forge.approvals), ("resolved_elsewhere", []))
+
+    def test_reply_left_by_a_stale_follow_up_is_judged_again(self):
+        _, review_id = self.follow_up()
+        self.add_note("sgiath", "manual-3", "This answer is insufficient.")
+        self.judged(review_id)
+        self.engine.tick()
+        self.assertEqual(len([r for r in self.follow_ups() if r["status"] == "running"]), 1)
+
+    def test_launch_retry_keeps_the_snapshot_the_agent_read(self):
+        self.posted()
+        self.author_reply()
+        self.forge.add(change(review_requested=False, reviewers=()))
+        launch = self.t3.launch
+
+        def lost(**kwargs):
+            launch(**kwargs)
+            raise T3Error("response lost")  # T3 started the thread on the first snapshot
+
+        self.t3.launch = lost
+        self.engine.tick()
+        review_id = self.follow_ups()[-1]["id"]
+        self.add_note("alice", "author-3", "My explanation was wrong.")
+        self.t3.launch = launch
+        self.engine.tick()
+        self.judged(review_id)
+        self.assertEqual(self.forge.resolutions, [])
