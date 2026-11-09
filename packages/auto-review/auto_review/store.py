@@ -12,6 +12,7 @@ from .models import Change, Selection
 from .note import marker, review_key
 
 ACTIVE = ("queued", "launching", "running", "limited", "deciding", "posting")
+BUSY = ACTIVE[1:]  # what counts against max_concurrent: everything active but queued
 FINISHED = ("done", "failed", "cancelled", "superseded")
 VIEWS = {"active": ACTIVE, "history": ("done", "cancelled", "superseded"), "failed": ("failed",)}
 

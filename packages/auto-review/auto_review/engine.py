@@ -19,23 +19,20 @@ from pathlib import Path
 from zoneinfo import ZoneInfo
 
 from . import bundle
-from .checkout import CheckoutError, HeadMoved
 from .forge.base import ForgeError
 from .models import Change, Selection
+from .launch import Launcher
 from .publish import Publisher
-from .rules import eligibility, moved
+from .rules import eligibility
 from .settings import CONTRACT, repo_view
-from .store import ACTIVE, Store
+from .store import ACTIVE, BUSY, Store
 from .t3 import T3Error
 from .threads import Threads
-from .threads import write as write_threads
 
 log = logging.getLogger("auto-review")
 
-BUSY = ("launching", "running", "limited", "deciding", "posting")
 STALL = timedelta(minutes=10)
 UNKNOWN_RESET = timedelta(minutes=30)
-LAUNCH_ATTEMPTS = 3
 IDENTITY_TTL = timedelta(hours=1)
 DISCOVERY_EVERY = timedelta(minutes=10)
 CONTINUE = "Continue where you left off. The usage limit that stopped this review has reset."
@@ -66,9 +63,9 @@ class Engine:
         self._waiting: list[dict] = []
         self._discovered: list[dict] = []
         self._discovered_at: datetime | None = None
-        self._launch_failures: dict[int, int] = {}
         self._settle_warned: set[int] = set()
         self._linked: set[str] = set()  # threads this process attached their MR/PR to
+        self.launcher = Launcher(self)
         self.publisher = Publisher(self)
         self.threads = Threads(self)
 
@@ -86,6 +83,7 @@ class Engine:
            `max_concurrent` running (launching, running, limited, deciding, posting count), under
            `max_launches_per_day`, and the review's provider has no unexpired limit. Before launching, re-read the
            change: a review whose MR closed, moved head/base or became ineligible is cancelled with that reason.
+           (launch.Launcher)
 
         4b. Before launching: per MR with an open or disputed thread of Filip's, queue a `follow_up` for new
            replies (threads.Threads.scan).
@@ -100,7 +98,7 @@ class Engine:
             self._settle_pending()
         self._discover(settings)
         self.threads.scan(settings)
-        self._launch_due(settings)
+        self.launcher.launch_due(settings)
         self.last_poll_at = _iso(self.now())
 
     def waiting(self) -> list[dict]:
@@ -139,7 +137,7 @@ class Engine:
             approved=False, settled=False, queued_at=_iso(self.now()),
             provider=selection[0], model=selection[1], effort=selection[2],
         )
-        self._launch_failures.pop(review_id, None)
+        self.launcher.failures.pop(review_id, None)
         self.record("info", f"retry queued as attempt {row['attempt'] + 1}", review_id=review_id)
 
     def post_anyway(self, review_id: int, finding_id: str) -> None:
@@ -253,7 +251,7 @@ class Engine:
             self._link(row, row["thread_id"])
         status = row["status"]
         if status == "launching":
-            return self._relaunch(row, settings)
+            return self.launcher.relaunch(row, settings)
         if status in ("deciding", "posting"):
             return self.publisher.publish(row, settings)
         state = self.t3.read(row["thread_id"])
@@ -385,103 +383,6 @@ class Engine:
         self._finish(row, "superseded", error=reason)
         self.record("info", reason, review_id=row["id"])
 
-    # Launching
-
-    def _launch_due(self, settings: dict) -> None:
-        now = self.now()
-        if settings["paused"] or self.quiet(now)[0]:
-            return
-        running = len(self.store.in_status(*BUSY))
-        cap = settings["max_launches_per_day"]
-        launched = self.launched_today(now)
-        limits = self.store.limits(_iso(now))
-        for row in self.store.in_status("queued"):
-            if running >= settings["max_concurrent"] or (cap is not None and launched >= cap):
-                return
-            if row["provider"] in limits or row["repo"] not in settings["repos"]:
-                continue
-            repo = repo_view(settings, row["repo"])
-            if not repo["enabled"]:
-                continue
-            if any(other["status"] in BUSY for other in self.store.for_mr(row["repo"], row["number"])):
-                continue  # one review of an MR at a time, whatever its kind
-            started = self._guard(row["id"], lambda r=row: self._launch(r, settings, repo))
-            if started:
-                running += 1
-                launched += 1
-
-    def _relaunch(self, row: dict, settings: dict) -> None:
-        """A launch interrupted before its thread id was saved: the same client request id replays it."""
-        if row["repo"] not in settings["repos"]:
-            return self.fail(row, "repo is no longer watched")
-        self._launch(row, settings, repo_view(settings, row["repo"]))
-
-    def _launch(self, row: dict, settings: dict, repo: dict) -> bool:
-        forge = self.forges[row["forge"]]
-        me = self.me(row["forge"])
-        change = forge.change(row["path"], row["number"], me)
-        follow_up = row["kind"] == "follow_up"  # judges Filip's own threads, so the review request does not matter
-        if reason := moved(row, change) or (None if follow_up else _skip(change, repo, me)):
-            if row["status"] == "launching":
-                self.fail(row, f"before launch: {reason}")
-            else:
-                self._finish(row, "cancelled", error=f"before launch: {reason}")
-                self.record("info", f"cancelled before launch: {reason}", review_id=row["id"])
-            return False
-        if not follow_up and eligibility(change, repo["rules"], me).action == "wait":
-            return False
-        if self.settings()["paused"] or self.quiet(self.now())[0]:
-            return False  # paused from the UI while this tick read the forge
-        now = _iso(self.now())
-        self.store.update(row["id"], status="launching")
-        self.store.record_launch(row["id"], row["attempt"], now)
-        try:
-            self.fetch(Path(repo["checkout"]), row["forge"], change)
-        except HeadMoved as error:
-            self._finish(row, "superseded", error=str(error))
-            self.record("info", f"head moved while fetching: {error}", review_id=row["id"])
-            return False
-        except CheckoutError as error:
-            self.fail(row, f"checkout: {error}")
-            return False
-        run_dir = self.run_dir(row)
-        # A retried launch may adopt a thread T3 already started on the first bundle: keep what that agent read.
-        if not (run_dir / "mr/own_threads.json").exists():
-            threads = forge.threads(row["path"], row["number"])
-            own, settled = self.threads.snapshot(row, threads, me)
-            if follow_up and not own:
-                self._finish(row, "cancelled", error="before launch: no open thread left to judge")
-                self.record("info", "cancelled before launch: no open thread left to judge", review_id=row["id"])
-                return False
-            bundle.write(run_dir, change, forge.diffs(row["path"], change), threads)
-            write_threads(run_dir, own, settled)
-        message = bundle.brief(row=row, repo=repo, change=change, run_dir=run_dir, me=me, threshold=repo["threshold"])
-        title = (f"{'Follow-up' if follow_up else 'Review'} {bundle.ref(row['forge'], row['path'], row['number'])}"
-                 f" @{row['head_sha'][:8]}")
-        try:
-            launched = self.t3.launch(
-                project=repo["t3_project"], title=title + (" (dry run)" if settings["dry_run"] else ""),
-                message=message, selection=Selection(row["provider"], row["model"], row["effort"]),
-                client_request_id=self.request_id(row),
-            )
-        except T3Error as error:
-            failures = self._launch_failures.get(row["id"], 0) + 1
-            self._launch_failures[row["id"]] = failures
-            if failures >= LAUNCH_ATTEMPTS:
-                self.fail(row, f"launch failed {failures} times: {error}")
-            else:
-                self.record("warn", f"launch failed, will retry: {error}", review_id=row["id"])
-            return False
-        self._launch_failures.pop(row["id"], None)
-        self.store.update(
-            row["id"], status="running", thread_id=launched["thread_id"], run_id=launched.get("run_id"),
-            thread_url=launched.get("url"), started_at=now, running_since=now, title=change.title,
-            dry_run=settings["dry_run"],
-        )
-        self.record("info", f"launched {row['model']}/{row['effort']} thread {launched['thread_id']}", review_id=row["id"])
-        self._link(row, launched["thread_id"])
-        return True
-
     # Helpers
 
     def _row(self, review_id: int) -> dict:
@@ -528,11 +429,6 @@ class Engine:
 
 def _key(row: dict) -> tuple:
     return (row["repo"], row["number"], row["head_sha"], row["base_sha"], row["target"])
-
-
-def _skip(change: Change, repo: dict, me: str) -> str | None:
-    verdict = eligibility(change, repo["rules"], me)
-    return verdict.reason if verdict.action == "skip" else None
 
 
 def _ref(row: dict) -> str:
