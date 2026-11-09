@@ -21,7 +21,9 @@ top-level worker threads, many of which reported back into the same transcript
 
 The [work-state](../../../../modules/home/agents/skills/work-state/SKILL.md) ledger moves state,
 decisions and pending questions into files that survive compaction. It does not stop machine events from arriving in
-the coordinator's transcript.
+the coordinator's transcript. [Work-state hooks](2026-11-08-work-state-hooks.md) propose file-only checks
+(re-adding the ledger after compaction, enforcing the open-question list) and leave event intake and live status
+to this note.
 
 ## Proposal
 
