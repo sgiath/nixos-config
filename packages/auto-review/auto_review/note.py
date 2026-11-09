@@ -16,6 +16,8 @@ DEFAULT_TEMPLATE = (
     "**{finding_id} · {disposition} · how often {frequency}/10 × how bad {severity}/10 = {score} — {title}**"
 )
 
+REPLY_NOTE = "> [!NOTE]\n> Automated review published on behalf of @{reviewer}"
+
 WORD = re.compile(r"\{([A-Za-z_][A-Za-z0-9_]*)\}")
 MARKER = re.compile(r"<!-- auto-review:v1 key=\S+ finding=\S+ -->")
 
@@ -57,3 +59,19 @@ def own_markers(threads: list[Thread], me: str) -> dict[str, tuple[str, Note]]:
             for match in MARKER.finditer(item.body):
                 found.setdefault(match.group(0), (thread.id, item))
     return found
+
+
+def review_key(row: dict) -> str:
+    """Names one attempt at one diff in the hidden marker of each comment it posts."""
+    return (f"{row['repo']}:{row['number']}:{row['head_sha'][:12]}:{row['base_sha'][:12]}:{row['target']}"
+            f":{row['attempt']}")
+
+
+def reply_body(me: str, text: str, key: str) -> str:
+    """An automated reply in one of Filip's threads: the short note, the text, and a hidden marker naming the
+    review that wrote it, so a reply whose answer was lost is not posted twice."""
+    return f"{REPLY_NOTE.format(reviewer=me)}\n\n{text}\n\n{reply_marker(key)}"
+
+
+def reply_marker(key: str) -> str:
+    return f"<!-- auto-review:v1 reply key={key} -->"

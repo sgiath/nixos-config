@@ -38,6 +38,12 @@ class Forge(Protocol):
         """GitLab: set `me`'s reviewer state to "requested changes", with the same drafts guard. GitHub: nothing (a
         REQUEST_CHANGES review needs a top-level body)."""
 
+    def reply(self, path: str, number: int, thread_id: str, body: str) -> Posted:
+        """Reply in the thread `thread_id` (GitLab discussion id, GitHub review-thread node id)."""
+
+    def resolve(self, path: str, number: int, thread_id: str) -> None:
+        """Mark the thread resolved."""
+
     def approve(self, path: str, change: Change) -> None:
         """Approve as `me`, pinned to `change.head_sha`; nothing when `me` already approved."""
 

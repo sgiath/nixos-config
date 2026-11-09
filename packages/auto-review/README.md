@@ -49,6 +49,33 @@ Dry run stops at step 6: findings are recorded and shown, nothing is written to 
 you post yourself with *Post anyway* in the UI. Pause stops
 launching and posting; running threads are still monitored.
 
+## After the comment: replies and fixes
+
+Every comment the service posts is tracked (SQLite `threads`, keyed by its hidden marker) until it is settled.
+
+- **Watching.** Each poll reads the MRs that have an `open` or `disputed` thread. A thread someone resolved on the
+  forge becomes `resolved_elsewhere` and is no longer watched; a closed or merged MR closes its threads. Filip's own
+  replies only count as seen. A reply by anyone else queues one `follow_up` review at the MR's current head
+  (`kind: follow_up`, keyed by the reply note ids, so the same reply never queues twice), unless a review of that MR
+  is active. Follow-ups do not need the review request; they share the queue, limits, pause, quiet hours, cancel and
+  retry with reviews, and a new head supersedes them.
+- **Judging.** A follow-up (`prompts/follow_up.md`) only judges threads; every review of a new head also judges
+  them (`prompts/threads.md` in both). The run directory gets `mr/own_threads.json` (open/disputed threads with all
+  their notes) and `mr/settled_threads.json`; the verdict's `threads` must judge each listed thread once as
+  `fixed`, `answered`, `open` or `disputed`, with reasoning and, except for `open`, a reply in Filip's voice.
+- **Acting.** `fixed`/`answered`: the reply is posted in the thread (short note on top, hidden reply marker so a lost
+  answer is not posted twice), then the thread is resolved; from then on the thread counts as fixed, and a later
+  finding tied to it is `settled` (not posted, not blocking). `open`: nothing is written. `disputed`: nothing is
+  written; the review ends `needs_attention`, Filip is notified, and the UI's *your decision* section shows the
+  reasoning and the proposed reply, which he can send (thread stays open), accept the author's answer (resolve; it
+  counts as fixed) or keep open. A failed reply or resolve leaves the thread open and the review `needs_attention`.
+- **Approving.** An open or disputed thread blocks approval of any review of the MR. After a follow-up or an accepted
+  answer settles threads, the latest finished review is reconsidered: if it is at the current head, read every file,
+  found no injection, and each of its findings reaching the threshold now sits in a settled thread, it is approved
+  under `approval: when_clean`, or the MR is marked reviewed under `never` (clearing an earlier *requested
+  changes* on GitLab). An open thread scoring at least `request_changes_threshold` keeps requesting changes.
+- Dry run records the judgments' reasoning and writes nothing.
+
 ## Settings and which one wins
 
 Nix (`services.auto-review.settings`) writes the defaults to a read-only file in the store. The UI writes only the
@@ -206,7 +233,8 @@ The item above plus `summary` (the agent's), `not_reviewed`, `injection_attempts
 }
 ```
 
-Finding `state`: `posted`, `would_post` (dry run), `below` (under threshold), `already_open`, `unanchored`,
+Finding `state`: `posted`, `would_post` (dry run), `below` (under threshold), `already_open`, `settled` (tied to one
+of Filip's threads that was fixed, answered or accepted), `unanchored`,
 `not_posted` (held: the MR changed before posting, or the reviewer reported text aimed at it).
 
 ### Actions
@@ -217,6 +245,14 @@ Finding `state`: `posted`, `would_post` (dry run), `below` (under threshold), `a
   ("post anyway"), then set the GitLab review state as a normal post would; refused with `409` when the MR head or
   base moved since the review.
 - `POST /api/poll`: poll now.
+- `POST /api/threads/accept|reply|dismiss` with `{"repo", "number", "marker", "text"}`: Filip's decision on a disputed
+  thread: accept the answer (optional `text` is replied first, then the thread is resolved), send `text` as his reply
+  (stays open), or keep it open. `409` unless the thread is disputed, or while paused (accept, reply).
+
+### `GET /api/threads`
+
+Disputed threads waiting for Filip: `repo`, `number`, `marker`, `review_id`, `finding_id`, `title`, `score`,
+`comment_url`, `reasoning`, `proposed_reply`, `updated_at`, `mr_url`, `mr_title`.
 
 ### `GET /api/waiting`
 

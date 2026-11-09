@@ -27,6 +27,8 @@ from .rules import eligibility, moved
 from .settings import CONTRACT, repo_view
 from .store import ACTIVE, Store
 from .t3 import T3Error
+from .threads import Threads
+from .threads import write as write_threads
 
 log = logging.getLogger("auto-review")
 
@@ -68,6 +70,7 @@ class Engine:
         self._settle_warned: set[int] = set()
         self._linked: set[str] = set()  # threads this process attached their MR/PR to
         self.publisher = Publisher(self)
+        self.threads = Threads(self)
 
     # The poll
 
@@ -84,6 +87,9 @@ class Engine:
            `max_launches_per_day`, and the review's provider has no unexpired limit. Before launching, re-read the
            change: a review whose MR closed, moved head/base or became ineligible is cancelled with that reason.
 
+        4b. Before launching: per MR with an open or disputed thread of Filip's, queue a `follow_up` for new
+           replies (threads.Threads.scan).
+
         Errors are contained per repo and per review; each is recorded as an event and the tick goes on.
         """
         settings = self.settings()
@@ -93,6 +99,7 @@ class Engine:
         if settings["auto_settle"]:
             self._settle_pending()
         self._discover(settings)
+        self.threads.scan(settings)
         self._launch_due(settings)
         self.last_poll_at = _iso(self.now())
 
@@ -141,6 +148,18 @@ class Engine:
         head or base moved."""
         self.publisher.post_anyway(self._row(review_id), finding_id)
 
+    def accept_thread(self, key: tuple, reply: str | None) -> None:
+        """Accept the author's answer on a disputed thread: optional reply, resolve, then reconsider approval."""
+        self.threads.accept(key, reply)
+
+    def reply_thread(self, key: tuple, body: str) -> None:
+        """Post Filip's reply on a disputed thread; it stays open."""
+        self.threads.reply(key, body)
+
+    def dismiss_thread(self, key: tuple) -> None:
+        """Keep a disputed thread open without writing anything."""
+        self.threads.dismiss(key)
+
     # Status for the UI
 
     def record(self, level: str, message: str, *, review_id: int | None = None) -> None:
@@ -172,8 +191,8 @@ class Engine:
 
     def summary(self, row: dict) -> dict:
         findings = self.store.findings(row["id"], row["attempt"])
-        counts = {"posted": 0, "would_post": 0, "below": 0, "already_open": 0, "already_resolved": 0, "unanchored": 0,
-                  "not_posted": 0}
+        counts = {"posted": 0, "would_post": 0, "below": 0, "already_open": 0, "already_resolved": 0, "settled": 0,
+                  "unanchored": 0, "not_posted": 0}
         for finding in findings:
             if finding["state"] in counts:
                 counts[finding["state"]] += 1
@@ -181,7 +200,7 @@ class Engine:
             **{k: row[k] for k in (
                 "id", "attempt", "repo", "forge", "number", "title", "url", "author", "head_sha", "base_sha",
                 "target", "status", "outcome", "thread_url", "dry_run", "queued_at", "started_at", "finished_at",
-                "limited_until", "error", "approved", "settled",
+                "limited_until", "error", "approved", "settled", "kind",
             )},
             "reviewer": {"provider": row["provider"], "model": row["model"], "effort": row["effort"]},
             "elapsed_seconds": self._elapsed(row),
@@ -396,14 +415,15 @@ class Engine:
         forge = self.forges[row["forge"]]
         me = self.me(row["forge"])
         change = forge.change(row["path"], row["number"], me)
-        if reason := moved(row, change) or _skip(change, repo, me):
+        follow_up = row["kind"] == "follow_up"  # judges Filip's own threads, so the review request does not matter
+        if reason := moved(row, change) or (None if follow_up else _skip(change, repo, me)):
             if row["status"] == "launching":
                 self.fail(row, f"before launch: {reason}")
             else:
                 self._finish(row, "cancelled", error=f"before launch: {reason}")
                 self.record("info", f"cancelled before launch: {reason}", review_id=row["id"])
             return False
-        if eligibility(change, repo["rules"], me).action == "wait":
+        if not follow_up and eligibility(change, repo["rules"], me).action == "wait":
             return False
         if self.settings()["paused"] or self.quiet(self.now())[0]:
             return False  # paused from the UI while this tick read the forge
@@ -420,9 +440,17 @@ class Engine:
             self.fail(row, f"checkout: {error}")
             return False
         run_dir = self.run_dir(row)
-        bundle.write(run_dir, change, forge.diffs(row["path"], change), forge.threads(row["path"], row["number"]))
+        threads = forge.threads(row["path"], row["number"])
+        own, settled = self.threads.snapshot(row, threads, me)
+        if follow_up and not own:
+            self._finish(row, "cancelled", error="before launch: no open thread left to judge")
+            self.record("info", "cancelled before launch: no open thread left to judge", review_id=row["id"])
+            return False
+        bundle.write(run_dir, change, forge.diffs(row["path"], change), threads)
+        write_threads(run_dir, own, settled)
         message = bundle.brief(row=row, repo=repo, change=change, run_dir=run_dir, me=me, threshold=repo["threshold"])
-        title = f"Review {bundle.ref(row['forge'], row['path'], row['number'])} @{row['head_sha'][:8]}"
+        title = (f"{'Follow-up' if follow_up else 'Review'} {bundle.ref(row['forge'], row['path'], row['number'])}"
+                 f" @{row['head_sha'][:8]}")
         try:
             launched = self.t3.launch(
                 project=repo["t3_project"], title=title + (" (dry run)" if settings["dry_run"] else ""),

@@ -112,6 +112,18 @@ class Finding:
 
 
 @dataclass(frozen=True)
+class Judgment:
+    """The reviewer's view of one of Filip's open threads: `fixed`, `answered` (the reply explains it), `open`
+    (still a problem, no new argument) or `disputed` (the reply does not convince). `reply` is the text to post
+    (fixed/answered) or to propose to Filip (disputed)."""
+
+    thread_id: str
+    status: str
+    reasoning: str
+    reply: str
+
+
+@dataclass(frozen=True)
 class Verdict:
     status: str
     error: str | None
@@ -119,12 +131,13 @@ class Verdict:
     findings: tuple[Finding, ...]
     not_reviewed: tuple[str, ...]
     injection_attempts: tuple[str, ...]
+    threads: tuple[Judgment, ...] = ()
 
 
 @dataclass(frozen=True)
 class Placed:
     """A finding and what the decision does with it: `post`, `below`, `already_open`, `already_resolved`,
-    `unanchored`, `not_posted`."""
+    `settled` (its thread is one of Filip's that was fixed or answered), `unanchored`, `not_posted`."""
 
     finding: Finding
     state: str

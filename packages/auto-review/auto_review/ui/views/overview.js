@@ -1,16 +1,17 @@
-// Overview: active reviews, failures, the waiting list and discovered repos.
+// Overview: replies waiting for your decision, active reviews, failures, the waiting list and discovered repos.
 
 import { h, replace, sectionHead } from "../lib/dom.js";
 import { now, tickAll } from "../lib/time.js";
 import { api } from "../api.js";
 import { pendingKeys } from "../store.js";
-import { reviewRow, waitingRow, discoveredRow, stable, syncElapsed } from "./rows.js";
+import { reviewRow, waitingRow, discoveredRow, decideRow, stable, syncElapsed } from "./rows.js";
 
 const SECTIONS = [
-  { key: "active", index: "01", label: "active", empty: "nothing is being reviewed" },
-  { key: "failed", index: "02", label: "failed", empty: "no failed reviews" },
-  { key: "waiting", index: "03", label: "waiting", empty: "every candidate is eligible or reviewed" },
-  { key: "discovered", index: "04", label: "discovered", empty: "no review requests in unwatched repos" },
+  { key: "decide", index: "01", label: "your decision", empty: "no disputed replies" },
+  { key: "active", index: "02", label: "active", empty: "nothing is being reviewed" },
+  { key: "failed", index: "03", label: "failed", empty: "no failed reviews" },
+  { key: "waiting", index: "04", label: "waiting", empty: "every candidate is eligible or reviewed" },
+  { key: "discovered", index: "05", label: "discovered", empty: "no review requests in unwatched repos" },
 ];
 
 export const overview = {
@@ -23,7 +24,8 @@ export const overview = {
 
   async refresh() {
     const settle = (p) => p.catch((err) => ({ error: err.message }));
-    const [active, failed, waiting, discovered] = await Promise.all([
+    const [decide, active, failed, waiting, discovered] = await Promise.all([
+      settle(api.threads()),
       settle(api.reviews({ view: "active" })),
       settle(api.reviews({ view: "failed" })),
       settle(api.waiting()),
@@ -31,10 +33,11 @@ export const overview = {
     ]);
     const fetchedAt = new Date(now()).toISOString();
     const onAction = () => this.refresh();
-    this.renderList(SECTIONS[0], active, (r) => reviewRow(r, { fetchedAt, onAction }), fetchedAt);
-    this.renderList(SECTIONS[1], failed, (r) => reviewRow(r, { fetchedAt, onAction }), fetchedAt);
-    this.renderList(SECTIONS[2], waiting, waitingRow);
-    this.renderList(SECTIONS[3], discovered, discoveredRow);
+    this.renderList(SECTIONS[0], decide, (t) => decideRow(t, onAction));
+    this.renderList(SECTIONS[1], active, (r) => reviewRow(r, { fetchedAt, onAction }), fetchedAt);
+    this.renderList(SECTIONS[2], failed, (r) => reviewRow(r, { fetchedAt, onAction }), fetchedAt);
+    this.renderList(SECTIONS[3], waiting, waitingRow);
+    this.renderList(SECTIONS[4], discovered, discoveredRow);
   },
 
   // re-render a section only when its data (or a pending action touching it) changed,

@@ -4,7 +4,7 @@ from . import bundle
 from .diffs import DiffIndex
 from .forge.base import ForgeError
 from .models import Comment, Finding
-from .note import DEFAULT_TEMPLATE, comment_body, marker, own_markers
+from .note import DEFAULT_TEMPLATE, comment_body, marker, own_markers, review_key
 from .rules import eligibility, moved
 from .settings import repo_view
 from .verdict import VerdictError, decide, load
@@ -28,12 +28,15 @@ class Publisher:
             return engine.fail(row, "repo is no longer watched")
         repo = repo_view(settings, row["repo"])
         run_dir = engine.run_dir(row)
+        follow_up = row["kind"] == "follow_up"
         try:
             verdict = load(run_dir / "verdict.json", review_id=row["id"], attempt=row["attempt"],
-                           head_sha=row["head_sha"], base_sha=row["base_sha"])
+                           head_sha=row["head_sha"], base_sha=row["base_sha"], follow_up=follow_up)
             forge, me = engine.forges[row["forge"]], engine.me(row["forge"])
             change = forge.change(row["path"], row["number"], me)
             threads = forge.threads(row["path"], row["number"])
+            if follow_up:
+                return self._follow_up(row, settings, verdict, change, threads, me)
             decision = decide(verdict, threshold=repo["threshold"], index=DiffIndex(bundle.diffs(run_dir)),
                               threads=threads)
         except VerdictError as error:
@@ -44,6 +47,20 @@ class Publisher:
         if not held and allowed.action == "wait":
             return
         dry_run = settings["dry_run"]
+        disputed, errors = [], []
+        if not held:
+            # Threads first: a finding tied to a thread this verdict calls fixed or answered is settled below.
+            if not dry_run and self._changed(settings, row["repo"]):
+                return
+            disputed, errors = engine.threads.apply(row, verdict, threads, me, dry_run=dry_run)
+            decision = decide(verdict, threshold=repo["threshold"], index=DiffIndex(bundle.diffs(run_dir)),
+                              threads=threads, settled=engine.threads.settled_ids(row["repo"], row["number"]))
+        outcome, reason = decision.outcome, decision.reason
+        if decision.outcome == "clean" and (waiting := engine.threads.watching(row)):
+            outcome, reason = "findings", f"earlier comments still open: {', '.join(t['finding_id'] for t in waiting)}"
+        if disputed or errors:
+            outcome, reason = "needs_attention", "; ".join(
+                [f"reply needs your decision on {line}" for line in disputed] + [f"thread write failed: {e}" for e in errors])
         stored = {f["finding_id"]: f for f in store.findings(row["id"], row["attempt"])}
         rows = []
         for placed in decision.placed:
@@ -57,13 +74,13 @@ class Publisher:
                 rows.append(_finding_row(placed.finding, state))
         store.save_findings(row["id"], row["attempt"], rows)
         store.update(row["id"], summary=verdict.summary, not_reviewed=list(verdict.not_reviewed),
-                     injection_attempts=list(verdict.injection_attempts), outcome=decision.outcome, dry_run=dry_run)
-        blocking = _blocking(decision, repo)
+                     injection_attempts=list(verdict.injection_attempts), outcome=outcome, dry_run=dry_run)
+        blocking = _blocking(decision, repo, engine.threads.watching(row))
         if held or dry_run:
             note = f"not posted: {held}" if held else "dry run: nothing posted"
             if dry_run and not held and blocking:
                 note += f", would request changes ({blocking})"
-            return self._done(row, decision.outcome, note)
+            return self._done(row, outcome, note)
 
         if self._changed(settings, row["repo"]):
             return  # paused, dry run or policy changed from the UI during the reads above; decide again next tick
@@ -74,7 +91,8 @@ class Publisher:
         posted = any(f["state"] == "posted" for f in store.findings(row["id"], row["attempt"]))
         if posted or blocking:
             self._review_state(row, change, blocking)
-        if repo["approval"] == "when_clean" and decision.approvable and not row["approved"]:
+        approvable = decision.approvable and outcome == "clean"
+        if repo["approval"] == "when_clean" and approvable and not row["approved"]:
             if self._changed(settings, row["repo"]):
                 return
             try:
@@ -83,7 +101,31 @@ class Publisher:
                 return engine.fail(row, f"approval failed: {error}")
             store.update(row["id"], approved=True)
             engine.record("info", f"approved at @{row['head_sha'][:8]}", review_id=row["id"])
-        self._done(row, decision.outcome, decision.reason)
+        self._done(row, outcome, reason)
+
+    def _follow_up(self, row: dict, settings: dict, verdict, change, threads, me: str) -> None:
+        """A follow-up only judges threads: apply the judgments, then see whether the MR can now be approved."""
+        engine, store = self.engine, self.engine.store
+        if reason := moved(row, change):
+            engine.finish(row, "superseded", error=reason)
+            engine.record("info", f"not applied: {reason}", review_id=row["id"])
+            return
+        dry_run = settings["dry_run"]
+        if not dry_run and self._changed(settings, row["repo"]):
+            return
+        store.update(row["id"], summary=verdict.summary, dry_run=dry_run)
+        disputed, errors = engine.threads.apply(row, verdict, threads, me, dry_run=dry_run)
+        if not dry_run:
+            engine.threads.reconsider(row["repo"], row["number"], settings)
+        judged = ", ".join(f"{j.status}" for j in verdict.threads) or "nothing to judge"
+        if disputed or errors:
+            outcome, note = "needs_attention", "; ".join(
+                [f"reply needs your decision on {line}" for line in disputed] + [f"thread write failed: {e}" for e in errors])
+        elif store.threads(row["repo"], row["number"], ("open", "disputed")):
+            outcome, note = "findings", f"judged {judged}; comments still open"
+        else:
+            outcome, note = "clean", f"judged {judged}; every comment is settled"
+        self._done(row, outcome, ("dry run: " if dry_run else "") + note)
 
     def post_anyway(self, row: dict, finding_id: str) -> None:
         from .engine import ActionError
@@ -114,14 +156,20 @@ class Publisher:
             thread_id, note = markers[mark]  # an earlier request was posted but its answer was lost
             store.update_finding(row["id"], row["attempt"], finding_id, state="posted",
                                  url=_note_url(row["forge"], change.url, note.id), remote_id=thread_id)
+            self._track(row, finding_id, thread_id)
         else:
             body = comment_body(_template(settings), finding, _values(row, repo, finding, me), key)
             [receipt] = forge.post(row["path"], change, [Comment(finding.id, anchor, body, mark)])
             store.update_finding(row["id"], row["attempt"], finding_id, state="posted", url=receipt.url,
                                  remote_id=receipt.id)
+            self._track(row, finding_id, receipt.id if row["forge"] == "gitlab" else None)
             engine.record("info", f"posted {finding_id} on request", review_id=row["id"])
         blocking = f"{finding.id} ({finding.score})" if finding.score >= repo["request_changes_threshold"] else ""
         self._review_state(row, change, blocking)
+
+    def _track(self, row: dict, finding_id: str, thread_id: str | None) -> None:
+        """Watch the posted comment's thread. GitHub posts return a comment id; the thread is found by marker."""
+        self.engine.store.track(row, finding_id, thread_id, self.engine.now().strftime("%Y-%m-%dT%H:%M:%SZ"))
 
     def _review_state(self, row: dict, change, blocking: str) -> None:
         """Request changes when `blocking` names findings, else mark the MR reviewed; a failure only warns."""
@@ -147,6 +195,7 @@ class Publisher:
                 thread_id, note = markers[mark]
                 store.update_finding(row["id"], row["attempt"], placed.finding.id, state="posted",
                                      url=_note_url(row["forge"], change.url, note.id), remote_id=thread_id)
+                self._track(row, placed.finding.id, thread_id)
                 continue
             body = comment_body(_template(engine.settings()), placed.finding,
                                 _values(row, repo, placed.finding, me), key)
@@ -171,6 +220,7 @@ class Publisher:
         for receipt in receipts:
             store.update_finding(row["id"], row["attempt"], receipt.finding_id, state="posted", url=receipt.url,
                                  remote_id=receipt.id)
+            self._track(row, receipt.finding_id, receipt.id if row["forge"] == "gitlab" else None)
         engine.record("info", f"posted {', '.join(r.finding_id for r in receipts)}", review_id=row["id"])
         return True
 
@@ -197,12 +247,6 @@ class Publisher:
             engine.notify(f"Review needs you: {bundle.ref(row['forge'], row['path'], row['number'])}", note)
 
 
-def review_key(row: dict) -> str:
-    """Names one attempt at one diff in the hidden marker of each comment it posts."""
-    return (f"{row['repo']}:{row['number']}:{row['head_sha'][:12]}:{row['base_sha'][:12]}:{row['target']}"
-            f":{row['attempt']}")
-
-
 def _template(settings: dict) -> str:
     return settings["note_template"] or DEFAULT_TEMPLATE
 
@@ -217,12 +261,16 @@ def _values(row: dict, repo: dict, finding: Finding, me: str) -> dict:
     }
 
 
-def _blocking(decision, repo: dict) -> str:
-    """The findings that request changes: posted (or about to be) or already open, scoring at least the repo's
-    `request_changes_threshold`, as "SR-1 (30), SR-3 (42)"; empty when none does."""
-    found = [p.finding for p in decision.placed if p.state in ("post", "already_open")
-             and p.finding.score >= repo["request_changes_threshold"]]
-    return ", ".join(f"{f.id} ({f.score})" for f in found)
+def _blocking(decision, repo: dict, watching: list[dict] = ()) -> str:
+    """The findings that request changes: posted (or about to be) or already open, or an earlier comment still open
+    or disputed, scoring at least the repo's `request_changes_threshold`, as "SR-1 (30), SR-3 (42)"; empty when
+    none does."""
+    limit = repo["request_changes_threshold"]
+    found = [f"{p.finding.id} ({p.finding.score})" for p in decision.placed
+             if p.state in ("post", "already_open") and p.finding.score >= limit]
+    found += [f"{t['finding_id']} of review {t['review_id']} ({t['score']})" for t in watching
+              if (t["score"] or 0) >= limit]
+    return ", ".join(found)
 
 
 def harness(provider: str) -> str:

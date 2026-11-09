@@ -13,6 +13,12 @@ THREADS_QUERY = (
     "{pullRequest(number:$number){reviewThreads(first:100,after:$endCursor){pageInfo{hasNextPage endCursor}"
     " nodes{id isResolved comments(first:100){nodes{databaseId author{login} body path line originalLine url}}}}}}}"
 )
+# FIXME: comments(first:100) is not paginated, so a reply after a thread's 100th comment is never seen. Paginate the
+# comments of tracked threads if a review thread that long ever turns up.
+ROOT_COMMENT_QUERY = (
+    "query($id:ID!){node(id:$id){... on PullRequestReviewThread{comments(first:1){nodes{databaseId}}}}}"
+)
+RESOLVE_MUTATION = "mutation($id:ID!){resolveReviewThread(input:{threadId:$id}){thread{id isResolved}}}"
 PR_FIELDS = "number,title,body,url,state,isDraft,author,labels,headRefOid,baseRefName,baseRefOid,reviewRequests,statusCheckRollup"
 FAILED = {"FAILURE", "CANCELLED", "TIMED_OUT", "ACTION_REQUIRED", "STARTUP_FAILURE", "ERROR"}
 PASSED = {"SUCCESS", "NEUTRAL", "SKIPPED"}
@@ -130,6 +136,15 @@ class GitHub:
                 return
         self._post(f"repos/{path}/pulls/{change.number}/reviews", {"commit_id": change.head_sha, "event": "APPROVE"})
 
+    def reply(self, path: str, number: int, thread_id: str, body: str) -> Posted:
+        """`thread_id` is the review thread's node id; GitHub replies go to the thread's first comment."""
+        root = self._graphql(ROOT_COMMENT_QUERY, thread_id)["node"]["comments"]["nodes"][0]["databaseId"]
+        created = self._post(f"repos/{path}/pulls/{number}/comments/{root}/replies", {"body": body})
+        return Posted("", str(created["id"]), created.get("html_url", ""))
+
+    def resolve(self, path: str, number: int, thread_id: str) -> None:
+        self._graphql(RESOLVE_MUTATION, thread_id)
+
     def discovered(self, me: str) -> list[dict]:
         query = quote("is:pr is:open review-requested:@me archived:false")
         found = self._get(f"search/issues?q={query}&per_page=100")
@@ -143,6 +158,15 @@ class GitHub:
             }
             for item in found.get("items", [])
         ]
+
+    def _graphql(self, query: str, node_id: str) -> dict:
+        try:
+            out = json.loads(run(["gh", "api", "graphql", "-f", f"query={query}", "-F", f"id={node_id}"], timeout=60))
+        except (CommandError, ValueError) as error:
+            raise ForgeError(f"GraphQL on {node_id}: {error}") from error
+        if out.get("errors"):
+            raise ForgeError(f"GraphQL on {node_id}: {out['errors']}")
+        return out["data"]
 
     def _get(self, path: str):
         try:

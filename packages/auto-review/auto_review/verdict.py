@@ -10,18 +10,20 @@ import re
 from pathlib import Path
 
 from .diffs import DiffIndex
-from .models import Decision, Finding, Placed, Thread, Verdict
+from .models import Decision, Finding, Judgment, Placed, Thread, Verdict
 
 SCHEMA = "auto-review/v1"
 FINDING_ID = re.compile(r"^SR-\d{1,3}$")
+JUDGMENTS = ("fixed", "answered", "open", "disputed")
 
 
 class VerdictError(Exception):
     pass
 
 
-def load(path: Path, *, review_id: int, attempt: int, head_sha: str, base_sha: str) -> Verdict:
-    """Parse and validate `verdict.json`; it must name this review id, attempt, head and base."""
+def load(path: Path, *, review_id: int, attempt: int, head_sha: str, base_sha: str, follow_up: bool = False) -> Verdict:
+    """Parse and validate `verdict.json`; it must name this review id, attempt, head and base, and judge exactly the
+    threads listed in the run's `mr/own_threads.json`. A follow-up reports no findings."""
     try:
         data = json.loads(path.read_text())
     except OSError as error:
@@ -40,6 +42,14 @@ def load(path: Path, *, review_id: int, attempt: int, head_sha: str, base_sha: s
     ids = [f.id for f in findings]
     if len(ids) != len(set(ids)):
         raise VerdictError("finding ids repeat")
+    if follow_up and findings:
+        raise VerdictError("a follow-up reports no findings")
+    listed = path.parent / "mr/own_threads.json"
+    expected = [t["thread_id"] for t in json.loads(listed.read_text())] if listed.exists() else []
+    judgments = tuple(_judgment(raw, index) for index, raw in enumerate(data.get("threads") or []))
+    judged = [j.thread_id for j in judgments]
+    if sorted(judged) != sorted(expected):
+        raise VerdictError(f"threads must judge each of {expected} once, got {judged}")
     return Verdict(
         status=data["status"],
         error=_text(data.get("error")) or None,
@@ -47,13 +57,17 @@ def load(path: Path, *, review_id: int, attempt: int, head_sha: str, base_sha: s
         findings=findings,
         not_reviewed=tuple(str(p) for p in _list(data, "not_reviewed")),
         injection_attempts=tuple(str(a) for a in _list(data, "injection_attempts")),
+        threads=judgments,
     )
 
 
-def decide(verdict: Verdict, *, threshold: int, index: DiffIndex, threads: list[Thread]) -> Decision:
+def decide(verdict: Verdict, *, threshold: int, index: DiffIndex, threads: list[Thread],
+           settled: frozenset[str] = frozenset()) -> Decision:
     """Place every finding:
 
     - `below` when `frequency * severity < threshold`;
+    - `settled` when its `existing_thread_id` is one of Filip's threads that was fixed or answered (`settled`):
+      decided, never posted again and not blocking;
     - `already_open` / `already_resolved` when its `existing_thread_id` names an unresolved / resolved thread (not
       posted again, but it still reaches the threshold, so it blocks approval), `unanchored` when it names no known
       thread;
@@ -72,6 +86,8 @@ def decide(verdict: Verdict, *, threshold: int, index: DiffIndex, threads: list[
     for finding in verdict.findings:
         if finding.score < threshold:
             placed.append(Placed(finding, "below"))
+        elif finding.existing_thread_id in settled:
+            placed.append(Placed(finding, "settled"))
         elif finding.existing_thread_id:
             thread = known.get(finding.existing_thread_id)
             if thread is None:
@@ -113,6 +129,19 @@ def _text(value) -> str:
 
 def _int(value) -> bool:
     return isinstance(value, int) and not isinstance(value, bool)
+
+
+def _judgment(raw, index: int) -> Judgment:
+    if not isinstance(raw, dict) or not _text(raw.get("thread_id")):
+        raise VerdictError(f"thread judgment {index} needs a thread_id")
+    status = raw.get("status")
+    if status not in JUDGMENTS:
+        raise VerdictError(f"thread {raw['thread_id']}: status must be one of {', '.join(JUDGMENTS)}, got {status!r}")
+    if not _text(raw.get("reasoning")):
+        raise VerdictError(f"thread {raw['thread_id']}: reasoning is required")
+    if status != "open" and not _text(raw.get("reply")):
+        raise VerdictError(f"thread {raw['thread_id']}: a {status} judgment needs a reply")
+    return Judgment(str(raw["thread_id"]).strip(), status, _text(raw["reasoning"]), _text(raw.get("reply")))
 
 
 def _finding(raw, index: int) -> Finding:

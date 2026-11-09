@@ -117,6 +117,21 @@ class GitLab:
         except CommandError as error:
             raise ForgeError(f"approving {change.url} at {change.head_sha[:8]}: {error}") from error
 
+    def reply(self, path: str, number: int, thread_id: str, body: str) -> Posted:
+        base = f"{_project(path)}/merge_requests/{number}/discussions/{thread_id}"
+        try:
+            created = json.loads(self._post(f"{base}/notes", {"body": body}))
+        except (CommandError, ValueError) as error:
+            raise ForgeError(f"replying in discussion {thread_id} of {path}!{number}: {error}") from error
+        return Posted("", str(created["id"]), "")
+
+    def resolve(self, path: str, number: int, thread_id: str) -> None:
+        base = f"{_project(path)}/merge_requests/{number}/discussions/{thread_id}"
+        try:
+            self._post(base, {"resolved": True}, method="PUT")
+        except CommandError as error:
+            raise ForgeError(f"resolving discussion {thread_id} of {path}!{number}: {error}") from error
+
     def discovered(self, me: str) -> list[dict]:
         items = self._get_all("merge_requests", {"scope": "all", "state": "opened", "reviewer_username": me})
         return [
@@ -144,11 +159,11 @@ class GitLab:
             raise ForgeError(f"GET {path}: {error}") from error
 
     @staticmethod
-    def _post(path: str, payload: dict) -> str:
+    def _post(path: str, payload: dict, method: str = "POST") -> str:
         with tempfile.NamedTemporaryFile("w", suffix=".json") as handle:
             json.dump(payload, handle)
             handle.flush()
-            cmd = ["glab", "api", "--method", "POST", path, "--header", "Content-Type: application/json"]
+            cmd = ["glab", "api", "--method", method, path, "--header", "Content-Type: application/json"]
             return run([*cmd, "--input", handle.name], timeout=60)
 
 

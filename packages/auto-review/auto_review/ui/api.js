@@ -43,6 +43,7 @@ export const api = {
   reviews: (params) => get(`/api/reviews?${new URLSearchParams(params)}`),
   review: (id) => get(`/api/reviews/${encodeURIComponent(id)}`),
   waiting: () => get("/api/waiting"),
+  threads: () => get("/api/threads"),
   discovered: () => get("/api/discovered"),
   events: (limit = 100) => get(`/api/events?limit=${limit}`),
 
@@ -51,6 +52,8 @@ export const api = {
   pollNow: () => request("POST", "/api/poll", {}),
   cancel: (id) => request("POST", `/api/reviews/${encodeURIComponent(id)}/cancel`, {}),
   retry: (id) => request("POST", `/api/reviews/${encodeURIComponent(id)}/retry`, {}),
+  // name: accept | reply | dismiss; key: { repo, number, marker }
+  threadAction: (name, key, text) => request("POST", `/api/threads/${name}`, { ...key, text }),
   postFinding: (id, findingId) =>
     request("POST", `/api/reviews/${encodeURIComponent(id)}/findings/${encodeURIComponent(findingId)}/post`, {}),
 };

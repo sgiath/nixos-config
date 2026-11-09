@@ -27,6 +27,7 @@ export function countsText(counts) {
   if (counts.below) parts.push(`below ${counts.below}`);
   if (counts.already_open) parts.push(`already open ${counts.already_open}`);
   if (counts.already_resolved) parts.push(`already resolved ${counts.already_resolved}`);
+  if (counts.settled) parts.push(`settled ${counts.settled}`);
   if (counts.unanchored) parts.push(`unanchored ${counts.unanchored}`);
   if (counts.not_posted) parts.push(`not posted ${counts.not_posted}`);
   return parts.length ? parts.join(" · ") : "no findings";
@@ -179,5 +180,60 @@ export function discoveredRow(d) {
       metaLine(["review requested in a repo that is not watched"]),
     ),
     h("div", { class: "side" }, h("div", { class: "actions" }, h("a", { class: "btn small", href: `#/settings?add=${encodeURIComponent(id)}` }, "add repo →"))),
+  );
+}
+
+// A reply the reviewer found inadequate: its reasoning, the reply it proposes (editable), and the three decisions.
+export function decideRow(t, onAction) {
+  const { forge } = splitRepo(t.repo);
+  const key = { repo: t.repo, number: t.number, marker: t.marker };
+  const pendingKey = `thread:${t.marker}`;
+  const reply = h("textarea", { rows: 4, spellcheck: "true", "aria-label": "reply to send" });
+  reply.value = t.proposed_reply || "";
+  const act = (name, label, done, text) =>
+    h(
+      "button",
+      {
+        class: "btn small",
+        type: "button",
+        onclick: async (e) => {
+          e.currentTarget.disabled = true;
+          try {
+            await api.threadAction(name, key, text ? reply.value : undefined);
+            setPending(pendingKey, { ttl: 15000 });
+            toast(`${done} on ${mrRef(forge, t.number)}`);
+          } catch (err) {
+            toast(err.message, "error");
+          }
+          onAction?.();
+        },
+      },
+      label,
+    );
+  const actions = isPending(pendingKey)
+    ? [pendingChip("queued…")]
+    : [
+        act("reply", "send reply", "reply queued", true),
+        act("accept", "accept answer", "accept queued", false),
+        act("dismiss", "keep open", "kept open", false),
+      ];
+  return h(
+    "div",
+    { class: "row", "data-id": t.marker },
+    h("div", { class: "state accent" }, "reply disputed"),
+    h(
+      "div",
+      { class: "main" },
+      h("div", { class: "repo" }, t.repo),
+      h("div", { class: "title" }, h("span", { class: "ref" }, mrRef(forge, t.number)), `${t.finding_id} · ${t.title || ""}`),
+      h("p", { class: "reason" }, t.reasoning || ""),
+      reply,
+      metaLine([
+        t.score != null ? `score ${t.score}` : null,
+        t.comment_url ? externalLink(t.comment_url, "thread ↗", "low") : null,
+        t.review_id != null ? h("a", { class: "low", href: `#/review/${t.review_id}` }, `review #${t.review_id}`) : null,
+      ]),
+    ),
+    h("div", { class: "actions" }, actions),
   );
 }

@@ -80,7 +80,9 @@ def brief(*, row: dict, repo: dict, change: Change, run_dir: Path, me: str, thre
         "review_id": str(row["id"]),
         "attempt": str(row["attempt"]),
     }
-    return Template((PROMPTS / "review.md").read_text()).substitute(values)
+    values["thread_rules"] = Template((PROMPTS / "threads.md").read_text()).substitute(values)
+    prompt = "follow_up.md" if row.get("kind") == "follow_up" else "review.md"
+    return Template((PROMPTS / prompt).read_text()).substitute(values)
 
 
 def _dump(path: Path, data) -> None:

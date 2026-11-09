@@ -74,10 +74,10 @@ class Worker:
             try:
                 getattr(self.engine, name)(*args)
             except ActionError as error:
-                self.engine.record("warn", f"{name} refused: {error}", review_id=args[0] if args else None)
+                self.engine.record("warn", f"{name} refused: {error}", review_id=_review_id(args))
             except Exception as error:  # noqa: BLE001 - an action failure is shown in the UI, not fatal
                 log.exception("%s failed", name)
-                self.engine.record("error", f"{name} failed: {error}", review_id=args[0] if args else None)
+                self.engine.record("error", f"{name} failed: {error}", review_id=_review_id(args))
 
 
 class App:
@@ -177,11 +177,47 @@ class App:
             if row["status"] != "done":
                 raise Conflict(f"review is {row['status']}")
             states = {f["finding_id"]: f["state"] for f in self.store.findings(review_id, row["attempt"])}
-            if states.get(finding_id) not in ("below", "would_post"):
+            if states.get(finding_id) not in ("below", "would_post", "not_posted"):
                 raise Conflict(f"finding {finding_id} is {states.get(finding_id, 'unknown')}")
             self.worker.submit(name, review_id, finding_id)
             return
         self.worker.submit(name, review_id)
+
+    def threads(self) -> list[dict]:
+        """Threads waiting for Filip's decision, newest judgment first."""
+        result = []
+        for t in self.store.disputed():
+            reviews = self.store.for_mr(t["repo"], t["number"])
+            latest = reviews[-1] if reviews else {}
+            result.append({
+                **{k: t[k] for k in ("repo", "number", "marker", "review_id", "finding_id", "title", "score",
+                                     "comment_url", "reasoning", "proposed_reply", "updated_at")},
+                "mr_url": latest.get("url"), "mr_title": latest.get("title"),
+            })
+        return sorted(result, key=lambda t: t["updated_at"] or "", reverse=True)
+
+    def thread_action(self, name: str, body: dict) -> None:
+        key = (str(body["repo"]), int(body["number"]), str(body["marker"]))
+        item = self.store.thread(*key)
+        if item is None:
+            raise NotFound("no such thread")
+        if item["status"] != "disputed":
+            raise Conflict(f"thread is {item['status']}")
+        if name != "dismiss" and self.settings.get()["paused"]:
+            raise Conflict("paused")
+        text = str(body.get("text") or "").strip()
+        if name == "reply" and not text:
+            raise BadRequest("the reply is empty")
+        if name == "accept":
+            self.worker.submit("accept_thread", key, text or None)
+        elif name == "reply":
+            self.worker.submit("reply_thread", key, text)
+        else:
+            self.worker.submit("dismiss_thread", key)
+
+
+def _review_id(args: tuple) -> int | None:
+    return args[0] if args and isinstance(args[0], int) else None
 
 
 class BadRequest(Exception):
@@ -199,6 +235,7 @@ class Conflict(Exception):
 REVIEW_ACTION = re.compile(r"^/api/reviews/(\d+)/(cancel|retry)$")
 FINDING_POST = re.compile(r"^/api/reviews/(\d+)/findings/([A-Za-z0-9-]+)/post$")
 REVIEW = re.compile(r"^/api/reviews/(\d+)$")
+THREAD_ACTION = re.compile(r"^/api/threads/(accept|reply|dismiss)$")
 
 
 def _handler(app: App):
@@ -254,6 +291,8 @@ def _handler(app: App):
                 return 200, app.reviews(query)
             if match := REVIEW.match(path):
                 return 200, app.review(int(match.group(1)))
+            if path == "/api/threads":
+                return 200, app.threads()
             if path == "/api/waiting":
                 return 200, app.engine.waiting()
             if path == "/api/discovered":
@@ -274,6 +313,9 @@ def _handler(app: App):
                 return 200, {"markdown": rendered, "unknown": unknown}
             if match := REVIEW_ACTION.match(path):
                 app.action(int(match.group(1)), match.group(2))
+                return 202, {"accepted": True}
+            if match := THREAD_ACTION.match(path):
+                app.thread_action(match.group(1), body)
                 return 202, {"accepted": True}
             if match := FINDING_POST.match(path):
                 app.action(int(match.group(1)), "post_anyway", match.group(2))
