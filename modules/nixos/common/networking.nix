@@ -36,15 +36,19 @@
         };
 
         # Pi-hole over Nebula first; public resolvers answer within a second
-        # while the tunnel is down. glibc reads at most three nameservers.
+        # while the tunnel is down. Hosts with a fixed home LAN address
+        # override the list to reach Pi-hole without the tunnel. glibc reads
+        # at most three nameservers.
+        networking.nameservers = lib.mkDefault [
+          config.sgiath.nebula.peers.vesta.ip4
+          "1.1.1.1"
+          "8.8.8.8"
+        ];
         environment.etc."resolv.conf".text = ''
           search sgiath.dev
           options timeout:1 attempts:1
 
-          nameserver ${config.sgiath.nebula.peers.vesta.ip4}
-          nameserver 1.1.1.1
-          nameserver 8.8.8.8
-        '';
+          ${lib.concatMapStrings (ns: "nameserver ${ns}\n") config.networking.nameservers}'';
       })
     ]
   );
