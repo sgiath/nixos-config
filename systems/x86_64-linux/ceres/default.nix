@@ -20,6 +20,21 @@
 
   virtualisation.docker.enable = true;
 
+  # Ceres sits on Vesta's LAN, so reach it directly: router hairpin NAT to
+  # the public lighthouse address has stranded the tunnel on stale conntrack
+  # entries. The public endpoint from the shared module stays as fallback.
+  services.nebula.networks.sgiath = {
+    staticHostMap =
+      let
+        vesta = config.sgiath.nebula.peers.vesta;
+      in
+      {
+        ${vesta.ip4} = [ "192.168.1.2:4242" ];
+        ${vesta.ip6} = [ "192.168.1.2:4242" ];
+      };
+    settings.preferred_ranges = [ "192.168.1.0/24" ];
+  };
+
   services = {
     ollama.enable = false;
   };
