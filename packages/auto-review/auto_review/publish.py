@@ -7,6 +7,7 @@ from .models import Comment, Finding
 from .note import DEFAULT_TEMPLATE, comment_body, marker, own_markers, review_key
 from .rules import eligibility, moved
 from .settings import repo_view
+from .threads import Applied
 from .verdict import VerdictError, decide, load
 
 POST_ATTEMPTS = 3
@@ -47,20 +48,20 @@ class Publisher:
         if not held and allowed.action == "wait":
             return
         dry_run = settings["dry_run"]
-        disputed, errors = [], []
+        applied = Applied()
         if not held:
             # Threads first: a finding tied to a thread this verdict calls fixed or answered is settled below.
             if not dry_run and self._changed(settings, row["repo"]):
                 return
-            disputed, errors = engine.threads.apply(row, verdict, threads, me, dry_run=dry_run)
+            applied = engine.threads.apply(row, verdict, threads, me,
+                                           record_only=dry_run or bool(verdict.injection_attempts))
             decision = decide(verdict, threshold=repo["threshold"], index=DiffIndex(bundle.diffs(run_dir)),
                               threads=threads, settled=engine.threads.settled_ids(row["repo"], row["number"]))
         outcome, reason = decision.outcome, decision.reason
         if decision.outcome == "clean" and (waiting := engine.threads.watching(row)):
             outcome, reason = "findings", f"earlier comments still open: {', '.join(t['finding_id'] for t in waiting)}"
-        if disputed or errors:
-            outcome, reason = "needs_attention", "; ".join(
-                [f"reply needs your decision on {line}" for line in disputed] + [f"thread write failed: {e}" for e in errors])
+        if applied.disputed or applied.errors:
+            outcome, reason = "needs_attention", _attention(applied)
         stored = {f["finding_id"]: f for f in store.findings(row["id"], row["attempt"])}
         rows = []
         for placed in decision.placed:
@@ -102,6 +103,8 @@ class Publisher:
             store.update(row["id"], approved=True)
             engine.record("info", f"approved at @{row['head_sha'][:8]}", review_id=row["id"])
         self._done(row, outcome, reason)
+        if applied.settled:
+            engine.threads.reconsider(row["repo"], row["number"])  # e.g. clears an old "requested changes" under never
 
     def _follow_up(self, row: dict, settings: dict, verdict, change, threads, me: str) -> None:
         """A follow-up only judges threads: apply the judgments, then see whether the MR can now be approved."""
@@ -110,17 +113,22 @@ class Publisher:
             engine.finish(row, "superseded", error=reason)
             engine.record("info", f"not applied: {reason}", review_id=row["id"])
             return
-        dry_run = settings["dry_run"]
+        if verdict.status == "error":
+            return engine.fail(row, f"reviewer could not finish: {verdict.error or 'no reason given'}")
+        dry_run, injected = settings["dry_run"], bool(verdict.injection_attempts)
         if not dry_run and self._changed(settings, row["repo"]):
             return
-        store.update(row["id"], summary=verdict.summary, dry_run=dry_run)
-        disputed, errors = engine.threads.apply(row, verdict, threads, me, dry_run=dry_run)
-        if not dry_run:
-            engine.threads.reconsider(row["repo"], row["number"], settings)
+        store.update(row["id"], summary=verdict.summary, dry_run=dry_run,
+                     injection_attempts=list(verdict.injection_attempts))
+        applied = engine.threads.apply(row, verdict, threads, me, record_only=dry_run or injected)
         judged = ", ".join(f"{j.status}" for j in verdict.threads) or "nothing to judge"
-        if disputed or errors:
-            outcome, note = "needs_attention", "; ".join(
-                [f"reply needs your decision on {line}" for line in disputed] + [f"thread write failed: {e}" for e in errors])
+        if injected:
+            self._done(row, "needs_attention", "the replies contain text aimed at the reviewer; nothing written")
+            return
+        if not dry_run:
+            engine.threads.reconsider(row["repo"], row["number"])
+        if applied.disputed or applied.errors:
+            outcome, note = "needs_attention", _attention(applied)
         elif store.threads(row["repo"], row["number"], ("open", "disputed")):
             outcome, note = "findings", f"judged {judged}; comments still open"
         else:
@@ -259,6 +267,11 @@ def _values(row: dict, repo: dict, finding: Finding, me: str) -> dict:
         "title": finding.title, "frequency": finding.frequency, "severity": finding.severity,
         "score": finding.score, "threshold": repo["threshold"], "disposition": "open",
     }
+
+
+def _attention(applied: Applied) -> str:
+    return "; ".join([f"reply needs your decision on {line}" for line in applied.disputed]
+                     + [f"thread write failed: {error}" for error in applied.errors])
 
 
 def _blocking(decision, repo: dict, watching: list[dict] = ()) -> str:

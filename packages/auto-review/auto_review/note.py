@@ -17,6 +17,7 @@ DEFAULT_TEMPLATE = (
 )
 
 REPLY_NOTE = "> [!NOTE]\n> Automated review published on behalf of @{reviewer}"
+REPLY_MARK = "<!-- auto-review:v1 reply key="
 
 WORD = re.compile(r"\{([A-Za-z_][A-Za-z0-9_]*)\}")
 MARKER = re.compile(r"<!-- auto-review:v1 key=\S+ finding=\S+ -->")
@@ -67,11 +68,11 @@ def review_key(row: dict) -> str:
             f":{row['attempt']}")
 
 
-def reply_body(me: str, text: str, key: str) -> str:
+def reply_body(me: str, text: str, operation: str) -> str:
     """An automated reply in one of Filip's threads: the short note, the text, and a hidden marker naming the
-    review that wrote it, so a reply whose answer was lost is not posted twice."""
-    return f"{REPLY_NOTE.format(reviewer=me)}\n\n{text}\n\n{reply_marker(key)}"
+    operation (thread and the evidence judged), so a reply whose answer was lost is not posted twice."""
+    return f"{REPLY_NOTE.format(reviewer=me)}\n\n{text}\n\n{reply_marker(operation)}"
 
 
-def reply_marker(key: str) -> str:
-    return f"<!-- auto-review:v1 reply key={key} -->"
+def reply_marker(operation: str) -> str:
+    return f"{REPLY_MARK}{operation} -->"

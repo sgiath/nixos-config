@@ -183,13 +183,22 @@ export function discoveredRow(d) {
   );
 }
 
+// Edited replies by thread marker: a section re-render (another row changed, a pending action elsewhere) rebuilds
+// every row, and must not throw away what Filip typed.
+const drafts = new Map();
+
 // A reply the reviewer found inadequate: its reasoning, the reply it proposes (editable), and the three decisions.
 export function decideRow(t, onAction) {
   const { forge } = splitRepo(t.repo);
   const key = { repo: t.repo, number: t.number, marker: t.marker };
   const pendingKey = `thread:${t.marker}`;
-  const reply = h("textarea", { rows: 4, spellcheck: "true", "aria-label": "reply to send" });
-  reply.value = t.proposed_reply || "";
+  const reply = h("textarea", {
+    rows: 4,
+    spellcheck: "true",
+    "aria-label": "reply to send",
+    oninput: (e) => drafts.set(t.marker, e.currentTarget.value),
+  });
+  reply.value = drafts.get(t.marker) ?? t.proposed_reply ?? "";
   const act = (name, label, done, text) =>
     h(
       "button",
@@ -200,6 +209,7 @@ export function decideRow(t, onAction) {
           e.currentTarget.disabled = true;
           try {
             await api.threadAction(name, key, text ? reply.value : undefined);
+            drafts.delete(t.marker);
             setPending(pendingKey, { ttl: 15000 });
             toast(`${done} on ${mrRef(forge, t.number)}`);
           } catch (err) {

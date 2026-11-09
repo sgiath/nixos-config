@@ -360,7 +360,10 @@ class Engine:
             if review_id:
                 self.record("info", f"queued {_ref_change(change)} @{change.head_sha[:8]}", review_id=review_id)
             for other in self.store.for_mr(repo_id, number):
-                if other["status"] in ACTIVE and _key(other) != change.key:
+                # A new review also judges Filip's threads, so it replaces a follow-up of the same head.
+                if other["status"] in ACTIVE and (
+                    _key(other) != change.key or (review_id and other["kind"] == "follow_up")
+                ):
                     self._supersede(other, f"superseded by @{change.head_sha[:8]}")
         return waiting
 
@@ -400,6 +403,8 @@ class Engine:
             repo = repo_view(settings, row["repo"])
             if not repo["enabled"]:
                 continue
+            if any(other["status"] in BUSY for other in self.store.for_mr(row["repo"], row["number"])):
+                continue  # one review of an MR at a time, whatever its kind
             started = self._guard(row["id"], lambda r=row: self._launch(r, settings, repo))
             if started:
                 running += 1
