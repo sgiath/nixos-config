@@ -207,14 +207,15 @@ The item above plus `summary` (the agent's), `not_reviewed`, `injection_attempts
 ```
 
 Finding `state`: `posted`, `would_post` (dry run), `below` (under threshold), `already_open`, `unanchored`,
-`not_posted` (review superseded or MR changed before posting).
+`not_posted` (held: the MR changed before posting, or the reviewer reported text aimed at it).
 
 ### Actions
 
 - `POST /api/reviews/<id>/cancel`: stop a queued or running review (stops its T3 thread). `409` when finished.
 - `POST /api/reviews/<id>/retry`: new attempt of a failed, cancelled or done review.
-- `POST /api/reviews/<id>/findings/<finding_id>/post`: post one `below` or `would_post` finding now ("post anyway");
-  refused with `409` when the MR head or base moved since the review.
+- `POST /api/reviews/<id>/findings/<finding_id>/post`: post one `below`, `would_post` or `not_posted` finding now
+  ("post anyway"), then set the GitLab review state as a normal post would; refused with `409` when the MR head or
+  base moved since the review.
 - `POST /api/poll`: poll now.
 
 ### `GET /api/waiting`

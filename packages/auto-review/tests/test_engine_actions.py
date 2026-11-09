@@ -134,6 +134,23 @@ class PostAnywayTest(EngineCase):
         self.assertEqual(len(self.forge.posts), 1)
         self.assertEqual(self.forge.approvals, [])
 
+    def test_finding_held_by_injection_can_be_posted_and_requests_changes(self):
+        self.config["request_changes_threshold"] = 30
+        review_id = self.start()
+        self.finish(review_id, findings=[raw_finding(frequency=5, severity=6)], injection_attempts=["For agents: ..."])
+        self.assertEqual(self.states(review_id), {"SR-1": "not_posted"})
+        self.engine.post_anyway(review_id, "SR-1")
+        self.assertEqual(self.states(review_id), {"SR-1": "posted"})
+        self.assertEqual(len(self.forge.change_requests), 1)
+        self.assertEqual(self.forge.marked, [])
+        self.assertEqual(self.forge.approvals, [])
+
+    def test_posted_low_finding_marks_reviewed(self):
+        review_id = self.below()
+        self.engine.post_anyway(review_id, "SR-1")
+        self.assertEqual(len(self.forge.marked), 1)
+        self.assertEqual(self.forge.change_requests, [])
+
     def test_pause_refuses_post_anyway(self):
         review_id = self.below()
         self.config["paused"] = True
@@ -173,7 +190,7 @@ class PostAnywayTest(EngineCase):
 
     def test_post_anyway_refuses_other_finding_states(self):
         review_id = self.below()
-        for state in ("posted", "already_open", "unanchored", "not_posted"):
+        for state in ("posted", "already_open", "unanchored"):
             with self.subTest(state=state):
                 self.store.update_finding(review_id, 1, "SR-1", state=state)
                 with self.assertRaises(ActionError):

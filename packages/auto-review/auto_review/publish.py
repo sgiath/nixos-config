@@ -73,14 +73,7 @@ class Publisher:
             return
         posted = any(f["state"] == "posted" for f in store.findings(row["id"], row["attempt"]))
         if posted or blocking:
-            try:
-                if blocking:
-                    forge.request_changes(row["path"], change)
-                    engine.record("info", f"requested changes: {blocking}", review_id=row["id"])
-                else:
-                    forge.mark_reviewed(row["path"], change)
-            except ForgeError as error:
-                engine.record("warn", f"setting the review state failed: {error}", review_id=row["id"])
+            self._review_state(row, change, blocking)
         if repo["approval"] == "when_clean" and decision.approvable and not row["approved"]:
             if self._changed(settings, row["repo"]):
                 return
@@ -102,7 +95,7 @@ class Publisher:
         if settings["paused"]:
             raise ActionError("paused")
         found = next((f for f in store.findings(row["id"], row["attempt"]) if f["finding_id"] == finding_id), None)
-        if found is None or found["state"] not in ("below", "would_post"):
+        if found is None or found["state"] not in ("below", "would_post", "not_posted"):
             raise ActionError(f"finding {finding_id} is {found['state'] if found else 'unknown'}")
         if row["repo"] not in settings["repos"]:
             raise ActionError("repo is no longer watched")
@@ -121,12 +114,26 @@ class Publisher:
             thread_id, note = markers[mark]  # an earlier request was posted but its answer was lost
             store.update_finding(row["id"], row["attempt"], finding_id, state="posted",
                                  url=_note_url(row["forge"], change.url, note.id), remote_id=thread_id)
-            return
-        body = comment_body(_template(settings), finding, _values(row, repo, finding, me), key)
-        [receipt] = forge.post(row["path"], change, [Comment(finding.id, anchor, body, mark)])
-        store.update_finding(row["id"], row["attempt"], finding_id, state="posted", url=receipt.url,
-                             remote_id=receipt.id)
-        engine.record("info", f"posted {finding_id} on request", review_id=row["id"])
+        else:
+            body = comment_body(_template(settings), finding, _values(row, repo, finding, me), key)
+            [receipt] = forge.post(row["path"], change, [Comment(finding.id, anchor, body, mark)])
+            store.update_finding(row["id"], row["attempt"], finding_id, state="posted", url=receipt.url,
+                                 remote_id=receipt.id)
+            engine.record("info", f"posted {finding_id} on request", review_id=row["id"])
+        blocking = f"{finding.id} ({finding.score})" if finding.score >= repo["request_changes_threshold"] else ""
+        self._review_state(row, change, blocking)
+
+    def _review_state(self, row: dict, change, blocking: str) -> None:
+        """Request changes when `blocking` names findings, else mark the MR reviewed; a failure only warns."""
+        engine, forge = self.engine, self.engine.forges[row["forge"]]
+        try:
+            if blocking:
+                forge.request_changes(row["path"], change)
+                engine.record("info", f"requested changes: {blocking}", review_id=row["id"])
+            else:
+                forge.mark_reviewed(row["path"], change)
+        except ForgeError as error:
+            engine.record("warn", f"setting the review state failed: {error}", review_id=row["id"])
 
     def _post(self, row, repo, change, threads, me, pending) -> bool:
         """Post what is not posted yet; False when a write failed (retried next tick)."""

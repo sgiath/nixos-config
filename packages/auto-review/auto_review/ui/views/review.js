@@ -120,7 +120,7 @@ export const review = {
     const faded = f.state === "below" || f.state === "not_posted";
     const actions = [];
     if (f.url) actions.push(externalLink(f.url, "comment ↗", "low"));
-    if (f.state === "below" || f.state === "would_post") {
+    if (f.state === "below" || f.state === "would_post" || f.state === "not_posted") {
       const key = `post:${r.id}:${f.finding_id}`;
       if (isPending(key, f.state)) actions.push(pendingChip("posting…"));
       else {
