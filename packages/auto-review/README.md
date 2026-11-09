@@ -56,9 +56,9 @@ Every comment the service posts is tracked (SQLite `threads`, keyed by its hidde
 - **Watching.** Each poll reads the MRs that have an `open` or `disputed` thread. A thread someone resolved on the
   forge becomes `resolved_elsewhere` and is no longer watched; a closed or merged MR closes its threads. Filip's own
   replies only count as seen. A new or edited reply by anyone else queues one `follow_up` review at the MR's current
-  head (`kind: follow_up`, keyed by the newest reply's id and a digest of the thread's notes and status, so the same
-  replies never queue twice, while a follow-up left stale by Filip's note or decision is redone), unless a review of
-  that MR
+  head (`kind: follow_up`, keyed by the newest reply's id and a digest of the thread's notes, status and count of
+  skipped stale judgments, so the same replies never queue twice, while a follow-up left stale is redone), unless a
+  review of that MR
   is active; so does a new head that no normal review will look at (review no longer requested). Follow-ups do not
   need the review request; they share the queue, limits, pause, quiet hours, cancel and retry with reviews. Only one
   review of an MR runs at a time, whatever its kind; a new head or a newly claimed normal review supersedes a
@@ -70,7 +70,9 @@ Every comment the service posts is tracked (SQLite `threads`, keyed by its hidde
   retried after a lost response keeps the snapshot the first launch wrote, since T3 may already run an agent on it.
 - **Acting.** A judgment is applied only if the thread is unchanged since the review read it (same notes, compared by
   id, author and body, and same status): a new or edited reply is judged by the next follow-up, and a decision Filip
-  made meanwhile wins. `fixed`/`answered`: the reply is posted in the thread (short note on top, hidden marker naming
+  made meanwhile wins; a skipped judgment queues a new follow-up. Each judgment acts once: a publish retry of the same
+  attempt (e.g. after a failed post) only reports what it left, so Filip's later decision stands and a dispute still
+  ends the review `needs_attention` with a notification. `fixed`/`answered`: the reply is posted in the thread (short note on top, hidden marker naming
   the thread and a digest of the judged notes, so the same notes never get two replies), then the thread is resolved; from then on the thread counts as fixed, and a
   later finding tied to it is `settled` (not posted, not blocking). `open`: nothing is written. `disputed`: nothing is
   written; the review ends `needs_attention`, Filip is notified, and the UI's *your decision* section shows the
@@ -83,7 +85,7 @@ Every comment the service posts is tracked (SQLite `threads`, keyed by its hidde
   reports injection or lists unread files (`not_reviewed`) only records the judgments and ends `needs_attention`.
 - **Approving.** An open or disputed thread blocks approval of any review of the MR. After a follow-up or an accepted
   answer settles threads, the latest finished review is reconsidered: if it is at the current head, read every file,
-  found no injection, and each of its findings reaching the threshold now sits in a settled thread, it is approved
+  found no injection, and each of its findings reaching the current threshold now sits in a settled thread, it is approved
   under `approval: when_clean` while the MR is ready under the repo's rules (draft, pipeline; the review request is not
   needed), or the MR is marked reviewed under `never` (clearing an earlier *requested changes* on GitLab). These
   writes wait out pause, dry run, quiet hours and a disabled repo; while they wait, the MR waits for a draft or

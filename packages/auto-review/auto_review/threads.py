@@ -87,8 +87,9 @@ class Threads:
             if not others:  # the replies were deleted
                 store.update_thread(repo_id, number, item["marker"], seen=None, updated_at=self._now())
             elif not active:
-                # Keyed by every note and the status: a follow-up left stale by Filip's note or decision is redone.
-                pending.append(f"{others[-1].id}@{digest(notes(thread, me), item['status'])[:8]}")
+                # Keyed by every note, the status and the stale judgments: a follow-up left stale is redone.
+                key = digest(notes(thread, me), item["status"], str(item["skips"]))
+                pending.append(f"{others[-1].id}@{key[:8]}")
         if settled:
             self.reconsider(repo_id, number)
         # A pushed fix with nobody replying: discovery reviews the new head only while a review is requested.
@@ -163,28 +164,43 @@ class Threads:
         fixed/answered -> reply once and resolve; open -> seen; disputed -> wait for Filip with the proposed reply;
         each marks the other people's notes seen and drops what an earlier failed settlement intended. A failed
         settling write leaves the thread disputed for Filip, remembering what was intended. `record_only` (dry run,
-        or a verdict that reported injection or left files unread) stores the reasoning and writes nothing."""
+        or a verdict that reported injection or left files unread) stores the reasoning and writes nothing.
+
+        Each judgment acts once: a thread records the attempt that judged it (`judged_by`), and a publish retry of
+        that attempt only reports what it left, so a later decision of Filip's stands. A skipped stale judgment bumps
+        the thread's `skips`, which keys a new follow-up."""
         engine, store = self.engine, self.engine.store
         listed_path = engine.run_dir(row) / "mr/own_threads.json"
         listed = {t["thread_id"]: t for t in json.loads(listed_path.read_text())} if listed_path.exists() else {}
-        tracked = {t["thread_id"]: t for t in store.threads(row["repo"], row["number"], WATCHED) if t["thread_id"]}
+        tracked = {t["thread_id"]: t for t in store.threads(row["repo"], row["number"]) if t["thread_id"]}
         current = {t.id: t for t in threads}
         forge = engine.forges[row["forge"]]
+        attempt = f"{row['id']}:{row['attempt']}"
         result = Applied()
         for judgment in verdict.threads:
             item, read, thread = (tracked.get(judgment.thread_id), listed.get(judgment.thread_id),
                                   current.get(judgment.thread_id))
-            if item is None or read is None or thread is None or thread.resolved:
+            if item is None or read is None:
                 continue
             label = item["finding_id"]
+            if item["judged_by"] == attempt:
+                if item["status"] == "disputed":
+                    result.disputed.append(f"{label}: {item['reasoning']}")
+                elif item["status"] in SETTLED:
+                    result.settled += 1
+                continue
+            if item["status"] not in WATCHED or thread is None or thread.resolved:
+                continue
             version = digest(notes(thread, me))
             if item["status"] != read["status"] or version != read.get("version"):
+                store.update_thread(row["repo"], row["number"], item["marker"], skips=item["skips"] + 1)
                 engine.record("info", f"{label}: the thread changed since the review read it; judging it again later",
                               review_id=row["id"])
                 continue
 
             def update(**fields):
-                store.update_thread(row["repo"], row["number"], item["marker"], updated_at=self._now(), **fields)
+                store.update_thread(row["repo"], row["number"], item["marker"], updated_at=self._now(),
+                                    judged_by=attempt, **fields)
 
             if record_only:
                 update(reasoning=judgment.reasoning, proposed_reply=judgment.reply or None)
@@ -192,7 +208,8 @@ class Threads:
             seen = digest([n for n in notes(thread, me) if n.author.casefold() != me.casefold()]) or None
             if judgment.status in ("fixed", "answered"):
                 operation = f"{judgment.thread_id}:{version[:12]}"  # the same notes never get two replies
-                update(pending=f"{judgment.status}@{version}")
+                store.update_thread(row["repo"], row["number"], item["marker"],
+                                    pending=f"{judgment.status}@{version}")
                 try:
                     if not replied(thread, operation, me):
                         forge.reply(row["path"], row["number"], judgment.thread_id,
@@ -263,11 +280,12 @@ class Threads:
 
     def _settled_review(self, settings: dict, repo_id: str, number: int) -> dict | None:
         """The MR's latest finished review when it read everything, found no injection, and each of its findings
-        reaching the threshold sits in a fixed, answered or accepted thread, with no thread still open or
+        reaching the current threshold sits in a fixed, answered or accepted thread, with no thread still open or
         disputed."""
         store = self.engine.store
         if repo_id not in settings["repos"]:
             return None
+        threshold = repo_view(settings, repo_id)["threshold"]
         reviews = [r for r in store.for_mr(repo_id, number) if r["kind"] == "review" and r["status"] == "done"]
         if not reviews or store.threads(repo_id, number, WATCHED):
             return None
@@ -279,8 +297,8 @@ class Threads:
         settled_findings = {(t["review_id"], t["attempt"], t["finding_id"]) for t in tracked}
         for finding in store.findings(row["id"], row["attempt"]):
             state = finding["state"]
-            if state in ("below", "settled"):
-                continue
+            if state == "settled" or (state == "below" and finding["score"] < threshold):
+                continue  # `below` as of the current threshold, which may have been lowered since
             if state == "posted" and (row["id"], row["attempt"], finding["finding_id"]) in settled_findings:
                 continue
             if state in ("already_open", "already_resolved") and finding["existing_thread_id"] in settled_threads:

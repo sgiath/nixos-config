@@ -339,3 +339,59 @@ class ThreadSafetyTest(ThreadCase):
         self.engine.tick()
         self.judged(review_id)
         self.assertEqual(self.forge.resolutions, [])
+
+    def test_keep_open_wins_over_a_publish_retry(self):
+        self.posted()
+        self.author_reply()
+        key = self.key()
+        review_id = self.next_review()
+        resolve, failed = self.forge.resolve, []
+
+        def fail_once(*args):
+            if not failed:
+                failed.append(args)
+                raise ForgeError("temporary outage")
+            resolve(*args)
+
+        self.forge.resolve, self.forge.fail_after = fail_once, 0  # posting the new finding fails once too
+        thread = self.forge.discussions[KEY][0]
+        self.complete(review_id, findings=[raw_finding(id="SR-2")], threads=[dict(
+            thread_id=thread.id, status="answered", reasoning="Checked.", reply="The explanation holds.")])
+        self.until(lambda: self.row(review_id)["status"] == "posting", "the post fails once")
+        self.engine.dismiss_thread(key)
+        self.until(lambda: self.row(review_id)["status"] == "done", "the retry finishes the review")
+        self.assertEqual((self.store.thread(*key)["status"], self.forge.resolutions), ("open", []))
+
+    def test_dispute_notifies_after_a_publish_retry(self):
+        self.posted()
+        self.author_reply()
+        review_id = self.next_review()
+        self.forge.fail_after = 0
+        row = self.judgment(review_id, "disputed", reply="Not enough.", findings=[raw_finding(id="SR-2")])
+        self.assertEqual(row["outcome"], "needs_attention")
+        self.assertEqual(len(self.notify.calls), 1)
+
+    def test_lowered_threshold_blocks_a_deferred_approval(self):
+        self.config["repos"][REPO]["approval"] = "when_clean"
+        review_id = self.start()
+        self.finish(review_id, findings=[raw_finding(), raw_finding(id="SR-2", severity=4)])
+        self.author_reply()
+        self.forge.add(change(review_requested=False, reviewers=(), pipeline="running"))
+        self.engine.tick()
+        self.judged(next(r["id"] for r in self.follow_ups() if r["status"] == "running"))
+        self.config["threshold"] = 4
+        self.forge.add(change(review_requested=False, reviewers=(), pipeline="success"))
+        self.engine.tick()
+        self.assertEqual(self.forge.approvals, [])
+
+    def test_reverted_edit_is_judged_again(self):
+        _, first = self.follow_up()
+        thread = self.forge.discussions[KEY][0]
+        edited = replace(thread.notes[-1], body="That was wrong.")
+        self.forge.discussions[KEY][0] = replace(thread, notes=thread.notes[:-1] + (edited,))
+        self.judged(first)
+        second = next(r["id"] for r in self.follow_ups() if r["status"] == "running")
+        self.forge.discussions[KEY][0] = thread
+        self.judged(second, status="open")
+        self.engine.tick()
+        self.assertEqual(len([r for r in self.follow_ups() if r["status"] == "running"]), 1)

@@ -53,7 +53,7 @@ CREATE TABLE IF NOT EXISTS threads (
   repo TEXT NOT NULL, number INTEGER NOT NULL, marker TEXT NOT NULL, forge TEXT NOT NULL, path TEXT NOT NULL,
   review_id INTEGER NOT NULL, attempt INTEGER NOT NULL, finding_id TEXT NOT NULL, thread_id TEXT,
   status TEXT NOT NULL DEFAULT 'open', seen TEXT, reasoning TEXT, proposed_reply TEXT, updated_at TEXT,
-  pending TEXT,
+  pending TEXT, judged_by TEXT, skips INTEGER NOT NULL DEFAULT 0,
   PRIMARY KEY (repo, number, marker)
 );
 """
@@ -83,7 +83,7 @@ class Store:
     status (`open`, `disputed`, `fixed`, `answered`, `accepted`, `resolved_elsewhere`, `closed`), seen (digest of
     the other people's notes already judged; null: none), reasoning, proposed_reply, updated_at, pending
     (`fixed@<notes digest>`, `answered@…` or `accepted@…` while the settling reply/resolve is in flight, or after it
-    failed).
+    failed), judged_by (`<review id>:<attempt>` whose judgment was applied), skips (judgments skipped as stale).
     """
 
     def __init__(self, path: Path):
