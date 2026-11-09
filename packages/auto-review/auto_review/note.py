@@ -12,8 +12,6 @@ VARIABLES = (
 DEFAULT_TEMPLATE = (
     "> [!NOTE]\n"
     "> Automated review published on behalf of @{reviewer}\n"
-    "> The assessment and checks below are AI-generated\n"
-    "> Review model: **{model}** / **{effort}** / {harness}\n"
     "\n"
     "**{finding_id} · {disposition} · how often {frequency}/10 × how bad {severity}/10 = {score} — {title}**"
 )
