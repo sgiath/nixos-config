@@ -27,7 +27,22 @@
         "sd_mod"
       ];
     };
-    kernelPackages = pkgs.linuxPackages_xanmod_latest;
+    # FIXME: nixpkgs adds its tools 128-bit types backport to XanMod main,
+    # but XanMod 7.3 already contains it, so patching fails in the kernel and
+    # cpupower builds. Drop once the selected nixpkgs omits it for 7.3+ as it
+    # does for mainline linux_7_3; see
+    # UPSTREAM-WORKAROUNDS.md#xanmod-tools-128bit-types-duplicate.
+    kernelPackages = pkgs.linuxPackagesFor (
+      pkgs.linux_xanmod_latest.override (old: {
+        kernelPatches =
+          if pkgs.linux_xanmod_latest.kernelAtLeast "7.3" then
+            lib.filter (
+              patch: patch.name != pkgs.linuxKernel.kernelPatches.tools_128bit_types.name
+            ) old.kernelPatches
+          else
+            old.kernelPatches;
+      })
+    );
     # AMD Zen sensors
     extraModulePackages = [ config.boot.kernelPackages.zenpower ];
     kernelParams = [ "amd_pstate=active" ];
