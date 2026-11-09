@@ -88,6 +88,8 @@ class Threads:
                 store.update_thread(repo_id, number, item["marker"], seen=None, updated_at=self._now())
             elif not active:
                 # Keyed by every note, the status and the stale judgments: a follow-up left stale is redone.
+                # FIXME: only while an unseen reply exists; a stale follow-up of a pushed fix (no new reply) is not
+                # redone until the next reply or head. Persist "skipped, still to judge" if that shows up in practice.
                 key = digest(notes(thread, me), item["status"], str(item["skips"]))
                 pending.append(f"{others[-1].id}@{key[:8]}")
         if settled:
@@ -297,8 +299,8 @@ class Threads:
         settled_findings = {(t["review_id"], t["attempt"], t["finding_id"]) for t in tracked}
         for finding in store.findings(row["id"], row["attempt"]):
             state = finding["state"]
-            if state == "settled" or (state == "below" and finding["score"] < threshold):
-                continue  # `below` as of the current threshold, which may have been lowered since
+            if state == "settled" or finding["score"] < threshold:
+                continue  # judged by the current threshold, which may have changed since the review
             if state == "posted" and (row["id"], row["attempt"], finding["finding_id"]) in settled_findings:
                 continue
             if state in ("already_open", "already_resolved") and finding["existing_thread_id"] in settled_threads:

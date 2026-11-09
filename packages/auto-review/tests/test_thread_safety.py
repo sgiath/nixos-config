@@ -6,7 +6,7 @@ Adopted from the independent review's contract checks; forge, T3 and fetch are t
 from dataclasses import replace
 
 from auto_review.forge.base import ForgeError
-from auto_review.models import Note, Posted
+from auto_review.models import Note, Posted, Thread
 from auto_review.note import REPLY_MARK
 from auto_review.t3 import T3Error
 from tests.fakes import REPO, change, raw_finding
@@ -395,3 +395,19 @@ class ThreadSafetyTest(ThreadCase):
         self.judged(second, status="open")
         self.engine.tick()
         self.assertEqual(len([r for r in self.follow_ups() if r["status"] == "running"]), 1)
+
+    def test_raised_threshold_drops_an_old_finding_from_approval(self):
+        self.config["repos"][REPO]["approval"] = "when_clean"
+        review_id = self.start()
+        self.forge.discussions[KEY] = [Thread("theirs", False, (Note("bob", "Seen before.", "bob-1"),), "src/new.py", 11)]
+        self.finish(review_id, findings=[raw_finding(), raw_finding(id="SR-2", existing_thread_id="theirs")])
+        mine = next(t for t in self.forge.discussions[KEY] if t.id != "theirs")
+        self.forge.discussions[KEY] = [replace(t, notes=t.notes + (Note("alice", "Explanation", "author-2"),))
+                                       if t is mine else t for t in self.forge.discussions[KEY]]
+        self.forge.add(change(review_requested=False, reviewers=()))
+        self.engine.tick()
+        self.config["threshold"] = 6  # SR-2 (already open in bob's thread) scores 5
+        follow_up = next(r["id"] for r in self.follow_ups() if r["status"] == "running")
+        self.finish(follow_up, threads=[dict(thread_id=mine.id, status="answered", reasoning="Checked.",
+                                             reply="The explanation holds.")])
+        self.assertEqual(len(self.forge.approvals), 1)
