@@ -7,6 +7,7 @@ from dataclasses import replace
 
 from auto_review.forge.base import ForgeError
 from auto_review.models import Note, Posted
+from auto_review.note import REPLY_MARK
 from tests.fakes import REPO, change, raw_finding
 from tests.thread_case import ThreadCase
 
@@ -183,3 +184,81 @@ class ThreadSafetyTest(ThreadCase):
         self.config["dry_run"] = True
         self.judged(self.next_review(), status="fixed")
         self.assertEqual((self.tracked()["status"], self.forge.replies, self.forge.resolutions), ("open", [], []))
+
+    def test_follow_up_that_could_not_read_everything_writes_nothing(self):
+        _, review_id = self.follow_up()
+        row = self.judged(review_id, not_reviewed=["src/new.py: could not be read"])
+        self.assertEqual(self.writes(), (0, 0, 0))
+        self.assertEqual((row["outcome"], row["not_reviewed"]), ("needs_attention", ["src/new.py: could not be read"]))
+
+    def test_edited_reply_is_judged_again(self):
+        _, review_id = self.follow_up()
+        thread = self.forge.discussions[KEY][0]
+        edited = replace(thread.notes[-1], body="Correction: the bug is real.")
+        self.forge.discussions[KEY][0] = replace(thread, notes=thread.notes[:-1] + (edited,))
+        self.judged(review_id)
+        self.assertEqual(self.forge.resolutions, [])
+        self.engine.tick()
+        self.assertEqual(len([r for r in self.follow_ups() if r["status"] == "running"]), 1)
+
+    def test_filips_note_quoting_the_reply_marker_counts_as_a_note(self):
+        _, review_id = self.follow_up()
+        self.add_note("sgiath", "manual-3", f"Not enough. (The bot writes {REPLY_MARK}… in its replies.)")
+        self.judged(review_id)
+        self.assertEqual(self.forge.resolutions, [])
+
+    def test_lost_resolve_answer_still_approves(self):
+        self.config["repos"][REPO]["approval"] = "when_clean"
+        _, review_id = self.follow_up()
+        resolve = self.forge.resolve
+
+        def lost(*args):
+            resolve(*args)
+            raise ForgeError("response lost")
+
+        self.forge.resolve = lost
+        self.judged(review_id)
+        self.forge.resolve = resolve
+        self.engine.tick()
+        self.assertEqual((self.tracked()["status"], len(self.forge.approvals)), ("answered", 1))
+
+    def test_lost_resolve_answer_of_an_accept_counts_as_accepted(self):
+        self.posted()
+        self.author_reply()
+        self.set_status("disputed")
+        resolve = self.forge.resolve
+
+        def lost(*args):
+            resolve(*args)
+            raise ForgeError("response lost")
+
+        self.forge.resolve = lost
+        with self.assertRaises(ForgeError):
+            self.engine.accept_thread(self.key(), None)
+        self.engine.tick()
+        self.assertEqual(self.tracked()["status"], "accepted")
+
+    def test_rebuttal_drops_the_failed_settlement(self):
+        _, review_id = self.follow_up()
+
+        def resolve(*args):
+            raise ForgeError("temporary outage")
+
+        working, self.forge.resolve = self.forge.resolve, resolve
+        self.judged(review_id)
+        self.add_note("alice", "author-4", "I retract that; the bug exists.")
+        self.engine.tick()
+        second = next(r["id"] for r in self.follow_ups() if r["status"] == "running")
+        self.judged(second, status="disputed")
+        working("team/service", 7, self.forge.discussions[KEY][0].id)  # someone resolves it by hand
+        self.engine.tick()
+        self.assertEqual(self.tracked()["status"], "resolved_elsewhere")
+
+    def test_approval_waits_for_the_pipeline(self):
+        self.config["repos"][REPO]["approval"] = "when_clean"
+        _, review_id = self.follow_up(pipeline="failed")
+        self.judged(review_id)
+        self.assertEqual(self.forge.approvals, [])
+        self.forge.add(change(review_requested=False, reviewers=(), pipeline="success"))
+        self.engine.tick()
+        self.assertEqual(len(self.forge.approvals), 1)

@@ -136,7 +136,9 @@ class ThreadPublishingTest(ThreadCase):
         self.author_reply()
         self.judgment(self.next_review(), 'open', reply='')
         self.assertEqual(self.forge.replies + self.forge.resolutions, [])
-        self.assertEqual((self.tracked()['status'], self.tracked()['last_note_id']), ('open', 'author-2'))
+        self.assertEqual(self.tracked()['status'], 'open')
+        self.engine.tick()
+        self.assertEqual(self.follow_ups(), [], 'a judged reply is not judged again')
 
     def test_disputed_judgment_notifies_without_writing(self):
         self.posted()

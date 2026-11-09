@@ -6,10 +6,12 @@ poll reads it; a reply by anyone but Filip, or a new head that no normal review 
 review at the MR's current head, and every review of a new head judges the open threads too. `fixed` and `answered`
 threads get a short reply and are resolved; `disputed` ones wait for Filip's decision in the UI.
 
-The service's own automated replies are not evidence: "the newest note" below always skips them, so a reply the
-service posted is never mistaken for an answer and never changes which reply it would post.
+The service's own automated replies are not evidence: `notes()` below always skips them, so a reply the service
+posted is never mistaken for an answer and never changes which reply it would post. Notes are compared by id, author
+and body, so an edited reply counts as new.
 """
 
+import hashlib
 import json
 from dataclasses import dataclass, field, replace
 from datetime import UTC
@@ -18,7 +20,7 @@ from pathlib import Path
 from . import bundle
 from .forge.base import ForgeError
 from .models import Note, Selection, Thread, Verdict
-from .note import REPLY_MARK, own_markers, reply_body, reply_marker
+from .note import REPLY_END, own_markers, reply_body, reply_marker
 from .rules import OPEN, eligibility, moved
 from .settings import CONTRACT, repo_view
 from .store import ACTIVE, SETTLED, WATCHED
@@ -36,6 +38,10 @@ class Applied:
 class Threads:
     def __init__(self, engine):
         self.engine = engine
+        # MRs whose threads are all settled but whose approval waits for a draft or pipeline: rechecked every poll.
+        # FIXME: in memory only, so a restart forgets them until the next settlement or review; persist them if
+        # that happens in practice.
+        self._deferred: set[tuple[str, int]] = set()
 
     # The poll
 
@@ -48,6 +54,8 @@ class Threads:
             repo = settings["repos"].get(repo_id)
             if repo and repo["enabled"]:
                 self.engine._guard(None, lambda r=repo_id, n=number: self._scan(settings, r, n))
+        for repo_id, number in sorted(self._deferred):
+            self.engine._guard(None, lambda r=repo_id, n=number: self.reconsider(r, n))
 
     def _scan(self, settings: dict, repo_id: str, number: int) -> None:
         engine, store = self.engine, self.engine.store
@@ -65,21 +73,23 @@ class Threads:
         rows = store.for_mr(repo_id, number)
         active = any(r["status"] in ACTIVE for r in rows)
         found = self._locate(repo_id, number, tracked, forge.threads(repo["path"], number), me)
-        pending = []
+        pending, settled = [], False
         for item in tracked:
             thread = found.get(item["marker"])
             if thread is None:
                 continue
             if thread.resolved:
-                self._resolved(item)
+                settled = self._resolved(item) or settled
                 continue
-            newest = evidence(thread, me)
-            if newest.id == item["last_note_id"]:
-                continue
-            if newest.author.casefold() == me.casefold():
-                store.update_thread(repo_id, number, item["marker"], last_note_id=newest.id, updated_at=self._now())
+            others = [n for n in notes(thread, me) if n.author.casefold() != me.casefold()]
+            if digest(others) == (item["seen"] or ""):
+                continue  # Filip's own notes only count as seen
+            if not others:  # the replies were deleted
+                store.update_thread(repo_id, number, item["marker"], seen=None, updated_at=self._now())
             elif not active:
-                pending.append(newest.id)
+                pending.append(f"{others[-1].id}@{digest(others)[:8]}")
+        if settled:
+            self.reconsider(repo_id, number)
         # A pushed fix with nobody replying: discovery reviews the new head only while a review is requested.
         new_head = bool(rows) and rows[-1]["head_sha"] != change.head_sha
         if active or not (pending or (new_head and eligibility(change, repo["rules"], me).action == "skip")):
@@ -94,25 +104,27 @@ class Threads:
             engine.record("info", f"queued a follow-up on {reason} in {bundle.ref(repo['forge'], repo['path'], number)}",
                           review_id=review_id)
 
-    def _resolved(self, item: dict) -> None:
-        """Resolved on the forge: by the service itself when a settling write was in flight (its answer was lost),
-        else by someone else, and no longer watched."""
+    def _resolved(self, item: dict) -> bool:
+        """Resolved on the forge: by the service itself when a settling write was in flight (its answer was lost;
+        True: settled), else by someone else, and no longer watched."""
         store = self.engine.store
         if item["pending"]:
             store.update_thread(item["repo"], item["number"], item["marker"], status=item["pending"], pending=None,
-                                updated_at=self._now())
-            return
+                                proposed_reply=None, updated_at=self._now())
+            return True
         store.update_thread(item["repo"], item["number"], item["marker"], status="resolved_elsewhere",
                             updated_at=self._now())
         self.engine.record("info", f"{item['finding_id']} of review {item['review_id']} was resolved on the forge;"
                                    " no longer watched")
+        return False
 
     # What a review reads
 
     def snapshot(self, row: dict, threads: list[Thread], me: str) -> tuple[list[dict], list[dict]]:
         """(own, settled) for the run directory: the open/disputed threads still unresolved on the forge, which the
         reviewer must judge, with every note; and the threads already fixed, answered or accepted, which are
-        decided. `status` and `newest_note_id` are what apply() later checks the thread against."""
+        decided. `status` and `version` (digest of every note but the service's replies) are what apply() later checks the
+        thread against."""
         store = self.engine.store
         tracked = store.threads(row["repo"], row["number"])
         watched = [t for t in tracked if t["status"] in WATCHED]
@@ -125,7 +137,7 @@ class Threads:
             own.append({
                 "thread_id": thread.id, "finding_id": item["finding_id"], "title": item["title"],
                 "file": item["file"], "line": item["line"], "score": item["score"], "status": item["status"],
-                "newest_note_id": evidence(thread, me).id,
+                "newest_note_id": notes(thread, me)[-1].id, "version": digest(notes(thread, me)),
                 "notes": [{"id": n.id, "author": n.author, "body": bundle.AGENT_PROMPT.sub("", n.body)}
                           for n in thread.notes],
             })
@@ -145,10 +157,11 @@ class Threads:
 
     def apply(self, row: dict, verdict: Verdict, threads: list[Thread], me: str, *, record_only: bool) -> Applied:
         """Act on each judgment whose thread is unchanged since the review read it: same tracked status (a decision
-        Filip made meanwhile wins) and same newest note (a newer reply is judged again by the next follow-up).
-        fixed/answered -> reply once and resolve; open -> seen; disputed -> wait for Filip with the proposed reply.
-        A failed settling write leaves the thread disputed for Filip, remembering what was intended. `record_only`
-        (dry run, or a verdict that reported injection) stores the reasoning and writes nothing."""
+        Filip made meanwhile wins) and same notes (a new or edited note is judged again by the next follow-up).
+        fixed/answered -> reply once and resolve; open -> seen; disputed -> wait for Filip with the proposed reply;
+        each marks the other people's notes seen and drops what an earlier failed settlement intended. A failed
+        settling write leaves the thread disputed for Filip, remembering what was intended. `record_only` (dry run,
+        or a verdict that reported injection or left files unread) stores the reasoning and writes nothing."""
         engine, store = self.engine, self.engine.store
         listed_path = engine.run_dir(row) / "mr/own_threads.json"
         listed = {t["thread_id"]: t for t in json.loads(listed_path.read_text())} if listed_path.exists() else {}
@@ -157,12 +170,13 @@ class Threads:
         forge = engine.forges[row["forge"]]
         result = Applied()
         for judgment in verdict.threads:
-            item, seen, thread = (tracked.get(judgment.thread_id), listed.get(judgment.thread_id),
+            item, read, thread = (tracked.get(judgment.thread_id), listed.get(judgment.thread_id),
                                   current.get(judgment.thread_id))
-            if item is None or seen is None or thread is None or thread.resolved:
+            if item is None or read is None or thread is None or thread.resolved:
                 continue
             label = item["finding_id"]
-            if item["status"] != seen["status"] or evidence(thread, me).id != seen["newest_note_id"]:
+            version = digest(notes(thread, me))
+            if item["status"] != read["status"] or version != read.get("version"):
                 engine.record("info", f"{label}: the thread changed since the review read it; judging it again later",
                               review_id=row["id"])
                 continue
@@ -173,9 +187,9 @@ class Threads:
             if record_only:
                 update(reasoning=judgment.reasoning, proposed_reply=judgment.reply or None)
                 continue
-            seen_id = seen["newest_note_id"]
+            seen = digest([n for n in notes(thread, me) if n.author.casefold() != me.casefold()]) or None
             if judgment.status in ("fixed", "answered"):
-                operation = f"{judgment.thread_id}:{seen_id}"  # the same evidence never gets two replies
+                operation = f"{judgment.thread_id}:{version[:12]}"  # the same notes never get two replies
                 update(pending=judgment.status)
                 try:
                     if not replied(thread, operation, me):
@@ -183,22 +197,22 @@ class Threads:
                                     reply_body(me, judgment.reply, operation))
                     forge.resolve(row["path"], row["number"], judgment.thread_id)
                 except ForgeError as error:
-                    update(status="disputed", last_note_id=seen_id, proposed_reply=None,
+                    update(status="disputed", seen=seen, proposed_reply=None,
                            reasoning=f"Closing it as {judgment.status} failed ({error}). {judgment.reasoning}")
                     result.errors.append(f"{label}: {error}")
                     engine.record("warn", f"closing {label} as {judgment.status} failed: {error}", review_id=row["id"])
                     continue
-                update(status=judgment.status, pending=None, last_note_id=seen_id, proposed_reply=None,
+                update(status=judgment.status, pending=None, seen=seen, proposed_reply=None,
                        reasoning=judgment.reasoning)
                 result.settled += 1
                 engine.record("info", f"{label} {judgment.status}: replied and resolved", review_id=row["id"])
             elif judgment.status == "disputed":
-                update(status="disputed", last_note_id=seen_id, proposed_reply=judgment.reply,
+                update(status="disputed", pending=None, seen=seen, proposed_reply=judgment.reply,
                        reasoning=judgment.reasoning)
                 result.disputed.append(f"{label}: {judgment.reasoning}")
                 engine.record("info", f"{label}: the reply needs your decision", review_id=row["id"])
             else:
-                update(last_note_id=seen_id, reasoning=judgment.reasoning)
+                update(pending=None, seen=seen, reasoning=judgment.reasoning)
         return result
 
     def reconsider(self, repo_id: str, number: int) -> None:
@@ -206,18 +220,52 @@ class Threads:
         found no injection, and each of its findings reaching the threshold now sits in a fixed, answered or accepted
         thread, with no thread of the MR still open or disputed: approve under `when_clean` if the MR is still ready
         under the repo's rules (draft, pipeline; the review request is not needed), else mark the MR reviewed
-        (clears an earlier "requested changes" on GitLab)."""
+        (clears an earlier "requested changes" on GitLab). An approval waiting for a draft or pipeline is rechecked
+        every poll."""
         engine, store = self.engine, self.engine.store
+        key = (repo_id, number)
         settings = engine.settings()
-        if settings["dry_run"] or settings["paused"] or repo_id not in settings["repos"]:
+        if settings["dry_run"] or settings["paused"]:
+            return  # a deferred approval waits for them
+        row = self._settled_review(settings, repo_id, number)
+        if row is None:
+            self._deferred.discard(key)
             return
         repo = repo_view(settings, repo_id)
+        forge, me = engine.forges[row["forge"]], engine.me(row["forge"])
+        change = forge.change(row["path"], row["number"], me)
+        deferred = key in self._deferred
+        self._deferred.discard(key)
+        if moved(row, change):
+            return
+        if repo["approval"] != "when_clean":
+            forge.mark_reviewed(row["path"], change)
+            return
+        ready = eligibility(replace(change, review_requested=True), repo["rules"], me)
+        if row["approved"] or ready.action != "review":
+            if not row["approved"] and ready.action == "wait":
+                if not deferred:
+                    engine.record("info", f"not approving yet: {ready.reason}", review_id=row["id"])
+                self._deferred.add(key)
+            return
+        forge.approve(row["path"], change)
+        store.update(row["id"], approved=True)
+        engine.record("info", f"approved at @{row['head_sha'][:8]}: every comment is fixed or answered",
+                      review_id=row["id"])
+
+    def _settled_review(self, settings: dict, repo_id: str, number: int) -> dict | None:
+        """The MR's latest finished review when it read everything, found no injection, and each of its findings
+        reaching the threshold sits in a fixed, answered or accepted thread, with no thread still open or
+        disputed."""
+        store = self.engine.store
+        if repo_id not in settings["repos"]:
+            return None
         reviews = [r for r in store.for_mr(repo_id, number) if r["kind"] == "review" and r["status"] == "done"]
         if not reviews or store.threads(repo_id, number, WATCHED):
-            return
+            return None
         row = reviews[-1]
         if row["dry_run"] or row["not_reviewed"] or row["injection_attempts"]:
-            return
+            return None
         tracked = store.threads(repo_id, number, SETTLED)
         settled_threads = {t["thread_id"] for t in tracked}
         settled_findings = {(t["review_id"], t["attempt"], t["finding_id"]) for t in tracked}
@@ -229,31 +277,17 @@ class Threads:
                 continue
             if state in ("already_open", "already_resolved") and finding["existing_thread_id"] in settled_threads:
                 continue
-            return
-        forge, me = engine.forges[row["forge"]], engine.me(row["forge"])
-        change = forge.change(row["path"], row["number"], me)
-        if moved(row, change):
-            return
-        if repo["approval"] != "when_clean":
-            forge.mark_reviewed(row["path"], change)
-            return
-        ready = eligibility(replace(change, review_requested=True), repo["rules"], me)
-        if row["approved"] or ready.action != "review":
-            if not row["approved"]:
-                engine.record("info", f"not approving yet: {ready.reason}", review_id=row["id"])
-            return
-        forge.approve(row["path"], change)
-        store.update(row["id"], approved=True)
-        engine.record("info", f"approved at @{row['head_sha'][:8]}: every comment is fixed or answered",
-                      review_id=row["id"])
+            return None
+        return row
 
     # Filip's decisions on a disputed thread (explicit actions: like Post anyway they write even in dry run)
 
     def accept(self, key: tuple, reply: str | None) -> None:
         """Accept the author's answer: reply if text is given (once), resolve, and count the thread as fixed."""
         item, forge, thread = self._disputed(key, write=True)
+        self.engine.store.update_thread(*key, pending="accepted")  # a resolve whose answer is lost still counts
         if reply and reply.strip():
-            operation = f"{item['thread_id']}:accept:{item['last_note_id']}"
+            operation = f"{item['thread_id']}:accept:{(item['seen'] or '')[:12]}"
             if not replied(thread, operation, self._me(item)):
                 forge.reply(item["path"], item["number"], item["thread_id"],
                             f"{reply.strip()}\n\n{reply_marker(operation)}")
@@ -325,12 +359,18 @@ class Threads:
         return self.engine.now().astimezone(UTC).strftime("%Y-%m-%dT%H:%M:%SZ")
 
 
-def evidence(thread: Thread, me: str) -> Note:
-    """The newest note that is not one of the service's own replies."""
-    for item in reversed(thread.notes):
-        if not (item.author.casefold() == me.casefold() and REPLY_MARK in item.body):
-            return item
-    return thread.notes[0]
+def notes(thread: Thread, me: str) -> list[Note]:
+    """The thread's notes but the service's own replies (by `me`, ending in a reply marker); never empty."""
+    found = [n for n in thread.notes if not (n.author.casefold() == me.casefold() and REPLY_END.search(n.body))]
+    return found or list(thread.notes[:1])
+
+
+def digest(items: list[Note]) -> str:
+    """Names `items` by id, author and body; "" for none."""
+    if not items:
+        return ""
+    data = json.dumps([[n.id, n.author, n.body] for n in items], ensure_ascii=False)
+    return hashlib.sha256(data.encode()).hexdigest()[:16]
 
 
 def replied(thread: Thread | None, operation: str, me: str) -> bool:

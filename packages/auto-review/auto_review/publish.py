@@ -53,8 +53,7 @@ class Publisher:
             # Threads first: a finding tied to a thread this verdict calls fixed or answered is settled below.
             if not dry_run and self._changed(settings, row["repo"]):
                 return
-            applied = engine.threads.apply(row, verdict, threads, me,
-                                           record_only=dry_run or bool(verdict.injection_attempts))
+            applied = engine.threads.apply(row, verdict, threads, me, record_only=dry_run or _unsafe(verdict))
             decision = decide(verdict, threshold=repo["threshold"], index=DiffIndex(bundle.diffs(run_dir)),
                               threads=threads, settled=engine.threads.settled_ids(row["repo"], row["number"]))
         outcome, reason = decision.outcome, decision.reason
@@ -115,15 +114,15 @@ class Publisher:
             return
         if verdict.status == "error":
             return engine.fail(row, f"reviewer could not finish: {verdict.error or 'no reason given'}")
-        dry_run, injected = settings["dry_run"], bool(verdict.injection_attempts)
+        dry_run, unsafe = settings["dry_run"], _unsafe(verdict)
         if not dry_run and self._changed(settings, row["repo"]):
             return
-        store.update(row["id"], summary=verdict.summary, dry_run=dry_run,
+        store.update(row["id"], summary=verdict.summary, dry_run=dry_run, not_reviewed=list(verdict.not_reviewed),
                      injection_attempts=list(verdict.injection_attempts))
-        applied = engine.threads.apply(row, verdict, threads, me, record_only=dry_run or injected)
+        applied = engine.threads.apply(row, verdict, threads, me, record_only=dry_run or bool(unsafe))
         judged = ", ".join(f"{j.status}" for j in verdict.threads) or "nothing to judge"
-        if injected:
-            self._done(row, "needs_attention", "the replies contain text aimed at the reviewer; nothing written")
+        if unsafe:
+            self._done(row, "needs_attention", f"{unsafe}; nothing written")
             return
         if not dry_run:
             engine.threads.reconsider(row["repo"], row["number"])
@@ -267,6 +266,15 @@ def _values(row: dict, repo: dict, finding: Finding, me: str) -> dict:
         "title": finding.title, "frequency": finding.frequency, "severity": finding.severity,
         "score": finding.score, "threshold": repo["threshold"], "disposition": "open",
     }
+
+
+def _unsafe(verdict) -> str:
+    """Why the verdict's thread judgments must not be acted on: injection reported, or files left unread."""
+    if verdict.injection_attempts:
+        return "the replies contain text aimed at the reviewer"
+    if verdict.not_reviewed:
+        return f"the reviewer could not read {', '.join(verdict.not_reviewed)}"
+    return ""
 
 
 def _attention(applied: Applied) -> str:

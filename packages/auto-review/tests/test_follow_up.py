@@ -24,7 +24,6 @@ class FollowUpPollTest(ThreadCase):
         self.author_reply('sgiath')
         self.engine.tick()
         self.assertEqual(self.follow_ups(), [])
-        self.assertEqual(self.tracked()['last_note_id'], 'author-2')
 
     def test_active_review_defers_reply_until_finished(self):
         self.posted()

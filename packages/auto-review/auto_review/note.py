@@ -18,6 +18,7 @@ DEFAULT_TEMPLATE = (
 
 REPLY_NOTE = "> [!NOTE]\n> Automated review published on behalf of @{reviewer}"
 REPLY_MARK = "<!-- auto-review:v1 reply key="
+REPLY_END = re.compile(r"<!-- auto-review:v1 reply key=\S+ -->\s*\Z")
 
 WORD = re.compile(r"\{([A-Za-z_][A-Za-z0-9_]*)\}")
 MARKER = re.compile(r"<!-- auto-review:v1 key=\S+ finding=\S+ -->")

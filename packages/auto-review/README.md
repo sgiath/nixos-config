@@ -55,32 +55,35 @@ Every comment the service posts is tracked (SQLite `threads`, keyed by its hidde
 
 - **Watching.** Each poll reads the MRs that have an `open` or `disputed` thread. A thread someone resolved on the
   forge becomes `resolved_elsewhere` and is no longer watched; a closed or merged MR closes its threads. Filip's own
-  replies only count as seen. A reply by anyone else queues one `follow_up` review at the MR's current head
-  (`kind: follow_up`, keyed by the reply note ids, so the same reply never queues twice), unless a review of that MR
+  replies only count as seen. A new or edited reply by anyone else queues one `follow_up` review at the MR's current
+  head (`kind: follow_up`, keyed by the newest reply's id and a digest of the replies, so the same replies never queue
+  twice), unless a review of that MR
   is active; so does a new head that no normal review will look at (review no longer requested). Follow-ups do not
   need the review request; they share the queue, limits, pause, quiet hours, cancel and retry with reviews. Only one
   review of an MR runs at a time, whatever its kind; a new head or a newly claimed normal review supersedes a
-  follow-up. The service's own replies are never counted as a reply.
+  follow-up. The service's own replies (by Filip's account, ending in the reply marker) are never counted as a reply.
 - **Judging.** A follow-up (`prompts/follow_up.md`) only judges threads; every review of a new head also judges
   them (`prompts/threads.md` in both). The run directory gets `mr/own_threads.json` (open/disputed threads with all
   their notes) and `mr/settled_threads.json`; the verdict's `threads` must judge each listed thread once as
   `fixed`, `answered`, `open` or `disputed`, with reasoning and, except for `open`, a reply in Filip's voice.
-- **Acting.** A judgment is applied only if the thread is unchanged since the review read it (same newest note, same
-  status): a newer reply is judged by the next follow-up, and a decision Filip made meanwhile wins. `fixed`/`answered`:
-  the reply is posted in the thread (short note on top, hidden marker naming the thread and the judged note, so the
-  same evidence never gets two replies), then the thread is resolved; from then on the thread counts as fixed, and a
+- **Acting.** A judgment is applied only if the thread is unchanged since the review read it (same notes, compared by
+  id, author and body, and same status): a new or edited reply is judged by the next follow-up, and a decision Filip
+  made meanwhile wins. `fixed`/`answered`: the reply is posted in the thread (short note on top, hidden marker naming
+  the thread and a digest of the judged notes, so the same notes never get two replies), then the thread is resolved; from then on the thread counts as fixed, and a
   later finding tied to it is `settled` (not posted, not blocking). `open`: nothing is written. `disputed`: nothing is
   written; the review ends `needs_attention`, Filip is notified, and the UI's *your decision* section shows the
   reasoning and the proposed reply, which he can send (thread stays open), accept the author's answer (resolve; it
   counts as fixed) or keep open. These decisions are explicit actions and, like *Post anyway*, write even in dry run.
   A failed reply or resolve turns the thread `disputed` with the error, so it lands in the same section; a resolve
-  whose answer was lost is recognised on the next poll. A verdict with `status: error` writes nothing, and one that
-  reports injection only records the judgments.
+  whose answer was lost (also after *accept*) is recognised on the next poll and counts as settled; a later judgment
+  of the thread drops what the failed settlement intended. A verdict with `status: error` writes nothing, and one that
+  reports injection or lists unread files (`not_reviewed`) only records the judgments and ends `needs_attention`.
 - **Approving.** An open or disputed thread blocks approval of any review of the MR. After a follow-up or an accepted
   answer settles threads, the latest finished review is reconsidered: if it is at the current head, read every file,
   found no injection, and each of its findings reaching the threshold now sits in a settled thread, it is approved
   under `approval: when_clean` while the MR is ready under the repo's rules (draft, pipeline; the review request is not
-  needed), or the MR is marked reviewed under `never` (clearing an earlier *requested changes* on GitLab). An open thread scoring at least `request_changes_threshold` keeps requesting changes.
+  needed; while it waits for a draft or pipeline, each poll checks again, until a restart), or the MR is marked
+  reviewed under `never` (clearing an earlier *requested changes* on GitLab). An open thread scoring at least `request_changes_threshold` keeps requesting changes.
 - Dry run records the judgments' reasoning and writes nothing.
 
 ## Settings and which one wins

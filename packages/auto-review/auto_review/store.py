@@ -51,7 +51,7 @@ CREATE TABLE IF NOT EXISTS events (
 CREATE TABLE IF NOT EXISTS threads (
   repo TEXT NOT NULL, number INTEGER NOT NULL, marker TEXT NOT NULL, forge TEXT NOT NULL, path TEXT NOT NULL,
   review_id INTEGER NOT NULL, attempt INTEGER NOT NULL, finding_id TEXT NOT NULL, thread_id TEXT,
-  status TEXT NOT NULL DEFAULT 'open', last_note_id TEXT, reasoning TEXT, proposed_reply TEXT, updated_at TEXT,
+  status TEXT NOT NULL DEFAULT 'open', seen TEXT, reasoning TEXT, proposed_reply TEXT, updated_at TEXT,
   pending TEXT,
   PRIMARY KEY (repo, number, marker)
 );
@@ -79,9 +79,9 @@ class Store:
     existing_thread_id, body, reasoning, state, url, remote_id.
     threads: one per comment the service posted, keyed (repo, number, marker): forge, path, review_id, attempt,
     finding_id, thread_id (null until known: GitHub posts return a comment id, the thread is found by marker),
-    status (`open`, `disputed`, `fixed`, `answered`, `accepted`, `resolved_elsewhere`, `closed`), last_note_id
-    (newest note already judged or seen), reasoning, proposed_reply, updated_at, pending (`fixed`/`answered` while
-    the settling reply/resolve is in flight or failed).
+    status (`open`, `disputed`, `fixed`, `answered`, `accepted`, `resolved_elsewhere`, `closed`), seen (digest of
+    the other people's notes already judged; null: none), reasoning, proposed_reply, updated_at, pending
+    (`fixed`/`answered`/`accepted` while the settling reply/resolve is in flight, or after it failed).
     """
 
     def __init__(self, path: Path):
