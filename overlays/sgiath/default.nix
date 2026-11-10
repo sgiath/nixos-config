@@ -106,19 +106,17 @@ in
       prev.hermes-agent;
 
   llm-agents = prev.llm-agents // {
-    # FIXME: the cargo setup hook makes aws-lc-sys, libsqlite3-sys, onig_sys
-    # and zstd-sys use system libraries, but codex 0.167.0 lists only OpenSSL
-    # and libcap. Backports nixpkgs master's aws-lc, oniguruma, sqlite and
-    # zstd for the same release. Drop once the selected llm-agents codex lists
-    # them; see UPSTREAM-WORKAROUNDS.md#llm-agents-codex-system-libraries.
-    codex = prev.llm-agents.codex.overrideAttrs (old: {
-      buildInputs = old.buildInputs ++ [
-        final.aws-lc
-        final.oniguruma
-        final.sqlite
-        final.zstd
-      ];
-    });
+    # FIXME: llm-agents codex builds openssl-sys against AWS-LC's compat
+    # openssl.pc, which nixpkgs AWS-LC 5.12.0 only installs with its OpenSSL
+    # shim, and openssl-sys's bindgen-cli path rejects its default symbol
+    # prefix. Drop once the selected llm-agents codex or nixpkgs AWS-LC
+    # provides it; see UPSTREAM-WORKAROUNDS.md#llm-agents-codex-aws-lc-openssl-shim.
+    codex = prev.llm-agents.codex.override {
+      aws-lc = final.aws-lc.override {
+        withOpenSSLShim = true;
+        symbolPrefix = null;
+      };
+    };
     # Replacing codex in this attrset does not reach llm-agents' own scope,
     # so t3code (and the nightly wrappers using its providerPackages) would
     # still carry the unfixed codex. Drop with the codex override above.
