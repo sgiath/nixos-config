@@ -46,10 +46,6 @@
 
   services = {
     davinci-resolve-mcp.enable = false;
-    openclaw.node = {
-      enable = true;
-      sshTarget = "sgiath@vesta.nebula.sgiath.dev";
-    };
     herdr-server.enable = true;
     # Settings changed in its UI (http://127.0.0.1:8787) override these.
     auto-review = {

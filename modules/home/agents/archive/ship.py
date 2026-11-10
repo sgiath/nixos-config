@@ -185,14 +185,6 @@ SOURCES = [
             ),
         )
     ),
-    Jsonl("openclaw", [".openclaw-old/agents/main/sessions/*.jsonl*"]),
-    Sqlite(
-        "openclaw",
-        ".openclaw/agents/main/agent/openclaw-agent.sqlite",
-        "transcript_events",
-        "session_id || ':' || seq",
-        "created_at",
-    ),
 ]
 
 
@@ -225,6 +217,8 @@ IGNORED = [
     (".ipython/profile_default/history.sqlite", "IPython history, not an agent"),
     (".local/share/gajim/*.db", "XMPP client"),
     (".local/share/fractal/**", "Matrix client"),
+    (".openclaw/**", "OpenClaw, retired; leftover state"),
+    (".openclaw-old/**", "OpenClaw, retired; leftover state"),
 ]
 
 

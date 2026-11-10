@@ -23,8 +23,7 @@ house.
   timing metrics. Needs rotation-aware shipping and an allowlist that drops
   account/rate-limit RPCs.
 - **More normalizers.** T3 (thread titles, runs, provider thread links through
-  `nativeThreadRef.nativeId`), Hermes (session/route aggregates only),
-  OpenClaw.
+  `nativeThreadRef.nativeId`), Hermes (session/route aggregates only).
 - **Hermes reconciliation.** Re-ship changed sessions' messages, since Hermes
   has no update stamps.
 

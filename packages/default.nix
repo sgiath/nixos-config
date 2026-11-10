@@ -13,7 +13,6 @@ pkgs: {
   katrain = pkgs.callPackage ./katrain { };
   live-install = pkgs.callPackage ./live-install { };
   nak = pkgs.callPackage ./nak { };
-  openclaw-desktop = pkgs.callPackage ./openclaw-desktop { };
   quickshell = pkgs.callPackage ./quickshell { };
   relay-tester = pkgs.callPackage ./relay-tester { };
   t3code-nightly = pkgs.callPackage ./t3code-nightly { };

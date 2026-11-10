@@ -41,18 +41,11 @@
 
   # Build-signing key for closures pushed to the servers; the public half is
   # secrets/ceres-cache.pub.
-  sops.secrets = {
-    nix-signing-key = {
-      sopsFile = ../../../secrets/ceres-signing.yaml;
-      key = "nix-signing-key";
-      mode = "0400";
-      restartUnits = [ "nix-daemon.service" ];
-    };
-
-    openclaw-token = {
-      owner = "sgiath";
-      mode = "0400";
-    };
+  sops.secrets.nix-signing-key = {
+    sopsFile = ../../../secrets/ceres-signing.yaml;
+    key = "nix-signing-key";
+    mode = "0400";
+    restartUnits = [ "nix-daemon.service" ];
   };
 
   nix.settings.secret-key-files = [ config.sops.secrets.nix-signing-key.path ];

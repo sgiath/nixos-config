@@ -159,9 +159,6 @@ Runtime checks in records are required future checks unless the record's
 | [`katrain-opencl-test-exclusion`](#katrain-opencl-test-exclusion) | test exception | required | ceres |
 | [`whiteboard-angle-runpath`](#whiteboard-angle-runpath) | compatibility | required | desktop |
 | [`whiteboard-cli-desktop-environment`](#whiteboard-cli-desktop-environment) | compatibility | required | desktop |
-| [`openclaw-desktop-deep-link-wrapper`](#openclaw-desktop-deep-link-wrapper) | temporary fix | required | desktop |
-| [`openclaw-desktop-remote-ssh-limitation`](#openclaw-desktop-remote-ssh-limitation) | known limitation | required | desktop |
-| [`openclaw-desktop-asset-aware-updater`](#openclaw-desktop-asset-aware-updater) | updater constraint | required | desktop |
 | [`nak-network-check-disable`](#nak-network-check-disable) | test exception | required | package only (not installed) |
 | [`davinci-resolve-mcp-sdk-version`](#davinci-resolve-mcp-sdk-version) | compatibility | required | ceres |
 | [`t3code-nightly-sea-patchelf`](#t3code-nightly-sea-patchelf) | temporary fix | required | ceres, vesta |
@@ -690,36 +687,6 @@ Also covers audit ID `package-katrain-opencl-test`.
 - **Remove when:** the selected CLI routes launches through a supported wrapper keeping the environment on cold/warm launch.
 - **Validate:** `desktop`; runtime: CLI-initiated and direct desktop launches from an environment containing the Electron/VSCode variables; git and external links work.
 
-#### `openclaw-desktop-deep-link-wrapper`
-
-- **Review (2026-11-06):** `required`. Full Ceres selects OpenClaw Desktop 2026.11.1, also [latest stable, commit 4ffdd204](https://github.com/openclaw/openclaw/blob/4ffdd2047d192dd65554de3c8c46c0e0197c6e2a/apps/linux/src-tauri/src/main.rs#L3487-L3498). The selected source still invokes deep_link().register_all() on Linux and has no Nix wrapper path integration there. Keep the packaged desktop-handler path; no isolated cold-open URI test was made and the user's handler was untouched.
-
-- **Where:** `packages/openclaw-desktop/default.nix` (no `update-desktop-database` on PATH; shipped `OpenClaw.desktop` handles `openclaw://`).
-- **Why:** runtime registration would point the handler at the unwrapped ELF.
-- **Upstream:** selected/latest stable [v2026.9.9](https://github.com/openclaw/openclaw/releases/tag/v2026.9.9) (2026-10-10).
-- **Remove when:** the selected Tauri/plugin integration registers the wrapped launcher on NixOS, verified on cold launch.
-- **Validate:** `desktop`; runtime: in an isolated desktop profile cold-open an `openclaw://` URI. Never overwrite the user's handler to test.
-
-#### `openclaw-desktop-remote-ssh-limitation`
-
-- **Review (2026-11-06):** `required`. Full Ceres selects the 2026.11.1 DEB. [Its tag source 4ffdd204](https://github.com/openclaw/openclaw/blob/4ffdd2047d192dd65554de3c8c46c0e0197c6e2a/apps/linux/src-tauri/src/remote_gateway.rs#L1030-L1040) and freshly fetched main both still construct /usr/bin/ssh and /bin/ssh candidates rather than consulting PATH. The source gate is unmet; no SSH session was opened. The existing FIXME's one-path wording remains stale.
-
-- **Where:** `packages/openclaw-desktop/default.nix` (FIXME; binary not patched).
-- **Why:** remote gateway only tries `/usr/bin/ssh` and `/bin/ssh` (the FIXME mentions only the first); neither exists on NixOS, so remote-gateway mode does not work.
-- **Upstream:** selected [v2026.9.9 remote_gateway.rs](https://github.com/openclaw/openclaw/blob/v2026.9.9/apps/linux/src-tauri/src/remote_gateway.rs#L1046) and [main 7f9594b2](https://github.com/openclaw/openclaw/blob/7f9594b2338497adf41a3c92cc9c6aa49b85eb02/apps/linux/src-tauri/src/remote_gateway.rs#L1028) still hardcode both paths (2026-10-10).
-- **Resolve when:** the downloaded `.deb` actually includes a PATH/configurable ssh fix; then drop the FIXME.
-- **Validate:** `desktop`; runtime: authorized SSH connection to a test gateway.
-
-#### `openclaw-desktop-asset-aware-updater`
-
-- **Review (2026-11-06):** `required`. Full Ceres selects [latest stable v2026.11.1](https://github.com/openclaw/openclaw/releases/tag/v2026.11.1), whose release API includes OpenClaw-2026.11.1-amd64.deb. The current release list still has a stable [v2026.9.36](https://github.com/openclaw/openclaw/releases/tag/v2026.9.36) without a Linux DEB, alongside newer releases that do have one. The durable all-releases asset contract is therefore still absent. No updater mutation or gateway runtime run was made.
-
-- **Where:** `packages/openclaw-desktop/update.sh` (highest stable release that has `OpenClaw-<version>-amd64.deb`).
-- **Why:** stable releases do not reliably ship a Linux `.deb`: on 2026-10-10 the latest stable 2026.9.9 has one, while 2026.9.8, 2026.8.35, 2026.8.34 and 2026.9.7 do not (the 2026.10.1 betas have none either).
-- **Upstream:** selected [v2026.9.9](https://github.com/openclaw/openclaw/releases/tag/v2026.9.9) has the required Linux asset; the preceding [v2026.9.8](https://github.com/openclaw/openclaw/releases/tag/v2026.9.8) does not. A newer project version alone is not a removal gate.
-- **Remove when:** upstream has a durable Linux release-asset contract, or the package source type changes deliberately.
-- **Validate:** `desktop`; runtime: OpenClaw local gateway and control UI after an update.
-
 #### `nak-network-check-disable`
 
 - **Review (2026-11-06):** `required`. Full Ceres exposes nak 0.22.2, also latest, from [07562de2](https://github.com/fiatjaf/nak/blob/07562de29368755358a2776b43cc26056af66d33/cli_test.go#L165-L180). Its TestReqIdFromRelay and TestReqWithFlagsAfter1 still query public nos.lol. The package retains doCheck=false; no sandbox/offline-only test selection was established, so the broad exclusion stays. No network tests or relay calls were run.
@@ -792,7 +759,7 @@ happens; do not remove them because upstream changed. Group names are stable.
 | `release-pins` | `ordinary-root-release-pins`, `standard-input-follows-and-overlays`, `flake-binary-cache-configuration`, `comfyui-upstream-release-pin` | `flake.nix`, `scripts/update-inputs.sh` | Ordinary tagged/immutable input refs advanced by the release updater, per-input `nixpkgs` follows, module wiring, upstream overlays, and substituter/key preferences. Only `hyprland-glaze-release-freeze` is a pin workaround; Hyprland's nixpkgs not following root is tracked in `desktop-hyprland-mesa-abi`. Trust/cache changes are separate scope. |
 | `bird-product` | `bird-native-linux-chromium-cookie-source`, `bird-standard-pnpm-recipe`, `hermes-bird-vesta-command-adapter` | `vendor/bird/src/lib/cookies.ts`, `vendor/bird/src/lib/chromium-cookies.ts`, `packages/bird/default.nix`, `modules/nixos/services/hermes-bird-vesta.sh` | Required read-only open-Chromium cookie reading (v11 keyring unsupported), normal pnpm recipe, digest command adapter. Credential/security changes need the security model. |
 | `comfyui-product` | `comfyui-cache-registration`, `comfyui-json-repair`, `comfyui-prompt-enhancer-node`, `comfyui-rocm-attention-policy`, `comfyui-bundled-nodes-opt-out`, `comfyui-qwen-service-state`, `comfyui-qwen-workflow-seeding`, `comfyui-qwen-model-downloads` | `flake.nix` nixConfig, `overlays/comfyui/default.nix`, `modules/nixos/services/comfyui.nix`, `systems/x86_64-linux/ceres/qwen-image.nix`, `systems/x86_64-linux/ceres/qwen-image/` | Cache opt-in, enhancer dependency/node pin, ROCm attention policy, node surface, user-owned state, edit-preserving workflow seeding, verified model downloader. `json-repair` migrates with `comfyui-service-overlay-selection`. |
-| `package-recipes` | `local-product-packaging`, `katrain-package-integration-details`, `openclaw-tauri-binary-layout`, `whiteboard-legacy-alias-removal`, `delta-authenticated-archive-packaging`, `relay-tester-manual-git-hash-refresh`, `quickshell-qtmultimedia-extension`, `quickshell-multimedia-and-qml-tooling` | `packages/`, `modules/home/desktop/quickshell.nix` | Ordinary reproducible packaging, binary relocation, QtMultimedia for video wallpaper. |
+| `package-recipes` | `local-product-packaging`, `katrain-package-integration-details`, `whiteboard-legacy-alias-removal`, `delta-authenticated-archive-packaging`, `relay-tester-manual-git-hash-refresh`, `quickshell-qtmultimedia-extension`, `quickshell-multimedia-and-qml-tooling` | `packages/`, `modules/home/desktop/quickshell.nix` | Ordinary reproducible packaging, binary relocation, QtMultimedia for video wallpaper. |
 | `updater-and-maintenance` | `dnd5etools-split-image-release-policy`, `local-maintenance-and-installer-commands`, `development-shell-and-input-updater-policy`, `nebula-certificate-mobile-helpers` | `packages/dnd5etools/`, `packages/update/`, `packages/clear-cache/`, `packages/fix-images/`, `packages/live-install/`, `packages/burn-iso/`, `scripts/`, `shells/default/` | Local tools and update policy (dnd5etools images advanced manually by decision). |
 | `security-policy` | `whiteboard-user-namespace-sandbox`, `grok-sandbox-off`, `installer-exported-keys-and-mobile-config`, `factorio-default-fetch-flow`, `factorio-headless-runtime-settings`, `matrix-livekit-runtime-turn-settings`, `normal-service-restart-and-auth-integrations` | `packages/whiteboard/default.nix`, `modules/home/agents/base.nix`, `packages/burn-iso/default.nix`, `scripts/nebula-mobile.sh`, `modules/nixos/gaming/role.nix`, `modules/nixos/services/factorio.nix`, `modules/nixos/services/matrix.nix`, agent/service modules | Intentional security-sensitive decisions: inert setuid helper removed (user-namespace sandbox, no `--no-sandbox`), explicit `GROK_SANDBOX=off`, exported installer keys, approved Factorio token handling, runtime credential serialization, service restart/auth boundaries. Change only by owner/security decision; never auto-remove. |
 | `session-lifecycle` | `desktop-once-per-session-startup`, `desktop-launcher-independent-app-cgroups`, `herdr-managed-desktop-environment`, `docker-delayed-workstation-start`, `qml-local-reactivity-patterns`, `quickshell-icon-lookup-cost` | `modules/home/desktop/role.nix`, `modules/home/programs/chat.nix`, `modules/home/programs/email.nix`, `modules/home/agents/herdr-server.nix`, `modules/home/desktop/quickshell/`, `modules/nixos/services/docker.nix` | Required once-per-session startup, app cgroup isolation, Herdr daemon ownership and graphical environment, boot policy, local QML patterns, launcher icon omission (owned by the proposed icon-lookup note). |
@@ -808,7 +775,6 @@ Fix together with the next change touching the file; behavior must not change.
 - `homes/x86_64-linux/sgiath@ceres/default.nix` says login default stays Noctalia; the evaluated default is `sgiath` (`noctalia-login-comment-stale`).
 - `modules/home/terminal/herdr.nix` comment names Yoru; the parser reads `themes/sgiath.yaml` (`herdr-yoru-comment-stale`).
 - `packages/katrain/default.nix` claims Kivy Python 3.14 support was merged; kivy#9225 is open.
-- `packages/openclaw-desktop/default.nix` FIXME names only `/usr/bin/ssh`; the binary also tries `/bin/ssh`.
 - `packages/AGENTS.md` lists obsolete package names and the old absolute Bird input.
 
 ## Resolved history
@@ -830,3 +796,4 @@ Fix together with the next change touching the file; behavior must not change.
 | `pihole-ftl-gcc16-unused-counter` | 2026-10-28 | Overlay and patch removed: root nixpkgs selects FTL 6.8, whose `src/config/validator.c` `sanitize_dns_hosts` (lines 1016-1024) already lacks the counter ([pi-hole/FTL#2939](https://github.com/pi-hole/FTL/pull/2939), merged 2026-07-07), so the backport failed to apply (`Reversed (or previously applied) patch detected!`). The unchanged package build reproduced that failure; after removal the upstream cached package and full Vesta toplevel build pass. Runtime checks remain for deployment: `pihole-ftl` healthy, local `dns.hosts` names and public DNS answer. |
 | `desktop-hyprland-elf-wrapper` | 2026-10-29 | Override removed: selected Hyprland v0.57.0 (0aa6745f) `nix/default.nix` takes `makeBinaryWrapper` directly (lines 7, 167) and wraps `bin/Hyprland` with `wrapProgram` adding binutils, hyprland-guiutils, pciutils and pkgconf to PATH (lines 255-263), so the stale `makeWrapper` override failed evaluation (`unexpected argument 'makeWrapper'`). After removal `programs.hyprland.package` is the unmodified upstream derivation and the full Ceres toplevel builds; `ensure-wrapper-integrity` accepts the ELF launcher and validates all capabilities. Runtime launch through greetd's `start-hyprland` with screen sharing remains unchecked pending activation. |
 | `preview-share-picker-region-coordinates` | 2026-11-05 | Retired with the 0.3.1 pin (`preview-share-picker-hyprland-057-ipc`): v0.3.1 `src/config.rs` defaults `region.command` to `slurp -f '%o@%X,%Y,%W,%H'` (output-relative, PR #26). The setting stays, unchanged, for its absolute `slurp` path. Runtime region selection on a monitor away from the layout origin remains to be checked after activation. |
+| `openclaw-desktop-deep-link-wrapper`, `openclaw-desktop-remote-ssh-limitation`, `openclaw-desktop-asset-aware-updater`, `openclaw-tauri-binary-layout` | 2026-11-10 | Removed together with `packages/openclaw-desktop` (last selected 2026.11.1) and the OpenClaw gateway/node modules; OpenClaw is no longer used. |

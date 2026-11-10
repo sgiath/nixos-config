@@ -13,7 +13,6 @@
     ./fx.nix
     ./herdr-server.nix
     ./muse-code.nix
-    ./openclaw.nix
     ./opencode.nix
     ./pi.nix
     ./t3code.nix

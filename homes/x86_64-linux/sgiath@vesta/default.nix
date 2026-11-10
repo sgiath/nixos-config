@@ -9,8 +9,5 @@
     awsRefreshMinute = 30;
   };
 
-  services = {
-    openclaw.gateway.enable = true;
-    t3code.channel = "nightly";
-  };
+  services.t3code.channel = "nightly";
 }

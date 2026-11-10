@@ -40,7 +40,7 @@ Role-based NixOS modules. Snowfall imports every `<dir>/default.nix` into every 
 - File names are kebab-case and match the option they hook (`services/ntfy-sh.nix` ↔ `services.ntfy-sh.enable`).
 - Roles push Home Manager options: `common` sets `home-manager.users.sgiath.sgiath.{enable,roles.terminal.enable}`, `desktop`/`gaming` set their matching `roles.*.enable`.
 - Server services gate on `config.sgiath.roles.server.enable && config.services.<name>.enable`; sites additionally on `sgiath.sites.<name>.enable`.
-- Host-specific secrets (ceres signing key, openclaw token) live in `systems/`, not here. Never read plaintext secret values during evaluation.
+- Host-specific secrets (ceres signing key) live in `systems/`, not here. Never read plaintext secret values during evaluation.
 - Nginx vhosts use `onlySSL`, `enableACME`, `kTLS`, and proxy to localhost/internal addresses; ACME credentials live under `/data/secrets`.
 - Service state commonly lives under `/data`; capture side effects (firewall ports, `extraGroups`, systemd ordering, bind addresses).
 

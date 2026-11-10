@@ -30,7 +30,6 @@
 
       # agents
       pkgs.llm-agents.grok
-      pkgs.llm-agents.openclaw
       pkgs.llm-agents.omo-ai
 
       # tools
@@ -48,7 +47,6 @@
       inputs.delta.packages.${pkgs.stdenv.hostPlatform.system}.delta
       pkgs.llm-agents.hermes-desktop
       pkgs.llm-agents.grok-bot
-      pkgs.${namespace}.openclaw-desktop
       # Drives the desktop Chromium through the browse extension; `browse
       # install` adopts this package and configures agents Nix does not manage.
       pkgs.${namespace}.browse
