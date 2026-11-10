@@ -36,12 +36,12 @@ in
       ++ (lib.optionals config.sgiath.roles.desktop.enable [ pkgs.llm-agents.chatgpt ]);
       file.".codex/AGENTS.md".source = ./AGENTS.md;
       # `codex --profile remote` layers this over config.toml: the Remote
-      # LiteLLM model through the cliproxy provider (modules/nixos/common/codex.nix).
+      # Claude login through the cliproxy provider (modules/nixos/common/codex.nix).
       file.".codex/remote.config.toml".source =
         (pkgs.formats.toml { }).generate "codex-remote-profile.toml"
           {
             model_provider = "cliproxy";
-            model = "remote/gpt-6.1-sol";
+            model = "remote/claude-opus-5-5";
           };
       file.".codex-remote/AGENTS.md".source = ./AGENTS.md;
     };

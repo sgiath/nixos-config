@@ -14,8 +14,8 @@ let
   # tools' saved native logins stay in place.
   #
   # Remote projects call `use remote_agents` from their .envrc. It points
-  # every tool at remote/<model> (the Remote Claude login and Remote
-  # LiteLLM): Claude Code through its model variables, Codex through the
+  # every tool at remote/<model> (the Remote Claude login): Claude Code
+  # through its model variables, Codex through the
   # remote profile (codex.nix), OpenCode through an extra config file, fx
   # through a second provider, and Pi and Grok through their own config
   # directories under ~/.config/remote-agents (no native login there).
@@ -40,15 +40,10 @@ let
             "claude-opus-5-5"
             "claude-sonnet-5-5"
             "claude-haiku-5-5"
-            "claude-fable-5-1"
-            "gpt-6.1-sol"
-            "gpt-6.1-terra"
-            "gpt-6-astra"
-            "gpt-6-luna"
+            "claude-fable-5-2"
           ]
         ) personal
-      )
-    ++ catalog.remoteOnly;
+      );
   ids = map (m: m.id);
   byId = models: f: lib.listToAttrs (map (m: lib.nameValuePair m.id (f m)) models);
 
@@ -58,7 +53,10 @@ let
     model = "gpt-6.1-sol";
     helper = "gpt-6-luna";
   };
-  remoteDefaults = lib.mapAttrs (_: id: "remote/${id}") defaults;
+  remoteDefaults = {
+    model = "remote/claude-opus-5-5";
+    helper = "remote/claude-haiku-5-5";
+  };
   remoteDir = "${config.xdg.configHome}/remote-agents";
   remoteRel = lib.removePrefix "${config.home.homeDirectory}/" remoteDir;
 
@@ -231,7 +229,7 @@ let
     ANTHROPIC_DEFAULT_OPUS_MODEL = "remote/claude-opus-5-5";
     ANTHROPIC_DEFAULT_SONNET_MODEL = "remote/claude-sonnet-5-5";
     ANTHROPIC_DEFAULT_HAIKU_MODEL = "remote/claude-haiku-5-5";
-    ANTHROPIC_DEFAULT_FABLE_MODEL = "remote/claude-fable-5-1";
+    ANTHROPIC_DEFAULT_FABLE_MODEL = "remote/claude-fable-5-2";
     CLAUDE_CODE_SUBAGENT_MODEL = "remote/claude-opus-5-5";
     OPENCODE_CONFIG = "${remoteDir}/opencode.json";
     PI_CODING_AGENT_DIR = "${remoteDir}/pi";

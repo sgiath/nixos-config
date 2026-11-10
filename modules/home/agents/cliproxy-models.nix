@@ -1,8 +1,8 @@
 # Models the agent tools offer through CLIProxyAPI (cliproxy.nix).
 # `personal` (bare and OpenCode Go) is every tool's global catalog;
-# Remote projects get the Claude and GPT ones as remote/<model> plus
-# `remoteOnly`, the Remote LiteLLM models that have no personal counterpart. `protocol` is the wire API each tool uses for the model
-# where it can choose (fx only speaks chat completions). Limits come from the
+# Remote projects get the Claude ones as remote/<model>. `protocol` is the
+# wire API each tool uses for the model where it can choose (fx only speaks
+# chat completions). Limits come from the
 # installed Codex/Pi model catalogs and xAI's Grok 4.7 guide; `effort` lists
 # the reasoning efforts the model accepts ([] when unknown).
 {
@@ -18,11 +18,9 @@
         "image"
       ];
       effort = [
-        "low"
         "medium"
         "high"
         "xhigh"
-        "max"
       ];
     }
     {
@@ -36,11 +34,9 @@
         "image"
       ];
       effort = [
-        "low"
         "medium"
         "high"
         "xhigh"
-        "max"
       ];
     }
     {
@@ -54,16 +50,14 @@
         "image"
       ];
       effort = [
-        "low"
         "medium"
         "high"
         "xhigh"
-        "max"
       ];
     }
     {
-      id = "claude-fable-5-1";
-      name = "Claude Fable 5.1";
+      id = "claude-fable-5-2";
+      name = "Claude Fable 5.2";
       protocol = "messages";
       context = 1000000;
       output = 128000;
@@ -72,8 +66,9 @@
         "image"
       ];
       effort = [
+        "medium"
+        "high"
         "xhigh"
-        "max"
       ];
     }
     {
@@ -87,11 +82,9 @@
         "image"
       ];
       effort = [
-        "low"
         "medium"
         "high"
         "xhigh"
-        "max"
       ];
     }
     {
@@ -105,11 +98,9 @@
         "image"
       ];
       effort = [
-        "low"
         "medium"
         "high"
         "xhigh"
-        "max"
       ];
     }
     {
@@ -123,11 +114,9 @@
         "image"
       ];
       effort = [
-        "low"
         "medium"
         "high"
         "xhigh"
-        "max"
       ];
     }
     {
@@ -141,11 +130,9 @@
         "image"
       ];
       effort = [
-        "low"
         "medium"
         "high"
         "xhigh"
-        "max"
       ];
     }
     {
@@ -160,7 +147,6 @@
         "image"
       ];
       effort = [
-        "low"
         "medium"
         "high"
         "xhigh"
@@ -177,12 +163,9 @@
         "image"
       ];
       effort = [
-        "minimal"
-        "low"
         "medium"
         "high"
         "xhigh"
-        "max"
       ];
     }
     {
@@ -196,12 +179,9 @@
         "image"
       ];
       effort = [
-        "minimal"
-        "low"
         "medium"
         "high"
         "xhigh"
-        "max"
       ];
     }
     {
@@ -214,11 +194,7 @@
         "text"
         "image"
       ];
-      effort = [
-        "low"
-        "high"
-        "max"
-      ];
+      effort = [ "high" ];
     }
     {
       id = "opencode-go/glm-5.3";
@@ -227,11 +203,7 @@
       context = 1000000;
       output = 131072;
       input = [ "text" ];
-      effort = [
-        "low"
-        "high"
-        "max"
-      ];
+      effort = [ "high" ];
     }
     {
       id = "opencode-go/minimax-m3.1-flash";
@@ -244,11 +216,9 @@
         "image"
       ];
       effort = [
-        "low"
         "medium"
         "high"
         "xhigh"
-        "max"
       ];
     }
     {
@@ -264,86 +234,16 @@
       effort = [ ];
     }
     {
-      id = "opencode-go/gemini-4-argon";
-      name = "Gemini 4 Argon (Go)";
+      id = "opencode-go/deepseek-v4.1-flash";
+      name = "DeepSeek V4.1 Flash (Go)";
       protocol = "chat";
-      context = 1048576;
-      output = 65536;
+      context = 1000000;
+      output = 384000;
       input = [
         "text"
         "image"
       ];
-      effort = [
-        "low"
-        "medium"
-        "high"
-      ];
-    }
-  ];
-
-  remoteOnly = [
-    {
-      id = "remote/gpt-5.6-luna";
-      name = "GPT-5.6 Luna (Remote)";
-      protocol = "responses";
-      # Limits as Remote LiteLLM reports them.
-      context = 922000;
-      output = 128000;
-      input = [
-        "text"
-        "image"
-      ];
-      effort = [
-        "low"
-        "medium"
-        "high"
-        "xhigh"
-        "max"
-      ];
-    }
-    {
-      id = "remote/gemini-4-argon";
-      name = "Gemini 4 Argon (Remote)";
-      protocol = "chat";
-      context = 1048576;
-      output = 65536;
-      input = [
-        "text"
-        "image"
-      ];
-      effort = [
-        "low"
-        "medium"
-        "high"
-      ];
-    }
-    {
-      id = "remote/gemini-3.8-flash";
-      name = "Gemini 3.8 Flash (Remote)";
-      protocol = "chat";
-      context = 1048576;
-      output = 65536;
-      input = [
-        "text"
-        "image"
-      ];
-      effort = [ ];
-    }
-    {
-      id = "remote/kimi-k3.1-pro";
-      name = "Kimi K3.1 Pro (Remote)";
-      protocol = "chat";
-      context = 1048576;
-      output = 131072;
-      input = [
-        "text"
-        "image"
-      ];
-      effort = [
-        "low"
-        "high"
-        "max"
-      ];
+      effort = [ "high" ];
     }
   ];
 }

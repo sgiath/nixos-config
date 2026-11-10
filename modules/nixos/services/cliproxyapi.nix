@@ -14,8 +14,8 @@ let
   # one is listed. With routing.force-model-prefix every credential that has
   # a prefix serves only <prefix>/<model>, so these never share a name with a
   # model of a logged-in account (requests would round-robin between them).
-  # Both upstreams are called as OpenAI chat completions; CLIProxyAPI
-  # translates Responses and Messages requests.
+  # They are called as OpenAI chat completions; CLIProxyAPI translates
+  # Responses and Messages requests.
   compat =
     {
       name,
@@ -57,10 +57,6 @@ in
           sopsFile = ../../../secrets/vesta.yaml;
           restartUnits = [ "cliproxyapi.service" ];
         };
-        litellm_api_key = {
-          sopsFile = ../../../secrets/vesta.yaml;
-          restartUnits = [ "cliproxyapi.service" ];
-        };
       };
 
       services.cliproxyapi = {
@@ -73,10 +69,10 @@ in
           # allow-remote stays off; the management key is still required.
           management.secret-key._secret = config.sops.secrets.cliproxyapi_management.path;
 
-          # Work accounts are kept apart by prefix: Remote LiteLLM below and
-          # the Remote Claude login (claude-…-filip.vavera@remote.com.json,
-          # `"prefix": "remote"` set once through the management API, stored
-          # in the auth file) serve only remote/<model>. Bare model names
+          # Work accounts are kept apart by prefix: the Remote Claude login
+          # (claude-…-filip.vavera@remote.com.json, `"prefix": "remote"` set
+          # once through the management API, stored in the auth file) serves
+          # only remote/<model>. Bare model names
           # reach only the personal accounts. A new work login needs the
           # same prefix before bare names are safe again.
           routing.force-model-prefix = true;
@@ -92,8 +88,9 @@ in
             # OpenCode Go subscription (opencode.ai/console API key). Go asks
             # for an identifying User-Agent and a stable session ID per
             # conversation (see x-opencode-session below).
-            # Free, contributor and DeepSeek models need workspace privacy
-            # settings and are left out.
+            # Free and contributor models need workspace privacy settings and
+            # are left out. DeepSeek needs the Global region allowed in the
+            # console (Settings › Privacy).
             (compat {
               name = "opencode-go";
               prefix = "opencode-go";
@@ -135,25 +132,7 @@ in
                 "qwen3.8-max"
                 "qwen3.8-flash"
                 "qwen3.7-plus"
-                "gemini-4-argon"
-              ];
-            })
-            # Remote's LiteLLM gateway. Only the chat models this key may call
-            # directly (`direct_access` in /v1/model/info); the others 403.
-            (compat {
-              name = "Remote LiteLLM";
-              prefix = "remote";
-              base-url = "https://ai-gateway-internal.eu-west-1.remote.com/v1";
-              secret = "litellm_api_key";
-              models = [
-                "gpt-6.1-sol"
-                "gpt-6.1-terra"
-                "gpt-6-astra"
-                "gpt-6-luna"
-                "gpt-5.6-luna"
-                "gemini-4-argon"
-                "gemini-3.8-flash"
-                "kimi-k3.1-pro"
+                "deepseek-v4.1-flash"
               ];
             })
           ];

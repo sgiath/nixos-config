@@ -181,13 +181,6 @@ in
     hermes-desktop = prev.llm-agents.hermes-desktop.override {
       inherit (final.llm-agents) hermes-agent;
     };
-
-    # FIXME: Remote LiteLLM (through CLIProxyAPI) ends a chat-completions
-    # stream with a usage chunk whose choice has no finish reason, which fx
-    # rejects after printing the answer. Drop once fx accepts that trailer.
-    fx = prev.llm-agents.fx.overrideAttrs (old: {
-      patches = (old.patches or [ ]) ++ [ ./fx-usage-trailer.patch ];
-    });
   };
 
   # FIXME: zenpower copies its module by hand, so Kbuild never writes the
