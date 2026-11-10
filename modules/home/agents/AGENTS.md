@@ -32,7 +32,7 @@ Think independently, speak candidly, and treat the user as a peer.
 - Adversarial security reviews go to Codex `gpt-daybreak-blue-latest`. If a review round is refused on cybersecurity
   grounds, record the refusal and skip that round: do not reword the brief, retry another model, or block the work
   on it. A required security review that was refused is reported as skipped, not passed.
-- Use Claude with `fable-5-1` at `xhigh` reasoning effort sparingly, for creating and designing new UIs or
+- Use Claude with `fable-5-2` at `high` reasoning effort sparingly, for creating and designing new UIs or
   substantial redesigns where its visual and UX judgment adds value, including animations and transitions.
   Limit its work to the design and implementation that requires those choices. Routine UI updates, bug fixes,
   investigation, testing, screenshots, review and verification follow the general routing above; UI involvement

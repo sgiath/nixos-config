@@ -228,7 +228,7 @@ in
 
             agent = {
               max_turns = 150;
-              reasoning_effort = "low";
+              reasoning_effort = "high";
               tool_use_enforcement = "auto";
             };
 
@@ -308,7 +308,7 @@ in
                   reference_models = [
                     {
                       provider = "anthropic";
-                      model = "claude-fable-5-1";
+                      model = "claude-fable-5-2";
                       reasoning_effort = "high";
                     }
                     {

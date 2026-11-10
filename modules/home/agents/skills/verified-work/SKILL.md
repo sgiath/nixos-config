@@ -87,7 +87,7 @@ relaxes routing quotes the user's instruction; a coordinator must not add its ow
 | Everything that is not production code: code exploration, research, investigation, evidence gathering, causal experiments, brute-force exploration, fuzzing/bisection, reproductions including the failing test that captures the defect, throwaway tests and scripts, production-data probes, screenshots, executable verification, and CI or review-failure triage | Codex with `gpt-6.1-sol` |
 | Independent review of a complicated fix or PR, including production-code correctness and design judgments | Codex with `gpt-6.1-sol` at `high` reasoning effort |
 | Once the handoff is ready: deciding where and how to fix the production code, production design and seam placement, production code, refactoring, existing UI changes that do not require a new design, and turning the handed-over failing test into the committed regression test | Claude with Opus 5.5 (`claude-opus-5-5` in the live catalog) |
-| Creating and designing new UIs or substantial redesigns where visual and UX judgment adds value, including animations and transitions | Claude with `fable-5-1` at `xhigh` reasoning effort |
+| Creating and designing new UIs or substantial redesigns where visual and UX judgment adds value, including animations and transitions | Claude with `fable-5-2` at `high` reasoning effort |
 
 Use Fable sparingly because it is expensive. Limit its scope to design and implementation that requires those
 design choices. Routine UI updates, bug fixes, investigation, testing, screenshots, review and verification use
