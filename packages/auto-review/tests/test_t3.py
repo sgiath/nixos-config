@@ -2,6 +2,7 @@ import unittest
 from unittest.mock import patch
 
 from auto_review.t3 import T3Client, T3Error
+from auto_review.models import Selection
 from tests.fakes import SELECTION
 
 
@@ -54,6 +55,25 @@ class LaunchIdentityTest(unittest.TestCase):
         [launch] = [c for c in call.call_args_list if c.args[0] == "t3_thread_launch"]
         self.assertEqual(launch.args[1]["title"], f"Review MR 7 {self.tag}")
         self.assertEqual(launch.args[1]["clientRequestId"], self.request_id)
+
+    def test_opencode_effort_goes_in_its_variant_option(self):
+        client = T3Client()
+        opencode = {"providerInstanceId": "opencode", "canRunChildTask": True, "models": [
+            {"id": "cliproxy/claude-opus-5-5", "options": [{"id": "variant", "values": ["low", "high"]}]},
+        ]}
+        responses = {
+            "t3_thread_list": {"threads": []},
+            "orchestrator_capabilities": {"providers": [opencode]},
+            "t3_thread_launch": {"threadId": "new"},
+        }
+        selection = Selection("opencode", "cliproxy/claude-opus-5-5", "high")
+        with patch.object(client, "_call", side_effect=lambda tool, args: responses[tool]) as call:
+            client.launch(project="project-a", title="Review MR 7", message="Review brief",
+                          selection=selection, client_request_id=self.request_id)
+            catalog = client.catalog()
+        [launch] = [c for c in call.call_args_list if c.args[0] == "t3_thread_launch"]
+        self.assertEqual(launch.args[1]["modelSelection"]["options"], [{"id": "variant", "value": "high"}])
+        self.assertEqual(catalog[0]["models"][0]["efforts"], ["low", "high"])
 
 
 class LinkTest(unittest.TestCase):

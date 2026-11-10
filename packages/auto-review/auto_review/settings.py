@@ -21,7 +21,7 @@ GLOBAL_DEFAULTS = {
     "request_changes_threshold": 30,
     "auto_settle": True,
     "note_template": None,  # None: note.DEFAULT_TEMPLATE, filled in by `effective`
-    "reviewer": {"provider": "codex", "model": "gpt-6.1-sol", "effort": "high"},
+    "reviewer": {"provider": "opencode", "model": "cliproxy/claude-opus-5-5", "effort": "high"},
     "max_concurrent": 3,
     "max_launches_per_day": None,
     "review_timeout_minutes": 120,

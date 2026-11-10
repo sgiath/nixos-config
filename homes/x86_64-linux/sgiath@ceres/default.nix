@@ -57,32 +57,43 @@
       repos =
         let
           dev = "${config.home.homeDirectory}/develop";
+          # Remote work goes through the Remote accounts behind the proxy.
+          reviewer = {
+            provider = "opencode";
+            model = "cliproxy/remote/claude-opus-5-5";
+            effort = "high";
+          };
         in
         {
           "gitlab:remote-com/neo-payroll/neo" = {
             checkout = "${dev}/remote/neo-payroll/neo";
             t3Project = "cc302d40-6268-4d27-8a59-47d572eedc9b";
             context = builtins.readFile ./auto-review/neo.md;
+            inherit reviewer;
           };
           "gitlab:remote-com/employ-starbase/tiger" = {
             checkout = "${dev}/remote/tiger";
             t3Project = "mcp:d4ad1cbf-7018-4e8e-918a-9130573c335a";
             context = builtins.readFile ./auto-review/tiger.md;
+            inherit reviewer;
           };
           "gitlab:remote-com/employ-starbase/dragon" = {
             checkout = "${dev}/remote/dragon";
             t3Project = "mcp:7e27a2a0-c09b-4fc5-a9bd-df76ea56f48f";
             context = builtins.readFile ./auto-review/dragon.md;
+            inherit reviewer;
           };
           "gitlab:remote-com/neo-payroll/architect" = {
             checkout = "${dev}/remote/neo-payroll/architect";
             t3Project = "3f2dd0df-b80d-4b35-96c6-6bd09c5f3dba";
             context = builtins.readFile ./auto-review/architect.md;
+            inherit reviewer;
           };
           "gitlab:remote-com/workbench/remote-vibed-labs" = {
             checkout = "${dev}/remote/remote-vibed-labs";
             t3Project = "mcp:118d46ef-c352-4e26-91ec-e5acdd216ad8";
             context = builtins.readFile ./auto-review/labs.md;
+            inherit reviewer;
           };
           "github:CrazyEggInc/ce" = {
             checkout = "${dev}/crazyegg/core_v2";

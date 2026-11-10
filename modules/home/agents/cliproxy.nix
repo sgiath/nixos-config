@@ -128,13 +128,19 @@ let
     name = "CLIProxyAPI";
     package = opencodePackage.responses;
     settings.baseURL = "${url}/v1";
-    models = opencodeModels personal;
+    # The remote/ models are listed here too: T3 runs one shared OpenCode
+    # server without the project's direnv environment, so a T3 thread in a
+    # Remote project (auto-review) has to name remote/<model> itself.
+    # FIXME: that server's title and compaction agents still use the
+    # personal helper model, so a compacted Remote thread sends its history
+    # to a personal account. Needs T3 to start a second OpenCode instance
+    # with OPENCODE_CONFIG set, or OpenCode to pick helpers per session.
+    models = opencodeModels (personal ++ remote);
   };
   # Loaded on top of the user config through OPENCODE_CONFIG. Title and
   # compaction would otherwise pick a personal model of the same provider.
   opencodeRemote = {
     model = "cliproxy/${remoteDefaults.model}";
-    providers.cliproxy.models = opencodeModels remote;
     agents = {
       title.model = "cliproxy/${remoteDefaults.helper}";
       compaction.model = "cliproxy/${remoteDefaults.helper}";

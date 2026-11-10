@@ -299,6 +299,8 @@ def harness(provider: str) -> str:
         return "Claude Code harness"
     if provider.startswith("codex"):
         return "Codex harness"
+    if provider.startswith("opencode"):
+        return "OpenCode harness"
     return provider
 
 

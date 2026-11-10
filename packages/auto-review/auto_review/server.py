@@ -23,8 +23,8 @@ from .store import ACTIVE, Store
 log = logging.getLogger("auto-review")
 UI = Path(__file__).parent / "ui"
 SAMPLE = {
-    "reviewer": "filip.vavera1", "provider": "codex", "model": "gpt-6.1-sol",
-    "effort": "high", "harness": "Codex harness", "repo": "remote-com/neo-payroll/neo",
+    "reviewer": "filip.vavera1", "provider": "opencode", "model": "cliproxy/claude-opus-5-5",
+    "effort": "high", "harness": "OpenCode harness", "repo": "remote-com/neo-payroll/neo",
     "number": "7627", "head_sha": "8a036c0ca011fe041c6a8b4d6d111f69c78710f7", "head_short": "8a036c0c",
     "finding_id": "SR-1", "title": "Retry re-sends the whole batch", "frequency": "3", "severity": "4",
     "score": "12", "threshold": "5", "disposition": "open",

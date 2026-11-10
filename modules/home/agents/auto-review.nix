@@ -178,8 +178,9 @@ in
     reviewer = mkOption {
       type = reviewer;
       default = {
-        provider = "codex";
-        model = "gpt-6.1-sol";
+        provider = "opencode";
+        # Remote repos override it with cliproxy/remote/claude-opus-5-5.
+        model = "cliproxy/claude-opus-5-5";
         effort = "high";
       };
     };

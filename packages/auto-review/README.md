@@ -109,7 +109,7 @@ Nix changes take effect when Home Manager restarts the service.
 | `request_changes_threshold` | `30` | Minimum score of a posted or already open finding that requests changes (GitLab). |
 | `auto_settle` | `true` | Settle the T3 thread after posting or when nothing is posted. |
 | `note_template` | see `auto_review/note.py` | Top of every posted comment; variables below. |
-| `reviewer` | `codex` / `gpt-6.1-sol` / `high` | Provider instance, model, effort. |
+| `reviewer` | `opencode` / `cliproxy/claude-opus-5-5` / `high` | Provider instance, model, effort. Remote repos set `cliproxy/remote/claude-opus-5-5`. |
 | `max_concurrent` | `3` | Reviews running at once. |
 | `max_launches_per_day` | `null` | Launch cap per local day; `null` is unlimited. |
 | `review_timeout_minutes` | `120` | Active running time before a review fails. |

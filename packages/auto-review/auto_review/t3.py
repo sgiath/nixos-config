@@ -401,4 +401,5 @@ def _title_tag(client_request_id: str) -> str:
 
 
 def _is_effort(option_id: str) -> bool:
-    return option_id in ("effort", "reasoningEffort")
+    """Claude and fx call it `effort`, Codex `reasoningEffort`, OpenCode `variant`, Pi `thinking`."""
+    return option_id in ("effort", "reasoningEffort", "variant", "thinking")
