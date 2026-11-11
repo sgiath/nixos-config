@@ -155,11 +155,17 @@ def pending_requests(thread_id):
         return None
 
 
+def project_root(root):
+    """The main checkout: T3 registers a project by it, not by its linked worktrees."""
+    common = Path(run(["git", "rev-parse", "--path-format=absolute", "--git-common-dir"], cwd=root).stdout.strip())
+    return common.parent if common.name == ".git" else root
+
+
 def worker_threads(root, topic):
     """Worker threads per slice id, from the T3 server's own CLI; None when unavailable."""
     try:
         result = subprocess.run(
-            ["t3", "thread", "list", "--json", "--project", str(root)],
+            ["t3", "thread", "list", "--json", "--project", str(project_root(root))],
             capture_output=True, text=True, timeout=60,
         )
         threads = json.loads(result.stdout) if result.returncode == 0 else None
