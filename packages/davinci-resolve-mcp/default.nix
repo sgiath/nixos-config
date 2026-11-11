@@ -7,12 +7,12 @@
   ffmpeg,
 }:
 let
-  version = "5.0.3";
+  version = "5.2.0";
   src = fetchFromGitHub {
     owner = "samuelgursky";
     repo = "davinci-resolve-mcp";
     tag = "v${version}";
-    hash = "sha256-z1lNQKjS1xRt+hivUEBr2dXh8izwVPWlhKHl3NFG94A=";
+    hash = "sha256-3veHmsp07VClVf/Oo+uwxhRBjTpl42yVBOo/BduJXjE=";
   };
 
   # FIXME: Resolve MCP requires SDK >=1.30,<2 because server.py imports
