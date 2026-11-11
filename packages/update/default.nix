@@ -43,10 +43,13 @@ writeShellScriptBin "update" ''
   pushd ~/nixos || exit 1
 
   no_commit=false
+  refresh=false
   update_args=()
   for arg in "$@"; do
     if [[ "$arg" == "--no-commit" ]]; then
       no_commit=true
+    elif [[ "$arg" == "--refresh" ]]; then
+      refresh=true
     else
       update_args+=("$arg")
     fi
@@ -101,10 +104,46 @@ writeShellScriptBin "update" ''
   }
   validation_time=$SECONDS
 
-  # Commit the lock that validation uses instead of leaving the rebuild to
-  # update it afterwards.
-  step_start "Locking flake inputs"
-  nix flake lock || step_fail
+  if [[ "$refresh" == true ]]; then
+    # The dev shell provides the updaters' tools wherever `update` runs from.
+    step_start "Updating release-pinned inputs and packages"
+    nix develop --command ./scripts/update-inputs.sh 2>&1 | tee "$work/inputs.log"
+    inputs_status=''${PIPESTATUS[0]}
+    if ((inputs_status != 0)); then
+      log_dir="''${XDG_STATE_HOME:-$HOME/.local/state}/update"
+      log="$log_dir/inputs-$(date +%Y%m%d-%H%M%S).log"
+      if ! mkdir -p "$log_dir" || ! cp "$work/inputs.log" "$log"; then
+        log="(could not be saved)"
+      fi
+      {
+        echo "\`./scripts/update-inputs.sh\` failed with exit status $inputs_status while running \`update --refresh\`."
+        echo "Fix the failing package updaters or builds in ~/nixos so that \`./scripts/update-inputs.sh\` passes; I will rerun \`update --refresh\` afterwards."
+        echo
+        echo "Full log: $log"
+        echo
+        echo "Errors:"
+        echo '```'
+        grep -E '^(ERROR|error):' "$work/inputs.log" | tail -n 50
+        echo '```'
+      } >"$work/thread.md"
+      if command -v t3 >/dev/null \
+        && thread_id="$(t3 thread start --title "Fix update-inputs failures $(date +%F)" . - <"$work/thread.md")"; then
+        echo "update: started T3 thread $thread_id to fix the failures" >&2
+      else
+        echo "update: could not start a T3 thread; the message is below" >&2
+        cat "$work/thread.md" >&2
+      fi
+      step_fail
+    fi
+
+    step_start "Updating flake inputs"
+    nix flake update || step_fail
+  else
+    # Commit the lock that validation uses instead of leaving the rebuild to
+    # update it afterwards.
+    step_start "Locking flake inputs"
+    nix flake lock || step_fail
+  fi
 
   # Format in place before the snapshot so validation, commits and deployment
   # hold the formatted files; a parse error aborts.
