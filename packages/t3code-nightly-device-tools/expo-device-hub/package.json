@@ -1,5 +1,5 @@
 {
   "dependencies": {
-    "expo-device-hub": "^0.19.1"
+    "expo-device-hub": "^0.22.1"
   }
 }
