@@ -68,8 +68,11 @@ the ask and the main point in a ten-second skim.
 ## Wording
 
 Be direct, plain, and technical. Use concrete names such as account IDs, PRs,
-services, and plans rather than descriptions of them. Use “I” for what he did or
-checked and “we” for shared systems and decisions.
+services, and plans rather than descriptions of them. Use “I” for everything he
+found, decided, changed or verified, including changes to shared systems and his
+own PRs: “I changed the exporter's IAM policy”, not “we changed”. Use “we” only
+when the team is the actor or the owner: “our exporter”, “we agreed to drop the
+old API”.
 
 Leave out:
 
@@ -211,3 +214,6 @@ uncertainty, makes no commitment he did not make, and contains nothing added to
 sound casual or human. Skim it once as the recipient: the ask and the main point
 should stand out, and nothing should repeat a PR, ticket, or document the
 message links to.
+
+Read every “we” and “our” before sending, and keep it only if it means the team.
+A sent Slack message often cannot be edited by the agent.
