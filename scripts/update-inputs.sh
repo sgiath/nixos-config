@@ -16,7 +16,7 @@ Updates GitHub flake inputs in flake.nix whose refs look like release tags
 to each repository's latest GitHub release tag, then runs package update scripts
 from packages/*/update.sh, builds every package they changed, and bumps the
 Executor container image (scripts/update-executor.sh). Exits non-zero when a
-changed package fails to build.
+package update script fails or a changed package fails to build.
 
 Put one of these comments immediately above an input to pin it instead:
   # pin to v1.2.3
@@ -231,6 +231,7 @@ run_package_updaters() {
     else
       status=$?
       failed_packages+=("${package_name} (${status})")
+      FAILED_UPDATERS+=("${package_name}")
       echo "ERROR: ${package_name}: update.sh failed with exit ${status}; continuing" >&2
     fi
     echo
@@ -248,6 +249,7 @@ run_package_updaters() {
   build_changed_packages fingerprints
 }
 
+FAILED_UPDATERS=()
 FAILED_BUILDS=()
 
 finish() {
@@ -258,8 +260,16 @@ finish() {
   else
     "${SCRIPT_DIR}/update-executor.sh"
   fi
+  local failed=0
+  if [[ "${#FAILED_UPDATERS[@]}" -gt 0 ]]; then
+    echo "ERROR: package update scripts failed: ${FAILED_UPDATERS[*]}" >&2
+    failed=1
+  fi
   if [[ "${#FAILED_BUILDS[@]}" -gt 0 ]]; then
     echo "ERROR: updated packages failed to build: ${FAILED_BUILDS[*]}" >&2
+    failed=1
+  fi
+  if [[ "${failed}" -eq 1 ]]; then
     exit 1
   fi
   echo "==> Done"
