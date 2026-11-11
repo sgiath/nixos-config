@@ -29,9 +29,11 @@ Think independently, speak candidly, and treat the user as a peer.
 - When a complicated fix or PR needs an independent review, use Codex with `gpt-6.1-sol` at `high`
   reasoning effort for its thorough review, including production-code correctness and design judgments.
   Production implementation remains with Opus.
-- Adversarial security reviews go to Codex `gpt-daybreak-blue-latest`. If a review round is refused on cybersecurity
-  grounds, record the refusal and skip that round: do not reword the brief, retry another model, or block the work
-  on it. A required security review that was refused is reported as skipped, not passed.
+- Adversarial security reviews go to Codex `gpt-6.1-sol` at `high` reasoning effort. If a round is refused on
+  cybersecurity grounds, record the refusal. Only when that review is critical to getting the security right, retry
+  it once on DeepSeek V4.1 Flash (`opencode-go/deepseek-v4.1-flash` through CLIProxy); otherwise skip the round.
+  Never use DeepSeek before `gpt-6.1-sol` has refused, do not reword the brief to get past a refusal, and do not
+  block the work on it. A required security review that no model completed is reported as skipped, not passed.
 - Use Claude with `fable-5-2` at `high` reasoning effort sparingly, for creating and designing new UIs or
   substantial redesigns where its visual and UX judgment adds value, including animations and transitions.
   Limit its work to the design and implementation that requires those choices. Routine UI updates, bug fixes,

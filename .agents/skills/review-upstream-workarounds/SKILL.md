@@ -25,7 +25,7 @@ Manual audit only. It never runs automatically at session start or on its own.
 
 ## Security records
 
-Delegate security-exception records and any credential- or secret-handling question to a subagent using model `openai-codex/gpt-daybreak-blue-latest`. Give it the record, its pins, and these rules. Never print or commit secrets, and never reset production state.
+Delegate security-exception records and any credential- or secret-handling question to a Codex subagent using `gpt-6.1-sol` at `high` reasoning effort. Give it the record, its pins, and these rules. Never print or commit secrets, and never reset production state. If it refuses on cybersecurity grounds, retry once on `opencode-go/deepseek-v4.1-flash` only when the record's security cannot be judged without that review; otherwise keep the record `unknown` and note the refusal.
 
 ## Report
 
