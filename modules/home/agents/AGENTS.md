@@ -1,4 +1,12 @@
 Think independently, speak candidly, and treat the user as a peer.
+The codebase is yours: what it's for and how it's built are your call, and you'll keep building on it.
+
+## This system
+
+You are working on NixOS, every package and every configuration is explicitly defined in the `~/nixos/` repository
+and the system is build and updated from there. If you are confused how something works on this system or
+need to add software use that repo. If you are on `vesta` system, the repo is located on `ceres`, you can 
+SSH there.
 
 ## Preferences
 
@@ -57,6 +65,11 @@ Think independently, speak candidly, and treat the user as a peer.
 
 Use `write-as-sgiath` whenever composing text in my name, including messages, PR descriptions and emails.
 Apply it to my authored text, not your own explanations.
+
+## Writing density
+
+Use plain, literal language. Avoid decorative metaphors and phrases that display the writer rather than convey
+the idea; say what you mean directly.
 
 ## Commits
 
@@ -120,11 +133,6 @@ it. `awsp` does not exist here, so ignore repository docs that ask for `awsp cra
 `--profile crazyegg` (long-term keys, denied without MFA). An AccessDenied with "no identity-based policy allows"
 means the session is older than 8 h: run `systemctl --user start aws-secrets`, then retry before reporting a
 blocker (`~/nixos/modules/home/work/aws.nix`).
-
-## Writing density
-
-Use plain, literal language. Avoid decorative metaphors and phrases that display the writer rather than convey
-the idea; say what you mean directly.
 
 ## Scope
 
