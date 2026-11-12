@@ -19,7 +19,7 @@ Role-based NixOS modules. Snowfall imports every `<dir>/default.nix` into every 
 | Large integrated service | `services/matrix.nix`, `services/hermes-agent.nix` | Secrets, TURN/LiveKit, vhosts, ordering. |
 | Reverse proxy template | `sites/nas.nix`, `sites/sinai-camp.nix` | Static/proxy patterns and rewrites. |
 | Game/app services | `services/foundryvtt.nix`, `server/minecraft.nix`, `services/factorio.nix` | Hardcoded ports/working dirs. |
-| Local runtime stacks | `services/docker.nix`, `services/ollama.nix`, `services/comfyui.nix` | Hook upstream `enable`; may add groups/services. |
+| Local runtime stacks | `services/docker.nix`, `services/llama-cpp.nix`, `services/comfyui.nix` | Hook upstream `enable`; may add groups/services. `llama-cpp` (Ceres): Vulkan `llama-server` router on `127.0.0.1:8081`, GGUFs in `/var/lib/llama-cpp-models`, proxied to the host's Nebula addresses by `llama-cpp-nebula` socket. |
 | Overlay-only agent servers | `services/opencode.nix`, `services/t3code.nix` | Nebula is the auth: nginx injects the upstream credential from a sops secret via `LoadCredential` at start. T3 Code also proxies peer servers as `t3-<peer>.sgiath.dev` |
 
 ## OPTION NAMESPACE

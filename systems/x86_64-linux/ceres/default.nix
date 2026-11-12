@@ -35,9 +35,7 @@
     settings.preferred_ranges = [ "192.168.1.0/24" ];
   };
 
-  services = {
-    ollama.enable = false;
-  };
+  services.llama-cpp.enable = true;
 
   # Build-signing key for closures pushed to the servers; the public half is
   # secrets/ceres-cache.pub.

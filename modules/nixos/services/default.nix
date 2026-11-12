@@ -13,12 +13,12 @@
     ./hermes-agent.nix
     ./home-assistant.nix
     ./jellyfin.nix
+    ./llama-cpp.nix
     ./matrix.nix
     ./mollysocket.nix
     ./monitoring.nix
     ./nostr-rs-relay.nix
     ./ntfy-sh.nix
-    ./ollama.nix
     ./opencode.nix
     ./pi-hole.nix
     ./searx.nix

@@ -151,7 +151,6 @@ Runtime checks in records are required future checks unless the record's
 | [`searx-json-secret-interpolation`](#searx-json-secret-interpolation) | temporary fix | unknown | vesta |
 | [`executor-state-ownership-migration`](#executor-state-ownership-migration) | data migration | unknown | vesta |
 | [`executor-registry-image-version-selection`](#executor-registry-image-version-selection) | updater constraint | required | vesta |
-| [`ollama-rocm-gfx-override-dormant`](#ollama-rocm-gfx-override-dormant) | compatibility | dormant | ceres |
 | [`katrain-kivy-python-api`](#katrain-kivy-python-api) | compatibility | required | ceres |
 | [`katrain-kivy-cython-long`](#katrain-kivy-cython-long) | temporary fix | required | ceres |
 | [`katrain-chardet-major-version`](#katrain-chardet-major-version) | compatibility | required | ceres |
@@ -580,16 +579,6 @@ Also covers audit ID `executor-root-to-nonroot-state-migration`.
 - **Remove when:** upstream guarantees a matching image for every release, or the updater design changes deliberately. Matching versions today are not enough.
 - **Validate:** `vesta`; runtime: deployed image tag and Executor health after switch.
 
-#### `ollama-rocm-gfx-override-dormant`
-
-- **Review (2026-11-06):** `dormant`. Full NixOS evaluation confirms services.ollama.enable=false on all four hosts; Ceres root nixpkgs 1d060086 exposes ollama-rocm 0.40.13. The local gfx10.3.0 override remains. Live [Ollama GPU documentation](https://docs.ollama.com/gpu) still documents HSA_OVERRIDE_GFX_VERSION and gfx1030/10.3.0 compatibility; no GPU inference probe was run. Keep dormant and re-establish the actual selected runtime's GPU support before enablement.
-
-- **Where:** `modules/nixos/services/ollama.nix` (`ollama-rocm`, gfx 10.3.0 override); referenced from `systems/x86_64-linux/ceres/default.nix`.
-- **Why:** spoofs the ROCm GPU target. Evaluated 2026-10-01: Ollama disabled on every host.
-- **Upstream / selected pin:** [Ollama GPU support](https://docs.ollama.com/gpu) is the compatibility reference; no original issue or fixed revision is recorded. Root nixpkgs currently exposes `ollama-rocm` 0.40.0 (evaluated 2026-10-10; Ollama still disabled on every host), but this dormant service has no exercised GPU runtime.
-- **Remove/change when:** before enabling, establish GPU support for the selected ROCm/Ollama and run real inference without spoofing.
-- **Validate:** `ceres` on enablement; runtime: GPU detected, inference works.
-
 ### Local packages and scripts
 
 #### `katrain-kivy-python-api`
@@ -789,6 +778,7 @@ Fix together with the next change touching the file; behavior must not change.
 | `clawpatch-trust-lockfile` | 5549fac4 | Removed together with `packages/clawpatch` (last selected 0.8.2); no `trust-lockfile`/`prePnpmInstall` remains at 9426fcce. Upstream v0.8.2 keeps `minimumReleaseAge: 2880`; reintroducing the package must not carry the bypass forward without an owner decision. |
 | `relay-tester-check-disable` | 2026-10-10 | Re-enabled the default Rust check phase: pinned a8483f82 (= upstream HEAD) defines no tests. Owner validates the package build with checks after removal. |
 | `stylix-release-check-suppression` | 2026-10-10 | Release checks re-enabled: NixOS, Home Manager and Stylix all report 26.11 at 9426fcce, so nothing was suppressed. Owner validates `desktop` builds without release warnings. |
+| `ollama-rocm-gfx-override-dormant` | 2026-11-12 | Removed together with `modules/nixos/services/ollama.nix`, which no host enabled; Ceres runs llama.cpp on Vulkan (`services/llama-cpp.nix`) instead, with no ROCm target override. The RX 6950 XT is native gfx1030, so the 10.3.0 override was a no-op. |
 | `home-manager-gpg-ssh-unit-cycle` | 2026-10-10 | Override removed: pinned Home Manager dfadbe51 contains e9cbe698 and no longer orders `set-SSH_AUTH_SOCK` against socket providers (2026-10-01 read-only comparison gave identical fields). Owner validates `all` and a real login without the ordering cycle. |
 | `amd-radv-nofibril` | 2026-10-10 | Flag removed: selected Mesa 26.1.5 `radv_perftest_options` has no `nofibril`, so it was a no-op. Owner compares a game/shader-compilation workload on Ceres after removal. |
 | `davinci-resolve-21-1-republished-hash` | 2026-10-10 | Overlay removed: root nixpkgs contains NixOS/nixpkgs#562336 (748f45f3) and its corrected hashes; upstream `davinci-resolve-studio` is used. The only consumer stays commented out in `homes/x86_64-linux/sgiath@ceres/default.nix`. Owner validates the package and licensed runtime on enablement. |
