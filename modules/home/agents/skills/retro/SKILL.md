@@ -39,7 +39,7 @@ path and message evidence; read transcripts, not just final summaries. Supply ex
 briefs. In T3, async delegated completion wakes the parent; yield instead of polling. Do not create top-level review
 threads merely to delegate a retrospective.
 
-Also read the steering the session ran under: the global `AGENTS.md` (source: `~/nixos/modules/home/agents/AGENTS.md`), the repository `AGENTS.md`/`CLAUDE.md`, the skills it loaded (source: `~/nixos/modules/home/agents/skills/`), and the repository's check commands and CI workflows.
+Also read the steering the session ran under: the global `AGENTS.md` (source: `~/nixos/modules/home/agents/AGENTS.md`), the repository `AGENTS.md`/`CLAUDE.md`, the skills it loaded (source: `~/nixos/modules/home/agents/skills/`, or `.agents/skills/` in the CrazyEgg home repository `~/develop/crazyegg/home/`), and the repository's check commands and CI workflows.
 
 ## 2. Look for candidates
 

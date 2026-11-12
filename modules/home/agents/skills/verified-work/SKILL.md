@@ -35,7 +35,8 @@ For each necessary step, identify:
 - What the check cannot establish, including injected conditions and substituted dependencies.
 
 Keep this in the task's existing plan or a short local working record when handoffs/resumption need it.
-Use skill://work-state's task record for substantial single changes that need durable state;
+For substantial single changes that need durable state, use the `work-state` skill's task record in the CrazyEgg home
+repository and a short working record outside tracked files elsewhere;
 reuse Drive's existing state instead of creating a parallel record. Do not create a tracked plan, Agent Note or
 new framework for every task. Update the record when evidence changes the necessary steps; preserve the requested
 outcome and explain any changed gate.

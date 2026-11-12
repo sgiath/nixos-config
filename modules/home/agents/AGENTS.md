@@ -124,9 +124,12 @@ then read the stored thread or task back to confirm. Scheduled tasks start a fre
 (`bindToCurrentThread=false`) unless I ask for runs to continue a thread; T3 then stores a `main`-based worktree
 that the scheduler tools cannot change, so in a repository without `main` check the stored workspace afterwards.
 
+CrazyEgg work starts in the home repository `~/develop/crazyegg/home/` (T3 project `crazyegg`); its `AGENTS.md` says where
+projects, task state, the wiki and machine notes live, and its `.agents/skills/` holds `work-state`.
+
 Machine-local facts about a repository (local services, ports, environment quirks) live in
-`~/.agents/local/<repository>.md`. Read it when it exists, and record such facts there rather than in a
-harness-specific memory.
+`~/.agents/local/<repository>.md`, or `~/develop/crazyegg/home/local/<repository>.md` for CrazyEgg repositories. Read it when
+it exists, and record such facts there rather than in a harness-specific memory.
 
 CrazyEgg AWS: bare `aws` (default credential chain) is already an MFA session; I never need to run anything for
 it. `awsp` does not exist here, so ignore repository docs that ask for `awsp crazyegg`, and never pass

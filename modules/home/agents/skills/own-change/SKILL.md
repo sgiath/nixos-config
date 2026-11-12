@@ -45,7 +45,8 @@ publication as a completed implementation. A recorded limitation does not waive 
   and selected apps' environment before testing. Follow repository cache-copy rules; do not copy stale formatter
   descriptors or race dependency setup. Do not guess paths, use `--clobber` or bypass hook approval.
 - Make a task list through implementation, behavioral verification, publication and PR babysitting. Record the source checkout, new worktree, branch and base. On resuming this already-started workflow, reuse its recorded task worktree rather than creating another one.
-- When waits or handoffs need durable state, use skill://work-state's task record.
+- When waits or handoffs need durable state, use the `work-state` skill's task record (CrazyEgg home repository); elsewhere
+  keep the same fields in a short working record outside tracked files.
   Keep scope, decisions, gate evidence, findings and next action there; reuse an invoking Drive plan's state instead
   of making another record. Read it and verify the live checkout before resuming.
 

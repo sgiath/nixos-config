@@ -4,8 +4,8 @@ Status: proposed
 
 ## Problem
 
-The [work-state](../../../../modules/home/agents/skills/work-state/SKILL.md) skill keeps task records and ledgers
-in `$XDG_STATE_HOME/agent-work/`, but every step that makes them useful depends on the model remembering a rule:
+The [work-state](/home/sgiath/develop/crazyegg/home/.agents/skills/work-state/SKILL.md) skill keeps task records and ledgers
+in the CrazyEgg home repository (`tasks/`, `projects/`), but every step that makes them useful depends on the model remembering a rule:
 
 - **Finding the record.** A resumed or compacted session finds its record only if the compaction summary or the
   thread kept the absolute path. Nothing outside the transcript links a session to its record.
@@ -33,7 +33,7 @@ Have Claude Code hooks do what the skill now asks the model to remember. One scr
 
 | Hook                                                    | Behavior                                                                                                     |
 | ------------------------------------------------------- | ------------------------------------------------------------------------------------------------------------ |
-| PostToolUse on Write/Edit of a file under `agent-work/` | Saves a link from the session to that record directory. Binding happens only on **write**.                   |
+| PostToolUse on Write/Edit of a record under `tasks/` or `projects/` | Saves a link from the session to that record directory. Binding happens only on **write**.                   |
 | SessionStart, matcher `compact\|resume`                 | If the session has a linked record, adds the record to the context (see the role table below).               |
 | Stop (skipped when `stop_hook_active` is set)           | Checks file facts only and stops the agent with a one-line reason when one fails (see the role table below). |
 | SessionStart, matcher `startup` (optional)              | Lists open records whose `Checkout:` matches the current directory, one line each.                           |
