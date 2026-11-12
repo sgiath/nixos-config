@@ -49,6 +49,36 @@ edit it there, not here.
    curl -s http://127.0.0.1:8081/v1/models | jq -r '.data[].id'
    ```
 
+## Per-model settings
+
+A new model runs with safe defaults: 8k context, as many layers on the GPU as
+fit (the rest on the CPU), and the GGUF's own chat template with tool calling
+(`--jinja`).
+
+To tune a model (longer context, all layers on the GPU, thinking off, a
+different chat template), add a section for it to `modelsPreset` in
+`~/nixos/modules/nixos/services/llama-cpp.nix`. The section name is the model
+id from `/v1/models`, and its keys are `llama-server` flags without the
+leading dashes. Then rebuild:
+
+```sh
+nixos-rebuild switch --sudo --flake ~/nixos#ceres
+```
+
+Models tuned for the agent evals use `evalProfile`: 32k context (16k for
+`gpt-oss-20b-MXFP4`, which leaves too little VRAM at 32k), all layers
+on the GPU (loading fails instead of falling back to the CPU), 8k default
+output (`n-predict`; a request's `max_tokens` still overrides it), and a q8_0
+KV cache. Add `noThinking` for models that can switch thinking off. A model
+that does not fit with these settings fails to load (the request errors and
+`journalctl -u llama-cpp` shows the allocation failure) instead of running
+slowly on the CPU; lower its `ctx-size` in that case.
+
+Chat templates: if a GGUF's embedded template does not produce `tool_calls`,
+save the official `chat_template.jinja` in `templates/` here and add
+`chat-template-file = /var/lib/llama-cpp-models/templates/<name>.jinja` to its
+section.
+
 ## Permissions
 
 The service runs as its own dynamic user, so every model file must be readable
