@@ -3,7 +3,6 @@ let
   cfg = config.sgiath.nebula;
   net = config.services.nebula.networks.sgiath;
   hostName = config.networking.hostName;
-  lighthouse = cfg.peers.vesta;
   # Overlay addresses; hosts with a fixed LAN address mirror its last octet,
   # non-NixOS devices (Mobile Nebula, scripts/nebula-mobile.sh) start at .20.
   # Certificates come from scripts/nebula-sign.sh, keyed by peer name.
@@ -11,30 +10,67 @@ let
     vesta = {
       ip4 = "10.42.0.2";
       ip6 = "fd51:da00:4788::2";
+      trusted = true;
+      lighthouse = "${config.sgiath.publicIPv4}:4242";
     };
     ceres = {
       ip4 = "10.42.0.6";
       ip6 = "fd51:da00:4788::6";
+      trusted = true;
     };
     pallas = {
       ip4 = "10.42.0.9";
       ip6 = "fd51:da00:4788::9";
+      trusted = true;
     };
     juno1 = {
       ip4 = "10.42.0.11";
       ip6 = "fd51:da00:4788::11";
+      trusted = true;
     };
     phone = {
       ip4 = "10.42.0.20";
       ip6 = "fd51:da00:4788::20";
+      trusted = true;
+    };
+    # JetKVMs (scripts/nebula-jetkvm.sh), named after the machine they control.
+    kvm-vesta = {
+      ip4 = "10.42.0.21";
+      ip6 = "fd51:da00:4788::21";
+    };
+    kvm-ceres = {
+      ip4 = "10.42.0.22";
+      ip6 = "fd51:da00:4788::22";
     };
   };
   peerType = lib.types.submodule {
     options = {
       ip4 = lib.mkOption { type = lib.types.str; };
       ip6 = lib.mkOption { type = lib.types.str; };
+      trusted = lib.mkOption {
+        type = lib.types.bool;
+        default = false;
+        description = ''
+          Admit the peer's inbound connections on every host. Untrusted peers
+          are still reachable: Nebula's firewall is stateful, so replies to
+          connections a host opens pass.
+        '';
+      };
+      lighthouse = lib.mkOption {
+        type = lib.types.nullOr lib.types.str;
+        default = null;
+        description = ''
+          Public `ip:port` of a lighthouse. Every lighthouse is also a relay,
+          and every other peer registers with all of them.
+        '';
+      };
     };
   };
+  lighthouses = lib.filterAttrs (name: peer: peer.lighthouse != null && name != hostName) cfg.peers;
+  lighthouseIPs = lib.concatMap (peer: [
+    peer.ip4
+    peer.ip6
+  ]) (lib.attrValues lighthouses);
 in
 {
   options.sgiath.nebula = {
@@ -42,13 +78,13 @@ in
       type = lib.types.str;
       default = "nebula.sgiath.dev";
       readOnly = true;
-      description = "DNS suffix for overlay host names (<host>.<domain>); also the lighthouse's public name.";
+      description = "DNS suffix for overlay host names (<host>.<domain>); also Vesta's public lighthouse name.";
     };
     peers = lib.mkOption {
       type = lib.types.attrsOf peerType;
       default = peers;
       readOnly = true;
-      description = "Overlay addresses of every Nebula host, keyed by hostname.";
+      description = "Overlay addresses, trust and lighthouse endpoints of every Nebula peer, keyed by certificate name.";
     };
     cidr4 = lib.mkOption {
       type = lib.types.str;
@@ -81,29 +117,24 @@ in
       cert = config.sops.secrets.nebula-cert.path;
       key = config.sops.secrets.nebula-key.path;
 
-      # Vesta sets isLighthouse/isRelay in its host config; everyone else
-      # discovers peers through it and falls back to relaying when hole
-      # punching fails. The lighthouse endpoint is the numeric public address
-      # so bootstrapping never depends on DNS, which itself runs over the
-      # tunnel. The phone (scripts/nebula-mobile.sh) uses the DNS-only
-      # nebula.sgiath.dev record instead, which must match sgiath.publicIPv4.
-      lighthouses = lib.mkIf (!net.isLighthouse) [
-        lighthouse.ip4
-        lighthouse.ip6
-      ];
-      relays = lib.mkIf (!net.isRelay) [
-        lighthouse.ip4
-        lighthouse.ip6
-      ];
-      staticHostMap = {
-        ${lighthouse.ip4} = [ "${config.sgiath.publicIPv4}:4242" ];
-        ${lighthouse.ip6} = [ "${config.sgiath.publicIPv4}:4242" ];
-      };
+      # Peers with a lighthouse endpoint serve as lighthouse and relay; the
+      # others register with all of them and fall back to relaying when hole
+      # punching fails. A peer advertises its relays to the lighthouses, so
+      # every peer lists all of them. The endpoints are numeric so
+      # bootstrapping never depends on DNS, which itself runs over the tunnel.
+      isLighthouse = cfg.peers.${hostName}.lighthouse != null;
+      isRelay = net.isLighthouse;
+      lighthouses = lib.mkIf (!net.isLighthouse) lighthouseIPs;
+      relays = lib.mkIf (!net.isRelay) lighthouseIPs;
+      staticHostMap = lib.concatMapAttrs (_: peer: {
+        ${peer.ip4} = [ peer.lighthouse ];
+        ${peer.ip6} = [ peer.lighthouse ];
+      }) lighthouses;
       listen.host = "[::]";
 
-      # Every peer holds a certificate signed by our CA; that is the auth, so
-      # services bound to the nebula interface need no login of their own.
-      # Inbound is an allowlist of the peers above by certificate name.
+      # A trusted peer's certificate is the auth, so services bound to the
+      # nebula interface need no login of their own. Inbound is an allowlist
+      # of trusted peers by certificate name and nothing else.
       firewall = {
         outbound = [
           {
@@ -116,7 +147,7 @@ in
           port = "any";
           proto = "any";
           host = name;
-        }) cfg.peers;
+        }) (lib.filterAttrs (_: peer: peer.trusted) cfg.peers);
       };
 
       settings.punchy = {
@@ -151,8 +182,8 @@ in
       }) cfg.peers
       ++ [
         {
-          ${lighthouse.ip4} = map (name: "${name}.sgiath.dev") cfg.services;
-          ${lighthouse.ip6} = map (name: "${name}.sgiath.dev") cfg.services;
+          ${cfg.peers.vesta.ip4} = map (name: "${name}.sgiath.dev") cfg.services;
+          ${cfg.peers.vesta.ip6} = map (name: "${name}.sgiath.dev") cfg.services;
         }
       ]
     );

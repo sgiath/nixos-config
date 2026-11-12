@@ -144,8 +144,16 @@ cat >"${work}/S23nebula" <<EOF
 dir=${REMOTE_DIR}
 pidfile=/tmp/nebula-supervisor.pid
 
+running() {
+  [ -f "\$pidfile" ] && kill -0 "\$(cat "\$pidfile")" 2>/dev/null
+}
+
 case "\$1" in
   start)
+    if running; then
+      echo "nebula supervisor already running"
+      exit 0
+    fi
     (
       while [ "\$(date +%s)" -lt ${installed_at} ] || ! ip route | grep -q '^default'; do sleep 5; done
       [ -e /dev/net/tun ] || modprobe tun
@@ -157,11 +165,11 @@ case "\$1" in
     echo \$! >"\$pidfile"
     ;;
   stop)
-    if [ -f "\$pidfile" ]; then
-      kill "\$(cat "\$pidfile")" 2>/dev/null
-      rm -f "\$pidfile"
+    if running; then
+      kill "\$(cat "\$pidfile")"
     fi
-    killall nebula 2>/dev/null
+    rm -f "\$pidfile"
+    killall nebula 2>/dev/null || true
     ;;
   *)
     echo "Usage: \$0 {start|stop}"
@@ -175,7 +183,9 @@ ssh_kvm "mkdir -p ${REMOTE_DIR} /userdata/init.d"
 ssh_kvm "cat >${REMOTE_DIR}/nebula.new && chmod 755 ${REMOTE_DIR}/nebula.new" <"${nebula_pkg}/bin/nebula"
 ssh_kvm "umask 077 && cat >${REMOTE_DIR}/config.yml.new" <"${work}/config.yml"
 ssh_kvm "cat >${INIT_SCRIPT}.new && chmod 755 ${INIT_SCRIPT}.new" <"${work}/S23nebula"
-ssh_kvm "[ ! -x ${INIT_SCRIPT} ] || ${INIT_SCRIPT} stop
+# Earlier versions of the init script could exit non-zero from stop.
+ssh_kvm "set -e
+if [ -x ${INIT_SCRIPT} ]; then ${INIT_SCRIPT} stop || true; fi
 mv ${REMOTE_DIR}/nebula.new ${REMOTE_DIR}/nebula
 mv ${REMOTE_DIR}/config.yml.new ${REMOTE_DIR}/config.yml
 mv ${INIT_SCRIPT}.new ${INIT_SCRIPT}

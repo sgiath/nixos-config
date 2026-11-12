@@ -33,6 +33,12 @@ nebula_opts="$(nix eval --json "${REPO_DIR}#nixosConfigurations.vesta.config.sgi
 domain="$(jq -r .domain <<<"${nebula_opts}")"
 ip4="$(jq -r --arg p "${peer}" '.peers[$p].ip4 // empty' <<<"${nebula_opts}")"
 ip6="$(jq -r --arg p "${peer}" '.peers[$p].ip6 // empty' <<<"${nebula_opts}")"
+# Every lighthouse is also a relay; JSON lists are valid YAML.
+lighthouses="$(jq -c '[.peers | to_entries[] | select(.value.lighthouse != null)]' <<<"${nebula_opts}")"
+static_host_map="$(jq -r '.[] | "  \"\(.value.ip4)\": [\"\(.value.lighthouse)\"]\n  \"\(.value.ip6)\": [\"\(.value.lighthouse)\"]"' <<<"${lighthouses}")"
+lighthouse_ips="$(jq -c '[.[] | .value.ip4, .value.ip6]' <<<"${lighthouses}")"
+inbound="$(jq -r '.peers | to_entries[] | select(.value.trusted)
+  | "    - port: any\n      proto: any\n      host: \(.key)"' <<<"${nebula_opts}")"
 lh4="$(jq -r .peers.vesta.ip4 <<<"${nebula_opts}")"
 lh6="$(jq -r .peers.vesta.ip6 <<<"${nebula_opts}")"
 if [[ -z "${ip4}" || -z "${ip6}" ]]; then
@@ -61,36 +67,29 @@ ${cert}
 ${key}
 
 static_host_map:
-  "${lh4}": ["${domain}:4242"]
-  "${lh6}": ["${domain}:4242"]
+${static_host_map}
 
 lighthouse:
   am_lighthouse: false
-  hosts:
-    - "${lh4}"
-    - "${lh6}"
+  hosts: ${lighthouse_ips}
 
 relay:
   am_relay: false
   use_relays: true
-  relays:
-    - "${lh4}"
-    - "${lh6}"
+  relays: ${lighthouse_ips}
 
 punchy:
   punch: true
   respond: true
 
-# Every peer holds a certificate signed by our CA; that is the auth.
+# Like the NixOS hosts, admit only trusted peers' connections.
 firewall:
   outbound:
     - port: any
       proto: any
       host: any
   inbound:
-    - port: any
-      proto: any
-      host: any
+${inbound}
 
 # Resolve through Pi-hole on vesta over the tunnel (ad blocking + overlay and
 # LAN names anywhere). Drop this block to keep the phone's system DNS.

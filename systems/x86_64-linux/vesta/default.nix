@@ -13,12 +13,9 @@ in
   networking.hostName = "vesta";
   networking.wireguard.enable = false;
 
-  # Nebula lighthouse/relay for every other host; needs UDP 4242 forwarded
-  # from the router so roaming peers reach it via nebula.sgiath.dev.
+  # Vesta is a Nebula lighthouse/relay through its endpoint in the peers table
+  # (modules/nixos/common/nebula.nix); the router forwards UDP 4242 to it.
   services.nebula.networks.sgiath = {
-    isLighthouse = true;
-    isRelay = true;
-
     # Debug SSH for nebula-manager's read-only network view. Bound to the
     # overlay address only (Nebula starts sshd after the interface is up), so
     # just overlay peers reach it, and only with the key below. The app sends
