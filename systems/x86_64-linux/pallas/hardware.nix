@@ -32,6 +32,8 @@
     # kernelParams = [ ];
     loader.systemd-boot = {
       windows."11".efiDeviceHandle = "HD0c";
+      # `map -c` in this shell finds the handle above after repartitioning.
+      edk2-uefi-shell.enable = true;
     };
   };
 
