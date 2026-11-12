@@ -38,6 +38,7 @@ in
     systemd.tmpfiles.rules = [
       "d ${modelsDir} 0755 sgiath users -"
       "A+ ${modelsDir} - - - - default:user::rwx,default:group::r-x,default:other::r-x"
+      "L+ ${modelsDir}/README.md - - - - ${./llama-cpp/models-README.md}"
     ];
 
     systemd.services.llama-cpp.serviceConfig = {

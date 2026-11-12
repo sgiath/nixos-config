@@ -35,7 +35,11 @@
     settings.preferred_ranges = [ "192.168.1.0/24" ];
   };
 
-  services.llama-cpp.enable = true;
+  services = {
+    llama-cpp.enable = true;
+    # Off to leave the GPU's VRAM to llama.cpp; qwen-image.nix keeps its setup.
+    comfyui.enable = false;
+  };
 
   # Build-signing key for closures pushed to the servers; the public half is
   # secrets/ceres-cache.pub.
