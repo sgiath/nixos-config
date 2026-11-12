@@ -6,7 +6,7 @@ description: "Manual only: /drive plan, replan, or a plan directory turns a spec
 
 # Drive a plan of slices
 
-Run ONLY when the user invokes `/drive` or explicitly asks to drive a plan. This skill replaces the user acting as a for-loop over agent sessions: it starts the next slice, relays nothing by hand, and asks the user only for decisions, merges and deploys.
+Run ONLY when the user invokes `/drive` or explicitly asks to drive a plan. This skill replaces the user acting as a for-loop over agent sessions: it starts the next slice, relays nothing by hand, and needs the user only for decisions, merges and deploys, which it puts in the user's inbox rather than in chat.
 
 Invoking it authorizes: committing plan files, launching worker threads that run `own-change` (worktrees, commits, pushes, PRs, babysitting), recording answers and deploy markers in the plan's state directory, and scheduling the driver's own wake-ups. It does not authorize merging, deploying, running migrations, or pushing plan changes before the user approves them. The user merges and deploys every slice.
 
@@ -34,6 +34,24 @@ Apply the `work-state` skill's decision and question rules to these records; the
 Outside the CrazyEgg home repository, where that skill is not installed, still record decisions with their source
 and supersession, and record each question before asking it.
 
+## Inbox
+
+The user does not watch the driver thread; a question posted there is buried by the next ticks. Everything the
+driver needs from the user is an inbox item it owns (the `inbox` skill in the CrazyEgg home repository: one file per
+item in `~/develop/crazyegg/home/inbox/<project>/`, created with `/home/sgiath/develop/crazyegg/home/bin/inbox new`):
+
+- `decision`: every question, relayed worker question, unachievable gate, closed-slice choice and trap proposal.
+- `merge`: merge-ready PRs per slice, in merge order with companions and migrations.
+- `deploy`: deploys, flag flips and migrations the user runs or authorizes, with checks and rollback.
+- `runbook`: any other manual step only the user can do.
+
+Wherever this skill says ask, relay or tell the user, create or update the item instead and keep the state-directory
+record it belongs to (`asked/NN.md`, `gates/NN.md`), with the item path in that record. Never repeat an item's content
+in chat. Items always describe the current state: when worker results, PR or deploy state, or new steps change one,
+rewrite it; delete it once it no longer needs the user, after recording the reason or the user's verbatim answer
+(`answers/NN.md`, `gates/NN.md`, `deployed/NN`). When the user runs `/inbox`, follow the inbox skill. Outside the
+CrazyEgg home repository's projects, where no inbox exists, ask in chat as one message per event.
+
 ## `/drive plan @<spec-note> [more notes…]`
 
 1. Read the notes and the code they touch. Cut the work into slices: each is one PR-sized, independently deployable deliverable (plus companion PRs such as a db-schemas migration) with an executable acceptance gate and a stop boundary. Apply verified-work within a slice rather than creating a delivery slice for every experiment. Identify the final integration gate that proves the plan's Goal. Put a "local testing with production-like data" slice first when the feature needs one and none exists.
@@ -59,7 +77,8 @@ The thread where this runs is the driver thread. It holds no implementation code
 the state directory so a fresh thread with the same command continues correctly. Run one tick, then only if its finish step still requires future coordination,
 create or retain a `schedule_task` bound to this thread, structured
 `schedule: {type: "interval", everyMs: 900000}`, with the prompt `Run one drive tick for @<plan-dir> (skill drive,
-section Tick). If plan-status reports "changed": false, end the turn at once with no text.` Keep exactly one schedule per plan: list scheduled tasks first and reuse an existing one. Retain
+section Tick). If plan-status reports "changed": false and the thread has no open inbox items, end the turn at once
+with no text.` Keep exactly one schedule per plan: list scheduled tasks first and reuse an existing one. Retain
 its ID, use a stable creation retry key, and report the returned cadence and next run time when creating it. Do not
 recreate a schedule after the tick stopped for completion or user answers. PR waits belong to each
 worker's persistent watcher. End the turn after the tick; do not keep a shell sleep/poll loop alive.
@@ -67,9 +86,11 @@ worker's persistent watcher. End the turn after the tick; do not keep a shell sl
 ## Tick
 
 1. Run `scripts/plan-status <absolute-plan-dir>` from the skill directory, without piping it through a parser. If
-   it prints `"changed": false`, nothing the tick acts on has moved since the last recorded tick: end the turn with no
-   message, without reading threads or re-checking PRs. A summary of what is still waiting is a message; the user
-   already has it. Otherwise read `plan.md` and act on the listed `changes`;
+   it prints `"changed": false`, nothing the tick acts on has moved since the last recorded tick. Run
+   `/home/sgiath/develop/crazyegg/home/bin/inbox count --thread "$T3CODE_THREAD_ID"`: with `0 open`, end the turn with no message, without
+   reading threads or re-checking PRs. Otherwise check each open item against what it depends on (this status, gate
+   records, answers, the PR or deploy it names), update or delete what is stale, and end with the inbox line (see
+   the end of this section) and nothing else. Otherwise read `plan.md` and act on the listed `changes`;
    read only the worker threads they name. The script chooses `gh` or `glab` from origin, uses explicit slice
    `branch` values when present, and lists each slice's worker threads (`workers`, from `t3 thread list`) with
    status, latest run, item count and pending requests. When `workers` is null, find them with `t3_thread_list`
@@ -82,7 +103,7 @@ worker's persistent watcher. End the turn after the tick; do not keep a shell sl
    A missing record is unverified until recovered. Request achievable missing verification from its owner;
    relay an unachievable gate once under verified-work, recording the question here. Pending/blocked gates remain
    unresolved even when the script reports `merged`, `done` or `complete`.
-2. **Closed slices**: a slice with an unmerged closed required PR and none open needs the user. Ask once whether to relaunch, replan or drop it; a merged companion does not complete it.
+2. **Closed slices**: a slice with an unmerged closed required PR and none open needs the user. Create one decision item: relaunch, replan or drop it; a merged companion does not complete it.
 3. **Workers that stopped early or are waiting** (`in_progress`, thread no longer running, and no PR or a non-empty
    `missing_repos`; or `pendingRequests` above zero on any worker). Null `pendingRequests` means the count was unavailable:
    read that worker, and leave it alone if it is running with no question. A
@@ -90,7 +111,8 @@ worker's persistent watcher. End the turn after the tick; do not keep a shell sl
    before that key existed. Fix the key instead of opening a PR. Otherwise read recent thread messages,
    queued follow-ups and pending user questions. Workspace preparation, queued work or live delegated children are
    waiting states, not stopped work. If a question is already answered in `answers/NN.md` or current user context,
-   respond through `t3_pending_request_respond` when available; otherwise relay it once with the thread link. Never
+   respond through `t3_pending_request_respond` when available; otherwise relay it once as a decision item with the
+   worker's thread link. Never
    infer an answer or approve permissions. An unachievable reproduction/verification gate is a blocker even if no
    host question card exists: read the worker's gate/attempts/options, relay the decision once, and preserve its
    pending question. Do not resend or replace that worker until the user answers. If the worker has stopped and no wait/blocker exists, send it back once naming the unmet
@@ -118,8 +140,9 @@ worker's persistent watcher. End the turn after the tick; do not keep a shell sl
    Read
    `list_thread_pull_requests` for its thread and its last messages; do not send it back merely because CI/review
    is pending. When every PR is merge-ready (all checks/reviewers complete and green, no unresolved actionable
-   threads, Evidence present, the screenshot or recording required by PR policy for UI changes) and the worker handed it back, tell the user once:
-   `NN <title> ready to merge: <PR URLs>`, plus companion merge order and any migration. If it handed back an
+   threads, Evidence present, the screenshot or recording required by PR policy for UI changes) and the worker handed it back, create one
+   merge item for the slice: `NN <title> ready to merge`, the PR URLs in merge order, companions and any migration.
+   Delete it when the PRs are merged; update it if a PR stops being ready. If it handed back an
    incomplete PR without a watcher, send it back once with the specific agent-actionable gap; relay genuine blockers.
    Readiness includes the slice's actual acceptance gate and any user-approved limitation; green CI alone is insufficient.
    Send independent verification findings directly to the implementation owner and request affected gates again.
@@ -131,8 +154,8 @@ worker's persistent watcher. End the turn after the tick; do not keep a shell sl
    checkout/artifacts still needed for unresolved dependent or final integration verification. Use native removal if available; otherwise read the
    `worktrunk` skill and use `wt remove <branch>` from a different checkout in each repository. Do not remove a
    dirty or active checkout; report why it remains. Deleting/settling a T3 thread does not remove its worktree.
-6. **Merged slices waiting for deploy**: `deploy_check` in `plan.md` decides. Without one, ask the user once to say when it is deployed; when they do, write `deployed/NN` in the state directory. Never treat a merge as a deploy.
-7. **Ask ahead** (`ask_ready` and `ask_next` in the status): ground the whole ready group's unanswered questions, plus the next eligible blocked slice's questions, in current code and production data with a read-only research subagent. Ask them together in one numbered message with a recommended answer each; consolidate shared decisions and map them back to each slice. When the evidence does not fit a short message, put it with the recommendations into a rendered page and ask one question: accept all, or list exceptions. Write the questions and recommendations you sent to `asked/NN.md`; `plan-status` then lists the slice in `awaiting_answers` and stops offering it, so never ground or ask it again. Before asking or recording answers, read the user's messages since the last ask; if an answer could refer to two different recommendation sets, confirm which. Write the user's answers to each `answers/NN.md` verbatim with the date. A slice with no questions gets `answers/NN.md` containing `No questions.`
+6. **Merged slices waiting for deploy**: `deploy_check` in `plan.md` decides. Without one, create a deploy item asking the user to deploy and say when it is done; when they do, write `deployed/NN` in the state directory and delete the item. Never treat a merge as a deploy.
+7. **Ask ahead** (`ask_ready` and `ask_next` in the status): ground the whole ready group's unanswered questions, plus the next eligible blocked slice's questions, in current code and production data with a read-only research subagent. Put them together in one decision item as a numbered list with a recommended answer each; consolidate shared decisions and map them back to each slice. When the evidence does not fit the item, link a rendered page with it and ask one question: accept all, or list exceptions. Write the questions, recommendations and item path to `asked/NN.md`; `plan-status` then lists the slice in `awaiting_answers` and stops offering it, so never ground or ask it again. Before asking or recording answers, read the user's messages since the last ask; if an answer could refer to two different recommendation sets, confirm which. Write the user's answers to each `answers/NN.md` verbatim with the date. A slice with no questions gets `answers/NN.md` containing `No questions.`
 8. **Launch** every eligible slice in `next` whose `answers/NN.md` exists, up to `parallel`: resolve its exact branch and verified remote default
    base, then inspect existing worker threads/worktrees to avoid duplicates. Before launching, require every
    `blocked_by` dependency's gate record to be passed as well as its delivery/deploy prerequisite; the script's
@@ -151,7 +174,7 @@ worker's persistent watcher. End the turn after the tick; do not keep a shell sl
    thread inventory before retrying; launch has no retry key. Post one line: `Started NN <title>: <thread link>`.
    An explicit empty branch awaits its real issue/branch; do not invent one. Independent MRs awaiting review consume only the configured capacity, not a group barrier. For local artifacts, supply absolute plan/answer paths and scope in the launch context and forbid workers from publishing them. Use the repository's host workflow: GitLab repositories publish with their template, authenticated-user assignment and GitLab skills; do not route them through `gh` or GitHub-only publication steps.
    Let the finish step decide whether a tick schedule remains necessary after this launch.
-9. **Traps**: after a slice is done, read `traps.md`. When it holds the same trap twice, or every five finished slices, propose permanent fixes the way the `retro` skill does (check, reviewer rule, steering edit, skill change, tooling), each with the exact file it touches. Skip traps that already have a `decided` line. Apply nothing; the user picks. Record each decision in `traps.md` as `- <date> decided: <trap> -> applied <commit>` or `-> declined`, and never propose a declined fix again.
+9. **Traps**: after a slice is done, read `traps.md`. When it holds the same trap twice, or every five finished slices, propose permanent fixes the way the `retro` skill does (check, reviewer rule, steering edit, skill change, tooling), each with the exact file it touches, in one decision item. Skip traps that already have a `decided` line. Apply nothing; the user picks. Record each decision in `traps.md` as `- <date> decided: <trap> -> applied <commit>` or `-> declined`, and never propose a declined fix again.
 10. **Finish**: when `complete` is true, verify `gates/NN.md` and `final-gate.md` against current applicable evidence before claiming
     the Goal is complete; `plan-status` tracks delivery, not behavioral proof. If a required gate is unmet and cannot
     be met, ask the user how to proceed. Delete the schedule when no independent work remains and the plan only
@@ -159,7 +182,10 @@ worker's persistent watcher. End the turn after the tick; do not keep a shell sl
     post a summary (slices, PRs, user-approved limitations) and the trap proposals. When nothing is running, in review
     or waiting for deploy and the plan only waits for user answers, delete the schedule too; the reply wakes the driver.
 
-Keep driver messages to one line per event. A tick whose `plan-status` output is unchanged posts nothing.
+Keep driver messages to one line per event. A tick whose `plan-status` output is unchanged and whose thread has no
+open inbox items posts nothing. Every other tick ends with the inbox line, the output of `bin/inbox count --thread
+"$T3CODE_THREAD_ID"`, for example `Inbox: 3 open: 2 decision, 1 merge (/inbox)`, so the latest message always
+shows how much waits for the user.
 
 ## Ad hoc work
 
