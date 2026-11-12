@@ -88,7 +88,10 @@ in
     description = "Start Hygiea when Oracle stopped it";
     after = [ "nebula@sgiath.service" ];
     onFailure = [ "notify-failure@%n.service" ];
-    environment.OCI_CLI_SUPPRESS_FILE_PERMISSIONS_WARNING = "True";
+    environment = {
+      OCI_CLI_SUPPRESS_FILE_PERMISSIONS_WARNING = "True";
+      SUPPRESS_LABEL_WARNING = "True";
+    };
     serviceConfig = {
       Type = "oneshot";
       ExecStart = lib.getExe watchdog;

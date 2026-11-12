@@ -92,7 +92,7 @@ let
         } \) -prune \) -o \
         -type f \( -name '*.db' -o -name '*.sqlite' -o -name '*.sqlite3' \) -size +0 -print0 |
         while IFS= read -r -d "" db; do
-          header="$(head -c 15 "$db")"
+          header="$(head -c 15 "$db" | tr -d '\0')"
           if [[ "$header" != "SQLite format 3" ]]; then
             continue
           fi
@@ -112,8 +112,8 @@ let
 in
 {
   sops.secrets = {
-    restic_offsite_password = { };
-    restic_offsite_rest_env = { };
+    restic_offsite_password.sopsFile = ../../../secrets/vesta.yaml;
+    restic_offsite_rest_env.sopsFile = ../../../secrets/vesta.yaml;
   };
 
   services.restic.backups.offsite = {
@@ -131,12 +131,11 @@ in
     backupPrepareCommand = lib.getExe prepare;
     # Append-only: forget/prune would fail here and runs on Ceres instead.
     pruneOpts = [ ];
-    # After the agent archive's midnight Parquet export.
-    timerConfig = {
-      OnCalendar = "03:30";
-      RandomizedDelaySec = "20min";
-      Persistent = true;
-    };
+    # FIXME: no timer while Vesta's enp1s0 drops ~15% of large packets (the
+    # first upload ran at 0.9 MB/s). Once the link is fixed, restore it to run
+    # after the agent archive's midnight Parquet export:
+    # { OnCalendar = "03:30"; RandomizedDelaySec = "20min"; Persistent = true; }
+    timerConfig = null;
   };
 
   systemd.services.restic-backups-offsite = {

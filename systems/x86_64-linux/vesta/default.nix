@@ -7,6 +7,9 @@ in
     ./crazyegg.nix
     ./hardware.nix
     ./disko.nix
+    ./hygiea-watchdog.nix
+    ./notify.nix
+    ./offsite-backup.nix
     ./services.nix
   ];
 

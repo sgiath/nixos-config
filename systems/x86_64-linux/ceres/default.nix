@@ -2,6 +2,7 @@
 {
   imports = [
     ./hardware.nix
+    ./offsite-prune.nix
     ./qwen-image.nix
   ];
 

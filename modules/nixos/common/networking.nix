@@ -35,15 +35,11 @@
           };
         };
 
-        # Pi-hole over Nebula first; public resolvers answer within a second
-        # while the tunnel is down. Hosts with a fixed home LAN address
-        # override the list to reach Pi-hole without the tunnel. glibc reads
-        # at most three nameservers.
-        networking.nameservers = lib.mkDefault [
-          config.sgiath.nebula.peers.vesta.ip4
-          "1.1.1.1"
-          "8.8.8.8"
-        ];
+        # The Pi-holes on Vesta and Hygiea over Nebula, then a public resolver
+        # while the tunnel is down; each step costs a one-second timeout.
+        # Hosts with a fixed home LAN address override the list to reach
+        # Pi-hole without the tunnel. glibc reads at most three nameservers.
+        networking.nameservers = lib.mkDefault (config.sgiath.nebula.resolvers ++ [ "1.1.1.1" ]);
         environment.etc."resolv.conf".text = ''
           search sgiath.dev
           options timeout:1 attempts:1

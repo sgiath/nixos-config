@@ -12,7 +12,9 @@ let
   # Public HTTPS names served by this nginx, minus the overlay-only services
   # above, resolve to Vesta's Nebula address instead of through Cloudflare or
   # the router's NAT hairpin. They have no local AAAA, so AAAA queries go
-  # upstream and IPv6 clients get Cloudflare where the name is proxied.
+  # upstream and IPv6 clients get Cloudflare where the name is proxied. Hygiea
+  # serves no vhosts, so its Pi-hole answers these names consistently from
+  # upstream (Cloudflare A and HTTPS records together).
   publicNames = lib.subtractLists (map (name: "${name}.sgiath.dev") nebula.services) (
     lib.concatLists (
       lib.mapAttrsToList (
@@ -32,92 +34,106 @@ in
 {
   options.services.pi-hole.enable = lib.mkEnableOption "pi-hole";
 
-  config = lib.mkIf (config.sgiath.roles.server.enable && config.services.pi-hole.enable) {
-    sops = {
-      secrets.pihole-password = { };
-      # FTL hashes FTLCONF_webserver_api_password at startup; settings coming
-      # from the environment never touch the store-backed pihole.toml.
-      templates.pihole-env = {
-        restartUnits = [ "pihole-ftl.service" ];
-        content = "FTLCONF_webserver_api_password=${config.sops.placeholder.pihole-password}";
-      };
-    };
-
-    networking.networkmanager.dns = lib.mkForce "none";
-
-    services.pihole-ftl = {
-      enable = true;
-      openFirewallDNS = true;
-      queryLogDeleter.enable = true;
-      lists = [
-        {
-          url = "https://big.oisd.nl/";
-          description = "oisd big";
-        }
-        {
-          url = "https://raw.githubusercontent.com/crazy-max/WindowsSpyBlocker/master/data/hosts/spy.txt";
-          description = "Windows";
-        }
-      ];
-      settings = {
-        dns = {
-          upstreams = [
-            "8.8.8.8"
-            "8.8.4.4"
-            "1.1.1.1"
-            "1.0.0.1"
-          ];
-          hosts = nebulaRecords ++ publicRecords;
-          # The Turris resolver forwards every LAN query here without validating,
-          # because it would reject the local sgiath.dev and blocked answers as
-          # bogus. Validate here instead; all LAN traffic arrives from the router,
-          # so a per-client rate limit would throttle the whole network.
-          dnssec = true;
-          rateLimit.count = 0;
-        };
-        # Keep public HTTPS records from routing clients through Cloudflare,
-        # and never forward overlay names upstream.
-        misc.dnsmasq_lines =
-          map (name: "local=/${name}.sgiath.dev/") nebula.services
-          ++ map (name: "local=/${name}/") peerNames
-          ++ publicHttpsRecords;
-      };
-    };
-
-    # On a fresh state dir the upstream setup script creates gravity.db, asks
-    # FTL to reopen it and immediately posts lists; the first request can hit
-    # "Database not available". Re-running is idempotent, so just retry.
-    systemd.services.pihole-ftl-setup.serviceConfig = {
-      Restart = "on-failure";
-      RestartSec = 5;
-    };
-
-    systemd.services.pihole-ftl.serviceConfig.EnvironmentFile = config.sops.templates.pihole-env.path;
-
-    services.pihole-web = {
-      enable = true;
-      hostName = "dns.sgiath";
-      ports = [ "127.0.0.1:8053" ];
-    };
-
-    services.nginx = {
-      virtualHosts."dns.sgiath" = {
-        rejectSSL = true;
-        locations = {
-          "/" = {
-            proxyPass = "http://127.0.0.1:8053";
-            extraConfig = ''
-              allow 127.0.0.1;
-              allow ::1;
-              deny 192.168.1.1;
-              allow 192.168.1.0/24;
-              allow ${nebula.cidr4};
-              allow ${nebula.cidr6};
-              deny all;
-            '';
+  config = lib.mkIf config.services.pi-hole.enable (
+    lib.mkMerge [
+      {
+        sops = {
+          secrets.pihole-password = { };
+          # FTL hashes FTLCONF_webserver_api_password at startup; settings coming
+          # from the environment never touch the store-backed pihole.toml.
+          templates.pihole-env = {
+            restartUnits = [ "pihole-ftl.service" ];
+            content = "FTLCONF_webserver_api_password=${config.sops.placeholder.pihole-password}";
           };
         };
-      };
-    };
-  };
+
+        networking.networkmanager.dns = lib.mkForce "none";
+
+        # Overlay clients only; LAN clients reach Vesta through the Turris, whose
+        # host firewall is off anyway.
+        networking.firewall.interfaces."nebula.sgiath" = {
+          allowedTCPPorts = [ 53 ];
+          allowedUDPPorts = [ 53 ];
+        };
+
+        services.pihole-ftl = {
+          enable = true;
+          queryLogDeleter.enable = true;
+          lists = [
+            {
+              url = "https://big.oisd.nl/";
+              description = "oisd big";
+            }
+            {
+              url = "https://raw.githubusercontent.com/crazy-max/WindowsSpyBlocker/master/data/hosts/spy.txt";
+              description = "Windows";
+            }
+          ];
+          settings = {
+            dns = {
+              upstreams = [
+                "8.8.8.8"
+                "8.8.4.4"
+                "1.1.1.1"
+                "1.0.0.1"
+              ];
+              hosts = nebulaRecords ++ publicRecords;
+              # The Turris resolver forwards every LAN query here without validating,
+              # because it would reject the local sgiath.dev and blocked answers as
+              # bogus. Validate here instead; all LAN traffic arrives from the router,
+              # so a per-client rate limit would throttle the whole network.
+              dnssec = true;
+              rateLimit.count = 0;
+            };
+            # Keep public HTTPS records from routing clients through Cloudflare,
+            # and never forward overlay names upstream.
+            misc.dnsmasq_lines =
+              map (name: "local=/${name}.sgiath.dev/") nebula.services
+              ++ map (name: "local=/${name}/") peerNames
+              ++ publicHttpsRecords;
+          };
+        };
+
+        # On a fresh state dir the upstream setup script creates gravity.db, asks
+        # FTL to reopen it and immediately posts lists; the first request can hit
+        # "Database not available". Re-running is idempotent, so just retry.
+        systemd.services.pihole-ftl-setup.serviceConfig = {
+          Restart = "on-failure";
+          RestartSec = 5;
+        };
+
+        systemd.services.pihole-ftl.serviceConfig.EnvironmentFile = config.sops.templates.pihole-env.path;
+
+        services.pihole-web = {
+          enable = true;
+          hostName = "dns.sgiath";
+          ports = [ "127.0.0.1:8053" ];
+        };
+      }
+
+      # The web UI is published on servers only; elsewhere use an SSH tunnel to
+      # 127.0.0.1:8053.
+      (lib.mkIf config.sgiath.roles.server.enable {
+        services.nginx = {
+          virtualHosts."dns.sgiath" = {
+            rejectSSL = true;
+            locations = {
+              "/" = {
+                proxyPass = "http://127.0.0.1:8053";
+                extraConfig = ''
+                  allow 127.0.0.1;
+                  allow ::1;
+                  deny 192.168.1.1;
+                  allow 192.168.1.0/24;
+                  allow ${nebula.cidr4};
+                  allow ${nebula.cidr6};
+                  deny all;
+                '';
+              };
+            };
+          };
+        };
+      })
+    ]
+  );
 }

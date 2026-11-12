@@ -77,8 +77,11 @@ static_host_map="$(jq -r --arg lan "${VESTA_LAN}" '.[]
   | ((if .key == "vesta" then [$lan] else [] end) + [.value.lighthouse]) as $endpoints
   | "  \"\(.value.ip4)\": \($endpoints | tojson)\n  \"\(.value.ip6)\": \($endpoints | tojson)"' <<<"${lighthouses}")"
 lighthouse_ips="$(jq -c '[.[] | .value.ip4, .value.ip6]' <<<"${lighthouses}")"
-inbound="$(jq -r '.peers | to_entries[] | select(.value.trusted)
-  | "    - port: any\n      proto: any\n      host: \(.key)"' <<<"${nebula_opts}")"
+# Trusted peers may connect; lighthouses may ping (Hygiea monitors home).
+inbound="$(jq -r '.peers | to_entries[]
+  | if .value.trusted then "    - port: any\n      proto: any\n      host: \(.key)"
+    elif .value.lighthouse != null then "    - port: any\n      proto: icmp\n      host: \(.key)"
+    else empty end' <<<"${nebula_opts}")"
 
 cat >"${work}/config.yml" <<EOF
 # Nebula on JetKVM ${peer} (${ip4}, ${ip6}); rendered by scripts/nebula-jetkvm.sh
@@ -119,7 +122,8 @@ tun:
 logging:
   level: warning
 
-# Only trusted peers open connections to the KVM; it opens none of its own.
+# Only trusted peers open connections to the KVM (lighthouses may ping it);
+# it opens none of its own.
 firewall:
   outbound:
     - port: any

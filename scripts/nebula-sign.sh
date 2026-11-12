@@ -7,12 +7,15 @@
 #
 # Run from `nix develop` (needs sops, nebula-cert, jq) with the sgiath PGP key
 # available; the CA private key is only decryptable with it.
+#
+# NEBULA_SECRETS_FILE stores the cert/key elsewhere, for untrusted hosts that
+# must not decrypt the shared file (Hygiea: secrets/hygiea.yaml).
 set -euo pipefail
 
 SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
 REPO_DIR="$(cd "${SCRIPT_DIR}/.." && pwd)"
 CA_FILE="${REPO_DIR}/secrets/nebula-ca.yaml"
-HOSTS_FILE="${REPO_DIR}/secrets/nebula.yaml"
+HOSTS_FILE="${NEBULA_SECRETS_FILE:-${REPO_DIR}/secrets/nebula.yaml}"
 SUBNET4_BITS=24
 SUBNET6_BITS=64
 

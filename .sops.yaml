@@ -3,6 +3,7 @@ keys:
   - &ceres age1mrl86ltzgeeu32ps58fdrvchk5m9a42wve92ejjdx7ztngjygeyqps9nqh
   - &vesta age1cl34njduy9a05t03ldq5uc7q03f6aqhw7ns9xw34uakk5cdqsg4qr54ezu
   - &pallas age1tndg60e92u7pu64c8qjwy7qac4ev5pnhgujafj0ed6jzak7pyyjsq97p26
+  - &hygiea age1g56y42afz2kv9g67xnkqvwju7ml77cxjh5knx0lt4hy56mxhj30qfcxwvz
 creation_rules:
   - path_regex: secrets/ceres-signing\.yaml$
     key_groups:
@@ -16,6 +17,20 @@ creation_rules:
           - *sgiath
         age:
           - *vesta
+  # Ceres-only secrets that Vesta must not read (offsite backup admin key).
+  - path_regex: secrets/ceres\.yaml$
+    key_groups:
+      - pgp:
+          - *sgiath
+        age:
+          - *ceres
+  # Hygiea is untrusted: it gets only its own file, never the shared ones.
+  - path_regex: secrets/hygiea\.yaml$
+    key_groups:
+      - pgp:
+          - *sgiath
+        age:
+          - *hygiea
   # Nebula CA private key: only needed to sign new host certs, never on a host.
   - path_regex: secrets/nebula-ca\.yaml$
     key_groups:

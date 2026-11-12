@@ -37,10 +37,12 @@ ip6="$(jq -r --arg p "${peer}" '.peers[$p].ip6 // empty' <<<"${nebula_opts}")"
 lighthouses="$(jq -c '[.peers | to_entries[] | select(.value.lighthouse != null)]' <<<"${nebula_opts}")"
 static_host_map="$(jq -r '.[] | "  \"\(.value.ip4)\": [\"\(.value.lighthouse)\"]\n  \"\(.value.ip6)\": [\"\(.value.lighthouse)\"]"' <<<"${lighthouses}")"
 lighthouse_ips="$(jq -c '[.[] | .value.ip4, .value.ip6]' <<<"${lighthouses}")"
-inbound="$(jq -r '.peers | to_entries[] | select(.value.trusted)
-  | "    - port: any\n      proto: any\n      host: \(.key)"' <<<"${nebula_opts}")"
-lh4="$(jq -r .peers.vesta.ip4 <<<"${nebula_opts}")"
-lh6="$(jq -r .peers.vesta.ip6 <<<"${nebula_opts}")"
+# Trusted peers may connect; lighthouses may ping (Hygiea monitors home).
+inbound="$(jq -r '.peers | to_entries[]
+  | if .value.trusted then "    - port: any\n      proto: any\n      host: \(.key)"
+    elif .value.lighthouse != null then "    - port: any\n      proto: icmp\n      host: \(.key)"
+    else empty end' <<<"${nebula_opts}")"
+resolvers="$(jq -r '.resolvers[] | "    - \"\(.)\""' <<<"${nebula_opts}")"
 if [[ -z "${ip4}" || -z "${ip6}" ]]; then
   echo "error: '${peer}' is not in the peers table of modules/nixos/common/nebula.nix" >&2
   exit 1
@@ -91,12 +93,11 @@ firewall:
   inbound:
 ${inbound}
 
-# Resolve through Pi-hole on vesta over the tunnel (ad blocking + overlay and
-# LAN names anywhere). Drop this block to keep the phone's system DNS.
+# Resolve through the Pi-holes on Vesta and Hygiea over the tunnel (ad blocking
+# and overlay names anywhere). Drop this block to keep the phone's system DNS.
 mobile_nebula:
   dns_resolvers:
-    - "${lh4}"
-    - "${lh6}"
+${resolvers}
   search_domains:
     - "${domain}"
 EOF

@@ -13,6 +13,15 @@ let
       trusted = true;
       lighthouse = "${config.sgiath.publicIPv4}:4242";
     };
+    # Backup lighthouse/relay, Pi-hole and backup target on Oracle Cloud
+    # (systems/aarch64-linux/hygiea); keeps the overlay up while Vesta is down.
+    hygiea = {
+      ip4 = "10.42.0.3";
+      ip6 = "fd51:da00:4788::3";
+      # Ephemeral public IP: it survives stop/start but not terminating the
+      # instance. A replacement means a new address here and in OCI.
+      lighthouse = "92.5.169.98:4242";
+    };
     ceres = {
       ip4 = "10.42.0.6";
       ip6 = "fd51:da00:4788::6";
@@ -74,6 +83,29 @@ let
 in
 {
   options.sgiath.nebula = {
+    enable = lib.mkOption {
+      type = lib.types.bool;
+      default = config.sgiath.enable;
+      defaultText = lib.literalExpression "config.sgiath.enable";
+      description = "Join the overlay; hosts without the baseline (Hygiea) enable it alone.";
+    };
+    secretsFile = lib.mkOption {
+      type = lib.types.path;
+      default = ../../../secrets/nebula.yaml;
+      description = ''
+        SOPS file with `ca_crt` and this host's `<host>_cert`/`<host>_key`.
+        Untrusted hosts get their own file so they cannot decrypt the others' keys.
+      '';
+    };
+    resolvers = lib.mkOption {
+      type = lib.types.listOf lib.types.str;
+      default = [
+        peers.vesta.ip4
+        peers.hygiea.ip4
+      ];
+      readOnly = true;
+      description = "Overlay addresses of the Pi-hole instances, in order of preference.";
+    };
     domain = lib.mkOption {
       type = lib.types.str;
       default = "nebula.sgiath.dev";
@@ -111,7 +143,7 @@ in
     };
   };
 
-  config = lib.mkIf config.sgiath.enable {
+  config = lib.mkIf cfg.enable {
     services.nebula.networks.sgiath = {
       ca = config.sops.secrets.nebula-ca.path;
       cert = config.sops.secrets.nebula-cert.path;
@@ -134,7 +166,8 @@ in
 
       # A trusted peer's certificate is the auth, so services bound to the
       # nebula interface need no login of their own. Inbound is an allowlist
-      # of trusted peers by certificate name and nothing else.
+      # of trusted peers by certificate name; lighthouses may also ping, so
+      # Hygiea can monitor home from outside.
       firewall = {
         outbound = [
           {
@@ -143,11 +176,17 @@ in
             host = "any";
           }
         ];
-        inbound = lib.mapAttrsToList (name: _: {
-          port = "any";
-          proto = "any";
-          host = name;
-        }) (lib.filterAttrs (_: peer: peer.trusted) cfg.peers);
+        inbound =
+          lib.mapAttrsToList (name: _: {
+            port = "any";
+            proto = "any";
+            host = name;
+          }) (lib.filterAttrs (_: peer: peer.trusted) cfg.peers)
+          ++ lib.mapAttrsToList (name: _: {
+            port = "any";
+            proto = "icmp";
+            host = name;
+          }) lighthouses;
       };
 
       settings.punchy = {
@@ -160,7 +199,7 @@ in
       let
         secret = key: {
           inherit key;
-          sopsFile = ../../../secrets/nebula.yaml;
+          sopsFile = cfg.secretsFile;
           owner = net.user;
           group = net.group;
           mode = "0400";

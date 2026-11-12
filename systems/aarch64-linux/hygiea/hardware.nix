@@ -23,12 +23,19 @@
       "console=tty1"
       "console=ttyAMA0,115200"
     ];
+    # A boot volume enlarged in the OCI console grows into the root
+    # filesystem on the next boot.
+    growPartition = true;
   };
+  fileSystems."/".autoResize = true;
 
   networking = {
     useNetworkd = true;
     useDHCP = true;
-    # Link-local OCI NTP service.
+    # Link-local OCI NTP and DNS services. The host resolves through the VCN
+    # resolver, not its own Pi-hole; resolved's stub would also hold port 53.
     timeServers = [ "169.254.169.254" ];
+    nameservers = [ "169.254.169.254" ];
   };
+  services.resolved.enable = false;
 }

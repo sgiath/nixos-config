@@ -75,6 +75,7 @@ update
 update --ceres
 update --vesta
 update --juno1
+update --hygiea
 update --iso
 ```
 

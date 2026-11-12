@@ -57,7 +57,7 @@ writeShellScriptBin "update" ''
   set -- "''${update_args[@]}"
   target=''${1:-}
   case "$target" in
-    ""|--ceres|--vesta|--juno[1-9]|--iso) ;;
+    ""|--ceres|--vesta|--juno[1-9]|--hygiea|--iso) ;;
     *) echo "Unknown update target: $target" >&2; exit 2 ;;
   esac
   if (($#)); then
@@ -77,7 +77,7 @@ writeShellScriptBin "update" ''
   case "$target" in
     --iso) ;;
     --vesta) deploy[vesta]=signed ;;
-    --juno*) deploy[''${target#--}]=native ;;
+    --juno*|--hygiea) deploy[''${target#--}]=native ;;
     --ceres) deploy[ceres]=local ;;
   esac
 
