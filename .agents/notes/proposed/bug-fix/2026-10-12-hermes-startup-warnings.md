@@ -10,7 +10,7 @@ Hermes v0.21.7 on Vesta reports several startup warnings independent of the Holo
 - The systemd unit has a 5-second stop timeout while the gateway requests at least 70 seconds to allow its cron drain to finish.
 - Some joined Matrix rooms are encrypted, but the configured process has no E2EE decryptor. Messages from those rooms are dropped. Encryption is explicitly disabled in this configuration, so enabling it requires confirming the intended room scope.
 
-These were observed in the gateway journal on 2026-10-12 after restarting the service for the memory fix. They do not prevent built-in memory initialization or searching the existing session database. The missing Anthropic credentials warning from the same startup is resolved separately in [Hermes service borrows the account's Claude Code login](../../implemented/bug-fix/2026-10-12-hermes-claude-credentials.md).
+These were observed in the gateway journal on 2026-10-12 after restarting the service for the memory fix. They do not prevent built-in memory initialization or searching the existing session database. The missing Anthropic credentials warning from the same startup no longer applies: Hermes reaches its models through CLIProxy ([Hermes reaches its models through CLIProxy](../../implemented/architecture/2026-11-12-hermes-models-through-cliproxy.md)).
 
 ## Proposal
 

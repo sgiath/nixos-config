@@ -19,6 +19,12 @@ let
   stateDir = "/home/sgiath/hermes";
   nebula = config.sgiath.nebula;
   host = "niamh.sgiath.dev";
+  # Models go through CLIProxy on the same host; it holds the Claude and Codex logins.
+  cliproxyBase = "http://127.0.0.1:${toString config.services.cliproxyapi.settings.server.port}";
+  cliproxyProvider = base_url: api_mode: {
+    inherit base_url api_mode;
+    api_key_env = "CLIPROXY_API_KEY";
+  };
   birdVesta = pkgs.writeShellApplication {
     name = "bird-vesta";
     runtimeInputs = [ pkgs.nodejs_22 ];
@@ -35,6 +41,13 @@ in
     { sgiath.nebula.services = [ "niamh" ]; }
 
     (lib.mkIf (config.sgiath.roles.server.enable && config.services.hermes-agent.enable) {
+      assertions = [
+        {
+          assertion = config.services.cliproxyapi.enable;
+          message = "Hermes reaches its models through CLIProxy on the same host; enable services.cliproxyapi.";
+        }
+      ];
+
       users.groups.hermes.members = [ "sgiath" ];
 
       sops.secrets = {
@@ -58,6 +71,19 @@ in
           restartUnits = [ "hermes-agent.service" ];
         };
       };
+      # The raw secret is a bare value, not an environment file.
+      sops.templates.hermes-cliproxy-env = {
+        owner = "sgiath";
+        group = "hermes";
+        mode = "0400";
+        content = ''
+          CLIPROXY_API_KEY=${config.sops.placeholder.cliproxy_api_key}
+        '';
+        restartUnits = [
+          "hermes-agent.service"
+          "hermes-dashboard.service"
+        ];
+      };
 
       # Upstream makes HERMES_HOME 2770 for the hermes group, but gateway discovery refuses a
       # home that another user can write, so cron and CLI clients cannot reach the gateway.
@@ -69,7 +95,10 @@ in
       systemd.tmpfiles.rules = [ "z ${stateDir}/.hermes 0700 - - - -" ];
 
       systemd.services = {
-        hermes-agent.after = [ "continuwuity.service" ];
+        hermes-agent.after = [
+          "continuwuity.service"
+          "cliproxyapi.service"
+        ];
         hermes-dashboard = {
           description = "Hermes Agent web dashboard";
           wantedBy = [ "multi-user.target" ];
@@ -114,12 +143,12 @@ in
             birdVesta
           ];
 
-          environmentFiles = [ config.sops.secrets.hermes-env.path ];
+          environmentFiles = [
+            config.sops.secrets.hermes-env.path
+            config.sops.templates.hermes-cliproxy-env.path
+          ];
           environment = {
             HERMES_DASHBOARD_TUI = "1";
-            # The unit sets HOME to stateDir; borrow the account's own Claude Code login,
-            # which Hermes refreshes in place.
-            CLAUDE_CONFIG_DIR = "${config.users.users.sgiath.home}/.claude";
 
             MATRIX_HOMESERVER = "https://matrix.sgiath.dev";
             MATRIX_USER_ID = "@niamh:sgiath.dev";
@@ -134,22 +163,31 @@ in
           };
 
           settings = {
+            # Named providers, not `custom`: bare `custom` drops codex_responses for an
+            # unknown host, and `anthropic` rejects a loopback base_url. `openai` is an
+            # OpenRouter alias in Hermes.
+            providers = {
+              cliproxy-claude = cliproxyProvider cliproxyBase "anthropic_messages";
+              cliproxy-codex = cliproxyProvider "${cliproxyBase}/v1" "codex_responses";
+              cliproxy-chat = cliproxyProvider "${cliproxyBase}/v1" "chat_completions";
+            };
+
             model = {
               default = "claude-opus-5-5";
-              provider = "anthropic";
+              provider = "cliproxy-claude";
             };
             fallback_model = {
               model = "gpt-6-sol";
-              provider = "openai-codex";
+              provider = "cliproxy-codex";
             };
 
             auxiliary = {
               web_extract = {
-                provider = "openai-codex";
+                provider = "cliproxy-codex";
                 model = "gpt-6-luna";
               };
               title_generation = {
-                provider = "openai-codex";
+                provider = "cliproxy-codex";
                 model = "gpt-6-luna";
               };
               # vision = {};
@@ -236,7 +274,7 @@ in
 
             delegation = {
               model = "claude-opus-5-5";
-              provider = "anthropic";
+              provider = "cliproxy-claude";
               max_concurrent_children = 10;
               max_spawn_depth = 2;
             };
@@ -300,24 +338,24 @@ in
                   enabled = true;
 
                   aggregator = {
-                    provider = "anthropic";
+                    provider = "cliproxy-claude";
                     model = "claude-opus-5-5";
                     reasoning_effort = "high";
                   };
 
                   reference_models = [
                     {
-                      provider = "anthropic";
+                      provider = "cliproxy-claude";
                       model = "claude-fable-5-2";
                       reasoning_effort = "high";
                     }
                     {
-                      provider = "openai-codex";
+                      provider = "cliproxy-codex";
                       model = "gpt-6-astra";
                       reasoning_effort = "high";
                     }
                     {
-                      provider = "xai-oauth";
+                      provider = "cliproxy-chat";
                       model = "grok-4.7";
                     }
                   ];

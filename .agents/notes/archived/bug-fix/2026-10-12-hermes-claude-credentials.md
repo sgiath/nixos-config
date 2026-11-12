@@ -1,6 +1,7 @@
 # Agent Note: Hermes service borrows the account's Claude Code login
 
 Status: implemented
+Archived: 2026-11-12
 
 ## Problem
 
