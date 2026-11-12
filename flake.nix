@@ -45,7 +45,7 @@
       inputs.hyprland.follows = "hyprland";
     };
 
-    noctalia.url = "github:noctalia-dev/noctalia/v5.4.1";
+    noctalia.url = "github:noctalia-dev/noctalia/v5.5.0";
 
     btc-clients = {
       url = "github:emmanuelrosa/btc-clients-nix";
@@ -101,7 +101,7 @@
       inputs.home-manager.follows = "home-manager";
     };
 
-    comfyui.url = "github:utensils/comfyui-nix/v0.37.0-r1";
+    comfyui.url = "github:utensils/comfyui-nix/v0.44.0";
 
     # NVIDIA DGX Spark (GB10, aarch64): NVIDIA 6.17 kernel, open driver, CUDA, ConnectX-7.
     dgx-spark = {
