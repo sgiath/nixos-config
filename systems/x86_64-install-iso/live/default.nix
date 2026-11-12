@@ -57,6 +57,7 @@ in
   boot = {
     kernelPackages = pkgs.linuxPackages_latest;
     supportedFilesystems = lib.mkForce [
+      "ext4"
       "btrfs"
       "reiserfs"
       "vfat"

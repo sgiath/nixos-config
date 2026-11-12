@@ -14,7 +14,9 @@ set -euo pipefail
 state="${XDG_RUNTIME_DIR:?}/pallas-install"
 host_key="$state/ssh_host_ed25519_key"
 repo=$(git -C "$(dirname "$0")" rev-parse --show-toplevel)
-flake="$repo#nixosConfigurations.pallas"
+# Only committed work is installed; other sessions may have uncommitted edits in the checkout.
+rev=$(git -C "$repo" rev-parse HEAD)
+flake="git+file://$repo?rev=$rev#nixosConfigurations.pallas"
 
 die() {
   echo "ERROR: $*" >&2
@@ -174,8 +176,7 @@ mount)
 install)
   [[ -f "$host_key" ]] || die "$host_key missing; generate it and add its recipient to .sops.yaml (REINSTALL.md)"
   recipient=$(nix shell nixpkgs#ssh-to-age -c ssh-to-age <"$host_key.pub")
-  grep -q "&pallas $recipient" "$repo/.sops.yaml" || die "$host_key is not the pallas recipient in .sops.yaml"
-  git -C "$repo" diff --quiet HEAD || die "commit the checkout first; the installed system records its revision"
+  git -C "$repo" show "$rev:.sops.yaml" | grep -q "&pallas $recipient" || die "$host_key is not the pallas recipient in .sops.yaml"
 
   echo "==> Building pallas"
   toplevel=$(nix build --no-link --print-out-paths "$flake.config.system.build.toplevel")
@@ -202,8 +203,15 @@ nixos-install --root /mnt --system "$1" --no-root-passwd --no-channel-copy
 EOF
 
   echo "==> Copying the checkout to /home/sgiath/nixos"
-  tar -C "$repo" --exclude=./result -cf - . |
+  clone=$(mktemp -d)
+  git clone -q "$repo" "$clone"
+  git -C "$clone" checkout -q "$rev"
+  git -C "$clone" checkout -q -B master
+  origin=$(git -C "$repo" remote get-url origin)
+  git -C "$clone" remote set-url origin "$origin"
+  tar -C "$clone" -cf - . |
     ssh "${ssh_opts[@]}" "sgiath@$host" sudo sh -c "'rm -rf /mnt/home/sgiath/nixos && install -d /mnt/home/sgiath/nixos && tar -C /mnt/home/sgiath/nixos -xf -'"
+  rm -rf "$clone"
   remote <<'EOF'
 set -euo pipefail
 nixos-enter --root /mnt -c 'chown sgiath:users /home/sgiath && chown -R sgiath:users /home/sgiath/nixos' >/dev/null
