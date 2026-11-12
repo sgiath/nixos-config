@@ -13,10 +13,11 @@ Filip does only the steps at the notebook. Run every command from `~/nixos` on C
   and an ext4 root. The filesystems get the UUIDs from `hardware.nix`, so the
   configuration needs no change. It refuses Windows partition types, NTFS and
   BitLocker volumes, and any ESP that contains the Windows boot manager.
-- `install`: builds the pallas system on Ceres, writes the pre-generated SSH
+- `install`: builds the pallas system from the committed HEAD on Ceres, writes the pre-generated SSH
   host key to the target (so SOPS secrets decrypt on first boot), copies the
   closure (the target downloads public cache paths itself), runs `nixos-install`,
-  and copies this checkout to `/home/sgiath/nixos`.
+  and copies a clean clone of HEAD to `/home/sgiath/nixos`. A QEMU rehearsal
+  took 40 minutes for the first run and 2 minutes for a repeat.
 - `verify`: checks the installed system over SSH, pinning the known host key.
 
 NixOS gets its own ESP. Windows keeps its ESP untouched; boot it from the
@@ -40,8 +41,12 @@ systemd-boot "Windows 11" entry or the firmware boot menu.
    Changing Secure Boot or the boot order otherwise triggers the recovery screen.
    Copy anything you still need off Omarchy; it will be deleted.
 2. **Filip:** plug a USB stick (4 GB or more; it is overwritten) into Ceres.
-3. **Agent:** write the live ISO without GPG keys (not needed for this flow):
-   `nix run .#burn-iso -- --no-keys /dev/sdX`.
+3. **Agent:** build the live ISO from HEAD (the checkout may hold other sessions'
+   uncommitted edits) and write it without GPG keys, which this flow does not need:
+   ```bash
+   iso=$(nix build --no-link --print-out-paths "git+file://$PWD?rev=$(git rev-parse HEAD)#install-isoConfigurations.live")
+   printf '%s\n' sdX | nix run .#burn-iso -- --no-keys --iso "$iso"/iso/*.iso /dev/sdX
+   ```
 4. **Filip, at Pallas:** plug in the stick, power on and press F12 for the boot
    menu (F1 or Del opens the firmware setup). If the stick does not boot, disable
    Secure Boot in the firmware setup. Boot the NixOS live entry.
