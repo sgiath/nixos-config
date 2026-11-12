@@ -22,7 +22,7 @@ as a stopped worker to restart, an automatic replan, or a limitation that counts
 ## Artifacts
 
 - **Spec**: Agent Notes in the repository, as usual. Decisions and architecture only, never progress.
-- **Plan**: `.agents/plans/<yyyy-mm-dd>-<topic>/` with `plan.md` and one `NN-<slug>.md` per slice. Format and templates: [plan format](references/plan-format.md). For tracked plans, only planning (on the default branch) and a slice's own PR edit these files. If the user or plan requires local artifacts, keep the plan, answers and spec unpublished; only the driver edits them and workers read absolute local paths. Do not copy them into implementation commits.
+- **Plan**: `.agents/plans/<yyyy-mm-dd>-<topic>/` with `plan.md` and one `NN-<slug>.md` per slice, or `plans/<yyyy-mm-dd>-<topic>/` in a home repository (a checkout that holds no code and whose `AGENTS.md` says code lives in sibling repositories, such as `~/develop/crazyegg/home`) with `primary_repo` in `plan.md`. Format and templates: [plan format](references/plan-format.md). For tracked plans, only planning (on the default branch) and a slice's own PR edit these files. If the user or plan requires local artifacts, keep the plan, answers and spec unpublished; only the driver edits them and workers read absolute local paths. Do not copy them into implementation commits.
 - **Delivery state**: derived on every wake-up by [`scripts/plan-status <plan-dir>`](scripts/plan-status) from slice files, GitHub PRs or GitLab MRs on the exact slice branches, local branches, and the deploy check. Run it against the original absolute plan directory independently of worker checkouts. It does not read behavioral gate records. Never cache delivery state in the conversation or write progress into the repository.
 - **State directory** (outside the repository, printed by `plan-status` as `state_dir`): `asked/NN.md` (questions and recommendations sent to the user), `answers/NN.md` (initial slice decisions), `deployed/NN` (deploy marker), `gates/NN.md` (driver-owned verification evidence and later gate decisions), `final-gate.md` (plan integration evidence), `traps.md` (friction workers hit, appended by workers), `tick-snapshot.json` (what the last tick saw, written only by `plan-status --record`).
 
@@ -106,7 +106,8 @@ worker's persistent watcher. End the turn after the tick; do not keep a shell sl
      so recover it here. Search thread inventory including settled workers and inspect any known PR watches,
      queues/children and provider processes for the checkout. Reuse a surviving task thread when possible. If none
      owns the work, verify the branch, task changes, PR/head and absolute checkout path, then launch one replacement
-     with `workspaceStrategy: {type: "existing_worktree", worktreePath: "<path>", branch: "<slice-branch>"}`.
+     with `workspaceStrategy: {type: "existing_worktree", worktreePath: "<path>", branch: "<slice-branch>"}`
+     (from a home repository: `{type: "root"}` with that checkout path in the worker prompt; see step 8).
      Supply the worker prompt plus the existing PRs, completed checks and outstanding findings; it resumes rather
      than restarting the slice. If the branch has no checkout, prepare one using native support for existing branches
      when available, otherwise Worktrunk, then bind the replacement to it. Do not create a replacement while another
@@ -142,6 +143,10 @@ worker's persistent watcher. End the turn after the tick; do not keep a shell sl
    credential sources, ceilings and authorizations from answers, Standing rules and later messages; label your own
    estimates as estimates, not caps.
    To resume an existing task checkout, use `existing_worktree` with its verified absolute path and branch.
+   When this project is a home repository, its worktrees contain no code: read skill://worktrunk, create (or reuse)
+   the slice checkout in `primary_repo` with `wt switch --create <slice-branch> --base origin/<default-branch> --no-cd
+   --format json`, run that checkout's setup, then launch with `workspaceStrategy: {type: "root"}` and the checkout's
+   absolute path in the worker prompt's home-repository line. Resume the same way with the existing checkout path.
    Retain the returned thread ID; a preparing launch is not a failed worker. After a lost/ambiguous response, inspect
    thread inventory before retrying; launch has no retry key. Post one line: `Started NN <title>: <thread link>`.
    An explicit empty branch awaits its real issue/branch; do not invent one. Independent MRs awaiting review consume only the configured capacity, not a group barrier. For local artifacts, supply absolute plan/answer paths and scope in the launch context and forbid workers from publishing them. Use the repository's host workflow: GitLab repositories publish with their template, authenticated-user assignment and GitLab skills; do not route them through `gh` or GitHub-only publication steps.

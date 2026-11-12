@@ -58,6 +58,8 @@ SSH there.
   through T3: `t3_worktree_handoff` moves the current thread, `t3_thread_launch` with `workspaceStrategy` starts
   a new one. Do not use `EnterWorktree`, `wt switch --create` or `git worktree add` for the thread's own checkout;
   they leave T3 bound to the root checkout. Use Worktrunk (`wt`) outside T3 and for companion repositories.
+  A thread in a home repository (CrazyEgg: `~/develop/crazyegg/home`) stays on that checkout; the code repositories
+  beside it are companion repositories, so create their task checkouts with `wt`.
   Verify environment setup and checkout-specific build caches; do not assume another tool's hooks ran.
 - Use dark mode for visual pages/demos, ideally matching `/home/sgiath/develop/sgiath/sgiath.dev/`.
 

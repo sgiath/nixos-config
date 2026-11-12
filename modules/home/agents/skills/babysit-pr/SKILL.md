@@ -23,7 +23,9 @@ GitLab MRs; choose its watcher or the repository monitor according to the requir
    Preserve unrelated user work and reuse the task checkout. If isolation is needed in T3, inspect its binding and
    use native worktree handoff with a continuation prompt carrying the PR state; do not create a shell worktree
    that leaves T3 bound elsewhere. An existing different-task binding needs an explicit workspace decision.
-   Outside T3, read skill://worktrunk and use wt. Never reset/stash/discard the user's checkout.
+   From a home repository (no code; code lives in sibling repositories), the PR's checkout is in the sibling
+   repository: reuse it, or create it there with wt, and work in it by absolute path. Outside T3, read
+   skill://worktrunk and use wt. Never reset/stash/discard the user's checkout.
 2. Read applicable repository steering and project-local PR/review/CI skills, even when the PR already exists.
    Repository policy supplements this workflow. If the branch has no open PR, call skill://pr to publish it;
    this invocation authorizes the task-related commits and push it needs. Do not duplicate PR creation here.

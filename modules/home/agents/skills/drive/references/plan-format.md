@@ -1,6 +1,7 @@
 # Plan format
 
-A plan lives at `.agents/plans/<yyyy-mm-dd>-<topic>/` in the repository that holds most of the work. `scripts/plan-status` parses only the frontmatter: flat `key: value` lines, lists as `[a, b]`, no nesting.
+A plan lives at `.agents/plans/<yyyy-mm-dd>-<topic>/` in the repository that holds most of the work, or in a home
+repository's `plans/<yyyy-mm-dd>-<topic>/` with `primary_repo` naming that code repository. `scripts/plan-status` parses only the frontmatter: flat `key: value` lines, lists as `[a, b]`, no nesting.
 
 ## `plan.md`
 
@@ -36,6 +37,7 @@ deploy_check: "<command that exits 0 when {sha} runs in production>"
 | --- | --- | --- |
 | `topic` | required | Short kebab-case name; used in branch names and thread titles. |
 | `branch_prefix` | `<topic>/` | Default slice branch is `<branch_prefix><NN>-<slug>` in every repository; an explicit slice `branch` overrides it. |
+| `primary_repo` | the repository holding the plan | Absolute path of the code checkout that holds most of the work. Required for a plan outside a repository's `.agents/plans/`; branches, PRs, `deploy_check` and the state key then come from it, so the state key matches the same plan inside that repository. |
 | `repos` | the plan repository | GitHub `owner/name` or GitLab `group[/subgroup]/project` of every repository a slice may open PRs in, on the same host as origin. |
 | `parallel` | `5` | Slices in progress or review at once. A slice with `migration: true` never runs beside another slice. |
 | `order` | numeric order | Delivery order by slice id. Slices not listed run after the listed ones. |

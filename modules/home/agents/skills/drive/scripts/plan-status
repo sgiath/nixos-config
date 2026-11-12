@@ -9,6 +9,10 @@ on GitHub with `gh` or GitLab with `glab`, finds each slice's worker threads wit
 status and writes nothing except what `deploy_check` itself does.
 See ../references/plan-format.md.
 
+Branches, PRs, `deploy_check` and the state key come from the code repository: the one whose `.agents/plans/`
+holds the plan, or `primary_repo` for a plan kept elsewhere (a home repository). Worker threads come from the
+T3 project of the repository that holds the plan.
+
 Ticks: by default it compares slice states, PRs, worker threads, plan and slice files,
 state-directory files and the launch/ask lists with the snapshot recorded by the
 last `--record`. When nothing changed it prints only `{"changed": false, ...}` and the
@@ -244,6 +248,20 @@ def describe_changes(old, new):
     return changes
 
 
+def code_root(plan, plan_dir, plan_root):
+    """The code checkout: `primary_repo` when declared, else the repository whose `.agents/plans/` holds the plan."""
+    declared = plan.get("primary_repo")
+    if declared:
+        path = Path(str(declared)).expanduser()
+        if not path.is_absolute() or not path.is_dir():
+            fail(f"plan.md primary_repo {declared!r} must be the absolute path of an existing code checkout")
+        return Path(run(["git", "rev-parse", "--show-toplevel"], cwd=path).stdout.strip())
+    if plan_dir.parent != plan_root / ".agents" / "plans":
+        fail(f"{plan_dir} is outside {plan_root}/.agents/plans/; plan.md needs `primary_repo: <absolute path of the "
+             "code checkout>`")
+    return plan_root
+
+
 def main():
     args = sys.argv[1:]
     flags = {arg for arg in args if arg.startswith("--")}
@@ -258,7 +276,10 @@ def main():
         fail(f"{plan_file} does not exist")
     plan = frontmatter(plan_file)
 
-    root = Path(run(["git", "rev-parse", "--show-toplevel"], cwd=plan_dir).stdout.strip())
+    # The repository holding the plan owns the driver's T3 project; the code repository owns branches, PRs, deploys
+    # and the state key. They differ for a plan kept in a home repository, which names its code checkout.
+    plan_root = Path(run(["git", "rev-parse", "--show-toplevel"], cwd=plan_dir).stdout.strip())
+    root = code_root(plan, plan_dir, plan_root)
     host, main_repo = repo_slug(root)
     topic = plan.get("topic") or fail("plan.md needs `topic`")
     prefix = plan.get("branch_prefix", f"{topic}/")
@@ -340,7 +361,7 @@ def main():
                 return False
         return True
 
-    workers = worker_threads(root, topic)
+    workers = worker_threads(plan_root, topic)
     for item in slices.values():
         item["workers"] = None if workers is None else workers.get(item["id"], [])
 

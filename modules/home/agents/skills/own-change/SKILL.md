@@ -31,7 +31,10 @@ publication as a completed implementation. A recorded limitation does not waive 
 - Reuse a task worktree already prepared by T3, an invoking driver or an earlier turn. Verify its branch/base
   and task ownership before editing. Otherwise create a new task branch/worktree from the verified remote default
   branch for independent work, or the intended local parent for a requested stack; avoid unrelated local commits.
-- In T3, inspect `t3_worktree_status`. When this thread is in the root checkout, call `t3_worktree_handoff` with
+- When this thread's checkout is a home repository (a checkout that holds no code and whose `AGENTS.md` says code lives in sibling repositories, such as `~/develop/crazyegg/home`), the code repository is a sibling and a
+  handoff would move the thread into a worktree of the home repository. Create the task checkout in the code repository
+  with Worktrunk as below, keep the thread where it is, and use the checkout's absolute path for everything.
+- Otherwise, in T3, inspect `t3_worktree_status`. When this thread is in the root checkout, call `t3_worktree_handoff` with
   the explicit branch/base and a continuation prompt carrying the task, acceptance criteria and remaining steps.
   Use `startFromOrigin:true` for an upstream base and `false` for a local stack parent. This is the last tool call
   of the turn; continue in the rebound workspace next turn. Handoff cannot move an already-attached thread: if

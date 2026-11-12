@@ -6,6 +6,7 @@ The driver launches each slice with this message, filled in. Use absolute plan/s
 /own-change Implement slice <NN> of the plan @<plan-dir>/plan.md: @<plan-dir>/<NN>-<slug>.md
 
 - T3 has already selected the primary task worktree on branch <branch> from the verified remote default branch. Verify the binding and reuse it; do not create another worktree or hand off again. Companion repositories use the same branch name and their own verified remote default base.
+  [Home-repository launch, instead of the line above: this thread stays on the home checkout. The primary task checkout is <absolute checkout path> on branch <branch>, created with Worktrunk from the verified remote default branch. Run every command, edit and delegate there by absolute path; do not hand off or create another checkout for this repository. Companion repositories use the same branch name and their own verified remote default base.]
 - The user's answers to this slice's questions: @<state-dir>/answers/<NN>.md. For tracked artifacts, record them under "Questions before starting" in the slice file in this PR, and move any decision they change into the spec note. For local artifacts, report decisions to the driver; do not modify, copy, commit or publish plan/spec/answer files.
 - Known traps from earlier slices: @<state-dir>/traps.md. Read it before starting.
 - Use skill://verified-work within this slice: validate its checks, implement only the Deliverable, prove the Acceptance gate and relevant integration behavior, and stop at the Stop boundary. Do not create a second delivery plan.
