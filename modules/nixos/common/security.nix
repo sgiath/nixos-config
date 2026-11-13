@@ -63,6 +63,25 @@
         "hmac-sha2-256"
         "umac-128@openssh.com"
       ];
+
+      # Ceres and Vesta reach each other unattended (CrazyEgg home repository
+      # sync, home/bin/inbox peers), so their host keys are known up front.
+      knownHosts = {
+        ceres = {
+          hostNames = [
+            "ceres"
+            "ceres.nebula.sgiath.dev"
+          ];
+          publicKey = "ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAIJqiRijmcUIZlOBesuAGoZJquV2wYOSe00GEaLGgXOKm";
+        };
+        vesta = {
+          hostNames = [
+            "vesta"
+            "vesta.nebula.sgiath.dev"
+          ];
+          publicKey = "ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAIJbclzr8Y1+/RCB5bsgzgZndcAPRCtQBgA8YBc1uEWm5";
+        };
+      };
     };
   };
 }
