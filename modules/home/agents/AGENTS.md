@@ -46,7 +46,8 @@ SSH there.
   substantial redesigns where its visual and UX judgment adds value, including animations and transitions.
   Limit its work to the design and implementation that requires those choices. Routine UI updates, bug fixes,
   investigation, testing, screenshots, review and verification follow the general routing above; UI involvement
-  alone is not a reason to use Fable or spawn a Fable subagent.
+  alone is not a reason to use Fable or spawn a Fable subagent. The one exception in review is the single read-only
+  Fable ship check that runs when review rounds hand disputed or leftover findings to me.
 - Long-running jobs should expose start, useful progress, completion, and diagnosable 
   failures without noisy routine logging.
 - Every wait has a timeout. Wait on builds and downloads with one blocking command or a monitor that

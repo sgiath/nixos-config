@@ -65,6 +65,10 @@ last approved; comment, documentation and format-only fixes need none. A later r
 the ledger with responses and the change since the last round, and checks open ids and changed code only.
 
 Stop when every reviewer approves the current behavior diff, no blocker or should is open and you have no concern
-of your own. When an item stays disputed after two replies, or the budget ends, show both sides in two or three
-lines each and let the user decide; an exhausted budget is not approval. Report the rounds, models, fixed and
-declined findings with reasons, and the diff size before and after.
+of your own. When an item stays disputed after two replies, or the budget ends, first run one ship check per review:
+a read-only Claude `fable-5-2` task at `high` reasoning effort with the original brief, the ledger with both sides
+of every open item, and the current diff. Ask it to call each open item `fix` (must change before this ships) or
+`follow-up` (can ship as is) with a one-line reason, and to give an overall `SHIP` or `HOLD`. Then show both sides
+of each item in two or three lines, with the ship check's call, and let the user decide. The ship check is advice,
+not approval, and neither is an exhausted budget; if it fails or Fable is unavailable, say so and hand over without
+it. Report the rounds, models, fixed and declined findings with reasons, and the diff size before and after.

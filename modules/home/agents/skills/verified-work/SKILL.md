@@ -89,10 +89,12 @@ relaxes routing quotes the user's instruction; a coordinator must not add its ow
 | Independent review of a complicated fix or PR, including production-code correctness and design judgments | Codex with `gpt-6.1-sol` at `high` reasoning effort |
 | Once the handoff is ready: deciding where and how to fix the production code, production design and seam placement, production code, refactoring, existing UI changes that do not require a new design, and turning the handed-over failing test into the committed regression test | Claude with Opus 5.5 (`claude-opus-5-5` in the live catalog) |
 | Creating and designing new UIs or substantial redesigns where visual and UX judgment adds value, including animations and transitions | Claude with `fable-5-2` at `high` reasoning effort |
+| The single ship check when review rounds hand open items to the user ([review rounds](references/independent-review.md#run-review-rounds)) | Claude with `fable-5-2` at `high` reasoning effort |
 
 Use Fable sparingly because it is expensive. Limit its scope to design and implementation that requires those
-design choices. Routine UI updates, bug fixes, investigation, testing, screenshots, review and verification use
-the general Opus/Codex routing; touching a UI does not route a phase or its descendants to Fable.
+design choices, and to the ship check. Routine UI updates, bug fixes, investigation, testing, screenshots, review
+and verification use the general Opus/Codex routing; touching a UI does not route a phase or its descendants to
+Fable.
 
 Codex establishes causes and compares measured alternatives; Claude judges the production change from that
 evidence. Hand work to Claude only when it is ready: the cause is established with evidence, the reproduction
