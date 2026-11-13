@@ -6,6 +6,15 @@
     publicUrl = "https://t3-pallas.sgiath.dev";
   };
 
+  sgiath.work = {
+    crazyegg = {
+      enable = true;
+      # Ceres refreshes at :00 and Vesta at :30; each MFA code works once.
+      awsRefreshMinute = 15;
+    };
+    remote.enable = true;
+  };
+
   sgiath.desktop.wallpaper = ../../../modules/home/desktop/wallpapers/massier.jpg;
 
   # The shared rules bind workspaces to Ceres's outputs, which leaves none for
