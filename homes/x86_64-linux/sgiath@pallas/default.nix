@@ -2,6 +2,7 @@
 {
   services.t3code = {
     enable = true;
+    channel = "nightly";
     publicUrl = "https://t3-pallas.sgiath.dev";
   };
 
