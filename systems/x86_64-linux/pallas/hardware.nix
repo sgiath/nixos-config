@@ -39,8 +39,6 @@
     };
   };
 
-  services.nfs.server.enable = true;
-
   # Same btrfs subvolumes as Ceres and Vesta; reinstall.sh creates them.
   fileSystems = {
     "/" = {
