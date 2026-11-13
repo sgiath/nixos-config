@@ -11,7 +11,6 @@
             "192.168.1.11" = [ "juno1.sgiath" ];
           };
           firewall.enable = false;
-          resolvconf.enable = lib.mkForce false;
         };
 
         users.users.sgiath.extraGroups = [ "networkmanager" ];
@@ -24,6 +23,7 @@
 
       (lib.mkIf (!config.networking.networkmanager.enable) {
         networking = {
+          resolvconf.enable = lib.mkForce false;
           defaultGateway = "192.168.1.1";
           dhcpcd = {
             denyInterfaces = [
