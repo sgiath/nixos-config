@@ -7,8 +7,8 @@ let
       (lua dispatcher)
     ];
   };
-  wpctl = lib.getExe' pkgs.wireplumber "wpctl";
-  brightnessctl = lib.getExe pkgs.brightnessctl;
+  volume = lib.getExe' pkgs.wireplumber "wpctl";
+  brightness = lib.getExe pkgs.brightnessctl;
   # Media keys also work on the lock screen; volume and brightness repeat while held.
   mediaBind = keys: command: repeating: {
     _args = [
@@ -40,13 +40,13 @@ in
 
   wayland.windowManager.hyprland.settings = {
     bind = [
-      (mediaBind "XF86AudioRaiseVolume" "${wpctl} set-volume --limit 1.0 @DEFAULT_AUDIO_SINK@ 5%+" true)
-      (mediaBind "XF86AudioLowerVolume" "${wpctl} set-volume @DEFAULT_AUDIO_SINK@ 5%-" true)
-      (mediaBind "XF86AudioMute" "${wpctl} set-mute @DEFAULT_AUDIO_SINK@ toggle" false)
-      (mediaBind "XF86AudioMicMute" "${wpctl} set-mute @DEFAULT_AUDIO_SOURCE@ toggle" false)
+      (mediaBind "XF86AudioRaiseVolume" "${volume} set-volume --limit 1.0 @DEFAULT_AUDIO_SINK@ 5%+" true)
+      (mediaBind "XF86AudioLowerVolume" "${volume} set-volume @DEFAULT_AUDIO_SINK@ 5%-" true)
+      (mediaBind "XF86AudioMute" "${volume} set-mute @DEFAULT_AUDIO_SINK@ toggle" false)
+      (mediaBind "XF86AudioMicMute" "${volume} set-mute @DEFAULT_AUDIO_SOURCE@ toggle" false)
       # The class keeps keyboard and status LEDs out of reach; desktops without a panel backlight have no target.
-      (mediaBind "XF86MonBrightnessUp" "${brightnessctl} --class=backlight --min-value=1 set +5%" true)
-      (mediaBind "XF86MonBrightnessDown" "${brightnessctl} --class=backlight --min-value=1 set 5%-" true)
+      (mediaBind "XF86MonBrightnessUp" "${brightness} --class=backlight --min-value=1 set +5%" true)
+      (mediaBind "XF86MonBrightnessDown" "${brightness} --class=backlight --min-value=1 set 5%-" true)
 
       (bind "SUPER + SHIFT + C" "hl.dsp.window.close()")
       (bind "SUPER + F" ''hl.dsp.window.float({ action = "toggle" })'')
