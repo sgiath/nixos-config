@@ -131,11 +131,12 @@ in
     backupPrepareCommand = lib.getExe prepare;
     # Append-only: forget/prune would fail here and runs on Ceres instead.
     pruneOpts = [ ];
-    # FIXME: no timer while Vesta's enp1s0 drops ~15% of large packets (the
-    # first upload ran at 0.9 MB/s). Once the link is fixed, restore it to run
-    # after the agent archive's midnight Parquet export:
-    # { OnCalendar = "03:30"; RandomizedDelaySec = "20min"; Persistent = true; }
-    timerConfig = null;
+    # After the agent archive's midnight Parquet export.
+    timerConfig = {
+      OnCalendar = "03:30";
+      RandomizedDelaySec = "20min";
+      Persistent = true;
+    };
   };
 
   systemd.services.restic-backups-offsite = {

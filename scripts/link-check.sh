@@ -55,15 +55,20 @@ check "Vesta -> Hygiea (Nebula)" vesta "$HYGIEA"
 check "Ceres -> router (control)" ceres "$ROUTER"
 check "Ceres -> Hygiea (control)" ceres "$HYGIEA"
 
-# Mbit/s of an upload or download through curl, which both hosts have.
+# Mbit/s of an upload or download through curl, which both hosts have. The
+# command is one string: ssh joins its arguments, so a nested `sh -c` would
+# lose its quoting on Vesta.
 speed() {
-  local where="$1" direction="$2" bps
+  local where="$1" direction="$2" command bps
   if [[ "$direction" == up ]]; then
-    bps="$(${on[$where]} sh -c "head -c $UP_BYTES /dev/zero | curl -sS --max-time 150 -o /dev/null \
-      -w '%{speed_upload}' --data-binary @- https://speed.cloudflare.com/__up" || true)"
+    command="head -c $UP_BYTES /dev/zero | curl -sS --max-time 150 -o /dev/null -w '%{speed_upload}' --data-binary @- https://speed.cloudflare.com/__up"
   else
-    bps="$(${on[$where]} curl -sS --max-time 120 -o /dev/null -w '%{speed_download}' \
-      "https://speed.cloudflare.com/__down?bytes=$DOWN_BYTES" || true)"
+    command="curl -sS --max-time 120 -o /dev/null -w '%{speed_download}' 'https://speed.cloudflare.com/__down?bytes=$DOWN_BYTES'"
+  fi
+  if [[ "$where" == vesta ]]; then
+    bps="$(ssh -o BatchMode=yes "$VESTA" "$command" || true)"
+  else
+    bps="$(sh -c "$command" || true)"
   fi
   awk -v b="${bps:-0}" 'BEGIN { printf "%.1f", b * 8 / 1e6 }'
 }
