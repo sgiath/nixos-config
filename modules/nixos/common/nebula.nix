@@ -11,7 +11,13 @@ let
       ip4 = "10.42.0.2";
       ip6 = "fd51:da00:4788::2";
       trusted = true;
-      lighthouse = [ "${config.sgiath.publicIPv4}:4242" ];
+      # The router forwards UDP 4242 and 443 to Vesta's 4242. Nebula never
+      # relays to a relay, so hosts that can only send to 443 (hotels) need
+      # Vesta's own 443 endpoint.
+      lighthouse = [
+        "${config.sgiath.publicIPv4}:4242"
+        "${config.sgiath.publicIPv4}:443"
+      ];
     };
     # Backup lighthouse/relay, Pi-hole and backup target on Oracle Cloud
     # (systems/aarch64-linux/hygiea); keeps the overlay up while Vesta is down.
