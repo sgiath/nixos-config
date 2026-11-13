@@ -2,6 +2,53 @@
 {
   services.t3code.enable = true;
 
+  sgiath.desktop.wallpaper = ../../../modules/home/desktop/wallpapers/massier.jpg;
+
+  # The shared rules bind workspaces to Ceres's outputs, which leaves none for
+  # eDP-1 and starts the session on workspace 11. Same names, one screen.
+  wayland.windowManager.hyprland.settings.workspace_rule = lib.mkForce (
+    [
+      {
+        workspace = "s[true]";
+        gaps_out = {
+          top = 160;
+          right = 300;
+          bottom = 160;
+          left = 300;
+        };
+      }
+    ]
+    ++
+      lib.imap1
+        (
+          id: name:
+          {
+            workspace = toString id;
+            monitor = "eDP-1";
+            default = id == 1;
+            persistent = true;
+          }
+          // lib.optionalAttrs (name != null) { default_name = name; }
+          // lib.optionalAttrs (id == 10) {
+            gaps_in = 0;
+            gaps_out = 0;
+            no_border = true;
+          }
+        )
+        [
+          "code"
+          "p web"
+          "c web"
+          "r web"
+          null
+          null
+          null
+          "firefox"
+          "email"
+          "comm"
+        ]
+  );
+
   stylix.fonts.sizes = {
     applications = 12;
     desktop = 12;

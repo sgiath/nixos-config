@@ -16,7 +16,7 @@ host_key="$state/ssh_host_ed25519_key"
 repo=$(git -C "$(dirname "$0")" rev-parse --show-toplevel)
 # Only committed work is installed; other sessions may have uncommitted edits in the checkout.
 rev=$(git -C "$repo" rev-parse HEAD)
-flake="git+file://$repo?rev=$rev#nixosConfigurations.pallas"
+flake="git+file://$repo?rev=$rev&lfs=1#nixosConfigurations.pallas"
 
 die() {
   echo "ERROR: $*" >&2

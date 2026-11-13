@@ -1,5 +1,9 @@
 {
   inputs = {
+    # Wallpapers and other images are Git LFS objects; without this a
+    # revision-pinned git+file:// reference fetches the pointer files.
+    self.lfs = true;
+
     nixpkgs-master.url = "github:NixOS/nixpkgs/master";
     nixpkgs.url = "github:NixOS/nixpkgs/nixos-unstable";
     # nixpkgs-stable.url = "github:NixOS/nixpkgs/nixos-26.05";

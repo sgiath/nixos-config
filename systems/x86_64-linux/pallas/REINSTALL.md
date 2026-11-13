@@ -45,7 +45,7 @@ systemd-boot "Windows 11" entry or the firmware boot menu.
 3. **Agent:** build the live ISO from HEAD (the checkout may hold other sessions'
    uncommitted edits) and write it without GPG keys, which this flow does not need:
    ```bash
-   iso=$(nix build --no-link --print-out-paths "git+file://$PWD?rev=$(git rev-parse HEAD)#install-isoConfigurations.live")
+   iso=$(nix build --no-link --print-out-paths "git+file://$PWD?rev=$(git rev-parse HEAD)&lfs=1#install-isoConfigurations.live")
    printf '%s\n' sdX | nix run .#burn-iso -- --no-keys --iso "$iso"/iso/*.iso /dev/sdX
    ```
 4. **Filip, at Pallas:** plug in the stick, power on and press F12 for the boot
