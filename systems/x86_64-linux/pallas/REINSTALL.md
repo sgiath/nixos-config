@@ -2,7 +2,7 @@
 
 Replaces whatever Linux is on Pallas (Omarchy) with this NixOS configuration and
 keeps Windows. The agent on Ceres runs `reinstall.sh` over SSH into the live ISO;
-Filip does only the steps at the notebook. Run every command from `~/nixos` on Ceres.
+sgiath does only the steps at the notebook. Run every command from `~/nixos` on Ceres.
 
 ## What the script does
 
@@ -35,43 +35,43 @@ systemd-boot "Windows 11" entry or the firmware boot menu.
 
 ## Runbook
 
-1. **Filip, in Windows:** save the BitLocker recovery key
+1. **sgiath, in Windows:** save the BitLocker recovery key
    (<https://account.microsoft.com/devices/recoverykey>, or
    `manage-bde -protectors -get C:` in an admin shell). Then suspend BitLocker
    for the next reboots: `manage-bde -protectors -disable C: -RebootCount 3`.
    Changing Secure Boot or the boot order otherwise triggers the recovery screen.
    Copy anything you still need off Omarchy; it will be deleted.
-2. **Filip:** plug a USB stick (4 GB or more; it is overwritten) into Ceres.
+2. **sgiath:** plug a USB stick (4 GB or more; it is overwritten) into Ceres.
 3. **Agent:** build the live ISO from HEAD (the checkout may hold other sessions'
    uncommitted edits) and write it without GPG keys, which this flow does not need:
    ```bash
    iso=$(nix build --no-link --print-out-paths "git+file://$PWD?rev=$(git rev-parse HEAD)&lfs=1#install-isoConfigurations.live")
    printf '%s\n' sdX | nix run .#burn-iso -- --no-keys --iso "$iso"/iso/*.iso /dev/sdX
    ```
-4. **Filip, at Pallas:** plug in the stick, power on and press F12 for the boot
+4. **sgiath, at Pallas:** plug in the stick, power on and press F12 for the boot
    menu (F1 or Del opens the firmware setup). If the stick does not boot, disable
    Secure Boot in the firmware setup. Boot the NixOS live entry.
-5. **Filip:** the console logs in as `sgiath`. Run `nmtui` → "Activate a
+5. **sgiath:** the console logs in as `sgiath`. Run `nmtui` → "Activate a
    connection" → your Wi-Fi (or plug in Ethernet). Run `ip -br a` and send the
    agent the IPv4 address.
 6. **Agent:** `systems/x86_64-linux/pallas/reinstall.sh inspect <ip>`. Report the
    layout and the partitions to delete: every Omarchy partition (Linux
    filesystem, LUKS, swap, and its own ESP if it has one). If Omarchy's boot
    files (Limine, `EFI/Linux`) live on the Windows ESP, list them too.
-7. **Filip:** confirm the partitions to delete.
+7. **sgiath:** confirm the partitions to delete.
 8. **Agent:** `systems/x86_64-linux/pallas/reinstall.sh partition <ip> /dev/nvmeXn1 <n>...`.
    If Omarchy used the Windows ESP, delete only its own files there (never
    `EFI/Microsoft`, and `EFI/BOOT` only if it holds Limine).
 9. **Agent:** `systems/x86_64-linux/pallas/reinstall.sh install <ip>`. Then remove
    Omarchy's firmware boot entry (`sudo efibootmgr -b XXXX -B` over SSH) and check
    that "Linux Boot Manager" comes first in the boot order.
-10. **Filip:** reboot, remove the stick, pick NixOS in systemd-boot, log in and
+10. **sgiath:** reboot, remove the stick, pick NixOS in systemd-boot, log in and
     connect Wi-Fi with the "Wi-Fi" launcher entry.
 11. **Agent:** `systems/x86_64-linux/pallas/reinstall.sh verify pallas.nebula.sgiath.dev`
     (the laptop firewall closes SSH on the LAN; only Nebula gets in): no failed
     units, `/run/secrets` populated, Nebula up, NVIDIA driver loaded. Then
     `rm -rf "$XDG_RUNTIME_DIR/pallas-install"`.
-12. **Filip:** reboot and pick "Windows 11". If that entry fails, pick the "EFI
+12. **sgiath:** reboot and pick "Windows 11". If that entry fails, pick the "EFI
     Shell" entry instead, run `map -c`, then `ls <handle>:\EFI` for each `HD`
     handle until one lists `Microsoft`; send the agent that handle (it goes into
     `efiDeviceHandle` in `hardware.nix`). Meanwhile Windows boots from the F12

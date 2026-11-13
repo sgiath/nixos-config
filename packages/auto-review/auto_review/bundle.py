@@ -56,9 +56,9 @@ def brief(*, row: dict, repo: dict, change: Change, run_dir: Path, me: str, thre
     forge = FORGES[row["forge"]]
     notes = LOCAL_NOTES / f"{Path(repo['checkout']).name}.md"
     local_notes = (
-        f"- `{notes}`: Filip's notes about this repository."
+        f"- `{notes}`: sgiath's notes about this repository."
         if notes.exists()
-        else "- Filip keeps no local notes for this repository."
+        else "- sgiath keeps no local notes for this repository."
     )
     values = {
         **forge,

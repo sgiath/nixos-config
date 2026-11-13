@@ -1,10 +1,10 @@
-"""Filip's threads after the comment: watch them for replies and fixes, apply the reviewer's judgment of each, and
+"""sgiath's threads after the comment: watch them for replies and fixes, apply the reviewer's judgment of each, and
 settle the review once every thread is fixed or answered.
 
 A thread is tracked from the moment the service posts it (store `threads`). While it is `open` or `disputed` the
-poll reads it; a reply by anyone but Filip, or a new head that no normal review will look at, queues a `follow_up`
+poll reads it; a reply by anyone but sgiath, or a new head that no normal review will look at, queues a `follow_up`
 review at the MR's current head, and every review of a new head judges the open threads too. `fixed` and `answered`
-threads get a short reply and are resolved; `disputed` ones wait for Filip's decision in the UI.
+threads get a short reply and are resolved; `disputed` ones wait for sgiath's decision in the UI.
 
 The service's own automated replies are not evidence: `notes()` below always skips them, so a reply the service
 posted is never mistaken for an answer and never changes which reply it would post. Notes are compared by id, author
@@ -47,7 +47,7 @@ class Threads:
 
     def scan(self, settings: dict) -> None:
         """For every MR with an open or disputed thread: close tracking when the MR is closed, settle or stop watching
-        threads resolved on the forge, stop follow-ups of an old head, mark Filip's own replies seen, and queue one
+        threads resolved on the forge, stop follow-ups of an old head, mark sgiath's own replies seen, and queue one
         follow-up for new replies by others, or for a new head no normal review will look at, unless a review of
         the MR is active (it, or the next poll, judges them)."""
         for repo_id, number in self.engine.store.watched():
@@ -83,7 +83,7 @@ class Threads:
                 continue
             others = [n for n in notes(thread, me) if n.author.casefold() != me.casefold()]
             if digest(others) == (item["seen"] or ""):
-                continue  # Filip's own notes only count as seen
+                continue  # sgiath's own notes only count as seen
             if not others:  # the replies were deleted
                 store.update_thread(repo_id, number, item["marker"], seen=None, updated_at=self._now())
             elif not active:
@@ -162,14 +162,14 @@ class Threads:
 
     def apply(self, row: dict, verdict: Verdict, threads: list[Thread], me: str, *, record_only: bool) -> Applied:
         """Act on each judgment whose thread is unchanged since the review read it: same tracked status (a decision
-        Filip made meanwhile wins) and same notes (a new or edited note is judged again by the next follow-up).
-        fixed/answered -> reply once and resolve; open -> seen; disputed -> wait for Filip with the proposed reply;
+        sgiath made meanwhile wins) and same notes (a new or edited note is judged again by the next follow-up).
+        fixed/answered -> reply once and resolve; open -> seen; disputed -> wait for sgiath with the proposed reply;
         each marks the other people's notes seen and drops what an earlier failed settlement intended. A failed
-        settling write leaves the thread disputed for Filip, remembering what was intended. `record_only` (dry run,
+        settling write leaves the thread disputed for sgiath, remembering what was intended. `record_only` (dry run,
         or a verdict that reported injection or left files unread) stores the reasoning and writes nothing.
 
         Each judgment acts once: a thread records the attempt that judged it (`judged_by`), and a publish retry of
-        that attempt only reports what it left, so a later decision of Filip's stands. A skipped stale judgment bumps
+        that attempt only reports what it left, so a later decision of sgiath's stands. A skipped stale judgment bumps
         the thread's `skips`, which keys a new follow-up."""
         engine, store = self.engine, self.engine.store
         listed_path = engine.run_dir(row) / "mr/own_threads.json"
@@ -308,12 +308,12 @@ class Threads:
             return None
         return row
 
-    # Filip's decisions on a disputed thread (explicit actions: like Post anyway they write even in dry run)
+    # sgiath's decisions on a disputed thread (explicit actions: like Post anyway they write even in dry run)
 
     def accept(self, key: tuple, reply: str | None) -> None:
         """Accept the author's answer: reply if text is given (once), resolve, and count the thread as fixed."""
         item, forge, thread = self._disputed(key, write=True)
-        if thread:  # a resolve whose answer is lost still counts, while the notes are those Filip accepted
+        if thread:  # a resolve whose answer is lost still counts, while the notes are those sgiath accepted
             self.engine.store.update_thread(*key, pending=f"accepted@{digest(notes(thread, self._me(item)))}")
         if reply and reply.strip():
             operation = f"{item['thread_id']}:accept:{(item['seen'] or '')[:12]}"
@@ -327,7 +327,7 @@ class Threads:
         self.reconsider(item["repo"], item["number"])
 
     def reply(self, key: tuple, body: str) -> None:
-        """Post Filip's reply; the thread stays open and is watched again."""
+        """Post sgiath's reply; the thread stays open and is watched again."""
         from .engine import ActionError
 
         if not body or not body.strip():

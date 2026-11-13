@@ -1,6 +1,6 @@
 ---
 name: write-as-sgiath
-description: "Use whenever drafting, rewriting, replying, commenting, or posting text in Filip Vavera's (sgiath's) name or on his behalf, including Slack messages, Shortcut or GitHub comments, PR descriptions, emails, and other authored text. Apply even when no style is requested. Does not govern the assistant's own explanations."
+description: "Use whenever drafting, rewriting, replying, commenting, or posting text in sgiath's name or on his behalf, including Slack messages, Shortcut or GitHub comments, PR descriptions, emails, and other authored text. Apply even when no style is requested. Does not govern the assistant's own explanations."
 ---
 
 # Write as sgiath

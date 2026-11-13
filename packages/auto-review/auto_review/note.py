@@ -70,7 +70,7 @@ def review_key(row: dict) -> str:
 
 
 def reply_body(me: str, text: str, operation: str) -> str:
-    """An automated reply in one of Filip's threads: the short note, the text, and a hidden marker naming the
+    """An automated reply in one of sgiath's threads: the short note, the text, and a hidden marker naming the
     operation (thread and the evidence judged), so a reply whose answer was lost is not posted twice."""
     return f"{REPLY_NOTE.format(reviewer=me)}\n\n{text}\n\n{reply_marker(operation)}"
 

@@ -113,9 +113,9 @@ class Finding:
 
 @dataclass(frozen=True)
 class Judgment:
-    """The reviewer's view of one of Filip's open threads: `fixed`, `answered` (the reply explains it), `open`
+    """The reviewer's view of one of sgiath's open threads: `fixed`, `answered` (the reply explains it), `open`
     (still a problem, no new argument) or `disputed` (the reply does not convince). `reply` is the text to post
-    (fixed/answered) or to propose to Filip (disputed)."""
+    (fixed/answered) or to propose to sgiath (disputed)."""
 
     thread_id: str
     status: str
@@ -137,7 +137,7 @@ class Verdict:
 @dataclass(frozen=True)
 class Placed:
     """A finding and what the decision does with it: `post`, `below`, `already_open`, `already_resolved`,
-    `settled` (its thread is one of Filip's that was fixed or answered), `unanchored`, `not_posted`."""
+    `settled` (its thread is one of sgiath's that was fixed or answered), `unanchored`, `not_posted`."""
 
     finding: Finding
     state: str

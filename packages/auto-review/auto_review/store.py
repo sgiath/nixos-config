@@ -1,5 +1,5 @@
 """SQLite state: reviews (one row per diff key and kind), their findings per attempt, the threads the service
-opened in Filip's name, provider limits and events."""
+opened in sgiath's name, provider limits and events."""
 
 import json
 import sqlite3

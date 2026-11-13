@@ -1,6 +1,6 @@
 """Read a review thread's verdict and decide what to post.
 
-Filip's rule: "Rate each bug from 1 to 10 on how often it would happen and how bad it would be. If the two scores
+sgiath's rule: "Rate each bug from 1 to 10 on how often it would happen and how bad it would be. If the two scores
 multiplied are below the threshold, do not report it." The product is recomputed here; the thread's own arithmetic
 and opinion of the outcome are not trusted.
 """
@@ -66,7 +66,7 @@ def decide(verdict: Verdict, *, threshold: int, index: DiffIndex, threads: list[
     """Place every finding:
 
     - `below` when `frequency * severity < threshold`;
-    - `settled` when its `existing_thread_id` is one of Filip's threads that was fixed or answered (`settled`):
+    - `settled` when its `existing_thread_id` is one of sgiath's threads that was fixed or answered (`settled`):
       decided, never posted again and not blocking;
     - `already_open` / `already_resolved` when its `existing_thread_id` names an unresolved / resolved thread (not
       posted again, but it still reaches the threshold, so it blocks approval), `unanchored` when it names no known

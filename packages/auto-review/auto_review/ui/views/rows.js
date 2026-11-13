@@ -184,7 +184,7 @@ export function discoveredRow(d) {
 }
 
 // Edited replies by thread marker: a section re-render (another row changed, a pending action elsewhere) rebuilds
-// every row, and must not throw away what Filip typed.
+// every row, and must not throw away what sgiath typed.
 const drafts = new Map();
 
 // A reply the reviewer found inadequate: its reasoning, the reply it proposes (editable), and the three decisions.

@@ -56,7 +56,7 @@ class Launcher:
         forge = engine.forges[row["forge"]]
         me = engine.me(row["forge"])
         change = forge.change(row["path"], row["number"], me)
-        follow_up = row["kind"] == "follow_up"  # judges Filip's own threads, so the review request does not matter
+        follow_up = row["kind"] == "follow_up"  # judges sgiath's own threads, so the review request does not matter
         if reason := moved(row, change) or (None if follow_up else _skip(change, repo, me)):
             if row["status"] == "launching":
                 engine.fail(row, f"before launch: {reason}")

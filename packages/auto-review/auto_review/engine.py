@@ -85,7 +85,7 @@ class Engine:
            change: a review whose MR closed, moved head/base or became ineligible is cancelled with that reason.
            (launch.Launcher)
 
-        4b. Before launching: per MR with an open or disputed thread of Filip's, queue a `follow_up` for new
+        4b. Before launching: per MR with an open or disputed thread of sgiath's, queue a `follow_up` for new
            replies (threads.Threads.scan).
 
         Errors are contained per repo and per review; each is recorded as an event and the tick goes on.
@@ -151,7 +151,7 @@ class Engine:
         self.threads.accept(key, reply)
 
     def reply_thread(self, key: tuple, body: str) -> None:
-        """Post Filip's reply on a disputed thread; it stays open."""
+        """Post sgiath's reply on a disputed thread; it stays open."""
         self.threads.reply(key, body)
 
     def dismiss_thread(self, key: tuple) -> None:
@@ -358,7 +358,7 @@ class Engine:
             if review_id:
                 self.record("info", f"queued {_ref_change(change)} @{change.head_sha[:8]}", review_id=review_id)
             for other in self.store.for_mr(repo_id, number):
-                # A new review also judges Filip's threads, so it replaces a follow-up of the same head.
+                # A new review also judges sgiath's threads, so it replaces a follow-up of the same head.
                 if other["status"] in ACTIVE and (
                     _key(other) != change.key or (review_id and other["kind"] == "follow_up")
                 ):

@@ -184,7 +184,7 @@ class App:
         self.worker.submit(name, review_id)
 
     def threads(self) -> list[dict]:
-        """Threads waiting for Filip's decision, newest judgment first."""
+        """Threads waiting for sgiath's decision, newest judgment first."""
         result = []
         for t in self.store.disputed():
             reviews = self.store.for_mr(t["repo"], t["number"])

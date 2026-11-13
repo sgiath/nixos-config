@@ -1,6 +1,6 @@
 # auto-review
 
-Reviews the merge requests and pull requests that ask for Filip's review, in T3 threads, and posts the findings
+Reviews the merge requests and pull requests that ask for sgiath's review, in T3 threads, and posts the findings
 that reach a threshold as line comments in his name. One user service (`auto-review.service`) runs the poller and a
 local web UI on `127.0.0.1` (port `services.auto-review.port`, default 8787).
 
@@ -35,7 +35,7 @@ It replaces the Spain G2N sprint poller in `~/.agents/local/spain-review/`, whic
    eligible. Each finding at or above the threshold is posted as one inline discussion on its diff line (GitLab) or
    as one review comment on its diff line (GitHub), topped by the note template. A finding the agent ties to an
    existing open thread is not posted again. A finding without a valid diff line is never posted; it is shown in the
-   UI as *unanchored*. Nothing is ever posted as a general MR comment. On GitLab, Filip's reviewer state then
+   UI as *unanchored*. Nothing is ever posted as a general MR comment. On GitLab, sgiath's reviewer state then
    becomes *requested changes* when a posted or already open finding scores at least `request_changes_threshold`,
    else *left comments* when anything was posted (skipped while he has unpublished drafts). GitHub gets no review
    state: a `REQUEST_CHANGES` review needs a top-level body, which would be a general comment.
@@ -54,7 +54,7 @@ launching and posting; running threads are still monitored.
 Every comment the service posts is tracked (SQLite `threads`, keyed by its hidden marker) until it is settled.
 
 - **Watching.** Each poll reads the MRs that have an `open` or `disputed` thread. A thread someone resolved on the
-  forge becomes `resolved_elsewhere` and is no longer watched; a closed or merged MR closes its threads. Filip's own
+  forge becomes `resolved_elsewhere` and is no longer watched; a closed or merged MR closes its threads. sgiath's own
   replies only count as seen. A new or edited reply by anyone else queues one `follow_up` review at the MR's current
   head (`kind: follow_up`, keyed by the newest reply's id and a digest of the thread's notes, status and count of
   skipped stale judgments, so the same replies never queue twice, while a follow-up left stale is redone), unless a
@@ -62,20 +62,20 @@ Every comment the service posts is tracked (SQLite `threads`, keyed by its hidde
   is active; so does a new head that no normal review will look at (review no longer requested). Follow-ups do not
   need the review request; they share the queue, limits, pause, quiet hours, cancel and retry with reviews. Only one
   review of an MR runs at a time, whatever its kind; a new head or a newly claimed normal review supersedes a
-  follow-up. The service's own replies (by Filip's account, ending in the reply marker) are never counted as a reply.
+  follow-up. The service's own replies (by sgiath's account, ending in the reply marker) are never counted as a reply.
 - **Judging.** A follow-up (`prompts/follow_up.md`) only judges threads; every review of a new head also judges
   them (`prompts/threads.md` in both). The run directory gets `mr/own_threads.json` (open/disputed threads with all
   their notes) and `mr/settled_threads.json`; the verdict's `threads` must judge each listed thread once as
-  `fixed`, `answered`, `open` or `disputed`, with reasoning and, except for `open`, a reply in Filip's voice. A launch
+  `fixed`, `answered`, `open` or `disputed`, with reasoning and, except for `open`, a reply in sgiath's voice. A launch
   retried after a lost response keeps the snapshot the first launch wrote, since T3 may already run an agent on it.
 - **Acting.** A judgment is applied only if the thread is unchanged since the review read it (same notes, compared by
-  id, author and body, and same status): a new or edited reply is judged by the next follow-up, and a decision Filip
+  id, author and body, and same status): a new or edited reply is judged by the next follow-up, and a decision sgiath
   made meanwhile wins; a skipped judgment queues a new follow-up. Each judgment acts once: a publish retry of the same
-  attempt (e.g. after a failed post) only reports what it left, so Filip's later decision stands and a dispute still
+  attempt (e.g. after a failed post) only reports what it left, so sgiath's later decision stands and a dispute still
   ends the review `needs_attention` with a notification. `fixed`/`answered`: the reply is posted in the thread (short note on top, hidden marker naming
   the thread and a digest of the judged notes, so the same notes never get two replies), then the thread is resolved; from then on the thread counts as fixed, and a
   later finding tied to it is `settled` (not posted, not blocking). `open`: nothing is written. `disputed`: nothing is
-  written; the review ends `needs_attention`, Filip is notified, and the UI's *your decision* section shows the
+  written; the review ends `needs_attention`, sgiath is notified, and the UI's *your decision* section shows the
   reasoning and the proposed reply, which he can send (thread stays open), accept the author's answer (resolve; it
   counts as fixed) or keep open. These decisions are explicit actions and, like *Post anyway*, write even in dry run.
   A failed reply or resolve turns the thread `disputed` with the error, so it lands in the same section; a resolve
@@ -250,7 +250,7 @@ The item above plus `summary` (the agent's), `not_reviewed`, `injection_attempts
 ```
 
 Finding `state`: `posted`, `would_post` (dry run), `below` (under threshold), `already_open`, `settled` (tied to one
-of Filip's threads that was fixed, answered or accepted), `unanchored`,
+of sgiath's threads that was fixed, answered or accepted), `unanchored`,
 `not_posted` (held: the MR changed before posting, or the reviewer reported text aimed at it).
 
 ### Actions
@@ -261,13 +261,13 @@ of Filip's threads that was fixed, answered or accepted), `unanchored`,
   ("post anyway"), then set the GitLab review state as a normal post would; refused with `409` when the MR head or
   base moved since the review.
 - `POST /api/poll`: poll now.
-- `POST /api/threads/accept|reply|dismiss` with `{"repo", "number", "marker", "text"}`: Filip's decision on a disputed
+- `POST /api/threads/accept|reply|dismiss` with `{"repo", "number", "marker", "text"}`: sgiath's decision on a disputed
   thread: accept the answer (optional `text` is replied first, then the thread is resolved), send `text` as his reply
   (stays open), or keep it open. `409` unless the thread is disputed, or while paused (accept, reply).
 
 ### `GET /api/threads`
 
-Disputed threads waiting for Filip: `repo`, `number`, `marker`, `review_id`, `finding_id`, `title`, `score`,
+Disputed threads waiting for sgiath: `repo`, `number`, `marker`, `review_id`, `finding_id`, `title`, `score`,
 `comment_url`, `reasoning`, `proposed_reply`, `updated_at`, `mr_url`, `mr_title`.
 
 ### `GET /api/waiting`

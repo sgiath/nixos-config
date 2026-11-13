@@ -98,7 +98,7 @@ class GitLab:
         self._set_state(path, change, "requested_changes")
 
     def _set_state(self, path: str, change: Change, state: str) -> None:
-        """Publishing with no drafts only sets the state; with drafts pending it would publish Filip's drafts too."""
+        """Publishing with no drafts only sets the state; with drafts pending it would publish sgiath's drafts too."""
         base = f"{_project(path)}/merge_requests/{change.number}"
         if self._get_all(f"{base}/draft_notes"):
             return

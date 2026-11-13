@@ -42,7 +42,7 @@ stdenvNoCC.mkDerivation {
   '';
 
   meta = {
-    description = "Review the MRs and PRs that request Filip's review in T3 threads";
+    description = "Review the MRs and PRs that request sgiath's review in T3 threads";
     mainProgram = "auto-review";
   };
 }
