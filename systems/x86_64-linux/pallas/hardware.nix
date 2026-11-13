@@ -24,7 +24,9 @@
       "usb_storage"
       "sd_mod"
     ];
-    kernelPackages = pkgs.linuxPackages_zen;
+    # Zen 7.3.4 panics in bh_worker (NULL dereference) under network IRQs;
+    # the vanilla 7.3.4 of the live ISO runs on this notebook.
+    kernelPackages = pkgs.linuxPackages_latest;
     # AMD Zen sensors
     extraModulePackages = [ config.boot.kernelPackages.zenpower ];
     kernelModules = [ "kvm-amd" ];
