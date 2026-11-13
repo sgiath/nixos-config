@@ -8,6 +8,7 @@ in
     ./hardware.nix
     ./disko.nix
     ./hygiea-watchdog.nix
+    ./jetkvm-tls.nix
     ./notify.nix
     ./offsite-backup.nix
     ./services.nix

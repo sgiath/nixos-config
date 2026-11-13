@@ -46,7 +46,7 @@
           (lib.getExe config.programs.chromium.finalPackage)
           "--user-data-dir=${config.xdg.dataHome}/jetkvm-browser"
           "--webrtc-ip-handling-policy=default_public_and_private_interfaces"
-          "--app=http://${name}.${osConfig.sgiath.nebula.domain}/"
+          "--app=https://${name}.${osConfig.sgiath.nebula.domain}/"
         ];
         icon = "computer";
         categories = [ "Network" ];
