@@ -32,7 +32,11 @@ ssh_opts=(-o StrictHostKeyChecking=accept-new -o "UserKnownHostsFile=$state/know
 
 # Runs the bash script on stdin as root on the target, with the given arguments.
 remote() {
-  ssh "${ssh_opts[@]}" "sgiath@$host" sudo bash -s -- "$@"
+  # ssh joins its arguments into one string for the remote shell; quote each so newlines survive.
+  local cmd
+  printf -v cmd '%q ' sudo bash -s -- "$@"
+  # shellcheck disable=SC2029 # expanded and quoted here on purpose
+  ssh "${ssh_opts[@]}" "sgiath@$host" "$cmd"
 }
 
 # Filesystem identifiers come from hardware.nix, so the new filesystems match the built system.
