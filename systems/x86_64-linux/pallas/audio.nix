@@ -53,4 +53,17 @@ in
   };
 
   powerManagement.resumeCommands = "${pkgs.coreutils}/bin/timeout 60s ${initialize}";
+
+  # After the sequence the codec reports a microphone in the headset jack
+  # whether or not one is plugged in, and the jack input (Mic2) outranks the
+  # internal digital microphone (Mic1) on route priority. Rank the internal
+  # one higher so dictation keeps using it.
+  services.pipewire.wireplumber.extraConfig."51-pallas-microphone" = {
+    "monitor.alsa.rules" = [
+      {
+        matches = [ { "node.name" = "alsa_input.pci-0000_65_00.6.HiFi__Mic1__source"; } ];
+        actions.update-props."priority.session" = 2100;
+      }
+    ];
+  };
 }
