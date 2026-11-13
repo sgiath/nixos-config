@@ -10,8 +10,9 @@ Filip does only the steps at the notebook. Run every command from `~/nixos` on C
   system partition, firmware boot entries, network.
 - `partition <disk> <n>...`: deletes the given partitions and creates, in the
   largest free block, a 1 GiB ESP, a swap partition (`PALLAS_SWAP`, default 16G)
-  and an ext4 root. The filesystems get the UUIDs from `hardware.nix`, so the
-  configuration needs no change. It refuses Windows partition types, NTFS and
+  and a btrfs root with the `root`, `home` and `nix/store` subvolumes Ceres and
+  Vesta use. The filesystems get the UUIDs from `hardware.nix`, so the
+  configuration needs no change. `mount` mounts what `hardware.nix` declares. It refuses Windows partition types, NTFS and
   BitLocker volumes, and any ESP that contains the Windows boot manager.
 - `install`: builds the pallas system from the committed HEAD on Ceres, writes the pre-generated SSH
   host key to the target (so SOPS secrets decrypt on first boot), copies the

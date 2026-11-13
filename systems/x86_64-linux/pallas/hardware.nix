@@ -39,10 +39,36 @@
 
   services.nfs.server.enable = true;
 
+  # Same btrfs subvolumes as Ceres and Vesta; reinstall.sh creates them.
   fileSystems = {
     "/" = {
       device = "/dev/disk/by-uuid/fa2b3be5-2c67-430e-9a96-4872f006c87f";
-      fsType = "ext4";
+      fsType = "btrfs";
+      options = [
+        "subvol=/root"
+        "compress=zstd"
+        "noatime"
+      ];
+    };
+
+    "/home" = {
+      device = "/dev/disk/by-uuid/fa2b3be5-2c67-430e-9a96-4872f006c87f";
+      fsType = "btrfs";
+      options = [
+        "subvol=/home"
+        "compress=zstd"
+        "noatime"
+      ];
+    };
+
+    "/nix/store" = {
+      device = "/dev/disk/by-uuid/fa2b3be5-2c67-430e-9a96-4872f006c87f";
+      fsType = "btrfs";
+      options = [
+        "subvol=/nix/store"
+        "compress=zstd"
+        "noatime"
+      ];
     };
 
     "/boot" = {

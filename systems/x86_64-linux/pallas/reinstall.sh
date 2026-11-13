@@ -49,15 +49,25 @@ identifiers() {
   swap_uuid=${swap_uuid#/dev/disk/by-uuid/}
 }
 
+# Mounts every local filesystem from hardware.nix under /mnt; attribute order puts parents first.
 mount_target() {
   identifiers
-  remote "$root_uuid" "$esp_uuid" "$swap_uuid" <<'EOF'
+  local mounts
+  # shellcheck disable=SC2016 # Nix expression, not shell
+  mounts=$(nix eval --raw "$flake.config.fileSystems" --apply '
+    fs: builtins.concatStringsSep "\n" (
+      map (mp: let f = fs.${mp}; in "${mp} ${f.device} ${f.fsType} ${builtins.concatStringsSep "," f.options}")
+        (builtins.filter (mp: fs.${mp}.fsType != "nfs") (builtins.attrNames fs))
+    )')
+  remote "$mounts" "$swap_uuid" <<'EOF'
 set -euo pipefail
 udevadm settle
-mountpoint -q /mnt || mount "/dev/disk/by-uuid/$1" /mnt
-mkdir -p /mnt/boot
-mountpoint -q /mnt/boot || mount -o umask=0077 "/dev/disk/by-uuid/$2" /mnt/boot
-swapon --show=UUID --noheadings | grep -qx "$3" || swapon "/dev/disk/by-uuid/$3"
+while read -r mp dev type opts; do
+  target=/mnt${mp%/}
+  mkdir -p "$target"
+  mountpoint -q "$target" || mount -t "$type" -o "$opts" "$dev" "$target"
+done <<<"$1"
+swapon --show=UUID --noheadings | grep -qx "$2" || swapon "/dev/disk/by-uuid/$2"
 findmnt -R /mnt
 swapon --show
 EOF
@@ -160,8 +170,15 @@ boot=/dev/disk/by-partlabel/pallas-boot
 wipefs -a "$boot" /dev/disk/by-partlabel/pallas-swap /dev/disk/by-partlabel/pallas-root
 mkfs.vfat -F 32 -n NIXBOOT -i "${esp_uuid//-/}" "$boot"
 mkswap -L swap -U "$swap_uuid" /dev/disk/by-partlabel/pallas-swap
-mkfs.ext4 -q -F -L nixos -U "$root_uuid" /dev/disk/by-partlabel/pallas-root
+mkfs.btrfs -q -f -L nixos -U "$root_uuid" /dev/disk/by-partlabel/pallas-root
 udevadm settle
+# Subvolumes as named in hardware.nix (subvol=/root, /home, /nix/store).
+top=$(mktemp -d)
+mount /dev/disk/by-partlabel/pallas-root "$top"
+mkdir "$top/nix"
+btrfs subvolume create "$top/root" "$top/home" "$top/nix/store"
+umount "$top"
+rmdir "$top"
 for id in "$root_uuid" "$esp_uuid" "$swap_uuid"; do
   [ "$(blkid -U "$id" | wc -l)" -eq 1 ] || { echo "UUID $id is not unique" >&2; exit 1; }
 done
