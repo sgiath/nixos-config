@@ -1,6 +1,9 @@
 { config, lib, ... }:
 {
-  services.t3code.enable = true;
+  services.t3code = {
+    enable = true;
+    publicUrl = "https://t3-pallas.sgiath.dev";
+  };
 
   sgiath.desktop.wallpaper = ../../../modules/home/desktop/wallpapers/massier.jpg;
 

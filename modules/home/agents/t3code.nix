@@ -157,6 +157,21 @@ in
       ];
     })
 
+    # The desktop app would start its own server on ~/.t3/userdata, which the
+    # user service below already owns, and fail; it connects to that server
+    # instead (paired once). The rest of the file stays app-owned.
+    (lib.mkIf (cfg.enable && config.sgiath.agents.enable && config.sgiath.roles.desktop.enable) {
+      home.activation.t3codeDesktopUsesService = lib.hm.dag.entryAfter [ "writeBoundary" ] ''
+        settings="$HOME/.t3/userdata/desktop-settings.json"
+        current='{}'
+        [[ -f $settings ]] && current=$(cat "$settings")
+        if [[ $(${lib.getExe pkgs.jq} .localEnvironmentEnabled <<<"$current") != false ]]; then
+          run mkdir -p "$(dirname "$settings")"
+          ${lib.getExe pkgs.jq} -c '.localEnvironmentEnabled = false' <<<"$current" | run tee "$settings" >/dev/null
+        fi
+      '';
+    })
+
     (lib.mkIf cfg.enable {
       home.packages = [ cli ];
 
