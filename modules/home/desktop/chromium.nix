@@ -1,6 +1,7 @@
 {
   config,
   lib,
+  osConfig,
   pkgs,
   ...
 }:
@@ -32,6 +33,25 @@
         "--fingerprinting-client-rects-noise"
       ];
     };
+
+    # One launcher per JetKVM in the Nebula peers table. ungoogled-chromium
+    # hides every local address from WebRTC, so the KVM's video connection
+    # never forms; only this separate profile exposes them, the main profile
+    # keeps the private default.
+    xdg.desktopEntries = lib.mapAttrs' (
+      name: _:
+      lib.nameValuePair name {
+        name = "KVM ${lib.removePrefix "kvm-" name}";
+        exec = lib.concatStringsSep " " [
+          (lib.getExe config.programs.chromium.finalPackage)
+          "--user-data-dir=${config.xdg.dataHome}/jetkvm-browser"
+          "--webrtc-ip-handling-policy=default_public_and_private_interfaces"
+          "--app=http://${name}.${osConfig.sgiath.nebula.domain}/"
+        ];
+        icon = "computer";
+        categories = [ "Network" ];
+      }
+    ) (lib.filterAttrs (name: _: lib.hasPrefix "kvm-" name) osConfig.sgiath.nebula.peers);
 
     # open PDF in Chromium
     home.activation.setChromiumAsPdfHandler = config.lib.dag.entryAfter [ "writeBoundary" ] ''
