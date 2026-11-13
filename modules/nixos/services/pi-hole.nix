@@ -15,11 +15,17 @@ let
   # upstream and IPv6 clients get Cloudflare where the name is proxied. Hygiea
   # serves no vhosts, so its Pi-hole answers these names consistently from
   # upstream (Cloudflare A and HTTPS records together).
+  # The CrazyEgg development vhost answers only loopback clients: every developer
+  # machine runs its own ce-local-infra and needs these names on 127.0.0.1, as
+  # public DNS has them. Publishing them here sent other hosts to Vesta.
+  localOnlyVhosts = [ "crazyeggdev.com" ];
   publicNames = lib.subtractLists (map (name: "${name}.sgiath.dev") nebula.services) (
     lib.concatLists (
       lib.mapAttrsToList (
         name: vhost:
-        lib.optionals (vhost.onlySSL || vhost.addSSL || vhost.forceSSL) ([ name ] ++ vhost.serverAliases)
+        lib.optionals (
+          (vhost.onlySSL || vhost.addSSL || vhost.forceSSL) && !(lib.elem name localOnlyVhosts)
+        ) ([ name ] ++ vhost.serverAliases)
       ) config.services.nginx.virtualHosts
     )
   );
