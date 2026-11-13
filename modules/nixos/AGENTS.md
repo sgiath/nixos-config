@@ -10,7 +10,7 @@ Role-based NixOS modules. Snowfall imports every `<dir>/default.nix` into every 
 | --- | --- | --- |
 | Baseline user/nix/boot | `common/users.nix`, `common/nix.nix`, `common/boot.nix` | `boot.nix` reads `sgiath.hardware.boot`; the kernel is chosen in each host's `hardware.nix`. |
 | Shared secrets | `common/secrets.nix` | SOPS defaults, user API keys, `apiKeyWrapper`, nix access-tokens template. |
-| Network quirks | `common/networking.nix`, `common/yggdrasil.nix`, `laptop/default.nix` | Static branch is `mkIf (!networkmanager.enable)`; laptop forces NetworkManager, which writes DHCP DNS through resolvconf. |
+| Network quirks | `common/networking.nix`, `common/yggdrasil.nix`, `laptop/default.nix` | Static branch is `mkIf (!networkmanager.enable)`; laptop forces NetworkManager, which writes DHCP DNS through resolvconf after the Nebula Pi-holes. |
 | GPU choice | `hardware/gpu.nix`, `hardware/gpu-amd.nix`, `hardware/gpu-nvidia.nix` | Nullable `sgiath.hardware.gpu`. |
 | DGX Spark platform | `hardware/dgx-spark.nix` | Enables `inputs.dgx-spark` module (`hardware.dgx-spark.enable`), Spark initrd modules, larger nix-daemon memory cap. |
 | Desktop session | `desktop/wayland.nix`, `desktop/audio.nix`, `desktop/stylix.nix` | Greetd/Hyprland, pipewire, theme from `themes/sgiath.yaml`. |
