@@ -20,6 +20,21 @@
     };
   };
 
+  # The JetKVM (kvm-ceres) captures HDMI-A-1 at 1080p60. Mirroring DP-1 there
+  # adds no desktop area and leaves DP-1's mode alone; Hyprland scales it to
+  # 1920x540. Use the KVM's relative mouse: an absolute one maps onto all
+  # three monitors.
+  wayland.windowManager.hyprland.settings.monitor = [
+    {
+      output = "HDMI-A-1";
+      mode = "1920x1080@60";
+      position = "auto";
+      scale = 1;
+      mirror = "DP-1";
+      vrr = 0;
+    }
+  ];
+
   sgiath.programs.blender.enable = false;
 
   sgiath.work = {
