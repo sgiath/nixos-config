@@ -16,9 +16,12 @@
 }:
 let
   nebula = config.sgiath.nebula;
-  # FIXME: list kvm-vesta here once Nebula runs on it (scripts/nebula-jetkvm.sh);
-  # a KVM without Nebula would fail every sync.
-  kvms = [ "kvm-ceres" ];
+  # KVMs running Nebula (scripts/nebula-jetkvm.sh); one without it would fail
+  # every sync.
+  kvms = [
+    "kvm-ceres"
+    "kvm-vesta"
+  ];
   domain = name: "${name}.${nebula.domain}";
 
   sync = pkgs.writers.writePython3Bin "jetkvm-tls-sync" {

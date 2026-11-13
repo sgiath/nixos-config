@@ -3,8 +3,14 @@
 # modules/nixos/common/nebula.nix. Signs the peer (group "kvm") on first use;
 # later runs reuse the stored cert/key and update the binary and config.
 #
-# Usage: scripts/nebula-jetkvm.sh <peer> <jetkvm-address>
-# Example: scripts/nebula-jetkvm.sh kvm-vesta 192.168.1.248
+# Usage: scripts/nebula-jetkvm.sh <peer> <jetkvm-address> [vesta]
+# Examples: scripts/nebula-jetkvm.sh kvm-ceres 192.168.1.248
+#           scripts/nebula-jetkvm.sh kvm-vesta 192.168.1.179 vesta
+#
+# Vesta's office network and Ceres's home network both use 192.168.1.0/24 but
+# are separate. A KVM on Vesta's network (`vesta`) is reached over SSH through
+# Vesta and uses Vesta's LAN address as lighthouse endpoint, avoiding the
+# router's NAT hairpin; elsewhere it only gets the public endpoints.
 #
 # Needs Developer Mode on the JetKVM with your SSH key (Settings > Advanced).
 # Nebula keeps running after Developer Mode is turned off again: the firmware
@@ -14,19 +20,24 @@ set -euo pipefail
 SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
 REPO_DIR="$(cd "${SCRIPT_DIR}/.." && pwd)"
 HOSTS_FILE="${REPO_DIR}/secrets/nebula.yaml"
-# The JetKVMs share Vesta's LAN; reach the lighthouse directly there, like
-# Ceres does, and keep the public endpoint as fallback.
 VESTA_LAN="192.168.1.2:4242"
-HOME_LAN="192.168.1.0/24"
+VESTA_NETWORK="192.168.1.0/24"
+VESTA_JUMP="sgiath@vesta.nebula.sgiath.dev"
 REMOTE_DIR="/userdata/nebula"
 INIT_SCRIPT="/userdata/init.d/S23nebula"
 
-if [[ $# -ne 2 ]]; then
-  echo "usage: $0 <peer> <jetkvm-address>" >&2
+if [[ $# -lt 2 || $# -gt 3 || ($# -eq 3 && "$3" != vesta) ]]; then
+  echo "usage: $0 <peer> <jetkvm-address> [vesta]" >&2
   exit 1
 fi
 peer="$1"
 address="$2"
+on_vesta_network=false
+ssh_opts=(-o BatchMode=yes -o ConnectTimeout=10 -o StrictHostKeyChecking=accept-new)
+if [[ $# -eq 3 ]]; then
+  on_vesta_network=true
+  ssh_opts+=(-J "$VESTA_JUMP")
+fi
 
 for cmd in sops jq nix ssh; do
   if ! command -v "${cmd}" >/dev/null 2>&1; then
@@ -35,12 +46,14 @@ for cmd in sops jq nix ssh; do
   fi
 done
 
+# Callers pass complete remote command lines, expanded here on purpose.
 ssh_kvm() {
-  ssh -o BatchMode=yes -o ConnectTimeout=10 -o StrictHostKeyChecking=accept-new "root@${address}" "$@"
+  # shellcheck disable=SC2029
+  ssh "${ssh_opts[@]}" "root@${address}" "$@"
 }
 
 echo "==> Checking SSH access to ${address}"
-if ! ssh -o BatchMode=yes -o ConnectTimeout=10 -o StrictHostKeyChecking=accept-new "root@${address}" true; then
+if ! ssh "${ssh_opts[@]}" "root@${address}" true; then
   echo "error: cannot SSH to root@${address}; turn on Developer Mode and add your SSH key (Settings > Advanced)" >&2
   exit 1
 fi
@@ -73,8 +86,14 @@ key="$(sops -d --extract "[\"${peer}_key\"]" "${HOSTS_FILE}" | indent)"
 
 # Lighthouses are also the relays; JSON lists are valid YAML.
 lighthouses="$(jq -c '[.peers | to_entries[] | select(.value.lighthouse != null)]' <<<"${nebula_opts}")"
-static_host_map="$(jq -r --arg lan "${VESTA_LAN}" '.[]
-  | ((if .key == "vesta" then [$lan] else [] end) + [.value.lighthouse]) as $endpoints
+vesta_lan=""
+preferred_ranges="[]"
+if [[ "$on_vesta_network" == true ]]; then
+  vesta_lan="$VESTA_LAN"
+  preferred_ranges="[\"${VESTA_NETWORK}\"]"
+fi
+static_host_map="$(jq -r --arg lan "${vesta_lan}" '.[]
+  | ((if .key == "vesta" and $lan != "" then [$lan] else [] end) + [.value.lighthouse]) as $endpoints
   | "  \"\(.value.ip4)\": \($endpoints | tojson)\n  \"\(.value.ip6)\": \($endpoints | tojson)"' <<<"${lighthouses}")"
 lighthouse_ips="$(jq -c '[.[] | .value.ip4, .value.ip6]' <<<"${lighthouses}")"
 # Trusted peers may connect; lighthouses may ping (Hygiea monitors home).
@@ -114,7 +133,7 @@ punchy:
   punch: true
   respond: true
 
-preferred_ranges: ["${HOME_LAN}"]
+preferred_ranges: ${preferred_ranges}
 
 tun:
   dev: nebula1
