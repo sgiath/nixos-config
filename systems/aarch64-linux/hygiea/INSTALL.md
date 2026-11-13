@@ -9,8 +9,8 @@ when the instance is lost (e.g. Oracle reclaimed and terminated it).
 - Instance: `VM.Standard.A1.Flex`, 1 OCPU, 6 GB, Canonical Ubuntu (aarch64),
   boot volume 200 GB (the whole free block storage allowance), your SSH key,
   in compartment `hygiea` (the watchdog's permissions are scoped to it).
-- VCN security list ingress: TCP 22 and UDP 4242 from `0.0.0.0/0`, **source
-  port All**. A source port of 4242 only admits lighthouses.
+- VCN security list ingress: TCP 22, UDP 4242 and UDP 443 (Nebula fallback for
+  restrictive networks) from `0.0.0.0/0`, **source port All**. A source port of 4242 only admits lighthouses.
 - A new instance gets a new public IP: put it into `lighthouse` of the `hygiea`
   peer in `modules/nixos/common/nebula.nix`, the instance OCID into
   `systems/x86_64-linux/vesta/hygiea-watchdog.nix`, and redeploy every host,

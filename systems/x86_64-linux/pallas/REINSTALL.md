@@ -66,8 +66,9 @@ systemd-boot "Windows 11" entry or the firmware boot menu.
    Omarchy's firmware boot entry (`sudo efibootmgr -b XXXX -B` over SSH) and check
    that "Linux Boot Manager" comes first in the boot order.
 10. **Filip:** reboot, remove the stick, pick NixOS in systemd-boot, log in and
-    connect Wi-Fi in the desktop. Send the agent the new IP.
-11. **Agent:** `systems/x86_64-linux/pallas/reinstall.sh verify <ip>`: no failed
+    connect Wi-Fi with the "Wi-Fi" launcher entry.
+11. **Agent:** `systems/x86_64-linux/pallas/reinstall.sh verify pallas.nebula.sgiath.dev`
+    (the laptop firewall closes SSH on the LAN; only Nebula gets in): no failed
     units, `/run/secrets` populated, Nebula up, NVIDIA driver loaded. Then
     `rm -rf "$XDG_RUNTIME_DIR/pallas-install"`.
 12. **Filip:** reboot and pick "Windows 11". If that entry fails, pick the "EFI

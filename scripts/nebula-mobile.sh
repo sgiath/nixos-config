@@ -34,13 +34,13 @@ domain="$(jq -r .domain <<<"${nebula_opts}")"
 ip4="$(jq -r --arg p "${peer}" '.peers[$p].ip4 // empty' <<<"${nebula_opts}")"
 ip6="$(jq -r --arg p "${peer}" '.peers[$p].ip6 // empty' <<<"${nebula_opts}")"
 # Every lighthouse is also a relay; JSON lists are valid YAML.
-lighthouses="$(jq -c '[.peers | to_entries[] | select(.value.lighthouse != null)]' <<<"${nebula_opts}")"
-static_host_map="$(jq -r '.[] | "  \"\(.value.ip4)\": [\"\(.value.lighthouse)\"]\n  \"\(.value.ip6)\": [\"\(.value.lighthouse)\"]"' <<<"${lighthouses}")"
+lighthouses="$(jq -c '[.peers | to_entries[] | select(.value.lighthouse != [])]' <<<"${nebula_opts}")"
+static_host_map="$(jq -r '.[] | "  \"\(.value.ip4)\": \(.value.lighthouse | tojson)\n  \"\(.value.ip6)\": \(.value.lighthouse | tojson)"' <<<"${lighthouses}")"
 lighthouse_ips="$(jq -c '[.[] | .value.ip4, .value.ip6]' <<<"${lighthouses}")"
 # Trusted peers may connect; lighthouses may ping (Hygiea monitors home).
 inbound="$(jq -r '.peers | to_entries[]
   | if .value.trusted then "    - port: any\n      proto: any\n      host: \(.key)"
-    elif .value.lighthouse != null then "    - port: any\n      proto: icmp\n      host: \(.key)"
+    elif .value.lighthouse != [] then "    - port: any\n      proto: icmp\n      host: \(.key)"
     else empty end' <<<"${nebula_opts}")"
 resolvers="$(jq -r '.resolvers[] | "    - \"\(.)\""' <<<"${nebula_opts}")"
 if [[ -z "${ip4}" || -z "${ip6}" ]]; then

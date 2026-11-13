@@ -14,5 +14,13 @@
         interval = 60;
       };
     };
+
+    # Foreign networks (hotels) reach nothing; peers come in over Nebula,
+    # whose own firewall admits only trusted certificates.
+    networking.firewall = {
+      enable = lib.mkForce true;
+      trustedInterfaces = [ config.services.nebula.networks.sgiath.tun.device ];
+    };
+    services.openssh.openFirewall = false;
   };
 }

@@ -11,7 +11,7 @@ let
       ip4 = "10.42.0.2";
       ip6 = "fd51:da00:4788::2";
       trusted = true;
-      lighthouse = "${config.sgiath.publicIPv4}:4242";
+      lighthouse = [ "${config.sgiath.publicIPv4}:4242" ];
     };
     # Backup lighthouse/relay, Pi-hole and backup target on Oracle Cloud
     # (systems/aarch64-linux/hygiea); keeps the overlay up while Vesta is down.
@@ -19,8 +19,13 @@ let
       ip4 = "10.42.0.3";
       ip6 = "fd51:da00:4788::3";
       # Ephemeral public IP: it survives stop/start but not terminating the
-      # instance. A replacement means a new address here and in OCI.
-      lighthouse = "92.5.169.98:4242";
+      # instance. A replacement means a new address here and in OCI. Port 443
+      # is redirected to 4242 on Hygiea for networks (hotels) that pass
+      # outbound UDP only to well-known ports.
+      lighthouse = [
+        "92.5.169.98:4242"
+        "92.5.169.98:443"
+      ];
     };
     ceres = {
       ip4 = "10.42.0.6";
@@ -66,16 +71,17 @@ let
         '';
       };
       lighthouse = lib.mkOption {
-        type = lib.types.nullOr lib.types.str;
-        default = null;
+        type = lib.types.listOf lib.types.str;
+        default = [ ];
         description = ''
-          Public `ip:port` of a lighthouse. Every lighthouse is also a relay,
-          and every other peer registers with all of them.
+          Public `ip:port` endpoints of a lighthouse; peers try all of them.
+          Every lighthouse is also a relay, and every other peer registers
+          with all of them.
         '';
       };
     };
   };
-  lighthouses = lib.filterAttrs (name: peer: peer.lighthouse != null && name != hostName) cfg.peers;
+  lighthouses = lib.filterAttrs (name: peer: peer.lighthouse != [ ] && name != hostName) cfg.peers;
   lighthouseIPs = lib.concatMap (peer: [
     peer.ip4
     peer.ip6
@@ -154,13 +160,13 @@ in
       # punching fails. A peer advertises its relays to the lighthouses, so
       # every peer lists all of them. The endpoints are numeric so
       # bootstrapping never depends on DNS, which itself runs over the tunnel.
-      isLighthouse = cfg.peers.${hostName}.lighthouse != null;
+      isLighthouse = cfg.peers.${hostName}.lighthouse != [ ];
       isRelay = net.isLighthouse;
       lighthouses = lib.mkIf (!net.isLighthouse) lighthouseIPs;
       relays = lib.mkIf (!net.isRelay) lighthouseIPs;
       staticHostMap = lib.concatMapAttrs (_: peer: {
-        ${peer.ip4} = [ peer.lighthouse ];
-        ${peer.ip6} = [ peer.lighthouse ];
+        ${peer.ip4} = peer.lighthouse;
+        ${peer.ip6} = peer.lighthouse;
       }) lighthouses;
       listen.host = "[::]";
 

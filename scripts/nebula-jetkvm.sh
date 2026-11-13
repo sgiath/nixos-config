@@ -85,7 +85,7 @@ cert="$(sops -d --extract "[\"${peer}_cert\"]" "${HOSTS_FILE}" | indent)"
 key="$(sops -d --extract "[\"${peer}_key\"]" "${HOSTS_FILE}" | indent)"
 
 # Lighthouses are also the relays; JSON lists are valid YAML.
-lighthouses="$(jq -c '[.peers | to_entries[] | select(.value.lighthouse != null)]' <<<"${nebula_opts}")"
+lighthouses="$(jq -c '[.peers | to_entries[] | select(.value.lighthouse != [])]' <<<"${nebula_opts}")"
 vesta_lan=""
 preferred_ranges="[]"
 if [[ "$on_vesta_network" == true ]]; then
@@ -93,13 +93,13 @@ if [[ "$on_vesta_network" == true ]]; then
   preferred_ranges="[\"${VESTA_NETWORK}\"]"
 fi
 static_host_map="$(jq -r --arg lan "${vesta_lan}" '.[]
-  | ((if .key == "vesta" and $lan != "" then [$lan] else [] end) + [.value.lighthouse]) as $endpoints
+  | ((if .key == "vesta" and $lan != "" then [$lan] else [] end) + .value.lighthouse) as $endpoints
   | "  \"\(.value.ip4)\": \($endpoints | tojson)\n  \"\(.value.ip6)\": \($endpoints | tojson)"' <<<"${lighthouses}")"
 lighthouse_ips="$(jq -c '[.[] | .value.ip4, .value.ip6]' <<<"${lighthouses}")"
 # Trusted peers may connect; lighthouses may ping (Hygiea monitors home).
 inbound="$(jq -r '.peers | to_entries[]
   | if .value.trusted then "    - port: any\n      proto: any\n      host: \(.key)"
-    elif .value.lighthouse != null then "    - port: any\n      proto: icmp\n      host: \(.key)"
+    elif .value.lighthouse != [] then "    - port: any\n      proto: icmp\n      host: \(.key)"
     else empty end' <<<"${nebula_opts}")"
 
 cat >"${work}/config.yml" <<EOF
