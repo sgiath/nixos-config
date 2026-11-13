@@ -27,6 +27,7 @@ in
         Environment = [
           "PATH=${
             lib.makeBinPath [
+              pkgs.bash
               pkgs.coreutils
               pkgs.diffutils
               pkgs.findutils
