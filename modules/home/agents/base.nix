@@ -1,6 +1,5 @@
 {
   config,
-  inputs,
   lib,
   pkgs,
   namespace,
@@ -30,11 +29,9 @@
 
       # agents
       pkgs.llm-agents.grok
-      pkgs.llm-agents.omo-ai
 
       # tools
       pkgs.llm-agents.qmd
-      pkgs.llm-agents.workmux
 
       # Hermes
       pkgs.llm-agents.hermes-agent
@@ -44,11 +41,7 @@
       pkgs.${namespace}.whiteboard
     ])
     ++ (lib.optionals config.sgiath.roles.desktop.enable [
-      inputs.delta.packages.${pkgs.stdenv.hostPlatform.system}.delta
-      pkgs.llm-agents.hermes-desktop
       pkgs.llm-agents.grok-bot
-      # Drives the desktop Chromium through the browse extension; `browse
-      # install` adopts this package and configures agents Nix does not manage.
       pkgs.${namespace}.browse
     ]);
 
