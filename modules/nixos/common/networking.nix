@@ -4,12 +4,6 @@
     lib.mkMerge [
       {
         networking = {
-          hosts = {
-            "192.168.1.1" = [ "router.sgiath" ];
-            # Pi-hole web UI, reached over Nebula wherever the host is.
-            ${config.sgiath.nebula.peers.vesta.ip4} = [ "dns.sgiath" ];
-            "192.168.1.11" = [ "juno1.sgiath" ];
-          };
           firewall.enable = false;
         };
 
