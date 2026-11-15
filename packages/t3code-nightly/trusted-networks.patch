@@ -1,0 +1,33 @@
+--- a/sea/assets/binMain.mjs
++++ b/sea/assets/binMain.mjs
+@@ -170078,3 +170078,30 @@
+ 	}))));
++	// Local patch (sgiath/nixos packages/t3code-nightly/trusted-networks.patch):
++	// T3CODE_TRUSTED_NETWORKS lists CIDRs and exact host names of an encrypted
++	// overlay such as Nebula, comma-separated. Plain-http links to those hosts
++	// carry credentials no less safely than links over the tailnet. Names
++	// match exactly, without a trailing dot, so they should be pinned to
++	// overlay addresses (e.g. /etc/hosts) rather than left to any resolver.
++	var isTrustedNetworkOrTailnetHost = (host) => {
++		if (isTailnetHost(host)) return true;
++		const net = process.getBuiltinModule("node:net");
++		const name = host.toLowerCase().replace(/^\[|\]$/gu, "");
++		const addresses = new net.BlockList();
++		const names = [];
++		for (const entry of (process.env.T3CODE_TRUSTED_NETWORKS ?? "").split(",")) {
++			const value = entry.trim().toLowerCase();
++			if (value === "") continue;
++			const [address, bits, ...rest] = value.split("/");
++			const family = net.isIP(address);
++			if (bits === void 0 && family === 0 && /^[a-z0-9-]+(\.[a-z0-9-]+)+$/u.test(value)) names.push(value);
++			else if (rest.length === 0 && family !== 0 && /^\d+$/u.test(bits ?? "") && Number(bits) <= (family === 4 ? 32 : 128)) addresses.addSubnet(address, Number(bits), `ipv${family}`);
++			else throw new Error(`T3CODE_TRUSTED_NETWORKS: "${entry.trim()}" is neither a CIDR nor a host name.`);
++		}
++		const family = net.isIP(name);
++		return family === 0 ? names.includes(name) : addresses.check(name, `ipv${family}`);
++	};
+ 	peerOrigin = (url) => {
++		// Shadows the tailnet check in the plain-http guard below, which keeps
++		// the patch off its bundler-renamed identifiers.
++		const isTailnetHost = isTrustedNetworkOrTailnetHost;
+ 		const parsed = URL.parse(url);

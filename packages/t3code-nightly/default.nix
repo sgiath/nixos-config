@@ -5,7 +5,6 @@
   autoPatchelfHook,
   makeBinaryWrapper,
   installShellFiles,
-  patchelf,
   alsa-lib,
   at-spi2-atk,
   at-spi2-core,
@@ -25,6 +24,8 @@
   nss,
   systemd,
   unzip,
+  nodejs-slim_26,
+  python3,
   vulkan-loader,
   callPackage,
   cloudflared,
@@ -66,20 +67,6 @@ let
     systemd
   ];
   browserLibraryPath = lib.makeLibraryPath browserLibraries;
-
-  # FIXME: patchelf 0.18+ moves the SEA's .dynamic to a new front segment that
-  # the next read-only LOAD overlaps, so ld.so segfaults writing DT_DEBUG. Drop
-  # this when nixpkgs patchelf leaves the SEA runnable; see
-  # UPSTREAM-WORKAROUNDS.md#t3code-nightly-sea-patchelf.
-  patchelfForSea = patchelf.overrideAttrs (
-    finalAttrs: _: {
-      version = "0.15.5";
-      src = fetchurl {
-        url = "https://github.com/NixOS/patchelf/releases/download/${finalAttrs.version}/patchelf-${finalAttrs.version}.tar.bz2";
-        hash = "sha256-E02LFkLBmE6FYjvAm/pYKayzIs9sgNzGDVcdzcrQng0=";
-      };
-    }
-  );
 in
 stdenv.mkDerivation (finalAttrs: {
   pname = "t3code-nightly";
@@ -87,6 +74,8 @@ stdenv.mkDerivation (finalAttrs: {
 
   # Prebuilt Node SEA plus the native node_modules it loads beside itself;
   # nightlies change pnpm deps too often to rebuild from source per release.
+  # The SEA's bundled server is unpacked, patched and packed again on
+  # nixpkgs' Node (upstream pins the same major).
   src = fetchurl {
     url = "https://github.com/pingdotgg/t3code/releases/download/v${finalAttrs.version}/t3-${finalAttrs.version}-${platform}.tar.gz";
     hash = sources.${stdenv.hostPlatform.system}.cli;
@@ -96,21 +85,41 @@ stdenv.mkDerivation (finalAttrs: {
     autoPatchelfHook
     makeBinaryWrapper
     installShellFiles
+    nodejs-slim_26
+    python3
   ];
 
-  # libstdc++ for node-pty, libatomic for the SEA itself, libvulkan for the
-  # transcribe-cpp ggml Vulkan backend.
+  # libstdc++ for node-pty, libvulkan for the transcribe-cpp ggml Vulkan
+  # backend.
   buildInputs = [
     (lib.getLib stdenv.cc.cc)
     vulkan-loader
   ];
 
+  prePatch = ''
+    python3 -I ${./sea-unpack.py} t3 sea "$PWD/t3"
+  '';
+
+  # Plain-http links to an encrypted overlay such as Nebula, which upstream
+  # only allows for Tailscale; see UPSTREAM-WORKAROUNDS.md#t3code-nightly-trusted-networks.
+  patches = [ ./trusted-networks.patch ];
+
   dontConfigure = true;
-  dontBuild = true;
+
+  # FIXME: upstream packs ARM64 SEAs with a page-alignment workaround
+  # (scripts/lib/linux-arm64-sea.ts); this repack is only exercised on x86_64.
+  # Port it before running the package on aarch64.
+  buildPhase = ''
+    runHook preBuild
+    node --build-sea sea/sea-config.json
+    rm -r sea
+    runHook postBuild
+  '';
+
   # Stripping would rewrite the SEA binary that carries its app blob in a note.
   dontStrip = true;
-  # Implicit postFixup runs before the hook's own pass; patch first so the
-  # completions below can execute t3.
+  # The hook would also rewrite t3, which is nixpkgs' Node and already finds
+  # its libraries.
   dontAutoPatchelf = true;
 
   # The SEA resolves client/, node_modules/ and resource-monitor/ next to its
@@ -137,7 +146,7 @@ stdenv.mkDerivation (finalAttrs: {
   '';
 
   postFixup = ''
-    PATH="${patchelfForSea}/bin:$PATH" autoPatchelf $out
+    autoPatchelf $(find $out/libexec/t3code -mindepth 1 -maxdepth 1 ! -name t3)
     for shell in bash fish zsh; do
       # Process substitution hides the generator's exit status, accepting
       # partial output even when the executable fails.
@@ -163,6 +172,8 @@ stdenv.mkDerivation (finalAttrs: {
     timeout 30 "$out/libexec/t3code/resource-monitor/${platform}/t3-resource-monitor" \
       < /dev/null > "$TMPDIR/resource-monitor.json"
     grep -F '"type":"hello"' "$TMPDIR/resource-monitor.json" > /dev/null
+    source ${./check-trusted-networks.sh}
+    assertTrustedNetworks "$out/bin/t3"
     source ${./check-libraries.sh}
     LD_LIBRARY_PATH=${browserLibraryPath} assertHeadlessShellResolved ${
       callPackage ./headless-shell.nix { }
