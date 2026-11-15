@@ -112,9 +112,9 @@
           init.defaultBranch = "master";
           safe.directory = "${config.home.homeDirectory}/nixos/";
           # Remotes are cloned as `github.com:owner/repo` (ssh config adds the
-          # user). T3 Code only recognises scp remotes with `user@`, so expose
-          # the explicit form; `git remote -v` and fetch/push apply the rewrite.
-          url."git@github.com:".insteadOf = "github.com:";
+          # user). Rewrite them to an explicit ssh:// URL: Nix warns about the
+          # relative path of scp-style `git@github.com:owner/repo` remotes.
+          url."ssh://git@github.com/".insteadOf = "github.com:";
 
           user = {
             name = "sgiath";
