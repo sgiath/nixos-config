@@ -1,4 +1,9 @@
-{ config, lib, ... }:
+{
+  config,
+  lib,
+  pkgs,
+  ...
+}:
 let
   nebula = config.sgiath.nebula;
   # Local records so phones and other non-Nix clients resolve overlay names the
@@ -65,6 +70,16 @@ in
 
         services.pihole-ftl = {
           enable = true;
+          # FIXME: pihole 6.6 exposes its fetchFromGitHub source as `src`, but the
+          # module still reads `piholePackage.src.src.tag` for /etc/pihole/versions.
+          # Drop this once https://github.com/NixOS/nixpkgs/pull/588606 is in the lock.
+          piholePackage = pkgs.pihole.overrideAttrs (old: {
+            passthru = old.passthru // {
+              src = old.passthru.src // {
+                inherit (old.passthru) src;
+              };
+            };
+          });
           queryLogDeleter.enable = true;
           lists = [
             {
