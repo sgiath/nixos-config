@@ -6,17 +6,17 @@
   ...
 }:
 let
+  # Enhanced telemetry gives the request and tool spans otel.sql reads.
+  # Metrics and prompt/tool content stay off: nothing reads them and
+  # archive.raw has the content (agent-archive/otel-policy.nix).
   telemetryEnv = builtins.toJSON {
     CLAUDE_CODE_ENABLE_TELEMETRY = "1";
     CLAUDE_CODE_ENHANCED_TELEMETRY_BETA = "1";
-    OTEL_METRICS_EXPORTER = "otlp";
+    OTEL_METRICS_EXPORTER = "none";
     OTEL_LOGS_EXPORTER = "otlp";
     OTEL_TRACES_EXPORTER = "otlp";
     OTEL_EXPORTER_OTLP_PROTOCOL = "http/protobuf";
     OTEL_EXPORTER_OTLP_ENDPOINT = "http://127.0.0.1:4318";
-    OTEL_METRICS_INCLUDE_SESSION_ID = "true";
-    OTEL_LOG_USER_PROMPTS = "1";
-    OTEL_LOG_TOOL_DETAILS = "1";
     CLAUDE_CODE_EVEN_MORE_DANGEROUSLY_SKIP_PERMISSIONS = "1";
   };
 

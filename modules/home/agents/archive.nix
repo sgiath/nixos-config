@@ -7,12 +7,15 @@
 }:
 let
   otelcol = lib.getExe' pkgs.opentelemetry-collector-contrib "otelcol-contrib";
+  otelPolicy = import ../../nixos/services/agent-archive/otel-policy.nix { inherit lib; };
 
   # Claude Code and Codex send OpenTelemetry here (claude.nix and
   # modules/nixos/common/codex.nix). Exporting straight to Vesta stalls `codex exec` for
   # 13-20 s at exit whenever Vesta is unreachable; this collector answers
   # locally and forwards from a disk queue, so telemetry produced away from
-  # home arrives later instead of being dropped.
+  # home arrives later instead of being dropped. It also receives whatever
+  # else on the host exports to the default OTLP endpoint; otelPolicy keeps
+  # only the agents' telemetry.
   otelAgentConfig =
     let
       yaml = (pkgs.formats.yaml { }).generate "otel-agent.yaml" {
@@ -31,7 +34,8 @@ let
             }
           ];
           batch = { };
-        };
+        }
+        // otelPolicy.processors;
         exporters.otlp_http = {
           endpoint = "https://otel.sgiath.dev";
           sending_queue.storage = "file_storage";
@@ -42,10 +46,7 @@ let
           extensions = [ "file_storage" ];
           pipelines = lib.genAttrs [ "logs" "traces" "metrics" ] (_: {
             receivers = [ "otlp" ];
-            processors = [
-              "resource"
-              "batch"
-            ];
+            processors = [ "resource" ] ++ otelPolicy.pipelines ++ [ "batch" ];
             exporters = [ "otlp_http" ];
           });
         };

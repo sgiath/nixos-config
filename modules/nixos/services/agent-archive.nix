@@ -18,6 +18,7 @@ let
   # written by this collector into the `otel` database.
   otelHost = "otel.sgiath.dev";
   otlpPort = 4319;
+  otelPolicy = import ./agent-archive/otel-policy.nix { inherit lib; };
   client = "${ch}/bin/clickhouse-client --port ${toString tcpPort} --user archive";
   # Per-tool parsing views, then the tables they fill.
   derivedSql = [
@@ -108,9 +109,9 @@ in
         };
       };
 
-      # Telemetry is kept forever like the session records (no TTL). The
-      # queue is on disk and retried without limit, so a ClickHouse restart
-      # loses nothing that reached the collector.
+      # Telemetry that otelPolicy keeps is kept forever like the session
+      # records (no TTL). The queue is on disk and retried without limit, so a
+      # ClickHouse restart loses nothing that reached the collector.
       services.opentelemetry-collector = {
         enable = true;
         package = pkgs.opentelemetry-collector-contrib;
@@ -120,7 +121,10 @@ in
             create_directory = true;
           };
           receivers.otlp.protocols.http.endpoint = "127.0.0.1:${toString otlpPort}";
-          processors.batch = { };
+          processors = {
+            batch = { };
+          }
+          // otelPolicy.processors;
           exporters.clickhouse = {
             endpoint = "tcp://127.0.0.1:${toString tcpPort}";
             username = "archive";
@@ -135,7 +139,7 @@ in
             extensions = [ "file_storage" ];
             pipelines = lib.genAttrs [ "logs" "traces" "metrics" ] (_: {
               receivers = [ "otlp" ];
-              processors = [ "batch" ];
+              processors = otelPolicy.pipelines ++ [ "batch" ];
               exporters = [ "clickhouse" ];
             });
           };

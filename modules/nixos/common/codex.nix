@@ -10,12 +10,6 @@ let
   # service (modules/home/agents/archive.nix). ~/.codex-remote sets its own
   # model_provider, so the cliproxy default applies to ~/.codex only.
   agents = config.home-manager.users.sgiath.sgiath.agents;
-  exporter = signal: {
-    otlp-http = {
-      endpoint = "http://127.0.0.1:4318/v1/${signal}";
-      protocol = "binary";
-    };
-  };
 in
 {
   config = lib.mkIf (config.sgiath.enable && agents.enable) {
@@ -33,12 +27,18 @@ in
         requires_openai_auth = false;
         supports_websockets = false;
       };
+      # Only logs: otel.sql reads completions and tool results. An omitted
+      # metrics_exporter means Statsig, not none. Prompt text and SSE deltas
+      # stay off (modules/nixos/services/agent-archive/otel-policy.nix).
       otel = {
         environment = config.networking.hostName;
-        log_user_prompt = true;
-        exporter = exporter "logs";
-        trace_exporter = exporter "traces";
-        metrics_exporter = exporter "metrics";
+        exporter.otlp-http = {
+          endpoint = "http://127.0.0.1:4318/v1/logs";
+          protocol = "binary";
+        };
+        trace_exporter = "none";
+        metrics_exporter = "none";
+        log_sse_deltas = false;
       };
     };
   };

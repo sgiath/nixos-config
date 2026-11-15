@@ -110,7 +110,10 @@ Why it is built this way is in
   keeps no local state and catches up after time offline.
 - **Telemetry.** Claude Code and Codex send OpenTelemetry to the `otel-agent`
   user service on `127.0.0.1:4318`, which forwards it from a disk queue to
-  database `otel`.
+  database `otel`. Both collectors keep only what
+  `modules/nixos/services/agent-archive/otel-policy.nix` allows: Claude
+  traces, the agents' logs without SSE deltas, no metrics, no prompt or tool
+  content, nothing from other services.
 - **Analysis tables.** Database `agents` (`requests`, `tool_calls`, `commands`,
   `sessions`, `tool_timing`, `opencode_recovered_sessions`) is rebuilt from
   `archive.raw` and `otel` every hour, and recreated when its SQL in

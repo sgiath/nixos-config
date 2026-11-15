@@ -41,7 +41,12 @@ host with agents (`modules/home/agents/archive.nix`) ships records to it.
 - **Telemetry next to the records.** Claude Code (with its beta request and
   tool tracing) and Codex export OpenTelemetry to a collector on every host,
   which forwards from a disk queue to a collector on Vesta writing database
-  `otel`, kept forever like the records. Exporting straight to Vesta stalled
+  `otel`, kept forever like the records. Both collectors keep only what a
+  consumer reads or what explains failures (`agent-archive/otel-policy.nix`):
+  in the first month, Codex internal traces, dev apps exporting to the
+  default `:4318`, streaming-delta logs and metrics made up over 95% of 13.8 GB
+  and nothing read them, and prompt and tool content duplicated
+  `archive.raw`. Exporting straight to Vesta stalled
   `codex exec` 13-20 s at exit whenever Vesta was unreachable and dropped the
   data; the local hop answers at once and delivers later. Claude request
   spans join `agents.requests` by request ID (duration, TTFT); Codex has no
