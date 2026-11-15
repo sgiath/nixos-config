@@ -1,14 +1,14 @@
 {
-  "version": "0.1.10-nightly.20261113.4643",
-  "headlessShellVersion": "157.0.8103.38",
+  "version": "0.1.10-nightly.20261114.4669",
+  "headlessShellVersion": "157.0.8103.78",
   "x86_64-linux": {
-    "cli": "sha256-J0Rb2HzJCMQtFlJd6bYVpJEpIob0QMVKm59bk1K5aPk=",
-    "appimage": "sha512-eirYg/jxEWntVJwUmKSuBHxaaAvgmbF20E8HOAPc1fsh43tWrswTxsJ174UfKdTBFxhCYzzUSGTRyajNLo64IQ==",
-    "headlessShell": "sha256-3q//p0Zgs0hTpBGcNh/UJ6yMn8ti21HduKeXzYOkui0="
+    "cli": "sha256-qk+4QoTCODykxk4HxDSSdrbDs2tZAM4LAohQ8IWVzfo=",
+    "appimage": "sha512-nqnogPhmWbfXQBZWGHf+uAl56ZB096qOyoRv49aKwYNemt+WlybVXawLeMCU/fv3gmdx2l66AlTjgd4CRHSTWg==",
+    "headlessShell": "sha256-+QMpcg+2Hlp22ptrUJtq0SpITJxd8DWUA+k1F3xtFTo="
   },
   "aarch64-linux": {
-    "cli": "sha256-D47cWh5DR1hh5JfbvorBD7ixJSkl7SEw6CpmkZ0wXhM=",
-    "appimage": "sha512-vBxTDpSufXf6G7MOaZiCXFCR6Ja3Py5A6HcDVkfc4bVX+qC7YE9RV7bir8lDrLZ5LOXu5OH1xR0S22kLy8R6iQ==",
-    "headlessShell": "sha256-ubkQpXsqFes+VQAKIzn5Opc5NKQT6/xuWFpQ7GxC/Ww="
+    "cli": "sha256-Jfepc4CjDWVCaI+rsFtgULVrsPFh6nI1UE5XVwwq8Dg=",
+    "appimage": "sha512-ix2vQWqhp+9hYt16tUAN5v83Tpcz++eVZgWtJNQ5QrXd7aHCq4z1wVN7zbt1M5GDT5I7Pt8mT7QQnLExBQvgLA==",
+    "headlessShell": "sha256-kS+/h35T3jTXs8ylEE87lWB9Qb01QSzMbNKlmf8MDb8="
   }
 }

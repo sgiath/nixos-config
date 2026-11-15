@@ -57,7 +57,7 @@ stdenv.mkDerivation (finalAttrs: {
   src = appimageTools.extract {
     inherit (finalAttrs) pname version;
     src = fetchurl {
-      url = "https://github.com/pingdotgg/t3code/releases/download/v${finalAttrs.version}/T3-Code-${finalAttrs.version}-${arch}.AppImage";
+      url = "https://github.com/pingdotgg/t3code/releases/download/v${finalAttrs.version}/T3-Code-Nightly-${arch}.AppImage";
       hash = sources.${stdenv.hostPlatform.system}.appimage;
     };
   };

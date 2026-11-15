@@ -53,8 +53,12 @@ appimage_hash() {
 	b64="$(python3 -c '
 import sys, yaml
 feed = yaml.safe_load(open(sys.argv[1]))
-print(next(f["sha512"] for f in feed["files"] if f["url"] == sys.argv[2]))
-' "${TMPDIR}/$1" "T3-Code-${VERSION}-$2.AppImage")"
+print(next((f["sha512"] for f in feed["files"] if f["url"] == sys.argv[2]), ""))
+' "${TMPDIR}/$1" "T3-Code-Nightly-$2.AppImage")"
+	if [[ -z "${b64}" ]]; then
+		echo "ERROR: T3-Code-Nightly-$2.AppImage missing from $1" >&2
+		exit 1
+	fi
 	echo "sha512-${b64}"
 }
 
