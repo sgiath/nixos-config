@@ -6,9 +6,7 @@
 }:
 let
   userKeys = {
-    GITHUB_PERSONAL_ACCESS_TOKEN = "github_token";
     GITHUB_TOKEN = "github_token";
-    GH_TOKEN = "github_token";
     CLIPROXY_API_KEY = "cliproxy_api_key";
   };
   keyFiles = pkgs.writeText "user-api-key-paths.json" (
