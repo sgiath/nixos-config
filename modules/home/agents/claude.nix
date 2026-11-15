@@ -8,7 +8,9 @@
 let
   # Enhanced telemetry gives the request and tool spans otel.sql reads.
   # Metrics and prompt/tool content stay off: nothing reads them and
-  # archive.raw has the content (agent-archive/otel-policy.nix).
+  # archive.raw has the content (agent-archive/otel-policy.nix). The
+  # activation below merges into settings.json, so turning a key off means
+  # setting it, not omitting it.
   telemetryEnv = builtins.toJSON {
     CLAUDE_CODE_ENABLE_TELEMETRY = "1";
     CLAUDE_CODE_ENHANCED_TELEMETRY_BETA = "1";
@@ -17,6 +19,8 @@ let
     OTEL_TRACES_EXPORTER = "otlp";
     OTEL_EXPORTER_OTLP_PROTOCOL = "http/protobuf";
     OTEL_EXPORTER_OTLP_ENDPOINT = "http://127.0.0.1:4318";
+    OTEL_LOG_USER_PROMPTS = "0";
+    OTEL_LOG_TOOL_DETAILS = "0";
     CLAUDE_CODE_EVEN_MORE_DANGEROUSLY_SKIP_PERMISSIONS = "1";
   };
 
