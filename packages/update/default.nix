@@ -26,8 +26,9 @@ let
       --build-host "sgiath@$address" --target-host "sgiath@$address"
   '';
 
-  # Deploys the toplevel that validation built for Vesta.
-  deployVesta = writeShellScript "deploy-vesta" ''
+  # Deploys a toplevel that validation built on Ceres to a host that trusts
+  # Ceres's signing key.
+  deploySigned = writeShellScript "deploy-signed" ''
     set -euo pipefail
     toplevel=$1
     address=$2
@@ -57,7 +58,7 @@ writeShellScriptBin "update" ''
   set -- "''${update_args[@]}"
   target=''${1:-}
   case "$target" in
-    ""|--ceres|--vesta|--juno[1-9]|--hygiea|--iso) ;;
+    ""|--ceres|--pallas|--vesta|--juno[1-9]|--hygiea|--iso) ;;
     *) echo "Unknown update target: $target" >&2; exit 2 ;;
   esac
   if (($#)); then
@@ -65,10 +66,10 @@ writeShellScriptBin "update" ''
   fi
 
   # How each selected host deploys: `local` switches this machine and `signed`
-  # pushes a Ceres-built, signed closure to Vesta, both built by validation;
-  # `native` builds on the host itself during deployment, so validation only
-  # evaluates it. Plain `update` selects the online hosts once the host list
-  # is known.
+  # pushes a Ceres-built, signed closure to Vesta or Pallas, both built by
+  # validation, so hosts share Ceres's store and its faster CPU; `native`
+  # builds on the host itself during deployment, so validation only evaluates
+  # it. Plain `update` selects the online hosts once the host list is known.
   if ! local_host="$(${lib.getExe' coreutils "uname"} -n)"; then
     echo "Failed to read the local hostname" >&2
     exit 1
@@ -76,7 +77,7 @@ writeShellScriptBin "update" ''
   declare -A deploy=() toplevels=() summary=()
   case "$target" in
     --iso) ;;
-    --vesta) deploy[vesta]=signed ;;
+    --vesta|--pallas) deploy[''${target#--}]=signed ;;
     --juno*|--hygiea) deploy[''${target#--}]=native ;;
     --ceres) deploy[ceres]=local ;;
   esac
@@ -247,8 +248,8 @@ writeShellScriptBin "update" ''
       probe_host=''${probes[$pid]}
       unset "probes[$pid]"
       if ((status == 0)); then
-        if [[ "$probe_host" == vesta ]]; then
-          deploy[vesta]=signed
+        if [[ "$probe_host" == vesta || "$probe_host" == pallas ]]; then
+          deploy[$probe_host]=signed
         else
           deploy[$probe_host]=native
         fi
@@ -311,13 +312,15 @@ writeShellScriptBin "update" ''
     step_fail
   fi
 
-  if [[ "''${deploy[vesta]:-}" == signed ]]; then
-    step_start "Preparing Vesta deployment"
+  if [[ " ''${deploy[*]} " == *" signed "* ]]; then
+    step_start "Preparing signed deployment"
     if ! sudo test -r /run/secrets/nix-signing-key; then
-      echo "Vesta deployment requires the signing key at /run/secrets/nix-signing-key. Activate the Ceres signing-key configuration first." >&2
+      echo "Signed deployment requires the signing key at /run/secrets/nix-signing-key. Activate the Ceres signing-key configuration first." >&2
       step_fail
     fi
-    nix-store --add-fixed sha256 "$HOME/nix-root/FoundryVTT-Linux-14.367.zip" || step_fail
+    if [[ -n "''${deploy[vesta]:-}" ]]; then
+      nix-store --add-fixed sha256 "$HOME/nix-root/FoundryVTT-Linux-14.367.zip" || step_fail
+    fi
   fi
 
   if [[ "$target" == --iso ]]; then
@@ -421,7 +424,7 @@ writeShellScriptBin "update" ''
     case "''${deploy[$deploy_host]}" in
       signed)
         address="$(ssh_address "$deploy_host")"
-        ${deployVesta} "''${toplevels[$deploy_host]}" "$address"
+        ${deploySigned} "''${toplevels[$deploy_host]}" "$address"
         ;;
       native)
         address="$(ssh_address "$deploy_host")"

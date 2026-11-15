@@ -74,6 +74,7 @@ update
 # limit the run to one host, or build the installer ISO
 update --ceres
 update --vesta
+update --pallas
 update --juno1
 update --hygiea
 update --iso
@@ -213,10 +214,10 @@ nixos-rebuild switch --sudo --flake '.#ceres'
 update --vesta
 ```
 
-`update` and `update --vesta` build on Ceres, sign the exact
-selected system closure, and pass it to `nixos-rebuild --store-path` for SSH
-transfer and activation. Neither command changes the existing `result` link.
-Vesta trusts Ceres's public key; it never receives the private key. Signature
+`update`, `update --vesta` and `update --pallas` build on Ceres, sign the
+exact selected system closure, and pass it to `nixos-rebuild --store-path` for
+SSH transfer and activation. None of them changes the existing `result` link.
+Every host trusts Ceres's public key; none receives the private key. Signature
 checks remain enabled, including for downloaded packages. Existing flake
 caches remain explicitly allowed for ordinary, non-trusted Nix users.
 
