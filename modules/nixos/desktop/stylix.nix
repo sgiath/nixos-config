@@ -10,6 +10,7 @@
       homeManagerIntegration.autoImport = false;
 
       targets.kmscon.enable = false;
+      targets.gtksourceview.enable = false;
     };
   };
 }
