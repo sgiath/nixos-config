@@ -15,7 +15,7 @@ Role-based NixOS modules. Snowfall imports every `<dir>/default.nix` into every 
 | DGX Spark platform | `hardware/dgx-spark.nix` | Enables `inputs.dgx-spark` module (`hardware.dgx-spark.enable`), Spark initrd modules, larger nix-daemon memory cap. |
 | Desktop session | `desktop/wayland.nix`, `desktop/audio.nix`, `desktop/stylix.nix` | Greetd/Hyprland, pipewire, theme from `themes/sgiath.yaml`. |
 | Gaming stack | `gaming/role.nix` | Steam/wine/gamescope/gamemode + `factorio-token` secret. |
-| Server root | `server/default.nix`, `server/nginx.nix` | Ceres cache-key trust; ACME Cloudflare, QUIC, shared nginx tuning. |
+| Server root | `server/default.nix`, `server/nginx.nix` | ACME Cloudflare, QUIC, shared nginx tuning. Ceres cache-key trust is in `common/nix.nix`. |
 | Large integrated service | `services/matrix.nix`, `services/hermes-agent.nix` | Secrets, TURN/LiveKit, vhosts, ordering. |
 | Reverse proxy template | `sites/nas.nix`, `sites/sinai-camp.nix` | Static/proxy patterns and rewrites. |
 | Game/app services | `services/foundryvtt.nix`, `server/minecraft.nix`, `services/factorio.nix` | Hardcoded ports/working dirs. |

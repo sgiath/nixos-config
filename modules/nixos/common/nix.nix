@@ -26,7 +26,10 @@ in
           "pipe-operators"
         ];
         trusted-substituters = cachePolicy.extra-substituters;
-        trusted-public-keys = cachePolicy.extra-trusted-public-keys;
+        # Ceres builds, signs and pushes the closures of Vesta and Pallas.
+        trusted-public-keys = cachePolicy.extra-trusted-public-keys ++ [
+          (lib.strings.trim (builtins.readFile ../../../secrets/ceres-cache.pub))
+        ];
       };
       channel.enable = false;
       optimise.automatic = true;
