@@ -36,6 +36,13 @@ let
     };
   });
   authConf = name: "/run/nginx/${name}-auth.conf";
+  proxyConf = ''
+    proxy_set_header Cookie "";
+    proxy_buffering off;
+    proxy_read_timeout 1h;
+    proxy_send_timeout 1h;
+    client_max_body_size 100m;
+  '';
 in
 {
   options.services.t3code = {
@@ -101,12 +108,16 @@ in
             proxyWebsockets = true;
             extraConfig = ''
               include ${authConf name};
-              proxy_set_header Cookie "";
-              proxy_buffering off;
-              proxy_read_timeout 1h;
-              proxy_send_timeout 1h;
-              client_max_body_size 100m;
-            '';
+            ''
+            + proxyConf;
+          };
+
+          # Linked environments call /mcp with the bearer the peer issued for
+          # the link; the injected bearer above would replace it and the peer
+          # would reject the call. Clients without a token get T3's OAuth.
+          locations."= /mcp" = {
+            proxyPass = env.upstream;
+            extraConfig = proxyConf;
           };
         }
       ) environments;
