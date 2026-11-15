@@ -124,6 +124,12 @@ in
       readOnly = true;
       description = "DNS suffix for overlay host names (<host>.<domain>); also Vesta's public lighthouse name.";
     };
+    localDomain = lib.mkOption {
+      type = lib.types.str;
+      default = "nebula.internal";
+      readOnly = true;
+      description = "Second suffix for overlay host names (<host>.<localDomain>) for plain-http clients: browsers and Electron force https on every .dev name (HSTS preload), so http://<host>.<domain> never reaches the host.";
+    };
     peers = lib.mkOption {
       type = lib.types.attrsOf peerType;
       default = peers;
@@ -224,13 +230,23 @@ in
         nebula-key = secret "${hostName}_key";
       };
 
-    # <host>.nebula.sgiath.dev and <service>.sgiath.dev resolve to the overlay
-    # addresses everywhere, independent of the current resolver.
+    # <host>.nebula.sgiath.dev, <host>.nebula.internal and <service>.sgiath.dev
+    # resolve to the overlay addresses everywhere, independent of the current
+    # resolver.
     networking.hosts = lib.mkMerge (
-      lib.mapAttrsToList (name: peer: {
-        ${peer.ip4} = [ "${name}.${cfg.domain}" ];
-        ${peer.ip6} = [ "${name}.${cfg.domain}" ];
-      }) cfg.peers
+      lib.mapAttrsToList (
+        name: peer:
+        let
+          names = [
+            "${name}.${cfg.domain}"
+            "${name}.${cfg.localDomain}"
+          ];
+        in
+        {
+          ${peer.ip4} = names;
+          ${peer.ip6} = names;
+        }
+      ) cfg.peers
       ++ [
         {
           ${cfg.peers.vesta.ip4} = map (name: "${name}.sgiath.dev") cfg.services;

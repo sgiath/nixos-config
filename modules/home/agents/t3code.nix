@@ -21,7 +21,10 @@ let
       nebula.cidr4
       nebula.cidr6
     ]
-    ++ map (name: "${name}.${nebula.domain}") (lib.attrNames nebula.peers)
+    ++ lib.concatMap (name: [
+      "${name}.${nebula.domain}"
+      "${name}.${nebula.localDomain}"
+    ]) (lib.attrNames nebula.peers)
   );
 
   # `t3 pair` builds its QR code from the address the running server
@@ -114,8 +117,9 @@ in
 
     publicUrl = lib.mkOption {
       type = lib.types.nullOr lib.types.str;
-      default = "http://${osConfig.networking.hostName}.${nebula.domain}:${toString cfg.port}";
-      defaultText = lib.literalExpression ''"http://''${hostName}.''${osConfig.sgiath.nebula.domain}:''${toString port}"'';
+      # Not the .dev name: the desktop app would upgrade it to https.
+      default = "http://${osConfig.networking.hostName}.${nebula.localDomain}:${toString cfg.port}";
+      defaultText = lib.literalExpression ''"http://''${hostName}.''${osConfig.sgiath.nebula.localDomain}:''${toString port}"'';
       description = "Origin apps reach this server at; `t3 pair` prints its QR code and pairing URL for it instead of the listen address.";
     };
 

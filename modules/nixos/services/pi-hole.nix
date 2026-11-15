@@ -8,6 +8,7 @@ let
   peerNames = lib.mapAttrsToList (name: _: "${name}.${nebula.domain}") nebula.peers;
   nebulaRecords =
     lib.mapAttrsToList (name: peer: "${peer.ip4} ${name}.${nebula.domain}") nebula.peers
+    ++ lib.mapAttrsToList (name: peer: "${peer.ip4} ${name}.${nebula.localDomain}") nebula.peers
     ++ map (name: "${vesta.ip4} ${name}.sgiath.dev") nebula.services;
   # Public HTTPS names served by this nginx, minus the overlay-only services
   # above, resolve to Vesta's Nebula address instead of through Cloudflare or
@@ -96,6 +97,7 @@ in
             misc.dnsmasq_lines =
               map (name: "local=/${name}.sgiath.dev/") nebula.services
               ++ map (name: "local=/${name}/") peerNames
+              ++ [ "local=/${nebula.localDomain}/" ]
               ++ publicHttpsRecords;
           };
         };
