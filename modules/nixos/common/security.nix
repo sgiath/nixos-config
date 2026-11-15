@@ -71,6 +71,7 @@
         ceres = {
           hostNames = [
             "ceres"
+            "ceres.nebula.internal"
             "ceres.nebula.sgiath.dev"
           ];
           publicKey = "ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAIJqiRijmcUIZlOBesuAGoZJquV2wYOSe00GEaLGgXOKm";
@@ -78,6 +79,7 @@
         vesta = {
           hostNames = [
             "vesta"
+            "vesta.nebula.internal"
             "vesta.nebula.sgiath.dev"
           ];
           publicKey = "ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAIJbclzr8Y1+/RCB5bsgzgZndcAPRCtQBgA8YBc1uEWm5";
@@ -85,6 +87,7 @@
         pallas = {
           hostNames = [
             "pallas"
+            "pallas.nebula.internal"
             "pallas.nebula.sgiath.dev"
           ];
           publicKey = "ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAIIIJi+z7rA4XFNVKVqJhoX+cRJ/LORCSZ6pYPoZ9p3Vc";
