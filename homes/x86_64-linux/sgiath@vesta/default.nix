@@ -9,5 +9,8 @@
     awsRefreshMinute = 30;
   };
 
-  services.t3code.channel = "nightly";
+  services.t3code = {
+    enable = true;
+    channel = "nightly";
+  };
 }

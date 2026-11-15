@@ -203,7 +203,6 @@ in
             timezone = "UTC";
 
             toolsets = [ "all" ];
-            # Connect directly: nginx replaces Authorization with its own bearer.
             # OAuth credentials live in HERMES_HOME/mcp-tokens, outside the store.
             mcp_servers = {
               t3-ceres = {
@@ -211,7 +210,7 @@ in
                 auth = "oauth";
               };
               t3-vesta = {
-                url = "http://127.0.0.1:3773/mcp";
+                url = "http://${nebula.peers.vesta.ip4}:3773/mcp";
                 auth = "oauth";
               };
             };

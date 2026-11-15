@@ -22,7 +22,6 @@
     ./opencode.nix
     ./pi-hole.nix
     ./searx.nix
-    ./t3code.nix
     ./transmission.nix
   ];
 }

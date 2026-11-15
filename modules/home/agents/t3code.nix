@@ -9,6 +9,20 @@
 }:
 let
   cfg = config.services.t3code;
+  nebula = osConfig.sgiath.nebula;
+
+  # Nebula encrypts the overlay, so the nightly's trusted-networks patch lets
+  # peer links use plain http there (packages/t3code-nightly). Host names are
+  # listed exactly because common/nebula.nix pins them in /etc/hosts; a
+  # wildcard would also trust names only DNS answers for. The CLI links too
+  # (`t3 environment link`), so shells get it as well as the service.
+  trustedNetworks = lib.concatStringsSep "," (
+    [
+      nebula.cidr4
+      nebula.cidr6
+    ]
+    ++ map (name: "${name}.${nebula.domain}") (lib.attrNames nebula.peers)
+  );
 
   # `t3 pair` builds its QR code from the address the running server
   # recorded in server-runtime.json and has no public-URL setting, so the
@@ -87,10 +101,9 @@ in
     host = lib.mkOption {
       type = lib.types.str;
       # Never a wildcard: the server must not answer outside the overlay.
-      # Vesta's NixOS `services.t3code` sets loopback behind nginx.
-      default = osConfig.sgiath.nebula.peers.${osConfig.networking.hostName}.ip4;
+      default = nebula.peers.${osConfig.networking.hostName}.ip4;
       defaultText = lib.literalExpression "osConfig.sgiath.nebula.peers.\${hostName}.ip4";
-      description = "Interface to bind; this host's Nebula address by default, so Vesta can proxy it as `t3-<host>.sgiath.dev`.";
+      description = "Interface to bind; this host's Nebula address by default.";
     };
 
     port = lib.mkOption {
@@ -101,9 +114,9 @@ in
 
     publicUrl = lib.mkOption {
       type = lib.types.nullOr lib.types.str;
-      default = null;
-      example = "https://t3-ceres.sgiath.dev";
-      description = "Origin Vesta proxies to this server; `t3 pair` prints its QR code and pairing URL for it instead of the local listen address.";
+      default = "http://${osConfig.networking.hostName}.${nebula.domain}:${toString cfg.port}";
+      defaultText = lib.literalExpression ''"http://''${hostName}.''${osConfig.sgiath.nebula.domain}:''${toString port}"'';
+      description = "Origin apps reach this server at; `t3 pair` prints its QR code and pairing URL for it instead of the listen address.";
     };
 
     extraArgs = lib.mkOption {
@@ -174,6 +187,7 @@ in
 
     (lib.mkIf cfg.enable {
       home.packages = [ cli ];
+      home.sessionVariables.T3CODE_TRUSTED_NETWORKS = trustedNetworks;
 
       systemd.user.services.t3code = {
         Unit = {
@@ -208,6 +222,7 @@ in
             # Web mode defaults to registering the cwd (home) as a project and
             # opening an empty thread in it on every start.
             "T3CODE_AUTO_BOOTSTRAP_PROJECT_FROM_CWD=false"
+            "T3CODE_TRUSTED_NETWORKS=${trustedNetworks}"
           ];
           KillMode = "mixed";
           # Also covers boot: a user unit cannot order after nebula, so the
