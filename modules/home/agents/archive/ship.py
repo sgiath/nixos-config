@@ -11,6 +11,8 @@ host that was offline for a week catches up on its next run and there is no
 local state to lose. A file's generation is its inode: a tool that rewrites a
 session by replacing the file gets the new version shipped in full next to the
 old one. Nothing is ever deleted from the archive when a tool prunes its files.
+Codex rollouts are the exception: they move and get recompressed, and every
+copy continues the archive record of the original file (see Rollouts).
 """
 
 import base64
@@ -18,12 +20,14 @@ import glob
 import gzip
 import json
 import os
+import re
 import socket
 import sqlite3
 import sys
 import time
 import urllib.parse
 import urllib.request
+from compression import zstd
 from dataclasses import dataclass
 from pathlib import Path
 
@@ -39,6 +43,30 @@ class Jsonl:
 
     tool: str
     globs: list
+
+
+@dataclass(frozen=True)
+class Rollouts:
+    """Codex rollouts under each root, in every form Codex keeps them.
+
+    A rollout starts as `sessions/YYYY/MM/DD/rollout-*.jsonl`, is moved flat
+    into `archived_sessions/` when archived, and is replaced by a `.jsonl.zst`
+    copy (a new file) once cold, or restored to plain JSONL when resumed. Every
+    form ships as the original `sessions/.../*.jsonl` source, continuing the
+    generation already stored for it, with positions in uncompressed bytes.
+    """
+
+    tool: str
+    roots: list
+
+    @property
+    def globs(self):
+        return [
+            f"{root}/{directory}/{name}"
+            for root in self.roots
+            for directory in ("sessions/**", "archived_sessions")
+            for name in ("*.jsonl", "*.jsonl.zst")
+        ]
 
 
 @dataclass(frozen=True)
@@ -86,11 +114,10 @@ SOURCES = [
     Files("claude", [".claude/projects/**/*.meta.json", ".claude-remote/projects/**/*.meta.json"]),
     # Written by the oh-my-opencode plugin, not by Claude Code.
     Jsonl("opencode-hooks", [".claude/transcripts/*.jsonl"]),
+    Rollouts("codex", [".codex", ".codex-remote"]),
     Jsonl(
         "codex",
         [
-            ".codex/sessions/**/*.jsonl",
-            ".codex-remote/sessions/**/*.jsonl",
             ".codex/history.jsonl",
             ".codex-remote/history.jsonl",
             ".codex/session_index.jsonl",
@@ -159,8 +186,10 @@ SOURCES = [
         "rowid",
         "key IN ('aiService.prompts', 'aiService.generations', 'composer.composerData')",
     ),
-    Jsonl("grok", [".grok/sessions/**/*.jsonl"]),
-    Files("grok", [".grok/sessions/**/summary.json"]),
+    Jsonl("grok", [".grok/sessions/**/*.jsonl", ".config/remote-agents/grok/sessions/**/*.jsonl"]),
+    Files("grok", [".grok/sessions/**/summary.json", ".config/remote-agents/grok/sessions/**/summary.json"]),
+    # What each Browse agent run executed in the browser, and its result.
+    Jsonl("browse", [".local/state/browse/sessions/*/journal.jsonl"]),
     Jsonl("muse", [".local/share/muse/sessions/**/*.jsonl"]),
     Jsonl("fx", [".fx/sessions/**/*.jsonl"]),
     Sqlite("goose", ".local/share/goose/sessions/sessions.db", "sessions", "id", "CAST(strftime('%s', updated_at) AS INTEGER) * 1000"),
@@ -192,7 +221,17 @@ SOURCES = [
 # under a session-like directory, and SQLite databases with a session-like
 # table, once they hold data (an installed but unused tool is not reported).
 # Every hit must be added to SOURCES or listed in IGNORED with a reason.
-SESSION_DIRS = {"sessions", "session", "projects", "transcripts", "chats", "conversations", "history", "threads"}
+SESSION_DIRS = {
+    "sessions",
+    "archived_sessions",
+    "session",
+    "projects",
+    "transcripts",
+    "chats",
+    "conversations",
+    "history",
+    "threads",
+}
 SESSION_TABLES = {"session", "sessions", "message", "messages", "conversation", "conversations", "chat", "chats"}
 # Trees not searched at all: large and not agent state. Project checkouts
 # under develop/ hold repository data, not tool homes.
@@ -219,12 +258,24 @@ IGNORED = [
     (".local/share/fractal/**", "Matrix client"),
     (".openclaw/**", "OpenClaw, retired; leftover state"),
     (".openclaw-old/**", "OpenClaw, retired; leftover state"),
+    (".aws/cli/cache/session.db", "AWS CLI credential cache, not an agent"),
+    (
+        ".claude/plugins/marketplaces/remote-claude-plugins/plugins/needs-me/tests/fixtures/transcripts/*.jsonl",
+        "plugin test fixtures",
+    ),
+    (".grok/marketplace-cache/*/plugins/needs-me/tests/fixtures/transcripts/*.jsonl", "cached plugin test fixtures"),
+    (".local/share/opencode-history-backup-20261023/opencode.db", "backup of the OpenCode store, already archived"),
+    (
+        ".t3/scratch/2026-10-15-can-you-start-collecting-some-f015a8b1/research/sessions/manifest.jsonl",
+        "research scratch manifest, not sessions",
+    ),
 ]
 
 
+SESSION_DB_SUFFIXES = (".db", ".sqlite", ".sqlite3", ".vscdb")
+
+
 def _is_session_db(path):
-    if path.suffix not in (".db", ".sqlite", ".sqlite3", ".vscdb"):
-        return False
     try:
         with open(path, "rb") as f:
             if f.read(16) != b"SQLite format 3\0":
@@ -244,10 +295,17 @@ def _is_session_db(path):
 
 
 def discover(home, sources, ignored=IGNORED):
-    """{store: files} for session-like stores under $HOME that no source covers."""
-    covered = set()
-    for source in sources:
-        covered.update(_files(home, [source.path] if isinstance(source, Sqlite) else source.globs))
+    """{store: files} for session-like stores under $HOME that no source covers.
+
+    Coverage is matched per file against the source patterns, so a session
+    created during the (long) walk is not reported.
+    """
+    patterns = [
+        pattern
+        for source in sources
+        for pattern in ([source.path] if isinstance(source, Sqlite) else source.globs)
+        if not pattern.startswith("/")
+    ] + [pattern for pattern, _ in ignored]
     found = {}
     for root, dirs, files in os.walk(home):
         rel_root = Path(root).relative_to(home)
@@ -255,12 +313,14 @@ def discover(home, sources, ignored=IGNORED):
         for name in files:
             path = Path(root) / name
             rel = rel_root / name
-            if path in covered or any(rel.full_match(pattern) for pattern, _ in ignored):
-                continue
-            if name.endswith(".jsonl") and SESSION_DIRS & set(rel.parts[:-1]) and path.stat().st_size:
+            if name.endswith((".jsonl", ".jsonl.zst")) and SESSION_DIRS & set(rel.parts[:-1]):
                 store = str(rel.parent)
-            elif _is_session_db(path):
+                if any(rel.full_match(pattern) for pattern in patterns) or not path.stat().st_size:
+                    continue
+            elif path.suffix in SESSION_DB_SUFFIXES:
                 store = str(rel)
+                if any(rel.full_match(pattern) for pattern in patterns) or not _is_session_db(path):
+                    continue
             else:
                 continue
             found[store] = found.get(store, 0) + 1
@@ -270,7 +330,7 @@ def discover(home, sources, ignored=IGNORED):
 def jsonl_records(path, cursor):
     """Yield (line number, end offset, line) for complete lines past `cursor`."""
     offset, line = (cursor[0], int(cursor[1])) if cursor else (0, 0)
-    with open(path, "rb") as f:
+    with _open(path) as f:
         f.seek(offset)
         for raw in f:
             if not raw.endswith(b"\n"):
@@ -278,6 +338,11 @@ def jsonl_records(path, cursor):
             offset += len(raw)
             line += 1
             yield str(line), offset, raw.rstrip(b"\r\n").decode("utf-8", "replace")
+
+
+def _open(path):
+    """A JSONL file, decompressed when it is a `.zst` copy; offsets are uncompressed."""
+    return zstd.open(path, "rb") if path.suffix == ".zst" else open(path, "rb")
 
 
 def _json_value(value):
@@ -441,6 +506,78 @@ def _ship_jsonl(home, source, cursors, out):
             out.add(source.tool, name, generation, key, position, record)
 
 
+ROLLOUT_DATE = re.compile(r"rollout-(\d{4})-(\d{2})-(\d{2})T")
+
+
+def _rollout_name(home, path):
+    """The `sessions/YYYY/MM/DD/*.jsonl` source every form of a rollout ships as.
+
+    Codex names the date directory and the file from the same local time.
+    """
+    name = _name(home, path).removesuffix(".zst")
+    date = ROLLOUT_DATE.match(path.name)
+    if path.parent.name == "archived_sessions" and date:
+        return str(Path(name).parent.parent / "sessions" / Path(*date.groups()) / Path(name).name)
+    return name
+
+
+def _uncompressed_size(path, stat):
+    if path.suffix != ".zst":
+        return stat.st_size
+    with open(path, "rb") as f:
+        size = zstd.get_frame_info(f.read(18)).decompressed_size
+    if size is None:  # not recorded in the frame header
+        with _open(path) as f:
+            size = sum(len(chunk) for chunk in iter(lambda: f.read(1 << 20), b""))
+    return size
+
+
+def _has_prefix(path, cursor):
+    """Whether the file starts with exactly the `cursor[1]` lines shipped up to `cursor[0]`."""
+    position, lines = cursor[0], int(cursor[1])
+    with _open(path) as f:
+        prefix = f.read(position)
+    return len(prefix) == position and prefix.endswith(b"\n") and prefix.count(b"\n") == lines
+
+
+def _rollout_cursor(path, size, generations):
+    """(generation, cursor) to continue for one form of a rollout.
+
+    The stored generation is the inode of whichever file was shipped first.
+    Moving keeps the inode; compressing and restoring write a new file with
+    the same content, so a stored generation whose shipped lines this file
+    still starts with is continued instead of shipping it again. A file of
+    exactly the shipped length is taken as the same content without reading
+    it, so the cold `.zst` copies are not decompressed every run.
+    """
+    inode = str(path.stat().st_ino)
+    if inode in generations:
+        return inode, generations[inode]
+    for generation, cursor in sorted(generations.items(), key=lambda item: -item[1][0]):
+        if size == cursor[0] or (size > cursor[0] and _has_prefix(path, cursor)):
+            return generation, cursor
+    return inode, None
+
+
+def _ship_rollouts(home, source, cursors, out):
+    forms = {}
+    for path in _files(home, source.globs):
+        name = _rollout_name(home, path)
+        # While Codex swaps forms both exist briefly; the plain file is current.
+        if name not in forms or forms[name].suffix == ".zst":
+            forms[name] = path
+    generations = {}
+    for (name, generation), cursor in cursors.items():
+        generations.setdefault(name, {})[generation] = cursor
+    for name, path in forms.items():
+        size = _uncompressed_size(path, path.stat())
+        generation, cursor = _rollout_cursor(path, size, generations.get(name, {}))
+        if cursor and size <= cursor[0]:
+            continue
+        for key, position, record in jsonl_records(path, cursor):
+            out.add(source.tool, name, generation, key, position, record)
+
+
 def _ship_files(home, source, cursors, out):
     for path in _files(home, source.globs):
         name, stat = _name(home, path), path.stat()
@@ -493,8 +630,9 @@ def ship(home, host, sources, clickhouse):
             for path in _files(home, [source.path]):
                 databases.setdefault(path, []).append(source)
 
+    shippers = {Jsonl: _ship_jsonl, Rollouts: _ship_rollouts, Files: _ship_files}
     work = [
-        (s.tool, s.globs, lambda s=s: (_ship_jsonl if isinstance(s, Jsonl) else _ship_files)(home, s, cursors, out))
+        (s.tool, s.globs, lambda s=s: shippers[type(s)](home, s, cursors, out))
         for s in sources
         if not isinstance(s, Sqlite)
     ] + [
@@ -505,7 +643,7 @@ def ship(home, host, sources, clickhouse):
     for tool, what, run in work:
         try:
             run()
-        except (OSError, sqlite3.Error) as error:
+        except (OSError, sqlite3.Error, zstd.ZstdError) as error:
             print(f"{tool} {what}: {error}", file=sys.stderr)
             failed.append(what)
     out.flush()

@@ -1,4 +1,5 @@
 import gzip
+from compression import zstd
 import json
 import os
 import sqlite3
@@ -9,6 +10,7 @@ import unittest
 import urllib.parse
 from http.server import BaseHTTPRequestHandler, HTTPServer
 from pathlib import Path
+from unittest.mock import patch
 
 import ship
 
@@ -209,6 +211,101 @@ class ShipTest(unittest.TestCase):
         self.assertEqual(self.inserts, inserts)
 
 
+class CodexRolloutTest(unittest.TestCase):
+    """Rollout storage changes must preserve the existing archive cursor."""
+
+    filename = "rollout-2026-11-13T08-05-17-00000000-0000-0000-0000-000000000001.jsonl"
+    prefix = b'{"type":"session_meta","payload":{"id":"session"}}\n{"type":"event_msg","payload":{"type":"task_complete"}}\n'
+    tail = b'{"type":"event_msg","payload":{"type":"task_started"}}\n'
+
+    def setUp(self):
+        self.home = Path(self.enterContext(tempfile.TemporaryDirectory()))
+        self.clickhouse = FakeClickHouse()
+        self.addCleanup(self.clickhouse.close)
+
+    def write(self, relative, data):
+        path = self.home / relative
+        path.parent.mkdir(parents=True, exist_ok=True)
+        path.write_bytes(data)
+        return path
+
+    def ship(self, sources=None):
+        return ship.ship(self.home, "ceres", ship.SOURCES if sources is None else sources,
+                         ship.ClickHouse(self.clickhouse.url))
+
+    def assert_records(self, data):
+        self.assertEqual([r["record"] for r in self.clickhouse.rows],
+                         data.decode().splitlines())
+
+    def test_collects_archived_rollouts_in_both_codex_homes(self):
+        for root in (".codex", ".codex-remote"):
+            self.write(f"{root}/archived_sessions/{self.filename}", self.prefix)
+        self.ship()
+        self.ship()
+        self.assertEqual(len(self.clickhouse.rows), 4)
+        self.assertEqual({r["source"].split("/")[0] for r in self.clickhouse.rows},
+                         {".codex", ".codex-remote"})
+
+    def test_collects_rollouts_compressed_before_first_shipment(self):
+        for root in (".codex", ".codex-remote"):
+            for directory in ("sessions/2026/11/13", "archived_sessions"):
+                with self.subTest(root=root, directory=directory):
+                    # Each variant starts with an empty archive.
+                    self.clickhouse.rows.clear()
+                    path = self.write(f"{root}/{directory}/{self.filename}.zst",
+                                      zstd.compress(self.prefix))
+                    before = len(self.clickhouse.rows)
+                    self.ship()
+                    self.ship()
+                    self.assertEqual(len(self.clickhouse.rows) - before, 2)
+                    self.assertEqual(self.clickhouse.rows[-1]["position"], len(self.prefix))
+                    self.assertTrue(self.clickhouse.rows[-1]["source"].endswith(".jsonl"))
+                    path.unlink()
+
+    def test_move_to_archive_resumes_legacy_cursor_without_replay(self):
+        active = f".codex/sessions/2026/11/13/{self.filename}"
+        archived = f".codex/archived_sessions/{self.filename}"
+        path = self.write(active, self.prefix)
+        self.ship([ship.Jsonl("codex", [active])])
+        inode = path.stat().st_ino
+        (self.home / archived).parent.mkdir(parents=True)
+        path.rename(self.home / archived)
+        self.assertEqual((self.home / archived).stat().st_ino, inode)
+        with (self.home / archived).open("ab") as stream:
+            stream.write(self.tail)
+        self.ship()
+        self.assert_records(self.prefix + self.tail)
+        self.assertEqual({r["source"] for r in self.clickhouse.rows}, {active})
+
+    def test_compression_resumes_legacy_cursor_and_ships_unseen_tail(self):
+        active = f".codex/sessions/2026/11/13/{self.filename}"
+        path = self.write(active, self.prefix)
+        self.ship([ship.Jsonl("codex", [active])])
+        old_inode = path.stat().st_ino
+        compressed = self.write(active + ".zst", zstd.compress(self.prefix + self.tail))
+        self.assertNotEqual(compressed.stat().st_ino, old_inode)
+        path.unlink()
+        self.ship()
+        self.ship()
+        self.assert_records(self.prefix + self.tail)
+        self.assertEqual({r["source"] for r in self.clickhouse.rows}, {active})
+        self.assertEqual({r["generation"] for r in self.clickhouse.rows}, {str(old_inode)})
+
+    def test_materialized_rollout_resumes_after_compression(self):
+        active = f".codex/sessions/2026/11/13/{self.filename}"
+        compressed = self.write(active + ".zst", zstd.compress(self.prefix))
+        self.ship()
+        self.assert_records(self.prefix)
+        # Codex restores via a new temp file, publishes it, then removes .zst.
+        restored = self.write(active, self.prefix + self.tail)
+        self.assertNotEqual(restored.stat().st_ino, compressed.stat().st_ino)
+        compressed.unlink()
+        self.ship()
+        self.ship()
+        self.assert_records(self.prefix + self.tail)
+        self.assertEqual(len({r["generation"] for r in self.clickhouse.rows}), 1)
+
+
 class DiscoverTest(unittest.TestCase):
     def setUp(self):
         self.home = Path(tempfile.mkdtemp())
@@ -250,6 +347,29 @@ class DiscoverTest(unittest.TestCase):
         self.database(".tool/cache.db", "entries", rows=1)  # no session-like table
         ignored = [(".tool/sessions/**", "debug traces, not conversations")]
         self.assertEqual(ship.discover(self.home, [], ignored=ignored), {})
+
+    def test_reports_uncovered_codex_archived_and_compressed_rollouts(self):
+        for root in (".codex", ".codex-remote"):
+            self.store(f"{root}/archived_sessions/a.jsonl")
+            self.store(f"{root}/sessions/2026/11/13/b.jsonl.zst", zstd.compress(b'{"type":"session_meta"}\n'))
+        self.assertEqual(
+            ship.discover(self.home, [], ignored=[]),
+            {".codex/archived_sessions": 1, ".codex/sessions/2026/11/13": 1,
+             ".codex-remote/archived_sessions": 1, ".codex-remote/sessions/2026/11/13": 1},
+        )
+
+    def test_does_not_report_a_covered_session_created_during_scan(self):
+        walk = os.walk
+
+        def walk_after_new_session(home):
+            self.store(".known/sessions/new.jsonl")
+            return walk(home)
+
+        with patch.object(os, "walk", walk_after_new_session):
+            self.assertEqual(
+                ship.discover(self.home, [ship.Jsonl("known", [".known/sessions/**/*.jsonl"])], ignored=[]),
+                {},
+            )
 
 
 if __name__ == "__main__":

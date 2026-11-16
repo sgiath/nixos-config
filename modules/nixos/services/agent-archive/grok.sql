@@ -8,6 +8,7 @@
 CREATE VIEW agents.grok_lines AS
 SELECT
     host,
+    if(source LIKE '.config/remote-agents/grok/%', '.config/remote-agents/grok', '.grok') AS account,
     extract(source, '/([0-9a-f-]{36})/[^/]+$') AS session_id,
     extract(source, '/([a-z_]+)\\.jsonl$') AS file,
     toUInt64(key) AS line,
@@ -19,7 +20,7 @@ CREATE VIEW agents.grok_requests AS
 WITH
     responses AS
     (
-        SELECT host, session_id, line, record,
+        SELECT host, account, session_id, line, record,
             row_number() OVER (PARTITION BY session_id ORDER BY line) AS nth
         FROM agents.grok_lines
         WHERE file = 'chat_history' AND JSONExtractString(record, 'type') = 'assistant'
@@ -34,7 +35,7 @@ WITH
 SELECT
     'grok' AS tool,
     r.host AS host,
-    '.grok' AS account,
+    r.account AS account,
     r.session_id AS session_id,
     concat(r.session_id, ':', toString(r.line)) AS request_id,
     toUInt8(0) AS is_subagent,

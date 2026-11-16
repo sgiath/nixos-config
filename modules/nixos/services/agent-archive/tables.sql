@@ -99,6 +99,7 @@ SELECT
 FROM agents.tool_calls
 WHERE (tool = 'claude' AND name = 'Bash')
     OR (tool IN ('omp', 'omo', 'pi', 'prime', 'opencode', 'muse') AND name = 'bash')
+    OR (tool = 'opencode' AND name = 'shell')
     OR (tool = 'cursor' AND name = 'run_terminal_cmd')
     OR (tool = 'grok' AND name = 'run_terminal_command')
 UNION ALL
