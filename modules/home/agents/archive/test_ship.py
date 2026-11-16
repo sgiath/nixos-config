@@ -35,6 +35,10 @@ class FakeClickHouse:
                 if "query" in query and query["query"][0].startswith("INSERT"):
                     fake.rows += [json.loads(line) for line in body.splitlines()]
                     out = b""
+                elif "param_key" in query:
+                    at = {name: query[f"param_{name}"][0] for name in ("host", "source", "generation", "key")}
+                    rows = [r for r in fake.rows if all(str(r[name]) == value for name, value in at.items())]
+                    out = (json.dumps({"argMax(record, position)": rows[-1]["record"]}) + "\n").encode() if rows else b""
                 else:
                     host = query["param_host"][0]
                     cursors = {}
@@ -299,6 +303,26 @@ class CodexRolloutTest(unittest.TestCase):
         self.assert_records(self.prefix + self.tail)
         self.assertEqual({r["source"] for r in self.clickhouse.rows}, {active})
         self.assertEqual({r["generation"] for r in self.clickhouse.rows}, {str(old_inode)})
+
+    def test_rewritten_rollout_ships_as_a_new_generation(self):
+        active = f".codex/sessions/2026/11/13/{self.filename}"
+        path = self.write(active, b'{"a":1}\n{"b":2}\n')
+        self.ship()
+        # Same length and line count as what was shipped, different content.
+        replacement = self.write(active + ".tmp", b'{"a":9}\n{"b":8}\n{"c":3}\n')
+        replacement.replace(path)
+        self.ship()
+        rows = self.clickhouse.rows[2:]
+        self.assertEqual([r["record"] for r in rows], ['{"a":9}', '{"b":8}', '{"c":3}'])
+        self.assertEqual({r["generation"] for r in rows}, {str(path.stat().st_ino)})
+
+    def test_truncated_compressed_rollout_fails_alone(self):
+        self.write(f".codex/sessions/2026/11/13/{self.filename}.zst", zstd.compress(self.prefix)[:-4])
+        self.write("p/a.jsonl", b'{"a":1}\n')
+        sources = [ship.Rollouts("codex", [".codex"]), ship.Jsonl("claude", ["p/*.jsonl"])]
+        with self.assertRaises(SystemExit):
+            self.ship(sources)
+        self.assertEqual([r["source"] for r in self.clickhouse.rows], ["p/a.jsonl"])
 
     def test_materialized_rollout_resumes_after_compression(self):
         active = f".codex/sessions/2026/11/13/{self.filename}"

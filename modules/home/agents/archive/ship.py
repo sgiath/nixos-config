@@ -439,6 +439,22 @@ class ClickHouse:
             cursors[source, generation] = (int(position), key)
         return cursors
 
+    def record(self, host, source, generation, key):
+        """The stored record at `key`, or None."""
+        out = self._post(
+            {
+                "query": "SELECT argMax(record, position) FROM archive.raw WHERE host = {host:String}"
+                " AND source = {source:String} AND generation = {generation:String} AND key = {key:String}"
+                " HAVING count() > 0 FORMAT JSONEachRow",
+                "param_host": host,
+                "param_source": source,
+                "param_generation": generation,
+                "param_key": key,
+            },
+            b"",
+        )
+        return json.loads(out)["argMax(record, position)"] if out.strip() else None
+
     def insert(self, rows):
         body = b"".join(json.dumps(row, ensure_ascii=False).encode() + b"\n" for row in rows)
         self._post(
@@ -542,15 +558,31 @@ def _uncompressed_size(path, stat):
     return size
 
 
-def _has_prefix(path, cursor):
-    """Whether the file starts with exactly the `cursor[1]` lines shipped up to `cursor[0]`."""
+def _continues(path, cursor, last):
+    """Whether the file starts with the `cursor[1]` lines shipped up to `cursor[0]`, the last being `last`.
+
+    FIXME: only the last shipped line is compared, so a rewrite that keeps
+    every line length and the last line would be taken as the old content.
+    Codex never rewrites a rollout; comparing every line needs the whole
+    shipped generation from ClickHouse.
+    """
     position, lines = cursor[0], int(cursor[1])
+    offset = line = 0
     with _open(path) as f:
-        prefix = f.read(position)
-    return len(prefix) == position and prefix.endswith(b"\n") and prefix.count(b"\n") == lines
+        for raw in f:
+            offset += len(raw)
+            line += 1
+            if offset >= position:
+                return (
+                    offset == position
+                    and line == lines
+                    and raw.endswith(b"\n")
+                    and raw.rstrip(b"\r\n").decode("utf-8", "replace") == last
+                )
+    return False
 
 
-def _rollout_cursor(path, size, generations):
+def _rollout_cursor(path, size, generations, stored):
     """(generation, cursor) to continue for one form of a rollout.
 
     The stored generation is the inode of whichever file was shipped first.
@@ -558,13 +590,14 @@ def _rollout_cursor(path, size, generations):
     the same content, so a stored generation whose shipped lines this file
     still starts with is continued instead of shipping it again. A file of
     exactly the shipped length is taken as the same content without reading
-    it, so the cold `.zst` copies are not decompressed every run.
+    it, so the cold `.zst` copies are not decompressed every run. `stored`
+    returns the last record shipped for a generation.
     """
     inode = str(path.stat().st_ino)
     if inode in generations:
         return inode, generations[inode]
     for generation, cursor in sorted(generations.items(), key=lambda item: -item[1][0]):
-        if size == cursor[0] or (size > cursor[0] and _has_prefix(path, cursor)):
+        if size == cursor[0] or (size > cursor[0] and _continues(path, cursor, stored(generation, cursor))):
             return generation, cursor
     return inode, None
 
@@ -581,7 +614,12 @@ def _ship_rollouts(home, source, cursors, out):
         generations.setdefault(name, {})[generation] = cursor
     for name, path in forms.items():
         size = _uncompressed_size(path, path.stat())
-        generation, cursor = _rollout_cursor(path, size, generations.get(name, {}))
+        generation, cursor = _rollout_cursor(
+            path,
+            size,
+            generations.get(name, {}),
+            lambda generation, cursor: out.clickhouse.record(out.host, name, generation, cursor[1]),
+        )
         if cursor and size <= cursor[0]:
             continue
         for key, position, record in jsonl_records(path, cursor):
@@ -657,7 +695,7 @@ def ship(home, host, sources, clickhouse):
     for tool, what, run in work:
         try:
             run()
-        except (OSError, sqlite3.Error, zstd.ZstdError) as error:
+        except (OSError, EOFError, sqlite3.Error, zstd.ZstdError) as error:
             print(f"{tool} {what}: {error}", file=sys.stderr)
             failed.append(what)
     out.flush()
