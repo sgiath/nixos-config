@@ -15,7 +15,8 @@ in
   config = lib.mkIf (config.sgiath.enable && agents.enable) {
     environment.etc."codex/config.toml".source = (pkgs.formats.toml { }).generate "codex-config.toml" {
       # Inference through CLIProxyAPI; `codex --profile remote` switches to
-      # the Remote model (~/.codex/remote.config.toml, modules/home/agents/codex.nix).
+      # the Remote model and `codex --profile daybreak` to OpenAI directly
+      # (~/.codex/{remote,daybreak}.config.toml, modules/home/agents/codex.nix).
       # FIXME: websockets stay off until Responses websocket continuation
       # through the proxy is tested.
       model_provider = "cliproxy";

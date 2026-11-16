@@ -25,7 +25,7 @@ Manual audit only. It never runs automatically at session start or on its own.
 
 ## Security records
 
-Delegate security-exception records and any credential- or secret-handling question to a Codex subagent using `gpt-6.1-sol` at `high` reasoning effort. Give it the record, its pins, and these rules. Never print or commit secrets, and never reset production state. If it refuses on cybersecurity grounds, retry once on `opencode-go/deepseek-v4.1-flash` only when the record's security cannot be judged without that review; otherwise keep the record `unknown` and note the refusal.
+Delegate security-exception records and any credential- or secret-handling question to a Codex subagent using `gpt-daybreak-blue-latest` at `high` reasoning effort through the direct ChatGPT login: provider instance `codex-daybreak` in T3, or `codex --profile daybreak` in the CLI. Give it the record, its pins, and these rules. Never print or commit secrets, and never reset production state. If that route is unavailable or the review is refused on cybersecurity grounds, keep the record `unknown` and record the reason; do not switch models or reword the brief to get past a refusal.
 
 ## Report
 
