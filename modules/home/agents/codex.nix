@@ -5,36 +5,6 @@
   ...
 }:
 let
-  # Inside Remote projects (`use remote_agents`, cliproxy.nix) Codex's
-  # session commands run with the remote profile. Codex has no environment
-  # variable for a profile, and its other subcommands (login, app-server,
-  # which T3 runs and passes the model itself, ...) reject --profile. An
-  # explicit profile (`codex --profile daybreak`) wins: Codex rejects a
-  # second --profile.
-  codex = pkgs.symlinkJoin {
-    name = "codex-cliproxy";
-    paths = [
-      (pkgs.writeShellScriptBin "codex" ''
-        if [ "''${REMOTE_AGENTS:-}" = 1 ]; then
-          for arg in "$@"; do
-            case $arg in
-              --) break ;;
-              -p | -p?* | --profile | --profile=*) exec ${pkgs.llm-agents.codex}/bin/codex "$@" ;;
-            esac
-          done
-          case "''${1:-}" in
-            agents | login | logout | mcp | plugin | app-server | remote-control | completion \
-              | update | doctor | sandbox | debug | apply | a | queue | archive | delete \
-              | migrate-* | unarchive | cloud | exec-server | features | help) ;;
-            *) exec ${pkgs.llm-agents.codex}/bin/codex --profile remote "$@" ;;
-          esac
-        fi
-        exec ${pkgs.llm-agents.codex}/bin/codex "$@"
-      '')
-      pkgs.llm-agents.codex
-    ];
-  };
-
   daybreakT3Instance = {
     driver = "codex";
     displayName = "Codex Daybreak";
@@ -52,18 +22,10 @@ in
   config = lib.mkIf config.sgiath.agents.enable {
     home = {
       packages = [
-        codex
+        pkgs.llm-agents.codex
       ]
       ++ (lib.optionals config.sgiath.roles.desktop.enable [ pkgs.llm-agents.chatgpt ]);
       file.".codex/AGENTS.md".source = ./AGENTS.md;
-      # `codex --profile remote` layers this over config.toml: the Remote
-      # Claude login through the cliproxy provider (modules/nixos/common/codex.nix).
-      file.".codex/remote.config.toml".source =
-        (pkgs.formats.toml { }).generate "codex-remote-profile.toml"
-          {
-            model_provider = "cliproxy";
-            model = "remote/claude-opus-5-5";
-          };
       # `codex --profile daybreak`: Daybreak Blue is served only by OpenAI
       # itself (the proxy has no route for it), so this profile uses the
       # built-in openai provider with the ChatGPT login in ~/.codex/auth.json.
@@ -73,7 +35,6 @@ in
             model_provider = "openai";
             model = "gpt-daybreak-blue-latest";
           };
-      file.".codex-remote/AGENTS.md".source = ./AGENTS.md;
     };
 
     # T3 runs `codex app-server`, which rejects --profile, so its Daybreak
@@ -110,7 +71,7 @@ in
         run ${lib.getExe (pkgs.callPackage ./whiteboard-plugin.nix { })} codex \
           ${lib.getExe pkgs.llm-agents.codex} \
           ${lib.escapeShellArg "${config.home.profileDirectory}/bin/whiteboard"} \
-          "$HOME/.codex" "$HOME/.codex-remote"
+          "$HOME/.codex"
       ''
     );
   };

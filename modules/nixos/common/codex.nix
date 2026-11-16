@@ -5,18 +5,16 @@
   ...
 }:
 let
-  # Codex's system config layer, below ~/.codex{,-remote}/config.toml which
-  # Codex itself rewrites. The local collector on :4318 is the HM otel-agent
-  # service (modules/home/agents/archive.nix). ~/.codex-remote sets its own
-  # model_provider, so the cliproxy default applies to ~/.codex only.
+  # Codex's system config layer, below ~/.codex/config.toml which Codex
+  # itself rewrites. The local collector on :4318 is the HM otel-agent
+  # service (modules/home/agents/archive.nix).
   agents = config.home-manager.users.sgiath.sgiath.agents;
 in
 {
   config = lib.mkIf (config.sgiath.enable && agents.enable) {
     environment.etc."codex/config.toml".source = (pkgs.formats.toml { }).generate "codex-config.toml" {
-      # Inference through CLIProxyAPI; `codex --profile remote` switches to
-      # the Remote model and `codex --profile daybreak` to OpenAI directly
-      # (~/.codex/{remote,daybreak}.config.toml, modules/home/agents/codex.nix).
+      # Inference through CLIProxyAPI; `codex --profile daybreak` switches to
+      # OpenAI directly (~/.codex/daybreak.config.toml, modules/home/agents/codex.nix).
       # FIXME: websockets stay off until Responses websocket continuation
       # through the proxy is tested.
       model_provider = "cliproxy";

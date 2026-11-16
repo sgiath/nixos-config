@@ -34,14 +34,7 @@ let
 in
 {
   config = lib.mkIf config.sgiath.agents.enable {
-    home = {
-      packages = with pkgs.llm-agents; [ claude-desktop ];
-      file.".claude-remote/CLAUDE.md".source = ./AGENTS.md;
-      file.".claude-remote/skills" = {
-        source = ./skills;
-        recursive = true;
-      };
-    };
+    home.packages = with pkgs.llm-agents; [ claude-desktop ];
 
     programs.claude-code = {
       enable = true;
@@ -59,12 +52,12 @@ in
         run ${lib.getExe (pkgs.callPackage ./whiteboard-plugin.nix { })} claude \
           ${lib.getExe config.programs.claude-code.package} \
           ${lib.escapeShellArg "${config.home.profileDirectory}/bin/whiteboard"} \
-          "$HOME/.claude" "$HOME/.claude-remote"
+          "$HOME/.claude"
       ''
     );
 
     # Claude rewrites settings.json itself (theme, plugins), so merge the
-    # attribution policy into both config dirs instead of owning the file.
+    # attribution policy into it instead of owning the file.
     # Without cleanupPeriodDays Claude deletes transcripts after 30 days.
     # The env block turns on OpenTelemetry (with the beta request/tool
     # tracing) to the local collector from archive.nix; Claude Code reads it
@@ -75,25 +68,22 @@ in
     # without it untouched.
     # FIXME: delete the migration once every agents host has activated it.
     home.activation.claudeAttribution = lib.hm.dag.entryAfter [ "writeBoundary" ] ''
-      for f in "$HOME/.claude/settings.json" "$HOME/.claude-remote/settings.json"; do
-        old=$(cat "$f" 2>/dev/null || true)
-        new=$(printf '%s' "''${old:-"{}"}" | ${lib.getExe pkgs.jq} --argjson env ${lib.escapeShellArg telemetryEnv} \
-          'def guard: (.command? // "") | tostring | endswith("/bin/claude-gitlab-watch-guard");
-           .attribution = {commit: "", pr: ""} | .cleanupPeriodDays = 36500 | .env = ((.env // {}) + $env)
-           | if any(.hooks.PreToolUse[]?.hooks[]?; guard) then
-               .hooks.PreToolUse |= map(.hooks |= map(select(guard | not)) | select(.hooks | length > 0))
-               | if .hooks.PreToolUse == [] then del(.hooks.PreToolUse) else . end
-               | if .hooks == {} then del(.hooks) else . end
-             else . end')
-        if [ "$new" != "$old" ]; then
-          run mkdir -p "$(dirname "$f")"
-          run ${pkgs.coreutils}/bin/tee "$f" <<<"$new" >/dev/null
-        fi
-      done
+      f="$HOME/.claude/settings.json"
+      old=$(cat "$f" 2>/dev/null || true)
+      new=$(printf '%s' "''${old:-"{}"}" | ${lib.getExe pkgs.jq} --argjson env ${lib.escapeShellArg telemetryEnv} \
+        'def guard: (.command? // "") | tostring | endswith("/bin/claude-gitlab-watch-guard");
+         .attribution = {commit: "", pr: ""} | .cleanupPeriodDays = 36500 | .env = ((.env // {}) + $env)
+         | if any(.hooks.PreToolUse[]?.hooks[]?; guard) then
+             .hooks.PreToolUse |= map(.hooks |= map(select(guard | not)) | select(.hooks | length > 0))
+             | if .hooks.PreToolUse == [] then del(.hooks.PreToolUse) else . end
+             | if .hooks == {} then del(.hooks) else . end
+           else . end')
+      if [ "$new" != "$old" ]; then
+        run mkdir -p "$(dirname "$f")"
+        run ${pkgs.coreutils}/bin/tee "$f" <<<"$new" >/dev/null
+      fi
     '';
 
-    # ~/.claude only: ~/.claude-remote keeps its own Remote login until the
-    # Remote projects select remote/<model> through the proxy instead.
     home.activation.claudeProxy = lib.hm.dag.entryAfter [ "claudeAttribution" ] ''
       f="$HOME/.claude/settings.json"
       old=$(cat "$f" 2>/dev/null || true)

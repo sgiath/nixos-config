@@ -179,7 +179,6 @@ in
       type = reviewer;
       default = {
         provider = "opencode";
-        # Remote repos override it with cliproxy/remote/claude-opus-5-5.
         model = "cliproxy/claude-opus-5-5";
         effort = "high";
       };

@@ -69,12 +69,10 @@ in
           # allow-remote stays off; the management key is still required.
           management.secret-key._secret = config.sops.secrets.cliproxyapi_management.path;
 
-          # Work accounts are kept apart by prefix: the Remote Claude login
-          # (claude-…-filip.vavera@remote.com.json, `"prefix": "remote"` set
-          # once through the management API, stored in the auth file) serves
-          # only remote/<model>. Bare model names
-          # reach only the personal accounts. A new work login needs the
-          # same prefix before bare names are safe again.
+          # Prefixed upstreams (OpenCode Go below) serve only
+          # <prefix>/<model>; bare names rotate across every logged-in
+          # account. An OAuth login is confined the same way by a "prefix"
+          # in its auth file, set through the management API; none has one.
           routing.force-model-prefix = true;
 
           # One usage record per upstream execution, held up to an hour for

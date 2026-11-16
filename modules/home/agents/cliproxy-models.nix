@@ -1,6 +1,5 @@
 # Models the agent tools offer through CLIProxyAPI (cliproxy.nix).
-# `personal` (bare and OpenCode Go) is every tool's global catalog;
-# Remote projects get the Claude ones as remote/<model>. `protocol` is the
+# `personal` (bare and OpenCode Go) is every tool's catalog. `protocol` is the
 # wire API each tool uses for the model where it can choose (fx only speaks
 # chat completions). Limits come from the
 # installed Codex/Pi model catalogs and xAI's Grok 4.7 guide; `effort` lists

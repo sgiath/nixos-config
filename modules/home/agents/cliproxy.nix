@@ -12,38 +12,10 @@ let
   # rewrites its own config, so activation merges the proxy part into it and
   # resets the default model only when it no longer points at the proxy. The
   # tools' saved native logins stay in place.
-  #
-  # Remote projects call `use remote_agents` from their .envrc. It points
-  # every tool at remote/<model> (the Remote Claude login): Claude Code
-  # through its model variables, Codex through the
-  # remote profile (codex.nix), OpenCode through an extra config file, fx
-  # through a second provider, and Pi and Grok through their own config
-  # directories under ~/.config/remote-agents (no native login there).
   url = config.sgiath.agents.cliproxyUrl;
   keyEnv = "CLIPROXY_API_KEY";
   catalog = import ./cliproxy-models.nix;
   personal = catalog.personal;
-  remote =
-    map
-      (
-        m:
-        m
-        // {
-          id = "remote/${m.id}";
-          name = "${m.name} (Remote)";
-        }
-      )
-      (
-        lib.filter (
-          m:
-          lib.elem m.id [
-            "claude-opus-5-5"
-            "claude-sonnet-5-5"
-            "claude-haiku-5-5"
-            "claude-fable-5-2"
-          ]
-        ) personal
-      );
   ids = map (m: m.id);
   byId = models: f: lib.listToAttrs (map (m: lib.nameValuePair m.id (f m)) models);
 
@@ -53,12 +25,6 @@ let
     model = "gpt-6.1-sol";
     helper = "gpt-6-luna";
   };
-  remoteDefaults = {
-    model = "remote/claude-opus-5-5";
-    helper = "remote/claude-haiku-5-5";
-  };
-  remoteDir = "${config.xdg.configHome}/remote-agents";
-  remoteRel = lib.removePrefix "${config.home.homeDirectory}/" remoteDir;
 
   jq = lib.getExe pkgs.jq;
   # FIXME: the TOML round trip drops comments and cannot carry TOML dates
@@ -126,23 +92,7 @@ let
     name = "CLIProxyAPI";
     package = opencodePackage.responses;
     settings.baseURL = "${url}/v1";
-    # The remote/ models are listed here too: T3 runs one shared OpenCode
-    # server without the project's direnv environment, so a T3 thread in a
-    # Remote project (auto-review) has to name remote/<model> itself.
-    # FIXME: that server's title and compaction agents still use the
-    # personal helper model, so a compacted Remote thread sends its history
-    # to a personal account. Needs T3 to start a second OpenCode instance
-    # with OPENCODE_CONFIG set, or OpenCode to pick helpers per session.
-    models = opencodeModels (personal ++ remote);
-  };
-  # Loaded on top of the user config through OPENCODE_CONFIG. Title and
-  # compaction would otherwise pick a personal model of the same provider.
-  opencodeRemote = {
-    model = "cliproxy/${remoteDefaults.model}";
-    agents = {
-      title.model = "cliproxy/${remoteDefaults.helper}";
-      compaction.model = "cliproxy/${remoteDefaults.helper}";
-    };
+    models = opencodeModels personal;
   };
 
   piApi = {
@@ -170,13 +120,15 @@ let
       ) models;
     };
   };
+  # FIXME: the remote/ check replaces Remote models from before the Remote
+  # Claude login joined the shared pool; delete it once every agents host
+  # has activated it (same for the other remote/ migrations below).
   piSettings = model: ''
-    if .defaultProvider == "cliproxy" and ((.defaultModel // "") | startswith("remote/")) == ${lib.boolToString (lib.hasPrefix "remote/" model)}
+    if .defaultProvider == "cliproxy" and ((.defaultModel // "") | startswith("remote/") | not)
     then . else .defaultProvider = "cliproxy" | .defaultModel = "${model}" end
   '';
 
-  # fx takes the permission reviewer from the provider, so Remote projects
-  # select a second provider (FX_PROVIDER) rather than only a model.
+  # fx takes the permission reviewer from the provider.
   fx = models: reviewer: {
     protocol = "openai-chat-completions";
     base_url = "${url}/v1";
@@ -222,38 +174,11 @@ let
         | ${grokPick "prompt_suggestion" d.helper})
     | .ui |= ((. // {}) | ${grokPick "fork_secondary_model" d.model})
   '';
-
-  remoteEnv = {
-    REMOTE_AGENTS = "1";
-    ANTHROPIC_MODEL = "remote/claude-opus-5-5";
-    ANTHROPIC_DEFAULT_OPUS_MODEL = "remote/claude-opus-5-5";
-    ANTHROPIC_DEFAULT_SONNET_MODEL = "remote/claude-sonnet-5-5";
-    ANTHROPIC_DEFAULT_HAIKU_MODEL = "remote/claude-haiku-5-5";
-    ANTHROPIC_DEFAULT_FABLE_MODEL = "remote/claude-fable-5-2";
-    CLAUDE_CODE_SUBAGENT_MODEL = "remote/claude-opus-5-5";
-    OPENCODE_CONFIG = "${remoteDir}/opencode.json";
-    PI_CODING_AGENT_DIR = "${remoteDir}/pi";
-    GROK_HOME = "${remoteDir}/grok";
-    FX_PROVIDER = "cliproxy-remote";
-    FX_MODEL = remoteDefaults.model;
-  };
 in
 {
   config = lib.mkIf config.sgiath.agents.enable {
     # Pi rewrites settings.json but only reads models.json.
     home.file.".pi/agent/models.json".text = builtins.toJSON (pi personal);
-
-    xdg.configFile = {
-      "remote-agents/pi/models.json".text = builtins.toJSON (pi remote);
-      "remote-agents/opencode.json".text = builtins.toJSON opencodeRemote;
-      "direnv/lib/remote-agents.sh".text = ''
-        # Remote (work) projects: every agent tool uses remote/<model> only.
-        use_remote_agents() {
-        ${
-          lib.concatStrings (lib.mapAttrsToList (n: v: "  export ${n}=${lib.escapeShellArg v}\n") remoteEnv)
-        }}
-      '';
-    };
 
     home.activation = {
       opencodeProxy = merge {
@@ -268,7 +193,8 @@ in
           | .share = "disabled"
           | .plugins = ((.plugins // []) - ["-opencode.provider.openai", "-opencode.provider.chatgpt"]
               + ["-opencode.provider.openai", "-opencode.provider.chatgpt"])
-          | .model |= (if type == "string" and startswith("cliproxy/") then . else "cliproxy/${defaults.model}" end)
+          | .model |= (if type == "string" and startswith("cliproxy/") and (startswith("cliproxy/remote/") | not)
+              then . else "cliproxy/${defaults.model}" end)
           | .policies = [
               {action: "provider.use", resource: "*", effect: "deny"},
               {action: "provider.use", resource: "cliproxy", effect: "allow"}
@@ -281,23 +207,17 @@ in
         overlay = { };
         filter = piSettings defaults.model;
       };
-      piRemoteProxy = merge {
-        path = "${remoteRel}/pi/settings.json";
-        overlay = { };
-        filter = piSettings remoteDefaults.model;
-      };
 
       fxProxy = merge {
         path = ".fx/settings.json";
         overlay = {
           cliproxy = fx personal defaults.helper;
-          cliproxy-remote = fx remote remoteDefaults.helper;
         };
         filter = ''
           .providers = ((.providers // {}) + $proxy)
+          | del(.providers["cliproxy-remote"], .models["cliproxy-remote"])
           | .provider = "cliproxy"
-          | .models.cliproxy |= (if . == null then "${defaults.model}" else . end)
-          | .models["cliproxy-remote"] |= (if . == null then "${remoteDefaults.model}" else . end)
+          | .models.cliproxy |= (if . == null or startswith("remote/") then "${defaults.model}" else . end)
         '';
       };
 
@@ -306,12 +226,6 @@ in
         toml = true;
         overlay = grok personal;
         filter = grokFilter "grok-4.7" defaults;
-      };
-      grokRemoteProxy = merge {
-        path = "${remoteRel}/grok/config.toml";
-        toml = true;
-        overlay = grok remote;
-        filter = grokFilter remoteDefaults.model remoteDefaults;
       };
     };
   };
