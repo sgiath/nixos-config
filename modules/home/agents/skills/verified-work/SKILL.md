@@ -123,6 +123,11 @@ for the roles they cover; selecting a composer model alone does not override thi
 provider/model or delegation route is unavailable, report the attempts and ask how to proceed before doing that
 phase. Do not silently substitute another model. Continue independent work on available roles.
 
+The one automatic substitution is a cybersecurity refusal: when a model in any role refuses a phase on
+cybersecurity grounds, retry that phase once, with the same brief, on Codex Daybreak (`gpt-daybreak-blue-latest`
+at `high`, T3 instance `codex-daybreak`) without asking. Record the refusal and the model that completed the
+phase. If Daybreak refuses too or is unavailable, report the phase as blocked and continue independent work.
+
 ## Execute and hand off
 
 One owning thread coordinates the work and remains responsible for the final outcome. This workflow permits

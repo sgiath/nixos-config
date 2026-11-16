@@ -46,9 +46,13 @@ SSH there.
 - Adversarial security reviews go to Codex `gpt-daybreak-blue-latest` at `high` reasoning effort through the
   direct ChatGPT login. In T3 use provider instance `codex-daybreak` (Codex Daybreak); in the CLI use
   `codex --profile daybreak`. If that route is unavailable, report the blocker instead of silently falling back
-  to another model. If a round is refused on cybersecurity grounds, record the refusal, do not reword the brief
+  to another model. If Daybreak refuses a round on cybersecurity grounds, record the refusal, do not reword the brief
   or switch models to get past it, and do not block independent work on it. A required security review that no
   model completed is reported as skipped, not passed.
+- When any model refuses a request on cybersecurity grounds (in this thread, a delegate or a review round),
+  automatically retry the same request once on Codex Daybreak (`gpt-daybreak-blue-latest`, `high`, the route
+  above) with the brief unchanged, without asking me first. Record the original refusal and which model
+  completed the work. If Daybreak also refuses or is unavailable, report that and continue independent work.
 - Use Fable (OpenCode, `cliproxy/claude-fable-5-2`) at `high` reasoning effort sparingly, for creating and
   designing new UIs or substantial redesigns where its visual and UX judgment adds value, including animations
   and transitions. Limit its work to the design and implementation that requires those choices. Routine UI
