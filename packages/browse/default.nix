@@ -1,45 +1,64 @@
 {
   lib,
-  stdenv,
-  importNpmLock,
-  makeWrapper,
-  nodejs,
+  stdenvNoCC,
+  fetchurl,
+  runtimeShell,
 }:
 
-stdenv.mkDerivation (finalAttrs: {
+let
+  version = "0.1.0";
+
+  # Upstream publishes static musl binaries only to npm; the GitHub release
+  # carries just the extension and the Node launcher.
+  targets = {
+    x86_64-linux = {
+      target = "linux-x64-musl";
+      hash = "sha256-K2ix593QQ1lHbdpwaKZVnJTfVuZuhbeWA4YY/GY6EPU=";
+    };
+    aarch64-linux = {
+      target = "linux-arm64-musl";
+      hash = "sha256-DyX0t17oen/fhrEWCP3uIjRsW473Q7eAG7sAVmcyV2k=";
+    };
+  };
+
+  platform =
+    targets.${stdenvNoCC.hostPlatform.system}
+      or (throw "browse: unsupported system ${stdenvNoCC.hostPlatform.system}");
+in
+stdenvNoCC.mkDerivation {
   pname = "browse";
-  version = (lib.importJSON ./package-lock.json).packages."node_modules/@opencode/browse".version;
-  src = ./.;
+  inherit version;
 
-  npmDeps = importNpmLock { npmRoot = ./.; };
-  npmRebuildFlags = [ "--ignore-scripts" ];
-  nativeBuildInputs = [
-    nodejs
-    importNpmLock.npmConfigHook
-    makeWrapper
-  ];
+  src = fetchurl {
+    url = "https://registry.npmjs.org/@opencode/browse-${platform.target}/-/browse-${platform.target}-${version}.tgz";
+    inherit (platform) hash;
+  };
 
+  sourceRoot = "package";
   dontBuild = true;
+  dontStrip = true;
 
-  # The tree `npm install -g` leaves under `<prefix>/lib/node_modules`. With
-  # npm_config_prefix pointing here, `npm root -g` is this package's own
-  # parent, so `browse install` adopts it instead of running
-  # `npm install -g @opencode/browse` (cli/src/setup/mcp.ts installRuntime).
+  # Nix owns the version: auto-update is forced off, and `browse install`
+  # is refused because it copies any binary it does not recognise as its own
+  # install (a store path included) into a mutable user directory, even with
+  # updates off. `browse pair` pairs a browser without that copy.
   installPhase = ''
     runHook preInstall
 
-    mkdir -p $out/lib
-    cp -r node_modules $out/lib/node_modules
-    rm -rf $out/lib/node_modules/.bin $out/lib/node_modules/.package-lock.json
-
-    # Nix owns the version: the relay would otherwise check npm hourly and
-    # run `npm install -g` into the read-only store.
-    makeWrapper ${lib.getExe nodejs} $out/bin/browse \
-      --add-flags $out/lib/node_modules/@opencode/browse/dist/cli.mjs \
-      --prefix PATH : ${lib.makeBinPath [ nodejs ]} \
-      --set npm_config_prefix $out \
-      --set OPENCODE_BROWSER_AUTO_UPDATE off \
-      --set OPENCODE_BROWSER_UPDATE_CHECK 0
+    install -Dm755 bin/browse $out/libexec/browse/browse
+    mkdir -p $out/bin
+    cat > $out/bin/browse <<EOF
+    #!${runtimeShell}
+    if [ "\''${1-}" = install ]; then
+      echo "browse: this binary is managed by Nix; 'browse install' would copy it out of the store." >&2
+      echo "browse: pair a browser with 'browse pair' and configure MCP clients through Nix or their own config." >&2
+      exit 2
+    fi
+    export OPENCODE_BROWSER_AUTO_UPDATE=off
+    export OPENCODE_BROWSER_UPDATE_CHECK=0
+    exec $out/libexec/browse/browse "\$@"
+    EOF
+    chmod +x $out/bin/browse
 
     runHook postInstall
   '';
@@ -48,7 +67,8 @@ stdenv.mkDerivation (finalAttrs: {
   installCheckPhase = ''
     runHook preInstallCheck
 
-    test "$(HOME=$TMPDIR $out/bin/browse --version)" = ${finalAttrs.version}
+    test "$(HOME=$TMPDIR $out/bin/browse --version)" = ${version}
+    ! HOME=$TMPDIR $out/bin/browse install 2>/dev/null
 
     runHook postInstallCheck
   '';
@@ -58,9 +78,7 @@ stdenv.mkDerivation (finalAttrs: {
     homepage = "https://github.com/anomalyco/browse";
     license = lib.licenses.mit;
     mainProgram = "browse";
-    platforms = [
-      "x86_64-linux"
-      "aarch64-linux"
-    ];
+    sourceProvenance = [ lib.sourceTypes.binaryNativeCode ];
+    platforms = lib.attrNames targets;
   };
-})
+}
