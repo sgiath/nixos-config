@@ -18,11 +18,12 @@ is not exhaustive: use filtered/paginated thread lists (including settled thread
 Use provider session files when T3 history lacks needed tool evidence or the requested work happened outside T3;
 deduplicate mirrored transcripts by task, timestamps and message evidence. Session stores:
 
-- Claude Code: `~/.claude/projects/<cwd-with-dashes>/*.jsonl`, and `~/.claude-remote/projects/` for the Remote account.
+- Claude Code: `~/.claude/projects/<cwd-with-dashes>/*.jsonl`. Sessions of the retired Remote account
+  (`~/.claude-remote`, `~/.codex-remote`) survive only in the agent archive (`archive.raw`, account `.claude-remote`/`.codex-remote`).
   `-tmp-t3code-claude-title-*` and `--t3-worktrees-*` sessions outside T3's provider IDs are title and branch
   generators: skip them.
 - oh-my-pi: `~/.omp/agent/sessions/<cwd-slug>/` (default profile) and `~/.omp/profiles/<profile>/agent/sessions/<cwd-slug>/` (for example `crazyegg`, `remote`); check every profile, since one project can have sessions in several
-- Codex: `~/.codex/sessions/<yyyy>/<mm>/<dd>/*.jsonl`, and `~/.codex-remote/sessions/` for the Remote account
+- Codex: `~/.codex/sessions/<yyyy>/<mm>/<dd>/*.jsonl` and `~/.codex/archived_sessions/` (cold ones as `.jsonl.zst`)
 - pi: `~/.pi/agent/sessions/<cwd-slug>/`
 - T3 Code threads: search and read them with the T3 thread tools. For a week or more of history, enumerate threads
   from the state database read-only instead of paging large `t3_thread_list` results:

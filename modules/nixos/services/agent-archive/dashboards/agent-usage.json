@@ -1122,7 +1122,7 @@
     {
       "type": "table",
       "title": "Accounts",
-      "description": ".claude-remote and .codex-remote are the second accounts; .omp/profiles/* are named OMP profiles.",
+      "description": ".claude-remote and .codex-remote are the retired Remote account; .omp/profiles/* are named OMP profiles.",
       "datasource": {
         "type": "grafana-clickhouse-datasource",
         "uid": "agent-archive"

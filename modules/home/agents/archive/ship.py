@@ -98,6 +98,9 @@ class Sqlite:
     where: str = "1"
 
 
+# FIXME: the .claude-remote, .codex-remote and .config/remote-agents entries
+# belong to the retired Remote account; drop them once Pallas and Juno1 have
+# shipped and removed those directories (deleted on Ceres and Vesta).
 # Paths are relative to $HOME unless absolute; missing or unreadable ones are
 # skipped, so one list serves every host. Root-only stores (the static Hermes
 # migration copy on Vesta) are archived by running this once as root.
