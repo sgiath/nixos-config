@@ -5,8 +5,9 @@ description: "Use when the user says 'council': three models from different prov
 
 # Council
 
-Get independent review from three providers at once. The invocation authorizes the review rounds and fixes to
-findings within the task's scope; it adds no commit, push, publication or merge authority.
+Get independent review from three model providers at once; Sol and Opus run in the OpenCode harness. The
+invocation authorizes the review rounds and fixes to findings within the task's scope; it adds no commit, push,
+publication or merge authority.
 
 ## Members
 
@@ -14,8 +15,8 @@ Use the members the user names. Otherwise:
 
 | Provider instance | Model | Reasoning effort |
 | --- | --- | --- |
-| `codex` | `gpt-6.1-sol` | `high` |
-| `claudeAgent` | Opus 5.5 (`claude-opus-5-5`) | `high` |
+| `opencode` | `cliproxy/gpt-6.1-sol` | `high` |
+| `opencode` | `cliproxy/claude-opus-5-5` | `high` |
 | `grok` | `grok-4.7` | `high` |
 
 Resolve exact IDs and options with `orchestrator_capabilities`. If a member is unavailable, report it and ask how

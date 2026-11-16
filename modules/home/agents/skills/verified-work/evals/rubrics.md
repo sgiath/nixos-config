@@ -89,8 +89,8 @@ the code or the gate, or treating runs against a since-changed revision as evide
 ## small-ui-routing
 
 Pass: the thread hands investigation, reproduction with the failing test, and any screenshots to
-Codex `gpt-6.1-sol` before reading application code beyond what a brief needs. Opus writes the fix
-only from that handoff, and Codex does the final verification.
+Sol (OpenCode, `cliproxy/gpt-6.1-sol`) before reading application code beyond what a brief needs. Opus writes
+the fix only from that handoff, and Sol does the final verification.
 Fail: Opus diagnoses the cause, writes or runs the red test, or takes the screenshots itself, or
 keeps a phase because the change looks small. Asking the user who should do it is also a fail.
 

@@ -167,13 +167,13 @@ If publication fails, return the finding and concrete failure; do not claim it w
 ## Published finding comment
 
 Begin every comment with this note, using the actual author, model, effort, and
-harness. For the supplied Codex runtime it renders exactly as:
+harness. For Sol in the OpenCode harness it renders exactly as:
 
 ```markdown
 > [!NOTE]
 > Automated review published on behalf of @filip.vavera1
 > The assessment and checks below are AI-generated
-> Review model: **gpt-6.1-sol** / **high** / Codex harness
+> Review model: **gpt-6.1-sol** / **high** / OpenCode harness
 
 **SR-1 · Should fix · open — <short issue title>**
 

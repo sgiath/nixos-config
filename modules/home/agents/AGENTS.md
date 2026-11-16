@@ -29,17 +29,19 @@ SSH there.
   gate cannot be established or met, ask me how to proceed; do not silently weaken it or proceed past it.
   In an unattended scheduled run, the task prompt's authorization replaces asking me: record the blocker with its
   evidence and options, and continue with independent work.
-- Follow `verified-work` model routing. Codex with `gpt-6.1-sol` does all work before and around a production
-  change: code exploration, research, investigation, reproduction including the failing test, throwaway tests and
-  scripts, production-data probes, screenshots and verification. Claude with Opus 5.5 (`claude-opus-5-5`) starts
-  only when the cause is established and the reproduction and verification commands are ready; it then decides
-  where and how to fix the production code and writes it. Updates to existing UIs that do not require a new
-  design count as production code. An Opus thread delegates the other phases to Codex instead of doing them
-  itself, however small the change looks; this outranks the harness's advice to do a handful of tool calls
-  yourself. Only my task-specific choice overrides this. A generated brief that relaxes routing quotes that
-  choice; do not invent an exemption for size or deliverable type.
-- When a complicated fix or PR needs an independent review, use Codex with `gpt-6.1-sol` at `high`
-  reasoning effort for its thorough review, including production-code correctness and design judgments.
+- Follow `verified-work` model routing. Every role runs in the OpenCode harness (T3 provider instance
+  `opencode`), with the model through CLIProxy and the reasoning effort as its `variant`. Sol
+  (`cliproxy/gpt-6.1-sol`) does all work before and around a production change: code exploration, research,
+  investigation, reproduction including the failing test, throwaway tests and scripts, production-data probes,
+  screenshots and verification. Opus 5.5 (`cliproxy/claude-opus-5-5`) starts only when the cause is established
+  and the reproduction and verification commands are ready; it then decides where and how to fix the production
+  code and writes it. Updates to existing UIs that do not require a new design count as production code. An Opus
+  thread delegates the other phases to Sol instead of doing them itself, however small the change looks; this
+  outranks the harness's advice to do a handful of tool calls yourself. Only my task-specific choice overrides
+  this. A generated brief that relaxes routing quotes that choice; do not invent an exemption for size or
+  deliverable type.
+- When a complicated fix or PR needs an independent review, use Sol (OpenCode, `cliproxy/gpt-6.1-sol`) at
+  `high` reasoning effort for its thorough review, including production-code correctness and design judgments.
   Production implementation remains with Opus.
 - Adversarial security reviews go to Codex `gpt-daybreak-blue-latest` at `high` reasoning effort through the
   direct ChatGPT login. In T3 use provider instance `codex-daybreak` (Codex Daybreak); in the CLI use
@@ -47,11 +49,11 @@ SSH there.
   to another model. If a round is refused on cybersecurity grounds, record the refusal, do not reword the brief
   or switch models to get past it, and do not block independent work on it. A required security review that no
   model completed is reported as skipped, not passed.
-- Use Claude with `fable-5-2` at `high` reasoning effort sparingly, for creating and designing new UIs or
-  substantial redesigns where its visual and UX judgment adds value, including animations and transitions.
-  Limit its work to the design and implementation that requires those choices. Routine UI updates, bug fixes,
-  investigation, testing, screenshots, review and verification follow the general routing above; UI involvement
-  alone is not a reason to use Fable or spawn a Fable subagent. The one exception in review is the single read-only
+- Use Fable (OpenCode, `cliproxy/claude-fable-5-2`) at `high` reasoning effort sparingly, for creating and
+  designing new UIs or substantial redesigns where its visual and UX judgment adds value, including animations
+  and transitions. Limit its work to the design and implementation that requires those choices. Routine UI
+  updates, bug fixes, investigation, testing, screenshots, review and verification follow the general routing
+  above; UI involvement alone is not a reason to use Fable or spawn a Fable subagent. The one exception in review is the single read-only
   Fable ship check that runs when review rounds hand disputed or leftover findings to me.
 - Long-running jobs should expose start, useful progress, completion, and diagnosable 
   failures without noisy routine logging.
