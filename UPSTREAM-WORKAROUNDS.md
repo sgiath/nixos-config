@@ -14,21 +14,26 @@ must not keep a second inventory.
   not misreported as stale workarounds; they have no upstream removal gate.
 - **Resolved history:** short record of verified clean cutovers.
 
-Baseline of this manual review: repository `082a34ed`, checked 2026-11-06.
-Resolved through `flake.inputs`: root `nixpkgs` 1d060086, `home-manager`
-2c0c1f01, `hyprland` acc1aa0b (v0.57.1; its nixpkgs 0bb2eedc), `comfyui`
-58f91b00 (its nixpkgs dc5d91f8), `sops-nix` b18e01ce, `snowfall-lib`
-6ee3542c, `nixpkgs-master` 164d29c0, `nixpkgs-ksa` 670a3617, `llm-agents`
-baf92436 and `hermes-agent` 2bd378ed. Re-resolve them for each manual review;
-never read bare lock nodes, which may name nested dependencies.
+Baseline of this manual review: repository `b1a85fff`, checked 2026-11-15.
+Resolved through `flake.inputs`: root `nixpkgs` d5cc6833, `home-manager`
+a1293da7, `hyprland` 11cbc6c5 (v0.57.2; its nixpkgs f4a03c00), `comfyui`
+a78b8b01 (its nixpkgs f4a03c00), `sops-nix` 11e5885d, `snowfall-lib`
+6ee3542c, `nixpkgs-master` 19899058, `nixpkgs-ksa` 670a3617, `llm-agents`
+aeb1afe1, `hermes-agent` 3b421578 (v0.23.1) and `dgx-spark` c646a19a.
+Re-resolve them for each manual review; never read bare lock nodes, which may
+name nested dependencies.
 
-The **Review (2026-11-06)** entries give the current status and supersede older
-upstream/selected-pin claims in each record. Historical **Exercised** evidence
-keeps its original date. Every active record was accounted for; the six
-security/credential-sensitive checks could not start because the required model
-was unavailable, and the selected ISO was absent for geometry inspection. Those
-seven records are retained as `unknown`. No workaround was removed, input
-upgraded, package/system built or host deployed by this audit.
+The **Review (2026-11-15)** entries give the current status and supersede older
+upstream/selected-pin claims in each record; historical **Exercised** evidence
+keeps its original date. Every active record was checked, including the seven
+security/credential-sensitive ones, reviewed by the security model this time.
+Three records remain `unknown`: Bird (no equivalent fetchable upstream
+established), Executor state ownership (retained-state ownership on Vesta
+deliberately not inspected) and burn-iso (selected ISO output absent, not built).
+Several records' Where/Selected pin/Why fields are outdated (named in their
+Review entries) and should be corrected in the change that next touches each
+workaround. No workaround was removed, input upgraded, package/system built or
+host deployed by this audit.
 
 ## Manual review
 
@@ -114,41 +119,41 @@ Runtime checks in records are required future checks unless the record's
 | ID | Kind | Status | Profile |
 | --- | --- | --- | --- |
 | [`zenpower-kbuild-module-install`](#zenpower-kbuild-module-install) | temporary fix | candidate | ceres, pallas, vesta |
-| [`xanmod-tools-128bit-types-duplicate`](#xanmod-tools-128bit-types-duplicate) | temporary fix | required | ceres |
+| [`xanmod-tools-128bit-types-duplicate`](#xanmod-tools-128bit-types-duplicate) | temporary fix | candidate | ceres |
 | [`chatgpt-tpm2-tss-build-inputs`](#chatgpt-tpm2-tss-build-inputs) | temporary fix | candidate | desktop |
-| [`cinny-desktop-gst-plugins`](#cinny-desktop-gst-plugins) | temporary fix | required | desktop |
+| [`cinny-desktop-gst-plugins`](#cinny-desktop-gst-plugins) | temporary fix | candidate | desktop |
 | [`otelcol-contrib-swiss-go127`](#otelcol-contrib-swiss-go127) | temporary fix | required | ceres, pallas, vesta, juno1 |
-| [`lk-jwt-service-aws-lc-inputs`](#lk-jwt-service-aws-lc-inputs) | temporary fix | required | vesta |
-| [`nostr-rs-relay-system-jemalloc`](#nostr-rs-relay-system-jemalloc) | temporary fix | required | vesta |
-| [`presenterm-oniguruma-inputs`](#presenterm-oniguruma-inputs) | temporary fix | required | all |
-| [`primp-system-library-inputs`](#primp-system-library-inputs) | temporary fix | required | all |
+| [`lk-jwt-service-aws-lc-inputs`](#lk-jwt-service-aws-lc-inputs) | temporary fix | candidate | vesta |
+| [`nostr-rs-relay-system-jemalloc`](#nostr-rs-relay-system-jemalloc) | temporary fix | candidate | vesta |
+| [`presenterm-oniguruma-inputs`](#presenterm-oniguruma-inputs) | temporary fix | candidate | all |
+| [`primp-system-library-inputs`](#primp-system-library-inputs) | temporary fix | candidate | all |
 | [`llm-agents-codex-aws-lc-openssl-shim`](#llm-agents-codex-aws-lc-openssl-shim) | temporary fix | required | all |
-| [`llm-agents-hermes-nemo-relay-aws-lc`](#llm-agents-hermes-nemo-relay-aws-lc) | temporary fix | required | all |
+| [`llm-agents-hermes-nemo-relay-aws-lc`](#llm-agents-hermes-nemo-relay-aws-lc) | temporary fix | candidate | all |
 | [`hermes-agent-exact-pin-relax`](#hermes-agent-exact-pin-relax) | compatibility | candidate | all |
 | [`hermes-agent-node-patchelf`](#hermes-agent-node-patchelf) | temporary fix | required | vesta |
-| [`hermes-agent-home-mode`](#hermes-agent-home-mode) | compatibility | unknown | vesta |
+| [`hermes-agent-home-mode`](#hermes-agent-home-mode) | compatibility | required | vesta |
 | [`snowfall-flake-utils-plus-deferred-config`](#snowfall-flake-utils-plus-deferred-config) | vendored fork | required | all |
 | [`hyprland-glaze-release-freeze`](#hyprland-glaze-release-freeze) | input pin | candidate | desktop |
 | [`ksa-unmerged-nixpkgs-package`](#ksa-unmerged-nixpkgs-package) | input fork | required | ceres |
 | [`bird-unavailable-upstream-vendoring`](#bird-unavailable-upstream-vendoring) | vendored source | unknown | ceres, vesta |
-| [`comfyui-rocm-int8-probe`](#comfyui-rocm-int8-probe) | temporary fix | required | ceres, juno1 |
-| [`comfyui-python-package-set`](#comfyui-python-package-set) | compatibility | required | ceres, juno1 |
-| [`comfyui-open-clip-broken-allowance`](#comfyui-open-clip-broken-allowance) | compatibility | candidate | ceres |
-| [`comfyui-service-overlay-selection`](#comfyui-service-overlay-selection) | compatibility | required | ceres |
-| [`comfyui-rocm-platform-guard`](#comfyui-rocm-platform-guard) | compatibility | required | ceres, juno1 |
-| [`comfyui-qwen-memory-policy`](#comfyui-qwen-memory-policy) | compatibility | required | ceres |
-| [`desktop-hyprland-mesa-abi`](#desktop-hyprland-mesa-abi) | ABI | candidate | desktop |
+| [`comfyui-rocm-int8-probe`](#comfyui-rocm-int8-probe) | temporary fix | dormant | ceres, juno1 |
+| [`comfyui-python-package-set`](#comfyui-python-package-set) | compatibility | dormant | ceres, juno1 |
+| [`comfyui-open-clip-broken-allowance`](#comfyui-open-clip-broken-allowance) | compatibility | dormant | ceres |
+| [`comfyui-service-overlay-selection`](#comfyui-service-overlay-selection) | compatibility | dormant | ceres |
+| [`comfyui-rocm-platform-guard`](#comfyui-rocm-platform-guard) | compatibility | dormant | ceres, juno1 |
+| [`comfyui-qwen-memory-policy`](#comfyui-qwen-memory-policy) | compatibility | dormant | ceres |
+| [`desktop-hyprland-mesa-abi`](#desktop-hyprland-mesa-abi) | ABI | required | desktop |
 | [`portal-qt-theme-isolation`](#portal-qt-theme-isolation) | compatibility | candidate | desktop |
 | [`legacy-wlroots-session-flags`](#legacy-wlroots-session-flags) | compatibility | unverified | desktop |
 | [`satty-floating-hack`](#satty-floating-hack) | compatibility | required | desktop |
 | [`quickshell-store-theme-restart`](#quickshell-store-theme-restart) | compatibility | unverified | desktop |
 | [`quickshell-hyprland-workspace-address`](#quickshell-hyprland-workspace-address) | compatibility | required | desktop |
 | [`hex-model-service-selection`](#hex-model-service-selection) | temporary fix | required | desktop |
-| [`preview-share-picker-hyprland-057-ipc`](#preview-share-picker-hyprland-057-ipc) | temporary fix | required | desktop |
+| [`preview-share-picker-hyprland-057-ipc`](#preview-share-picker-hyprland-057-ipc) | temporary fix | candidate | desktop |
 | [`gaming-gtk2-broken-allowance`](#gaming-gtk2-broken-allowance) | compatibility | required | ceres |
 | [`tmux-sessionizer-session-target`](#tmux-sessionizer-session-target) | temporary fix | candidate | all |
 | [`pihole-first-run-setup-retry`](#pihole-first-run-setup-retry) | temporary fix | required | vesta |
-| [`searx-json-secret-interpolation`](#searx-json-secret-interpolation) | temporary fix | unknown | vesta |
+| [`searx-json-secret-interpolation`](#searx-json-secret-interpolation) | temporary fix | required | vesta |
 | [`executor-state-ownership-migration`](#executor-state-ownership-migration) | data migration | unknown | vesta |
 | [`executor-registry-image-version-selection`](#executor-registry-image-version-selection) | updater constraint | required | vesta |
 | [`katrain-kivy-python-api`](#katrain-kivy-python-api) | compatibility | required | ceres |
@@ -163,14 +168,14 @@ Runtime checks in records are required future checks unless the record's
 | [`t3code-nightly-trusted-networks`](#t3code-nightly-trusted-networks) | security exception | required | ceres, pallas, vesta |
 | [`cross-architecture-nixos-rebuild-no-reexec`](#cross-architecture-nixos-rebuild-no-reexec) | compatibility | candidate | ceres, juno1 |
 | [`burn-iso-hybrid-mbr-key-partition`](#burn-iso-hybrid-mbr-key-partition) | compatibility | unknown | iso |
-| [`dgx-spark-nvidia-kernel-cve-2026-98432`](#dgx-spark-nvidia-kernel-cve-2026-98432) | security backport | unknown | juno1 |
-| [`whiteboard-bundled-electron`](#whiteboard-bundled-electron) | security exception | unknown | desktop |
+| [`dgx-spark-nvidia-kernel-cve-2026-98432`](#dgx-spark-nvidia-kernel-cve-2026-98432) | security backport | required | juno1 |
+| [`whiteboard-bundled-electron`](#whiteboard-bundled-electron) | security exception | watch | desktop |
 
 ### Flake inputs, overlays and vendoring
 
 #### `zenpower-kbuild-module-install`
 
-- **Review (2026-11-06):** `candidate`. Selected root nixpkgs `1d060086` contains [976984ad](https://github.com/NixOS/nixpkgs/commit/976984ad4730) (`compare` to pin: ahead 9955, behind 0); its [zenpower package](https://github.com/NixOS/nixpkgs/blob/1d060086d60cb76a40cf37109f979d88a5bd6396/pkgs/os-specific/linux/zenpower/default.nix) now supplies `kernelModuleMakeFlags`, `installTargets = [ "modules_install" ]`, the kernel build directory and `M=$(PWD)`. Full Ceres selection is zenpower5 `0.5.0-unstable-2026-01-07` (zenpower5 source `66871d8e`). The local extension duplicates the selected fix. [Issue #575192](https://github.com/NixOS/nixpkgs/issues/575192) remains open, so issue state alone is misleading. Removal still needs `ceres`, `pallas`, `vesta` builds without the extension, output/module-tree certificate proof, and booted `sensors` evidence; none was run by this audit.
+- **Review (2026-11-15):** `candidate`. Nothing changed in the removal assessment since November 6. [Selected root nixpkgs d5cc6833](https://github.com/NixOS/nixpkgs/blob/d5cc6833999746cffdfe0598f7bc801a57b887a9/pkgs/os-specific/linux/zenpower/default.nix) contains the modules_install fix (`976984ad` → pin: ahead 21711, behind 0); Ceres selects zenpower5 `0.5.0-unstable-2026-01-07`/`66871d8e`. Removal still needs Ceres/Pallas/Vesta builds, module certificates/tree inspection and booted sensors proof.
 
 - **Where:** `overlays/sgiath/default.nix` (`kernelPackagesExtensions` override of `zenpower`).
 - **Why:** since [NixOS/nixpkgs#571181](https://github.com/NixOS/nixpkgs/pull/571181) Kbuild signs every module with kmodigest during `modules_install` and writes `<module>.ko.cer` next to it, and `aggregateModules` concatenates the certificates of all external modules into `modules.cer`. zenpower copies `zenpower.ko` by hand, so there is no certificate and the `linux-*-modules` build fails with `cat: kernel/drivers/hwmon/zenpower/zenpower.ko.cer: No such file or directory`. The override adds `kernelModuleMakeFlags` and installs through the kernel's `modules_install` (same path, stripped, `DEPMOD=true`), which also compresses the module.
@@ -182,6 +187,8 @@ Runtime checks in records are required future checks unless the record's
 
 #### `xanmod-tools-128bit-types-duplicate`
 
+- **Review (2026-11-15):** `candidate`. [Selected root d5cc6833](https://github.com/NixOS/nixpkgs/blob/d5cc6833999746cffdfe0598f7bc801a57b887a9/pkgs/top-level/linux-kernels.nix#L128-L142) now omits the duplicate patch from XanMod main (`e99a4dcc` → pin: ahead 6046, behind 0). Ceres selects XanMod `7.3.4`; upstream and configured patch lists both contain only bridge-stp-helper and request-key-helper. The local filter is redundant; removal still needs the Ceres/cpupower/config builds and booted frequency checks.
+
 - **Where:** `systems/x86_64-linux/ceres/hardware.nix` (`boot.kernelPackages` is `linuxPackagesFor` an override of `linux_xanmod_latest` that drops the patch named `tools_128bit_types.name` from `kernelPatches` when the kernel is 7.3 or newer). Ceres is the only XanMod host; other kernel families and the XanMod LTS attr are untouched.
 - **Why:** nixpkgs `pkgs/top-level/linux-kernels.nix` adds `kernelPatches.tools_128bit_types` (a backport of [torvalds/linux@10a47fb6](https://github.com/torvalds/linux/commit/10a47fb67340bca274276faf855d7d460afd9a7a), "tools: add 128-bit integer types for aarch64") to every XanMod variant. XanMod 7.3.3's `tools/include/linux/types.h` already contains every line it adds, so `patchPhase` stops with `Reversed (or previously applied) patch detected!`. `cpupower` reuses the kernel's `src` and `patches`, so it fails the same way as the kernel config. The override keeps `bridge_stp_helper`, `request_key_helper` and the patches `buildLinux` adds itself.
 - **Upstream:** no nixpkgs issue or PR searched by this change. The selected nixpkgs already omits the patch from mainline `linux_7_3` and `linux_testing`; only the XanMod and Zen lists still carry it.
@@ -192,7 +199,7 @@ Runtime checks in records are required future checks unless the record's
 
 #### `chatgpt-tpm2-tss-build-inputs`
 
-- **Review (2026-11-06):** `candidate`. Selected llm-agents `baf92436` equals live main and contains [a5c70bf1](https://github.com/numtide/llm-agents.nix/commit/a5c70bf1c91c) (`compare` to pin: ahead 1173, behind 0). Its [unwrapped recipe](https://github.com/numtide/llm-agents.nix/blob/baf924369e8d5ec02af1eab444db411d6fed1e5e/packages/chatgpt/unwrapped.nix) directly includes both `openssl` and `tpm2-tss` in Linux `buildInputs`. Full Ceres selects ChatGPT `26.1029.61003`, against root nixpkgs `1d060086`. The dependency gate is met; desktop builds without the duplicate inputs, native-module `ldd`, and Remote Control pairing remain unrun. Remove only the ChatGPT override, preserving other active `llm-agents` overrides.
+- **Review (2026-11-15):** `candidate`. Nothing changed in the removal assessment since November 6. Selected/live llm-agents [aeb1afe1 supplies OpenSSL and tpm2-tss itself](https://github.com/numtide/llm-agents.nix/blob/aeb1afe1529c5dc7dcdc54d644a8aed212d99dd0/packages/chatgpt/unwrapped.nix#L89-L107) (`a5c70bf1` → pin: ahead 2035, behind 0). Ceres now selects ChatGPT `26.1111.21308`, with both inputs duplicated locally. Desktop builds without the override, native-module ldd and Remote Control pairing remain unrun.
 
 - **Where:** `overlays/sgiath/default.nix` (`llm-agents.chatgpt` with `chatgpt-unwrapped` overridden).
 - **Why:** since 26.1013.40934 ChatGPT ships `resources/native/remote-control-device-key.node`, which links `libtss2-esys.so.0`, `libtss2-mu.so.0`, `libtss2-tcti-device.so.0` and `libcrypto.so.3`. llm-agents doesn't list tpm2-tss or OpenSSL in `chatgpt-unwrapped`; auto-formatelf only found them by following the RUNPATH of `libnss_myhostname.so.2`/`libnss_systemd.so.2` in systemd 261.3. systemd 262 libraries don't carry that RUNPATH anymore, so with our nixpkgs the build fails with `auto-formatelf: libtss2-esys.so.0 not found`. The override adds `openssl` and `tpm2-tss` to `buildInputs`, nothing else.
@@ -204,7 +211,7 @@ Runtime checks in records are required future checks unless the record's
 
 #### `cinny-desktop-gst-plugins`
 
-- **Review (2026-11-06):** `required`. [nixpkgs #578827](https://github.com/NixOS/nixpkgs/pull/578827) merged as `e56cb3d6` on 2026-10-29, but both live master and [selected root `1d060086`](https://github.com/NixOS/nixpkgs/blob/1d060086d60cb76a40cf37109f979d88a5bd6396/pkgs/by-name/ci/cinny-desktop/package.nix) still list only GStreamer and Base, without Good or Bad. Full Ceres now selects Cinny `4.12.8`; Good and Bad in its evaluated inputs come from the local overlay. The release update does not satisfy the removal gate.
+- **Review (2026-11-15):** `candidate`. [Selected root d5cc6833 now supplies Good and Bad itself](https://github.com/NixOS/nixpkgs/blob/d5cc6833999746cffdfe0598f7bc801a57b887a9/pkgs/by-name/ci/cinny-desktop/package.nix#L75-L85), through fix `630d75eb` (#580784; compare ahead 1053, behind 0). Ceres selects Cinny `4.12.8`, and the local overlay duplicates those inputs. Removal still needs desktop builds, the unoverridden launcher's plugin-path proof and audio playback without a web-process crash.
 
 - **Where:** `overlays/sgiath/default.nix` (`cinny-desktop` adds `gst_all_1.gst-plugins-good` and `gst_all_1.gst-plugins-bad` to `buildInputs`; `wrapGAppsHook3` puts them on the launcher's `GST_PLUGIN_SYSTEM_PATH_1_0`, so the desktop entry and the `cinny-desktop` user service in `modules/home/programs/chat.nix` both get them).
 - **Why:** nixpkgs gives Cinny only `gstreamer` and `gst-plugins-base`. WebKitGTK 2.54.1 aborts the web process in `MediaPlayerPrivateGStreamer::createAudioSink` when audio plays (`GStreamer element autoaudiosink not found`), which crashed Cinny on Ceres. `autoaudiosink` is in Good; playback then still fails without Bad's `fakevideosink` and WebVTT encoder. gst-libav was not needed for the reproduction and is not added.
@@ -216,6 +223,8 @@ Runtime checks in records are required future checks unless the record's
 
 #### `otelcol-contrib-swiss-go127`
 
+- **Review (2026-11-15):** `required`. The selected generated collector `0.155.0` source still pins [Swiss b0f6560f, which excludes Go 1.27](https://github.com/cockroachdb/swiss/blob/b0f6560f979b/runtime_go1.20.go#L25). Root d5cc6833 defaults to Go `1.27.3`; the local override selects `1.26.11`. Live Swiss now admits Go 1.27, but that revision is not selected, and selected/live nixpkgs still use collector `0.155.0`. The removal assessment is unchanged.
+
 - **Where:** `overlays/sgiath/default.nix` (`opentelemetry-collector-contrib` is `otelcol-contrib` from `opentelemetry-collector-releases.override { buildGoModule = buildGo126Module; }`). Only the compiler of the final Go build changes: the generated source derivation, version, `vendorHash` and the other collector distributions are unchanged. Both the HM `otel-agent` (`modules/home/agents/archive.nix`) and the Vesta collector (`modules/nixos/services/agent-archive.nix`) use this attr.
 - **Why:** otelcol-contrib `0.155.0`'s generated `go.mod` requires Go 1.25 and pins `github.com/cockroachdb/swiss v0.0.0-20251224182025-b0f6560f979b`. That revision's `runtime_go1.20.go`, which defines `hashFn`, `getRuntimeHasher` and `fastrand64`, is built only under `(go1.20 && !go1.27) || untested_go_version`. Default `buildGoModule` is Go 1.27, so the build fails with `undefined: hashFn`. Go 1.26 is inside the range swiss tested; the `untested_go_version` tag was rejected because it builds runtime-linked hashing on an unvalidated runtime.
 - **Upstream:** [cockroachdb/swiss](https://github.com/cockroachdb/swiss) and [open-telemetry/opentelemetry-collector-contrib](https://github.com/open-telemetry/opentelemetry-collector-contrib); live status was not checked by this change.
@@ -225,6 +234,8 @@ Runtime checks in records are required future checks unless the record's
 - **Exercised (2026-11-09):** before the change the collector build failed with the undefined swiss symbols; `go build ./...` of the extracted swiss module under Go 1.27 reproduced them exactly. After the change the attr evaluates to `otelcol-contrib-0.155.0` built with Go 1.26.10, and its source derivation (`yhn9jz02…-otelcol-contrib-src-0.155.0.drv`) is identical to the original. The collector built successfully and reports version 0.155.0; both full Ceres and Vesta toplevels passed, including validation of their generated collector configs. Live service/telemetry checks were not run; no activation was requested.
 
 #### `lk-jwt-service-aws-lc-inputs`
+
+- **Review (2026-11-15):** `candidate`. [Selected root d5cc6833 supplies AWS-LC and pkg-config itself](https://github.com/NixOS/nixpkgs/blob/d5cc6833999746cffdfe0598f7bc801a57b887a9/pkgs/by-name/lk/lk-jwt-service/package.nix#L26-L32) (`1e289062` → pin: ahead 6203, behind 0). Vesta selects `0.9.0`, with the local inputs duplicated. Removal still needs package/full-Vesta builds without the overlay, service startup and an Element Call LiveKit-token check.
 
 - **Where:** `overlays/sgiath/default.nix` (`lk-jwt-service` gets `aws-lc` in `buildInputs` and `pkg-config` in `nativeBuildInputs`). Vesta's `services.lk-jwt-service` (`modules/nixos/services/matrix.nix`) uses this attr.
 - **Why:** nixpkgs `pkgs/build-support/rust/hooks/cargo-setup-hook.sh` (`cargoUseSystemLibs`) exports `AWS_LC_SYS_USE_SYSTEM=1` for every `buildRustPackage`. lk-jwt-service `0.9.0` vendors `aws-lc-sys 0.44.0`, whose build script then requires a system AWS-LC, but the package recipe has no `buildInputs` or `nativeBuildInputs`, so the build panics with `AWS_LC_SYS_USE_SYSTEM=1 requires a system-installed AWS-LC, but none was found.` The override adds exactly the inputs nixpkgs master added; system-library enforcement and the package's tests stay on.
@@ -236,6 +247,8 @@ Runtime checks in records are required future checks unless the record's
 
 #### `nostr-rs-relay-system-jemalloc`
 
+- **Review (2026-11-15):** `candidate`. [Selected root d5cc6833 now lists rust-jemalloc-sys](https://github.com/NixOS/nixpkgs/blob/d5cc6833999746cffdfe0598f7bc801a57b887a9/pkgs/by-name/no/nostr-rs-relay/package.nix#L25-L28) (`6ca526f8` → pin: ahead 4165, behind 0). Vesta selects relay `0.10.0`, with jemalloc duplicated by the local overlay. Removal still needs package/full-Vesta builds and relay startup/NIP-11 runtime proof.
+
 - **Where:** `overlays/sgiath/default.nix` (`nostr-rs-relay` gets `rust-jemalloc-sys` in `buildInputs`). Vesta's `services.nostr-rs-relay` uses this attr.
 - **Why:** nixpkgs `cargo-setup-hook.sh` (`cargoUseSystemLibs`) sets `JEMALLOC_OVERRIDE` to a nonexistent sentinel path unless a system jemalloc's setup hook already set it. nostr-rs-relay `0.10.0` locks `tikv-jemallocator 0.5.4` / `tikv-jemalloc-sys 0.5.4+5.3.0-patched` (prefixed build, `cargo:rustc-cfg=prefixed`), but its recipe lists no jemalloc, so the build script fails on the sentinel. `rust-jemalloc-sys` is nixpkgs' system jemalloc configured with `--with-private-namespace=_rjem_ --with-jemalloc-prefix=_rjem_` (the crate's prefixed ABI; the unprefixed variant is not used), and its setup hook points `JEMALLOC_OVERRIDE` at its library. System-library enforcement stays on.
 - **Upstream:** nixpkgs [`pkgs/by-name/no/nostr-rs-relay/package.nix`](https://github.com/NixOS/nixpkgs/blob/41691813c5b74a5f1394fcac9a4dafa58b9e06f0/pkgs/by-name/no/nostr-rs-relay/package.nix) on master `41691813` has the same omission. No issue or PR searched; live status not checked by this change.
@@ -245,6 +258,8 @@ Runtime checks in records are required future checks unless the record's
 - **Exercised (2026-11-09):** before the change the Vesta build (`50l06bb5…-nostr-rs-relay-0.10.0.drv`) failed in `tikv-jemalloc-sys` on the `JEMALLOC_OVERRIDE` sentinel path. After the change the attr and `services.nostr-rs-relay.package` evaluate to `smk0iiw0…-nostr-rs-relay-0.10.0.drv` whose jemalloc input is the `rust-jemalloc-sys` derivation. The package and full Vesta toplevel builds passed. Live relay checks were not run; no activation was requested.
 
 #### `presenterm-oniguruma-inputs`
+
+- **Review (2026-11-15):** `candidate`. [Selected root d5cc6833 supplies pkg-config and oniguruma itself](https://github.com/NixOS/nixpkgs/blob/d5cc6833999746cffdfe0598f7bc801a57b887a9/pkgs/by-name/pr/presenterm/package.nix#L25-L32) (`e33426f2` → pin: ahead 5265, behind 0). Ceres selects `0.16.1`; both inputs are duplicated locally. Removal still needs the all-profile builds and package tests/version check without the overlay.
 
 - **Where:** `overlays/sgiath/default.nix` (`presenterm` gets `pkg-config` in `nativeBuildInputs` and `oniguruma` in `buildInputs`). The terminal role (`modules/home/terminal/role.nix`) installs it on every host.
 - **Why:** `cargo-setup-hook.sh` exports `RUSTONIG_SYSTEM_LIBONIG=1`, so `onig_sys` must find oniguruma through pkg-config, but presenterm `0.16.1` lists neither, and the build script fails because pkg-config is not installed.
@@ -256,6 +271,8 @@ Runtime checks in records are required future checks unless the record's
 
 #### `primp-system-library-inputs`
 
+- **Review (2026-11-15):** `candidate`. [Selected root d5cc6833 supplies pkg-config, AWS-LC and zstd-c itself](https://github.com/NixOS/nixpkgs/blob/d5cc6833999746cffdfe0598f7bc801a57b887a9/pkgs/development/python-modules/primp/default.nix#L36-L46) (`b9eb668f` → pin: ahead 6442, behind 0). Ceres selects primp `2.0.1`, with those inputs duplicated locally. Removal still needs all-profile builds and the package's pytest/import checks without the extension.
+
 - **Where:** `overlays/sgiath/default.nix` (`pythonPackagesExtensions` entry: `primp` gets `pkg-config` in `nativeBuildInputs`, `aws-lc` and `zstd` in `buildInputs`, in every Python package set). Reached through `ddgs`, which both Hermes packages depend on.
 - **Why:** `cargo-setup-hook.sh` exports `ZSTD_SYS_USE_PKG_CONFIG=1` and `AWS_LC_SYS_USE_SYSTEM=1`, but primp `2.0.1` lists neither library nor pkg-config, so `zstd-sys` fails without pkg-config.
 - **Upstream:** nixpkgs master [`pkgs/development/python-modules/primp/default.nix`](https://github.com/NixOS/nixpkgs/blob/41691813c5b74a5f1394fcac9a4dafa58b9e06f0/pkgs/development/python-modules/primp/default.nix) adds `pkg-config`, `aws-lc` and `zstd-c` (`pkgs.zstd`) for the same version, source hash and cargo hash. Established from the selected master source; live status not checked by this change.
@@ -265,6 +282,8 @@ Runtime checks in records are required future checks unless the record's
 - **Exercised (2026-11-09):** before the change the Ceres build (`klmizxhh…-python3.14-primp-2.0.1.drv`) failed in `zstd-sys`. After the change `python3Packages.primp` evaluates to `m1rl7qyk…-python3.14-primp-2.0.1.drv` with `aws-lc-5.12.0` and `zstd-1.5.7`, and `python3Packages.ddgs` propagates that derivation. The package passed its import check and all 491 pytest tests; both full Ceres/Vesta toplevels built. The built llm-agents Hermes Python environment also imports `primp`.
 
 #### `llm-agents-codex-aws-lc-openssl-shim`
+
+- **Review (2026-11-15):** `required`. Nothing changed in the removal assessment. Selected/live llm-agents [aeb1afe1 still relies on AWS-LC's compat openssl.pc](https://github.com/numtide/llm-agents.nix/blob/aeb1afe1529c5dc7dcdc54d644a8aed212d99dd0/packages/codex/package.nix#L113-L136), while [root d5cc6833 defaults to a prefixed AWS-LC without the shim](https://github.com/NixOS/nixpkgs/blob/d5cc6833999746cffdfe0598f7bc801a57b887a9/pkgs/by-name/aw/aws-lc/package.nix#L18-L20). Ceres now selects Codex `0.169.0`; retain the Codex override and its T3 propagation.
 
 - **Where:** `overlays/sgiath/default.nix` (`llm-agents.codex` is called with `aws-lc.override { withOpenSSLShim = true; symbolPrefix = null; }`; `llm-agents.t3code` is overridden with that `codex`, and `llm-agents.t3code-desktop` with that `t3code`). `modules/home/agents/codex.nix` uses `llm-agents.codex`; `packages/t3code-nightly` and `packages/t3code-nightly-desktop` put `llm-agents.t3code.providerPackages` on `PATH`.
 - **Why:** the recipe dropped OpenSSL and builds `openssl-sys 0.9.111` against AWS-LC "through its compat openssl.pc", so only one libcrypto is linked. nixpkgs AWS-LC `5.12.0` (`ENABLE_DIST_PKG`) installs only `aws-lc.pc`, `libcrypto-awslc.pc` and `libssl-awslc.pc` unless `withOpenSSLShim` is set, so `pkg-config openssl` fails ("Could not find directory of OpenSSL installation"). With the shim alone, `openssl-sys`'s `run_bindgen.rs` panics: "aws-lc installation has prefixed symbols, but bindgen-cli does not support removing prefixes", because nixpkgs prefixes symbols with `AWS_LC` by default; `symbolPrefix = null` removes the prefix. llm-agents' own nixpkgs pin predates the nixpkgs AWS-LC change, so its CI does not hit this. Replacing `codex` in the `llm-agents` attrset does not change the `codex` that llm-agents' own scope passes to `t3code`, whose `providerPackages` would otherwise keep the unfixed Codex in both system closures through the nightly T3 wrappers.
@@ -276,6 +295,8 @@ Runtime checks in records are required future checks unless the record's
 
 #### `llm-agents-hermes-nemo-relay-aws-lc`
 
+- **Review (2026-11-15):** `candidate`. Selected/live llm-agents [aeb1afe1 now supplies pkg-config, AWS-LC and zstd inside nemo-relay's private binding](https://github.com/numtide/llm-agents.nix/blob/aeb1afe1529c5dc7dcdc54d644a8aed212d99dd0/packages/hermes-agent/package.nix#L80-L100) (`bd4c275c` → pin: ahead 624, behind 0). Ceres selects Nemo Relay `0.11.1`, with the inputs duplicated locally. Removal still needs all-profile/package builds, native imports and closure proof that Hermes/Desktop use the single upstream derivation.
+
 - **Where:** `overlays/sgiath/default.nix` (`llm-agents.hermes-agent` is overridden with a `python3` whose `pkgs.buildPythonPackage` adds `pkg-config`, `aws-lc` and `zstd` to the package named `nemo-relay` and returns every other package unchanged; `llm-agents.hermes-desktop` takes that `hermes-agent`).
 - **Why:** the Hermes recipe builds its private `nemo-relay 0.11.1` (PyO3, `cargoSetupHook` + `maturinBuildHook`) in a `let` binding with no native libraries. It vendors `aws-lc-sys 0.45` and `zstd-sys`, so the cargo setup hook's `AWS_LC_SYS_USE_SYSTEM=1` and `ZSTD_SYS_USE_PKG_CONFIG=1` fail without AWS-LC, zstd and pkg-config. The binding feeds `dependencies`, `pythonEnv` (`HERMES_PYTHON`, the install checks) and `passthru.nemo-relay`; overriding the passthru or the `dependencies` list would leave the old build in the Python environment. The recipe's `python3` argument is the only seam that reaches the binding, and only `buildPythonPackage` changes in it.
 - **Upstream:** llm-agents [`packages/hermes-agent/package.nix`](https://github.com/numtide/llm-agents.nix/blob/3327b7d82f31f2444533e935f06caf1a1b4da18c/packages/hermes-agent/package.nix#L53-L93) at the selected `3327b7d8`. No issue or PR searched; live status not checked by this change.
@@ -286,7 +307,7 @@ Runtime checks in records are required future checks unless the record's
 
 #### `hermes-agent-exact-pin-relax`
 
-- **Review (2026-11-06):** `candidate`. Selected llm-agents `baf92436` equals live main; its [Hermes recipe](https://github.com/numtide/llm-agents.nix/blob/baf924369e8d5ec02af1eab444db411d6fed1e5e/packages/hermes-agent/package.nix#L637-L660) now relaxes both `markdown` and `prompt_toolkit` itself. Full Ceres selects llm-agents Hermes `0.22.7` (source tag commit `b200f5bc`), and the evaluated relaxation list includes each twice because of the local override. The dependency gate is met; `all` profile builds, package checks and interactive Markdown rendering without the override remain unrun. Remove the local Hermes-agent/Desktop overrides together while preserving unrelated `llm-agents` overrides.
+- **Review (2026-11-15):** `candidate`. Nothing changed in the removal assessment since November 6. Selected/live llm-agents [aeb1afe1 relaxes markdown and prompt_toolkit itself](https://github.com/numtide/llm-agents.nix/blob/aeb1afe1529c5dc7dcdc54d644a8aed212d99dd0/packages/hermes-agent/package.nix#L670-L680); Ceres now selects Hermes `0.23.0`, with both names duplicated locally. Removal still needs all-profile/package builds and interactive Markdown proof. Coordinate the remaining Hermes/Desktop attrs with the separate Nemo Relay record.
 
 - **Where:** `overlays/sgiath/default.nix` (`llm-agents.hermes-agent` adds `prompt_toolkit` and `markdown` to `pythonRelaxDeps`, spelled as in the wheel metadata because the relax hook matches names literally (case-insensitive only); `llm-agents.hermes-desktop` gets the overridden `hermes-agent`).
 - **Why:** Hermes 0.22.2 pins `prompt_toolkit==3.0.52` and `Markdown==3.10.2` in `pyproject.toml`. Root nixpkgs 09063bd1 has prompt-toolkit 3.0.53 and Markdown 3.10.3, so `pythonRuntimeDepsCheck` fails with `prompt-toolkit==3.0.52 not satisfied by version 3.0.53` and `markdown==3.10.2 not satisfied by version 3.10.3`. llm-agents already relaxes the other `==` pins nixpkgs moved past (`rich`, `pillow`, `croniter`, `exa-py`); this adds the same for these two patch releases.
@@ -297,6 +318,8 @@ Runtime checks in records are required future checks unless the record's
 - **Exercised (2026-10-20):** without the override the full Ceres build failed in `hermes-agent` with the errors above. With it `hermes-agent` and `hermes-desktop` build (import, version and install checks pass), `hermes --version` runs, its Python env imports `cli` with prompt_toolkit 3.0.53 and renders Markdown with 3.10.3, and the full Ceres build passes. The interactive CLI wasn't started.
 
 #### `hermes-agent-node-patchelf`
+
+- **Review (2026-11-15):** `required`. Full Vesta now selects Hermes input `3b421578` (`v0.23.1`), whose [PM recipe still applies patchelf #672 without a version guard](https://github.com/NousResearch/hermes-agent/blob/3b421578588243f920886e6fe79a6faa87ea026e/nix/pm-packages.nix#L53-L69); live main retains it. Root d5cc6833 still selects unpatched patchelf `0.15.2`. Derivation inspection confirms the locally corrected Node `26.12.1` uses that root patchelf. The removal assessment is unchanged; no build or dashboard runtime check was run.
 
 - **Where:** `overlays/sgiath/default.nix` (`hermes-agent`: while the selected `patchelf` is older than 0.18, every `pmPackages` artifact's `patchelf` native input is replaced by the selected, unpatched `patchelf`; from 0.18 on the attr is upstream's package unchanged). The earlier node-only patchelf 0.15.5 pin is gone.
 - **Why:** Hermes builds its TUI, web UI and wrapper on the upstream `node-v26.12.1-linux-x64` binary pinned in `pm/lock.json`, fixed up by `autoPatchelfHook` (`--set-interpreter`, then `--set-rpath`). patchelf 0.18+ then leaves `.dynamic` in a RW `PT_LOAD` that the next read-only `PT_LOAD` overlaps, so node exits 139 (details under Exercised). Hermes' [`nix/pm-packages.nix`](https://github.com/NousResearch/hermes-agent/blob/2bd378ed1b8d6bf2192cb26e0a55ff3091e6bd19/nix/pm-packages.nix#L55-L88) answers this by appending patchelf#672 (`59acc3d9`, written against 0.19.2) to whatever `patchelf` nixpkgs selects and putting it first in the native inputs of every Linux PM artifact (node, python, uv, ffmpeg, ripgrep, ...). Root nixpkgs now selects patchelf 0.15.2, where 4 of the patch's 6 hunks fail, so `patchelf-0.15.2` (`hcs1ifln…`) and every PM artifact fail. 0.15.x predates the regression and handled this node layout in the 2026-10-23 bisect, so below 0.18 no patch is needed or applicable; at 0.18+ Hermes' own patched patchelf stays in charge. Same failure class as `t3code-nightly-sea-patchelf`.
@@ -310,7 +333,7 @@ Runtime checks in records are required future checks unless the record's
 
 #### `snowfall-flake-utils-plus-deferred-config`
 
-- **Review (2026-11-06):** `required`. Resolved Snowfall input `6ee3542c` still equals [live main](https://github.com/snowfallorg/lib/commit/6ee3542cb459ca4b038cfe50ceb8797f05cdabad) and selects the local `flake-utils-plus-fixed` wrapper based on `3542fe91`. Live flake-utils-plus [master `a00f6f51`](https://github.com/gytis-ivaskevicius/flake-utils-plus/blob/a00f6f51907b5c74d2fde086b10b19d446d15717/lib/mkFlake.nix#L113-L155) still pre-evaluates `hostConfig` and forces `nixpkgs.config = {}`. [#163](https://github.com/gytis-ivaskevicius/flake-utils-plus/pull/163) remains open/unmerged at head `10d81075`, whose implementation still injects `nixpkgs.pkgs = selectedNixpkgs`. The selected local wrapper still supplies deferred configuration, overlay metadata and `nix.settings.nix-path`; the equivalence gate is not met.
+- **Review (2026-11-15):** `required`. Nothing changed since November 6: Snowfall `6ee3542c` still equals live main and selects the local wrapper based on `3542fe91`. [Live flake-utils-plus a00f6f51 still eagerly evaluates host config](https://github.com/gytis-ivaskevicius/flake-utils-plus/blob/a00f6f51907b5c74d2fde086b10b19d446d15717/lib/mkFlake.nix#L113-L155); open/unmerged [#163](https://github.com/gytis-ivaskevicius/flake-utils-plus/pull/163) still injects external nixpkgs.pkgs. The selected-upstream equivalence gate remains unmet.
 
 - **Where:** `flake.nix` (`flake-utils-plus-fixed` input; `snowfall-lib.inputs.flake-utils-plus.follows`), `vendor/flake-utils-plus-fixed/flake.nix`, `vendor/flake-utils-plus-fixed/lib/mkFlake.nix`, `vendor/flake-utils-plus-fixed/lib/options.nix`.
 - **Why:** upstream `mkFlake` pre-evaluates `hostConfig` and forces `nixpkgs.config = mkForce {}`, breaking host `nixpkgs.config`. The wrapper (based on upstream 3542fe91) passes channel config/overlays as NixOS module definitions, keeps raw channel data in `__flakeUtilsPlus`, and migrates `nix.nixPath` to `nix.settings.nix-path`.
@@ -321,7 +344,7 @@ Runtime checks in records are required future checks unless the record's
 
 #### `hyprland-glaze-release-freeze`
 
-- **Review (2026-11-06):** `candidate`. The registry's v0.56.1 freeze and stale-comment description no longer matches source: `flake.nix` now selects [v0.57.1 `acc1aa0b`](https://github.com/hyprwm/Hyprland/tree/acc1aa0bfd4bd575dcb0f76c35ccf12b660a1ab9), the current latest release, and the freeze marker/comment is absent from `scripts/update-inputs.sh`/`flake.nix`. Comparing [glaze fix `91f29f23` to the pin](https://github.com/hyprwm/Hyprland/compare/91f29f23bb691462f8aa6171b964069aebc37910...acc1aa0bfd4bd575dcb0f76c35ccf12b660a1ab9) gives ahead 291, behind 0. Pinned `CMakeLists.txt` has unrestricted `find_package(glaze QUIET)`. Full Ceres selection is `0.57.1+date=2026-11-03_acc1aa0`; root glaze is `9.0.0` (Hyprland uses its own resolved package set). The original pin workaround is already absent; keep the record pending reconciliation rather than claiming a verified removal. Audit did not establish desktop full-build and login/acceleration/portal/plugin runtime proof for this current pin.
+- **Review (2026-11-15):** `candidate`. The original freeze remains absent, as recorded November 6. Full Ceres now selects latest release v0.57.2/`11cbc6c5` with glaze `9.0.0`; [pinned CMake accepts glaze without a version bound](https://github.com/hyprwm/Hyprland/blob/11cbc6c577b84ffb1edf4df3fc5b6128c3ae6947/CMakeLists.txt#L131) (`91f29f23` → pin: ahead 313, behind 0). Reconcile the stale Where/Upstream/comment fields; desktop builds and session/acceleration/portal/plugin runtime proof remain unestablished.
 
 - **Where:** `flake.nix` (`hyprland.url = github:hyprwm/Hyprland/v0.56.1`, comment block above it; `hyprland-plugins` follows it), `scripts/update-inputs.sh` (the `# pin to v0.56.1` marker freezes the updater).
 - **Why:** v0.56.x `CMakeLists.txt:133` requires `find_package(glaze 7...<8 QUIET)` and falls back to network `FetchContent`; root nixpkgs ships glaze 8.4.0. Why v0.56.1 rather than main was chosen (87644f14) is undocumented; do not claim v0.56.1 solves glaze 8.
@@ -333,7 +356,7 @@ Runtime checks in records are required future checks unless the record's
 
 #### `ksa-unmerged-nixpkgs-package`
 
-- **Review (2026-11-06):** `required`. [nixpkgs #492242](https://github.com/NixOS/nixpkgs/pull/492242) remains open/unmerged, with head `670a3617` equal to resolved `nixpkgs-ksa`. Root `1d060086` still has no KSA package source. Full Ceres selects the fork's KSA `2026.5.7.4397`; the root-package availability gate is not met.
+- **Review (2026-11-15):** `required`. Nothing changed in the removal assessment since November 6. [Nixpkgs #492242](https://github.com/NixOS/nixpkgs/pull/492242) remains open/unmerged, with head `670a3617` equal to the selected fork. Root d5cc6833 still lacks KSA, while full Ceres selects the [fork's 2026.5.7.4397 package](https://github.com/Leha44581/nixpkgs/blob/670a36178e0aac8fc085f133ae6470f47c021686/pkgs/by-name/ks/ksa/package.nix). The root-package availability gate remains unmet.
 
 - **Where:** `flake.nix` (`nixpkgs-ksa`), `overlays/sgiath/default.nix` (`pkgs-ksa`, `ksa`), consumer `modules/home/gaming/role.nix`.
 - **Why:** Kitten Space Agency is not in root nixpkgs; the fork branch packages 2026.5.7.4397.
@@ -343,7 +366,7 @@ Runtime checks in records are required future checks unless the record's
 
 #### `bird-unavailable-upstream-vendoring`
 
-- **Review (2026-11-06):** `unknown`. The required security/credential-handling delegate could not start: orchestrator capabilities advertised no matching model, and delegate_task with provider opencode/model openai-codex/gpt-daybreak-blue-latest returned model_unavailable. No substitute review was performed. The previously recorded [steipete/bird](https://github.com/steipete/bird) 404 and the vendored 0.8.0/native-cookie behavior remain historical evidence; live availability and equivalence were not revalidated. Retain the vendor tree and deliberate bird-product decisions.
+- **Review (2026-11-15):** `unknown`. Full Ceres still selects vendored Bird `0.8.0`. Unauthenticated [API](https://api.github.com/repos/steipete/bird) and [web](https://github.com/steipete/bird) fetches of the original upstream both return HTTP 404; deleted versus private remains unknown. Immutable public mirrors exist, including [Oceanswave 90ead61c](https://github.com/Oceanswave/bird/tree/90ead61c96d1794dfa7a4563f66f04cbaffd263f) and [transitive-bullshit 978d1779](https://github.com/transitive-bullshit/bird/tree/978d17794d8b7888d153f6d8f838327ed4951009), but no successor preserving the locally modified CLI and native open-Chromium cookie behavior was established. Retain vendoring and the deliberate bird-product decisions. No Bird execution, cookie access, build or authenticated check occurred.
 
 - **Where:** `vendor/bird/`, `packages/bird/default.nix` (builds from `vendor/bird`).
 - **Why:** upstream is unreachable; the vendored 0.8.0 tree is also locally modified (native Linux Chromium cookie source, dependency refresh, e.g. d9fce644).
@@ -357,7 +380,7 @@ Common runtime check for every ComfyUI record: `systemctl show comfyui.service -
 
 #### `comfyui-rocm-int8-probe`
 
-- **Review (2026-11-06):** `required`. Resolved comfyui-nix `58f91b00` still equals [live main/latest v0.37.0-r1](https://github.com/utensils/comfyui-nix/tree/58f91b001c99a97df46b7be8d58b08f01cb8f6ff). Full Ceres service selects ComfyUI `0.37.0`, fetched revision `73c9bad4`; its selected patched source `/nix/store/pr50d0r8spnyz9gr5xm213rxbyk7hqgz-source-patched` contains the local cached ROCm `_int_mm` probe. The [unpatched pinned function](https://github.com/Comfy-Org/ComfyUI/blob/73c9bad4d21e7addbe1d13bc92eee0f1431b017d/comfy/model_management.py#L2049-L2068) and both [latest v0.44.0](https://github.com/Comfy-Org/ComfyUI/blob/v0.44.0/comfy/model_management.py#L2101-L2125) and [live master `63e5bf59`](https://github.com/Comfy-Org/ComfyUI/blob/63e5bf594339f676b4b15e072529873e3448409e/comfy/model_management.py#L2154-L2178) still lack that probe. New upstream CPU exclusions are not equivalent. The selected service Python closure still has the torch `2.10.0+rocm7.1` wheel; no new gfx1030 GEMM or workflow execution was authorized/run.
+- **Review (2026-11-15):** `dormant`. No configured host enables ComfyUI. Retained ROCm ComfyUI is now `0.44.0`/`2c75dc1b`; its [unpatched capability function](https://github.com/Comfy-Org/ComfyUI/blob/2c75dc1b379a59e0880619d029607af5169a62ef/comfy/model_management.py#L2101-L2120) still lacks the probe, while the fetched local patched source contains it. The torch `2.10.0+rocm7.1` constraint is unchanged; removal still needs gfx1030 GEMM and workflow proof plus the Ceres/Juno1 validation profile.
 
 - **Where:** `overlays/comfyui/default.nix` (`applyPatches` override), `overlays/comfyui/rocm-int8-compute.patch`.
 - **Why:** PyTorch 2.10.0+rocm7.1 lacks the hipBLASLt gfx1030 Tensile library. The patch probes `torch._int_mm` once per AMD device in `supports_int8_compute`, caching `False` on `RuntimeError` so ComfyUI uses its existing dequantized full-precision path; CPU and non-AMD paths are not probed.
@@ -368,7 +391,7 @@ Common runtime check for every ComfyUI record: `systemctl show comfyui.service -
 
 #### `comfyui-python-package-set`
 
-- **Review (2026-11-06):** `required`. comfyui-nix `58f91b00` still pins nixpkgs `dc5d91f8` through `flake.inputs`; [its current Python overrides](https://github.com/utensils/comfyui-nix/blob/58f91b001c99a97df46b7be8d58b08f01cb8f6ff/nix/python-overrides.nix) remain paired with that scope. Full Ceres service resolves Python `3.12.14`, torch `2.10.0+rocm7.1`, torchvision `0.25.0`, torchaudio `2.10.0`, and json-repair `0.55.2` from the selected `pythonRuntime.paths`. [#81](https://github.com/utensils/comfyui-nix/issues/81) remains closed, but no compatible root-scope GPU-stack proof or removal of the needed local INT8 patch exists. Retain the private construction.
+- **Review (2026-11-15):** `dormant`. No configured host enables ComfyUI. Retained comfyui-nix `a78b8b01` uses nested nixpkgs `f4a03c00` and its [backend Python overrides](https://github.com/utensils/comfyui-nix/blob/a78b8b018dc808c2f2c7bbe72a857a96a8b2ab04/nix/python-overrides.nix): Python `3.12.16`, torch `2.10.0+rocm7.1`, torchvision `0.25.0`, torchaudio `2.10.0`, json-repair `0.64.1`. The private-construction rationale is unchanged; root-scope compatibility and workflow proof remain absent.
 
 - **Where:** `overlays/comfyui/default.nix` (`import comfyui-nix.inputs.nixpkgs`, upstream `versions.nix`, `python-overrides.nix`).
 - **Why:** builds with comfyui-nix's own nixpkgs (dc5d91f8), not root nixpkgs, so upstream Python overrides (Python 3.12, torch 2.10.0+rocm7.1) still match and unchanged derivations share store paths.
@@ -378,7 +401,7 @@ Common runtime check for every ComfyUI record: `systemctl show comfyui.service -
 
 #### `comfyui-open-clip-broken-allowance`
 
-- **Review (2026-11-06):** `candidate`. The selected nested nixpkgs [dc5d91f8 open-clip-torch recipe](https://github.com/NixOS/nixpkgs/blob/dc5d91f840324650bac8c379428c7037a416959a/pkgs/development/python-modules/open-clip-torch/default.nix) has no `meta.broken` declaration. Full Ceres's actual selected service Python paths include open-clip-torch `3.3.0` with `meta.broken = false`. comfyui-nix [58f91b00 still carries its allowance](https://github.com/utensils/comfyui-nix/blob/58f91b001c99a97df46b7be8d58b08f01cb8f6ff/flake.nix#L177-L184), but that is not evidence this selected Linux package needs one. The local broken-package predicate appears inert; its removal still needs the Ceres full build without it, service-Python `import open_clip`, and both Qwen workflows. No package/system build or runtime proof was run here.
+- **Review (2026-11-15):** `dormant`. No configured host enables ComfyUI. The retained Python scope still selects open-clip-torch `3.3.0` with `meta.broken = false`; its [selected nixpkgs recipe](https://github.com/NixOS/nixpkgs/blob/f4a03c008967841f2a0b3cb7c436fc6fc31671f6/pkgs/development/python-modules/open-clip-torch/default.nix) has no broken declaration. The allowance remains apparently inert, unchanged from the previous review; removal still awaits a Ceres build without it, import and workflow proof on enablement.
 
 - **Where:** `overlays/comfyui/default.nix` (`allowBrokenPredicate` for `open-clip-torch`).
 - **Why:** the private package set marks `open-clip-torch` broken; this mirrors upstream comfyui-nix ([flake.nix](https://github.com/utensils/comfyui-nix/blob/58f91b001c99a97df46b7be8d58b08f01cb8f6ff/flake.nix#L177-L184), tests disabled in [python-overrides.nix](https://github.com/utensils/comfyui-nix/blob/58f91b001c99a97df46b7be8d58b08f01cb8f6ff/nix/python-overrides.nix#L954-L959)). Not an insecure-package exemption.
@@ -387,7 +410,7 @@ Common runtime check for every ComfyUI record: `systemctl show comfyui.service -
 
 #### `comfyui-service-overlay-selection`
 
-- **Review (2026-11-06):** `required`. Selected/live comfyui-nix `58f91b00` [still sets the module packageSet to its own packages](https://github.com/utensils/comfyui-nix/blob/58f91b001c99a97df46b7be8d58b08f01cb8f6ff/flake.nix#L348-L357). Full Ceres `ExecStart` selects local `/nix/store/fshaa8qr26pp3xcpsyfdqhbsqax7rqj8-comfy-ui-0.37.0/bin/comfy-ui`, with patched source and `json-repair` `0.55.2`. Default upstream selection still lacks the needed ROCm capability probe, so the coordinated-cutover gate remains unmet.
+- **Review (2026-11-15):** `dormant`. Ceres disables ComfyUI and has no service ExecStart. On enablement the local selection remains needed: [pinned comfyui-nix](https://github.com/utensils/comfyui-nix/blob/a78b8b018dc808c2f2c7bbe72a857a96a8b2ab04/flake.nix#L371-L382) supplies its own packageSet, bypassing the retained patched ROCm package and json-repair. The coordinated-cutover gate is unchanged and unmet; service selection and both workflows need verification when enabled.
 
 - **Where:** `modules/nixos/services/comfyui.nix` (`package = pkgs.comfy-ui-rocm`).
 - **Why:** upstream module defaults `packageSet` to the flake's own packages ([flake.nix](https://github.com/utensils/comfyui-nix/blob/58f91b001c99a97df46b7be8d58b08f01cb8f6ff/flake.nix#L348-L357)), which would bypass the INT8 patch and `json-repair`. Upstream `extraPythonPackages` cannot be combined with a custom package.
@@ -396,7 +419,7 @@ Common runtime check for every ComfyUI record: `systemctl show comfyui.service -
 
 #### `comfyui-rocm-platform-guard`
 
-- **Review (2026-11-06):** `required`. Selected/live comfyui-nix `58f91b00` [still throws outside x86_64 Linux for ROCm](https://github.com/utensils/comfyui-nix/blob/58f91b001c99a97df46b7be8d58b08f01cb8f6ff/flake.nix#L332-L339), and its ROCm wheels remain `manylinux_2_28_x86_64`. Full Ceres uses that ROCm selection, while full Juno1 config has `services.comfyui.enable = false`. No new supported ROCm architecture/wheel evidence meets the removal gate.
+- **Review (2026-11-15):** `dormant`. No configured host enables ComfyUI; Juno1 toplevel evaluation succeeds. [Selected comfyui-nix `a78b8b01`](https://github.com/utensils/comfyui-nix/blob/a78b8b018dc808c2f2c7bbe72a857a96a8b2ab04/flake.nix#L350-L361) still restricts ROCm to x86_64 Linux, and the retained wheel is manylinux x86_64. The architecture constraint is unchanged; retain the guard and validate Ceres/Juno1 on enablement.
 
 - **Where:** `overlays/comfyui/default.nix` (`isLinux && isx86_64` branch, `prev.comfy-ui-rocm` fallback).
 - **Why:** upstream ROCm package exists only on x86_64 Linux ([flake.nix](https://github.com/utensils/comfyui-nix/blob/58f91b001c99a97df46b7be8d58b08f01cb8f6ff/flake.nix#L332-L337)); keeps aarch64 (Juno) evaluation lazy.
@@ -405,7 +428,7 @@ Common runtime check for every ComfyUI record: `systemctl show comfyui.service -
 
 #### `comfyui-qwen-memory-policy`
 
-- **Review (2026-11-06):** `required`. Full Ceres still selects ComfyUI `0.37.0`/torch `2.10.0+rocm7.1`; evaluated service arguments retain `--reserve-vram 5`, and both seeded workflows put the regular text encoder on `cpu`. The exact [Qwen model revision `ace0edeb`](https://huggingface.co/Comfy-Org/Qwen-Image-2.1/tree/ace0edeb3791a594ddfa36ed5f41a178a394e921) remains fetchable (model API revision lookup succeeded). This hardware-fit policy is not invalidated by a new ComfyUI release: no cold/warm 1024×1024 baseline/enhanced workflow memory evidence without the reserve/CPU placement was produced. Keep the recorded policy.
+- **Review (2026-11-15):** `dormant`. Ceres disables ComfyUI, so its evaluated arguments are empty; the gated source retains the 5 GiB reserve and both seeded workflows retain CPU placement of the regular encoder. The [exact model revision `ace0edeb`](https://huggingface.co/Comfy-Org/Qwen-Image-2.1/tree/ace0edeb3791a594ddfa36ed5f41a178a394e921) remains fetchable. The hardware-fit rationale is unchanged; no cold/warm baseline/enhanced memory proof supports removing the policy.
 
 - **Where:** `systems/x86_64-linux/ceres/qwen-image.nix` (VRAM reserve), `systems/x86_64-linux/ceres/qwen-image/int8.json`, `int8-enhanced.json` (CPU text encoder placement).
 - **Why:** 5 GiB VRAM reserve for casts/attention scratch on the 16 GiB RX 6950 XT and CPU placement of the Qwen3VL encoder, needed with INT8 storage + full-precision fallback.
@@ -417,7 +440,7 @@ Common runtime check for every ComfyUI record: `systemctl show comfyui.service -
 
 #### `desktop-hyprland-mesa-abi`
 
-- **Review (2026-11-06):** `candidate`. Ceres and Pallas now evaluate the same exact 64-bit Mesa store path from the configured Hyprland package universe and root pkgs (`j6846pd6a2i4bx16wcdn571sq7jznr71-mesa-26.2.6`), and the same exact 32-bit path (`hhxdd360v6ygsaa8wr9536hpvir2585d-mesa-26.2.6`). Root and Hyprland glibc are also the identical `pqyiidz5mi73wv5f91d48s9plcqyj5bz-glibc-2.44-57`. Thus this override currently selects identical packages despite different nixpkgs revisions (1d060086 / 0bb2eedc); candidate, not a guarantee that future independent pins remain coherent. [Hyprland issue #5148](https://github.com/hyprwm/Hyprland/issues/5148) remains closed. Removing the override still needs both desktop builds and accelerated session, capture and 32-bit game runtime checks. The old wiki URL and its current unversioned variant both returned HTTP 404; package identity is independently established by evaluation.
+- **Review (2026-11-15):** `required`. Full Ceres and Pallas now select Hyprland-scope Mesa 26.2.6 for both architectures, while [root nixpkgs d5cc6833](https://github.com/NixOS/nixpkgs/tree/d5cc6833999746cffdfe0598f7bc801a57b887a9) selects Mesa 26.3.0; the previous identical-output evidence no longer holds. [Selected Hyprland 11cbc6c5](https://github.com/hyprwm/Hyprland/tree/11cbc6c577b84ffb1edf4df3fc5b6128c3ae6947) uses nixpkgs f4a03c00. Root, compositor and portal glibc paths agree, but no current incompatibility or successful removal runtime was demonstrated. Retain the coherent Mesa selection pending desktop builds and acceleration, capture and 32-bit-game checks.
 
 - **Where:** `modules/nixos/desktop/wayland.nix` (`hardware.graphics.package`/`package32` from `inputs.hyprland.inputs.nixpkgs`); enabled by `modules/nixos/hardware/gpu.nix`. README "Desktop graphics" explains the failure.
 - **Why:** root Mesa can require a newer glibc than the pinned compositor loads, causing `Cannot open backend: no allocator available` (5299bbf2). Evaluated 2026-10-10: selected Mesa 26.1.5 with Hyprland's glibc 2.42 vs root Mesa 26.2.4 / glibc 2.44.
@@ -427,7 +450,7 @@ Common runtime check for every ComfyUI record: `systemctl show comfyui.service -
 
 #### `portal-qt-theme-isolation`
 
-- **Review (2026-11-06):** `candidate`. The full Ceres configuration selects xdg-desktop-portal-hyprland `1.5.0+date=2026-11-01_8545044`, source [85450448](https://github.com/hyprwm/xdg-desktop-portal-hyprland/tree/85450448ea40a54ec4f10bd607e68019d8f5cc41), identical to live master. Its [picker CMake](https://github.com/hyprwm/xdg-desktop-portal-hyprland/blob/85450448ea40a54ec4f10bd607e68019d8f5cc41/hyprland-share-picker/CMakeLists.txt) links hyprtoolkit >=0.6.0, not Qt6; selected Nix buildInputs contain hyprtoolkit and no Qt, and the exact source archive has no Qt6/QApplication/QWidget/theme-variable consumer in CMake, Nix or C++ sources. The Qt6 rationale is obsolete. Candidate for removing both UnsetEnvironment names, subject to desktop builds and capture with inherited variables; no runtime proof was produced. [Issue #145](https://github.com/hyprwm/xdg-desktop-portal-hyprland/issues/145) remains closed and is not removal proof.
+- **Review (2026-11-15):** `candidate`. Nothing material changed since the previous review: selected portal [85450448](https://github.com/hyprwm/xdg-desktop-portal-hyprland/blob/85450448ea40a54ec4f10bd607e68019d8f5cc41/hyprland-share-picker/CMakeLists.txt) still uses hyprtoolkit rather than Qt, and its evaluated inputs contain no Qt. [Current master 705ae6e6](https://github.com/hyprwm/xdg-desktop-portal-hyprland/blob/705ae6e6190a89e6e7687e572b88a9399660b2e8/hyprland-share-picker/CMakeLists.txt) retains that dependency. Removing both environment exclusions still needs desktop builds and monitor/window capture with inherited variables.
 
 - **Where:** `modules/nixos/desktop/wayland.nix` (`xdg-desktop-portal-hyprland` unsets `QT_QPA_PLATFORMTHEME`, `QT_STYLE_OVERRIDE`).
 - **Why:** [INFERENCE] isolates the Qt6 share picker from global Qt theme plugins/styles; no failure or upstream fix recorded.
@@ -437,7 +460,7 @@ Common runtime check for every ComfyUI record: `systemctl show comfyui.service -
 
 #### `legacy-wlroots-session-flags`
 
-- **Review (2026-11-06):** `unverified`. Full Ceres evaluation still exports both flags. Neither name occurs in `src/` of selected [Hyprland acc1aa0b](https://github.com/hyprwm/Hyprland/tree/acc1aa0bfd4bd575dcb0f76c35ccf12b660a1ab9/src). Live Hyprland main is ab6141897d57e609e24c571a762c30c963e0885a. There is still no established original failure or complete inventory of other session consumers, so retain unverified; the AMD/NVIDIA cursor/render/hotplug/capture gate is not met. The [wlroots source](https://gitlab.freedesktop.org/wlroots/wlroots) remains the consumer-family reference rather than proof of current consumption.
+- **Review (2026-11-15):** `unverified`. Both flags remain exported, and neither occurs in [selected Hyprland 11cbc6c5 src](https://github.com/hyprwm/Hyprland/tree/11cbc6c577b84ffb1edf4df3fc5b6128c3ae6947/src). The material conclusion is unchanged: no original failure or complete inventory of other session consumers is established. Retain pending that inventory and AMD/NVIDIA cursor, rendering, hotplug and capture checks without each flag.
 
 - **Where:** `modules/nixos/desktop/wayland.nix` (`WLR_RENDERER_ALLOW_SOFTWARE`, `WLR_NO_HARDWARE_CURSORS`).
 - **Why:** legacy wlroots software-render/cursor flags; neither name occurs in pinned Hyprland `src/`. Possibly stale, but other consumers are not ruled out.
@@ -447,7 +470,7 @@ Common runtime check for every ComfyUI record: `systemctl show comfyui.service -
 
 #### `satty-floating-hack`
 
-- **Review (2026-11-06):** `required`. Selected Satty remains 0.22.0 ([tag commit 9f99065e](https://github.com/Satty-org/Satty/blob/9f99065e4177820e965f5475503e5c3bdbd74e6a/cli/src/command_line.rs#L36-L39)), also latest release; live main [7e7ef403](https://github.com/Satty-org/Satty/blob/7e7ef403599f06ad9a5220f0a76baf997ad0fb62/cli/src/command_line.rs#L54-L57) still declares the compositor-dependent floating hack. The local screenshot launcher and matching window rule remain. Neither region nor monitor flow without the flag was exercised; keep required.
+- **Review (2026-11-15):** `required`. Nothing material changed: selected/latest Satty [0.22.0/9f99065e](https://github.com/Satty-org/Satty/blob/9f99065e4177820e965f5475503e5c3bdbd74e6a/cli/src/command_line.rs#L36-L39) and [live main 7e38860d](https://github.com/Satty-org/Satty/blob/7e38860dfc6ea426e7e2c9f729dbd00ec794bed0/cli/src/command_line.rs#L54-L57) still declare the floating hack. Window-rule-only region and monitor flows remain untested; retain the flag and rule.
 
 - **Where:** `modules/home/desktop/hyprland/screenshot.nix` (`--floating-hack` plus window rule for `com.gabm.satty`).
 - **Why:** Satty's own compositor-dependent floating workaround ([command_line.rs](https://github.com/Satty-org/Satty/blob/f578432a68f3930cc5fd52f2f7d99d54aff0d9ae/cli/src/command_line.rs#L36-L39), still on main); selected Satty 0.22.0.
@@ -456,7 +479,7 @@ Common runtime check for every ComfyUI record: `systemctl show comfyui.service -
 
 #### `quickshell-store-theme-restart`
 
-- **Review (2026-11-06):** `unverified`. Full Ceres configuration still selects Quickshell 0.3.2 (tag resolves to [4f508be5](https://github.com/quickshell-mirror/quickshell/blob/4f508be500dea6e5732cc3d50382a0048b17e7b1/src/io/fileview.cpp#L494-L547)); 0.3.2 remains the latest release. Selected FileView uses QFileSystemWatcher on the target and parent directory and rearms dropped file watches; live [master 9b0f339b](https://github.com/quickshell-mirror/quickshell/blob/9b0f339b19057f4731bf3b48293307d7ef241671/src/io/fileview.cpp) retains that logic. [Qt documentation](https://doc.qt.io/qt-6/qfilesystemwatcher.html#details) still says renamed/removed files stop being watched, but does not prove this exact atomic-symlink case. No live/packaged symlink-replacement test was run, so classify the unreproduced rationale as unverified and retain the restart trigger; the removal gate is not met.
+- **Review (2026-11-15):** `unverified`. Nothing material changed: selected/latest Quickshell [0.3.2/4f508be5](https://github.com/quickshell-mirror/quickshell/blob/4f508be500dea6e5732cc3d50382a0048b17e7b1/src/io/fileview.cpp#L494-L547) and [live master 9b0f339b](https://github.com/quickshell-mirror/quickshell/blob/9b0f339b19057f4731bf3b48293307d7ef241671/src/io/fileview.cpp) retain the same watcher logic. The configured theme restart trigger remains; no atomic-symlink replacement proof in live and packaged modes establishes its removal.
 
 - **Where:** `modules/home/desktop/quickshell.nix` (`X-Restart-Triggers`), `modules/home/desktop/quickshell/config/Theme.qml`.
 - **Why:** the file watcher does not notice the store theme symlink target changing during a switch ([QFileSystemWatcher](https://doc.qt.io/qt-6/qfilesystemwatcher.html) stops watching renamed files; exact case not reproduced).
@@ -465,7 +488,7 @@ Common runtime check for every ComfyUI record: `systemctl show comfyui.service -
 
 #### `quickshell-hyprland-workspace-address`
 
-- **Review (2026-11-06):** `required`. Root nixpkgs 1d060086 still selects Quickshell 0.3.2 ([4f508be5 workspace.cpp](https://github.com/quickshell-mirror/quickshell/blob/4f508be500dea6e5732cc3d50382a0048b17e7b1/src/wayland/hyprland/ipc/workspace.cpp)), with `activate()` dispatching bName and focusedmon/openwindow looking up by name. Live [master 9b0f339b](https://github.com/quickshell-mirror/quickshell/blob/9b0f339b19057f4731bf3b48293307d7ef241671/src/wayland/hyprland/ipc/connection.cpp) still has all three defects; latest release remains 0.3.2. Selected Hyprland 0.57.1 ([acc1aa0b FocusState.cpp](https://github.com/hyprwm/Hyprland/blob/acc1aa0bfd4bd575dcb0f76c35ccf12b660a1ab9/src/desktop/state/FocusState.cpp#L283-L287)) still emits addressableName in focusedmon. Keep the patch; the source gate has not been met. No new runtime run supersedes the November 1 evidence.
+- **Review (2026-11-15):** `required`. The defect is unchanged: selected Quickshell [4f508be5 activate()](https://github.com/quickshell-mirror/quickshell/blob/4f508be500dea6e5732cc3d50382a0048b17e7b1/src/wayland/hyprland/ipc/workspace.cpp#L165) dispatches the display name and both events resolve by name; [live master 9b0f339b](https://github.com/quickshell-mirror/quickshell/blob/9b0f339b19057f4731bf3b48293307d7ef241671/src/wayland/hyprland/ipc/connection.cpp) retains them. Selected Hyprland [0.57.2/11cbc6c5](https://github.com/hyprwm/Hyprland/blob/11cbc6c577b84ffb1edf4df3fc5b6128c3ae6947/src/desktop/state/FocusState.cpp#L283-L287) still emits workspace addresses. Retain the patch; no new runtime evidence supersedes November 1.
 
 - **Where:** `packages/quickshell/default.nix` (`overrideAttrs` under the multimedia wrapper), `packages/quickshell/hyprland-workspace-address.patch`.
 - **Why:** Hyprland 0.57 separates a workspace's address from its display name: workspace 8 has address `8` and name `firefox`. Quickshell's `HyprlandWorkspace.activate()` dispatches the name, which Hyprland resolves to a new workspace with address `firefox`. `focusedmon` and `openwindow` carry the address, but Quickshell looks it up among names, so a named workspace loses its focus state after a monitor change and a new window on it has a null workspace. The patch dispatches the same selector as Hyprland's `Workspace::selector()` and looks both events up by address. QML can't repair the built-in `HyprlandToplevel.workspace`, so the fix is in the package. It rebuilds Quickshell instead of using the binary cache.
@@ -478,7 +501,7 @@ Common runtime check for every ComfyUI record: `systemctl show comfyui.service -
 
 #### `hex-model-service-selection`
 
-- **Review (2026-11-06):** `required`. Selected Hex is 3.3.0 from [98e4c37f](https://github.com/anomalyco/hex/blob/98e4c37fac07f52c95566e1bebacb2ea24a50255/nix/hm-module.nix#L31), whose install wrapper still runs bare `model install` and whose hexSettings activation remains after reloadSystemd. Live dev [aa79bc25](https://github.com/anomalyco/hex/blob/aa79bc25eb952a5cae0257e7a0bcd5eef5faf717/nix/hm-module.nix#L31) has the same ordering and command. Full Ceres evaluation still produces the explicit `hex model install whisper_large_v3_turbo --language en` override. Keep required; no selected upstream fix or new first-activation runtime proof.
+- **Review (2026-11-15):** `required`. Selected Hex advanced to 3.4.0/[82ca73f9](https://github.com/anomalyco/hex/blob/82ca73f945db65dfd82e980aa4ff4632f7055fcd/nix/hm-module.nix#L31), but its module and [live dev 77b474d7](https://github.com/anomalyco/hex/blob/77b474d7abc2799a6b0246849a952a07a635abbd/nix/hm-module.nix#L31) retain bare `model install` and settings activation after reloadSystemd. Full Ceres still explicitly requests Whisper large-v3-turbo and English. The ordering defect is unchanged; retain the override pending an upstream fix and first-activation proof.
 
 - **Where:** `modules/home/desktop/hex.nix` (`systemd.user.services.hex-model.Service.ExecStart` forced to `hex model install <model> --language <language>` from `programs.hex.model` and `programs.hex.language`).
 - **Why:** upstream's `hex-install-model` runs a bare `hex model install`, which reads the model from settings. The `hex-model` service starts during `reloadSystemd`, but `home.activation.hexSettings` applies `programs.hex.model` only after it, so a first install with no settings file downloads Hex's default Parakeet Unified English (731 MB) instead of the declared model. The override names the model and language, so ordering no longer matters. It drops upstream's two-minute wait for `network-online.target`; `Restart=on-failure` with `RestartSec=60` stays, so a login without network retries.
@@ -490,7 +513,7 @@ Common runtime check for every ComfyUI record: `systemctl show comfyui.service -
 
 #### `preview-share-picker-hyprland-057-ipc`
 
-- **Review (2026-11-06):** `required`. Root nixpkgs is now 1d060086; full Ceres evaluation still selects the unoverridden picker at 0.2.1. [Compare 49c91869...1d060086](https://github.com/NixOS/nixpkgs/compare/49c91869b2ec0738fec7333eba11364ef17509ad...1d060086d60cb76a40cf37109f979d88a5bd6396) reports `behind` (root does not contain the fix). [PR #582643](https://github.com/NixOS/nixpkgs/pull/582643) remains merged as 49c91869, while selected Hyprland is 0.57.1 acc1aa0b. Keep the 0.3.1 override; the selected-source gate is unmet. No new ScreenCast runtime claim.
+- **Review (2026-11-15):** `candidate`. [Selected root d5cc6833 recipe](https://github.com/NixOS/nixpkgs/blob/d5cc6833999746cffdfe0598f7bc801a57b887a9/pkgs/by-name/hy/hyprland-preview-share-picker/package.nix) now supplies 0.3.1 with the local override’s exact source and cargo hashes. [Compare 49c91869...d5cc6833](https://github.com/NixOS/nixpkgs/compare/49c91869b2ec0738fec7333eba11364ef17509ad...d5cc6833999746cffdfe0598f7bc801a57b887a9) is ahead 11138, behind 0. The version/source gate is met; removing only the override still needs desktop builds and ScreenCast Outputs/Windows thumbnails, selections and cancellation checks. Keep the dark wrapper and absolute region command.
 
 - **Where:** `modules/home/desktop/share-picker.nix` (`overrideAttrs` on `hyprland-preview-share-picker`: `version`, `src` tag hash, `cargoDeps`).
 - **Why:** nixpkgs 0.2.1 lists windows and monitors through `hyprland-rs` 0.4.0-beta.2, whose workspace type requires `id`. Hyprland 0.57 workspace objects in `clients`/`monitors` JSON carry `address`, `name` and `type` instead, so `Clients::get` and `Monitors::get` fail with ``missing field `id` `` and the picker shows only the Region tab. v0.3.1 removed `hyprland-rs` ([PR #29](https://github.com/WhySoBad/hyprland-preview-share-picker/pull/29)): windows come from the portal's `XDPH_WINDOW_SHARING_LIST`, monitors from `wl_output`. It also makes the default region command output-relative ([PR #26](https://github.com/WhySoBad/hyprland-preview-share-picker/pull/26)), which retired `preview-share-picker-region-coordinates`; `region.command` stays only for its absolute `slurp` path, because the portal's `PATH` has no `slurp`.
@@ -503,7 +526,7 @@ Common runtime check for every ComfyUI record: `systemctl show comfyui.service -
 
 #### `gaming-gtk2-broken-allowance`
 
-- **Review (2026-11-06):** `required`. Root nixpkgs 1d060086 selects gtk+ 2.24.33 and Lutris 0.5.22. [Selected Lutris recipe](https://github.com/NixOS/nixpkgs/blob/1d060086d60cb76a40cf37109f979d88a5bd6396/pkgs/by-name/lu/lutris/package.nix) has now dropped gtk2 from multiPkgs (only gtk3 remains), as has live master. However Ceres still declares zulu8 for Prism/Nomifactory, and [selected zulu common.nix](https://github.com/NixOS/nixpkgs/blob/1d060086d60cb76a40cf37109f979d88a5bd6396/pkgs/development/compilers/zulu/common.nix#L52-L63) retains gtk2 in runtimeDependencies for Linux JDK<17 with default gtkSupport. [GTK2 removal #410814](https://github.com/NixOS/nixpkgs/issues/410814) remains open; selected and live GTK2 recipe retain problems.broken. Keep the handler until the remaining zulu8 dependency is removed; the old claim that selected Lutris itself pulls GTK2 is now stale.
+- **Review (2026-11-15):** `required`. Root nixpkgs is now `d5cc6833`; GTK2 `2.24.33` still has [problems.broken](https://github.com/NixOS/nixpkgs/blob/d5cc6833999746cffdfe0598f7bc801a57b887a9/pkgs/by-name/gt/gtk2/package.nix#L178-L184), and [Zulu8’s runtime dependencies](https://github.com/NixOS/nixpkgs/blob/d5cc6833999746cffdfe0598f7bc801a57b887a9/pkgs/development/compilers/zulu/common.nix#L52-L62) still include it. Lutris continues to omit GTK2. The previous review’s remaining Zulu8 constraint is unchanged; removal tracking remains open and targets migration before NixOS 27.05.
 
 - **Where:** `modules/nixos/gaming/role.nix` (`nixpkgs.config.problems.handlers."gtk+".broken = "warn"`), so only hosts with the gaming role get it.
 - **Why:** selected nixpkgs marks GTK2 `problems.broken` as a removal notice, not a build failure (`pkgs/by-name/gt/gtk2/package.nix` lines 178-184: final release 2.24.33, migrate before NixOS 27.05). Lutris's FHS env lists `gtk2` and `gtk3` in `multiPkgs` (`pkgs/by-name/lu/lutris/package.nix` lines 256-257) for games that load legacy GTK, and Prism Launcher's `zulu8` (Nomifactory) adds `gtk2` because `gtkSupport` defaults on for JDK < 17 (`pkgs/development/compilers/zulu/common.nix` lines 26, 60-61). Without the handler, Ceres evaluation stops on `gtk+-2.24.33` in `lutris-0.5.22-fhsenv-rootfs`. The handler matches only package `gtk+` and problem `broken`; every other broken package still fails, and each evaluation prints the GTK2 warning. Not an `allowBroken` or insecure-package exemption. Vesta's headless Nomifactory server avoids GTK2 with `zulu8.override { gtkSupport = false; }` instead (`modules/nixos/server/minecraft.nix`).
@@ -516,7 +539,7 @@ Common runtime check for every ComfyUI record: `systemctl show comfyui.service -
 
 #### `tmux-sessionizer-session-target`
 
-- **Review (2026-11-06):** `candidate`. `modules/home/terminal/tmux.nix` no longer exists, no Nix source references tmux-sessionizer, and full configurations evaluate programs.tmux.enable=false on Ceres, Pallas, Vesta and Juno1. The root package remains tmux-sessionizer 0.6.1; [v0.6.1](https://github.com/jrmoulton/tmux-sessionizer/blob/v0.6.1/src/tmux.rs#L170-L191) and live [main 335eee11](https://github.com/jrmoulton/tmux-sessionizer/blob/335eee11832f1a23caa52c7f76f34ec972f93beb/src/tmux.rs#L170-L191) still pass an unqualified session to new-window, so this is absence of local callers rather than an upstream fix. Keep as candidate pending reconciliation and the registry validation/runtime requirements; do not claim the upstream source gate passed or invent removal proof.
+- **Review (2026-11-15):** `candidate`. Nothing material changed: the recorded module is absent, no repository Nix source references tmux-sessionizer, and tmux remains disabled in all four profile hosts. Selected [0.6.1/f133e5e0](https://github.com/jrmoulton/tmux-sessionizer/blob/f133e5e018b97a5f6e69d231daa5ff0c2ca372b2/src/tmux.rs#L170-L191) and [live main 335eee11](https://github.com/jrmoulton/tmux-sessionizer/blob/335eee11832f1a23caa52c7f76f34ec972f93beb/src/tmux.rs#L170-L191) still use the unqualified target. Keep pending reconciliation; absence of local callers is not an upstream fix or new collision-runtime proof.
 
 - **Where:** `modules/home/terminal/tmux.nix` (`postPatch` on `tmux-sessionizer`).
 - **Why:** `Tmux::new_window` targets an unqualified session name, which tmux can resolve to a matching worktree window. The patch appends `:`.
@@ -527,7 +550,7 @@ Common runtime check for every ComfyUI record: `systemctl show comfyui.service -
 
 #### `hermes-agent-home-mode`
 
-- **Review (2026-11-06):** `unknown`. Root input resolution now selects Hermes [2bd378ed](https://github.com/NousResearch/hermes-agent/tree/2bd378ed1b8d6bf2192cb26e0a55ff3091e6bd19), rather than the bf0203a7 source in the historical record. The required security delegate failed to start with model_unavailable for openai-codex/gpt-daybreak-blue-latest; the selected activation/tmpfiles/discovery equivalence was not revalidated. Retain both local mode corrections. No home permissions, gateway state or authenticated cron operation was read or changed.
+- **Review (2026-11-15):** `required`. Selected Hermes input [3b421578](https://github.com/NousResearch/hermes-agent/tree/3b421578588243f920886e6fe79a6faa87ea026e) still sets HERMES_HOME to 2770 in [tmpfiles](https://github.com/NousResearch/hermes-agent/blob/3b421578588243f920886e6fe79a6faa87ea026e/nix/nixosModules.nix#L447) and [activation](https://github.com/NousResearch/hermes-agent/blob/3b421578588243f920886e6fe79a6faa87ea026e/nix/nixosModules.nix#L467). Its [discovery policy](https://github.com/NousResearch/hermes-agent/blob/3b421578588243f920886e6fe79a6faa87ea026e/hermes_cli/gateway_runtime_discovery.py#L50) permits group write only for the owner’s private group; full Vesta config uses `sgiath:hermes` while sgiath’s primary group is `users`. Live main `01129483` has identical relevant files. Retain both 0700 corrections. No production permissions, gateway state or authenticated operation was inspected.
 
 - **Where:** `modules/nixos/services/hermes-agent.nix` (activation script `hermes-agent-home-mode` after `hermes-agent-setup`, tmpfiles `z` rule; both set `/home/sgiath/hermes/.hermes` to 0700).
 - **Why:** the upstream NixOS module makes HERMES_HOME 2770 owned by `sgiath:hermes`, in `hermes-agent-setup` on every activation and in its tmpfiles `d` rule on boot and switch. Hermes' own gateway discovery (`home_mode_unsafe` in `hermes_cli/gateway_runtime_discovery.py`) only accepts a group-writable home when the group is the owner's private group, so `connect_gateway()` fails with `unsafe_control_permissions` and cron jobs that need the gateway (the Oct 24 and 25 screenshot runs) die with `GatewayUnavailableError`. Both services run as `sgiath` and nothing else needs group access to the home, so 0700 is enough. `stateDir`, `workspace` and the state subdirectories stay 2770; discovery doesn't check them.
@@ -539,7 +562,7 @@ Common runtime check for every ComfyUI record: `systemctl show comfyui.service -
 
 #### `pihole-first-run-setup-retry`
 
-- **Review (2026-11-06):** `required`. Full Vesta selects FTL 6.8. The [setup script at root nixpkgs 1d060086](https://github.com/NixOS/nixpkgs/blob/1d060086d60cb76a40cf37109f979d88a5bd6396/nixos/modules/services/networking/pihole-ftl-setup-script.nix) is byte-identical to [live master 3c7fa76e](https://github.com/NixOS/nixpkgs/blob/3c7fa76e7261ee7241a26d2a99151aa95d4cd3e5/nixos/modules/services/networking/pihole-ftl-setup-script.nix): it signals SIGRTMIN, retries TestAPIAvailability, then submits lists without waiting for database readiness or retrying addList. The source gate remains unmet. No fresh-state or production-state run was made.
+- **Review (2026-11-15):** `required`. Vesta now selects FTL 6.9, but [root d5cc6833 setup](https://github.com/NixOS/nixpkgs/blob/d5cc6833999746cffdfe0598f7bc801a57b887a9/nixos/modules/services/networking/pihole-ftl-setup-script.nix) remains byte-identical to [live master 605e90c7](https://github.com/NixOS/nixpkgs/blob/605e90c7bd301d1a28f9a277d82818f1c972bc94/nixos/modules/services/networking/pihole-ftl-setup-script.nix): API availability is retried, database reopening and list submission are not. The defect is unchanged. Both Vesta and Hygiea configure the local retry; no disposable fresh-state or populated-state runtime proof was run.
 
 - **Where:** `modules/nixos/services/pi-hole.nix` (`pihole-ftl-setup` `Restart=on-failure`, `RestartSec=5`).
 - **Why:** on fresh state the upstream setup script creates `gravity.db`, signals FTL and posts lists immediately; the first request can fail "Database not available".
@@ -549,7 +572,7 @@ Common runtime check for every ComfyUI record: `systemctl show comfyui.service -
 
 #### `searx-json-secret-interpolation`
 
-- **Review (2026-11-06):** `unknown`. Root nixpkgs now resolves to [1d060086](https://github.com/NixOS/nixpkgs/blob/1d060086d60cb76a40cf37109f979d88a5bd6396/nixos/modules/services/networking/searx.nix). The required credential-handling review failed to start: model_unavailable for openai-codex/gpt-daybreak-blue-latest. Safe selected-module serialization and restart equivalence were not revalidated. Retain jq --rawfile and the existing runtime credential wiring; no credential values or production settings were read.
+- **Review (2026-11-15):** `required`. Selected root nixpkgs [d5cc6833](https://github.com/NixOS/nixpkgs/blob/d5cc6833999746cffdfe0598f7bc801a57b887a9/nixos/modules/services/networking/searx.nix#L26) generates YAML and then substitutes environment values with `envsubst`, without runtime credential serialization. [Live master 605e90c7](https://github.com/NixOS/nixpkgs/blob/605e90c7bd301d1a28f9a277d82818f1c972bc94/nixos/modules/services/networking/searx.nix#L26) retains it. Keep local `jq --rawfile`, runtime credentials and both restart units. Full Vesta has empty favicon/limiter settings, but their generation remains part of any future cutover. No secret values, generated production settings or live search were read; fixture and runtime validation were not run.
 
 - **Where:** `modules/nixos/services/searx.nix` (`searx-init` replaced with `jq --rawfile`).
 - **Why:** upstream `envsubst` interpolates secrets unescaped into JSON strings; jq encodes them correctly while keeping runtime credentials and restart wiring.
@@ -559,7 +582,7 @@ Common runtime check for every ComfyUI record: `systemctl show comfyui.service -
 
 #### `executor-state-ownership-migration`
 
-- **Review (2026-11-06):** `unknown`. Full Vesta still selects ghcr.io/rhyssullivan/executor-selfhost:1.6.10; [the historical upstream Dockerfile](https://github.com/UsefulSoftwareCo/executor/blob/3890d6f5e5efd1530f0dba0fe23ada95a39caf86/apps/host-selfhost/Dockerfile#L28) remains the prior UID evidence. The security delegate failed to start with model_unavailable for openai-codex/gpt-daybreak-blue-latest. Image-user and retained-volume/backup/rollback ownership were not revalidated. Keep both tmpfiles rules; no volume contents, ownership or production state was changed.
+- **Review (2026-11-15):** `unknown`. Full Vesta selects `ghcr.io/rhyssullivan/executor-selfhost:1.6.10`; its release tag resolves to `3890d6f5`, whose [Dockerfile](https://github.com/UsefulSoftwareCo/executor/blob/3890d6f5e5efd1530f0dba0fe23ada95a39caf86/apps/host-selfhost/Dockerfile#L41) owns `/data` as 65532:65532 and explicitly sets `USER 65532:65532`. The recursive `Z` removal gate still lacks proof that every retained volume, restored backup and supported rollback target is already correctly owned. Those production facts were deliberately not inspected. Keep both tmpfiles rules; no volume contents, ownership, container state or credentials were read or changed.
 
 Also covers audit ID `executor-root-to-nonroot-state-migration`.
 
@@ -570,7 +593,7 @@ Also covers audit ID `executor-root-to-nonroot-state-migration`.
 
 #### `executor-registry-image-version-selection`
 
-- **Review (2026-11-06):** `required`. Full Vesta evaluation still selects `ghcr.io/rhyssullivan/executor-selfhost:1.6.10`; read-only `scripts/update-executor.sh --dry-run` reports already at 1.6.10. Latest GitHub release is now [v1.6.11](https://github.com/UsefulSoftwareCo/executor/releases/tag/v1.6.11). Its [self-host image publishing workflow](https://github.com/UsefulSoftwareCo/executor/blob/v1.6.11/.github/workflows/publish-selfhost-docker.yml#L4-L10) is workflow_dispatch with an explicit tag, not guaranteed publishing on every release. Thus matching-image guarantee remains absent, and the release/registry mismatch directly supports retaining registry-based version selection. No updater mutation or deployment occurred.
+- **Review (2026-11-15):** `required`. Nothing material changed: full Vesta and the updater dry run remain at image 1.6.10, while GitHub’s latest release is [v1.6.11/4c753d3b](https://github.com/UsefulSoftwareCo/executor/releases/tag/v1.6.11). Its [publishing workflow](https://github.com/UsefulSoftwareCo/executor/blob/4c753d3b1c4a5c4c9d926f718c02c0622635f2f6/.github/workflows/publish-selfhost-docker.yml#L4-L10) and [live main 5d84c586](https://github.com/UsefulSoftwareCo/executor/blob/5d84c58647e3544b28347e23ac4a7b8a72c8f722/.github/workflows/publish-selfhost-docker.yml#L4-L10) still require manual dispatch. Retain registry-based version selection; no per-release image guarantee meets the removal gate.
 
 - **Where:** `scripts/update-executor.sh` (highest semver tag on `ghcr.io/rhyssullivan/executor-selfhost`).
 - **Why:** not every GitHub release publishes an image (comment: 1.6.9 had none), so the updater follows registry tags, not releases. Concrete version pinning in the module (never `:latest`) is a separate deliberate rule.
@@ -583,7 +606,7 @@ Also covers audit ID `executor-root-to-nonroot-state-migration`.
 
 #### `katrain-kivy-python-api`
 
-- **Review (2026-11-06):** `required`. Full Ceres selects KaTrain 1.20.0, Python 3.13.16 and package-local Kivy 2.3.1. [KaTrain v1.20.0/f4981cf9](https://github.com/sanderland/katrain/blob/f4981cf905cece90085ce4e3967415d0c16d525f/pyproject.toml) still requires Python >=3.11,<3.14; it remains the latest release. Root nixpkgs 1d060086 still supplies Kivy 2.3.1-unstable-2026-07-11 from [d8e642fe](https://github.com/kivy/kivy/tree/d8e642fec15894ce338b0c9773c3f58b41b75f09), while default Python is 3.14.8. Kivy's latest release remains 2.3.1 and [#9225](https://github.com/kivy/kivy/issues/9225) is still open. Neither the compatible-dependency nor UI/audio gate is met.
+- **Review (2026-11-15):** `required`. Full Ceres selects KaTrain `1.20.0`, Python `3.13.18` and local Kivy `2.3.1`; root nixpkgs `d5cc6833` still supplies Python `3.14.10` and the Kivy master snapshot. [Selected KaTrain](https://github.com/sanderland/katrain/blob/f4981cf905cece90085ce4e3967415d0c16d525f/pyproject.toml#L6-L10) still requires Python <3.14. Kivy’s latest release advanced to [2.3.2](https://github.com/kivy/kivy/releases/tag/2.3.2), but it is not selected; dependency compatibility and UI/audio removal gates remain unmet.
 
 - **Where:** `packages/katrain/default.nix` (Python 3.13 + package-local Kivy 2.3.1 with pyproject relaxations and mtdev path patch); consumer `homes/x86_64-linux/sgiath@ceres/default.nix`.
 - **Why:** KaTrain 1.20.0 needs Python `>=3.11,<3.14` and Kivy 2.3.1 APIs; root nixpkgs has Kivy `2.3.1-unstable-2026-07-11`.
@@ -593,7 +616,7 @@ Also covers audit ID `executor-root-to-nonroot-state-migration`.
 
 #### `davinci-resolve-mcp-sdk-version`
 
-- **Review (2026-11-06):** `required`. Full Ceres now selects Resolve MCP 4.19.2 and a package-local SDK 1.30.0; root nixpkgs 1d060086 instead supplies SDK 2.3.0. Selected/latest [v4.19.2/cab652f0 requirements](https://github.com/samuelgursky/davinci-resolve-mcp/blob/cab652f0e6dc2347b4ed4ea9425d9f7573b9a87d/requirements.txt) still require mcp>=1.30,<2, and the already-built selected server imports mcp.server.fastmcp at src/server.py:263. The implementation now builds SDK 1 independently rather than overriding the SDK 2 recipe. Keep that isolation until Resolve accepts the selected root SDK; the earlier 4.10.4/SDK-1.29 rationale is historical. No new native Resolve or authenticated runtime check was made.
+- **Review (2026-11-15):** `required`. Full Ceres now selects Resolve MCP `5.2.11`/`f74eac02` with package-local SDK `1.30.0`; root SDK remains `2.3.0`. [Selected/latest Resolve requirements](https://github.com/samuelgursky/davinci-resolve-mcp/blob/f74eac02d4d8c2798595e62e019862f9e3aa8ff2/requirements.txt#L11-L15) still require SDK <2, and [selected SDK2’s FastMCP placeholder](https://github.com/modelcontextprotocol/python-sdk/blob/2118f14f8a19bc158d8a1cf90af58d85d187f849/src/mcp/server/fastmcp.py) raises ModuleNotFoundError. The isolation constraint is unchanged; no new build or native/authenticated runtime proof was produced.
 
 - **Where:** `packages/davinci-resolve-mcp/default.nix` (package-local SDK 1 recipe).
 - **Why:** Resolve MCP 4.10.4 requires `mcp>=1.30,<2`, but the selected nixpkgs package is 1.29.0. SDK 2 removes the `mcp.server.fastmcp` interface used by the server.
@@ -603,6 +626,8 @@ Also covers audit ID `executor-root-to-nonroot-state-migration`.
 - **Exercised:** 2026-10-10: SDK checks (1212 passed), full Ceres and Vesta builds, Juno1 system evaluation, native scripting import, HTTP authentication and Host rejection, authenticated discovery of 37 tools, quiet journald logging, and a live Resolve Studio 21.1.0.17 version query through Executor passed.
 
 #### `t3code-nightly-trusted-networks`
+
+- **Review (2026-11-15):** `required`. Full Ceres, Pallas and Vesta select nightly `0.1.10-nightly.20261115.4736` ([7379f196](https://github.com/pingdotgg/t3code/blob/7379f1969b0f4b579327cf81299ef8cc3ddf8e9c/apps/server/src/peer/PeerLinks.ts#L155)). Its HTTP guard, [latest nightly .4749](https://github.com/pingdotgg/t3code/blob/295a0a7332aa1b0cc2f737dae71bd5e607a6ebb9/apps/server/src/peer/PeerLinks.ts#L155) and [live main 51cdf232](https://github.com/pingdotgg/t3code/blob/51cdf232652db8cdcea806f9a9e27d7460868579/apps/server/src/peer/PeerLinks.ts#L155) still allow only loopback/Tailscale, with no configured-overlay setting. The local patch remains limited to that guard, with exact hostname matching and CIDR membership; all three systems configure only the two Nebula CIDRs and exact `/etc/hosts` peer names, without suffixes or trailing dots. Retain the repack. No new build or authenticated runtime check was run; stored-link and redirect limitations remain.
 
 - **Where:** `packages/t3code-nightly/trusted-networks.patch`, applied to the server bundle that `sea-unpack.py` extracts from the release SEA before `node --build-sea` (nixpkgs `nodejs-slim_26`) packs it again; `check-trusted-networks.sh` in the install check. `T3CODE_TRUSTED_NETWORKS` is set from the Nebula CIDRs and peer names in `modules/home/agents/t3code.nix`.
 - **Why:** `peerOrigin` in [`apps/server/src/peer/PeerLinks.ts`](https://github.com/pingdotgg/t3code/blob/9a35ab0afeae64ac7c3bf92d674ead365cf55e10/apps/server/src/peer/PeerLinks.ts#L150-L178) refuses `http:` peer links unless the host is loopback or Tailscale (`*.ts.net`, `fd7a:115c:a1e0::/48`). Nebula encrypts the overlay the same way, so the hosts link over `http://<host>.nebula.internal:3773` without a TLS proxy. The patch adds the hosts listed in `T3CODE_TRUSTED_NETWORKS` (comma-separated CIDRs and exact host names; empty by default) to that check only, by shadowing `isTailnetHost` inside `peerOrigin`, so the hunk avoids bundler-renamed identifiers such as `fail$9`. `isTailnetHost` itself stays unchanged because it also classifies Tailscale interfaces. Names match exactly and without a trailing dot because the guard does not resolve them: only names that `common/nebula.nix` pins to overlay addresses in `/etc/hosts` are listed, never a DNS suffix (the apex `nebula.sgiath.dev` is public, and `ceres.nebula.sgiath.dev.` skips `/etc/hosts`). The setting governs link creation only; T3 does not recheck stored links, so removing an entry does not revoke a link. Upstream also sends MCP requests with fetch's default redirect following (descriptor and OAuth requests use `redirect: "manual"`); worth raising with the issue. Ingress from the LAN to overlay listeners is tracked in [the overlay-listener note](.agents/notes/proposed/bug-fix/2026-11-15-overlay-listeners-lan-ingress.md).
@@ -614,7 +639,7 @@ Also covers audit ID `executor-root-to-nonroot-state-migration`.
 
 #### `katrain-kivy-cython-long`
 
-- **Review (2026-11-06):** `required`. Full Ceres still selects package-local Kivy 2.3.1 ([20d74dcd](https://github.com/kivy/kivy/tree/20d74dcd30f143abbd1aa94c76bafc5bd934d5bd)) and Cython 3.3.0 from root 1d060086. The fetched source still contains long(self.__ref__()) in weakproxy.pyx:257 and the unconverted dict_keys assignment in instructions.pyx:899. [Python-2 removal #8610](https://github.com/kivy/kivy/pull/8610) is merged, but comparing dcd8fb2a to the selected release is diverged, and direct selected-file inspection confirms the fixes are absent. Latest Kivy remains 2.3.1. No replacement or source gate is met; historical build evidence was not rerun.
+- **Review (2026-11-15):** `required`. Selected Kivy remains [2.3.1/20d74dcd](https://github.com/kivy/kivy/tree/20d74dcd30f143abbd1aa94c76bafc5bd934d5bd) with Cython `3.3.0`; direct source inspection still finds both replaced constructs. Comparing Python-2 removal `dcd8fb2a` to the selected release is diverged (ahead 114, behind 22). New [Kivy 2.3.2](https://github.com/kivy/kivy/blob/ec09ee880c666e70de42501f36dbc43e349e3712/kivy/graphics/instructions.pyx#L896-L901) still retains the dict_keys branch and is not selected. The removal gate is unchanged and unmet.
 
 - **Where:** `packages/katrain/default.nix` (Kivy `postPatch` replacing Python 2 `long` in `weakproxy.pyx`, `context_instructions.pyx`, `opengl.pyx`, and the PY2 `dict_keys` assignment in `instructions.pyx`).
 - **Why:** Kivy 2.3.1 does not build with current Cython. Cython 3.2 dropped the `long` builtin. Cython 3.3 also type-checks the dead `if PY2:` branch of `RenderContext.apply` and fails with `instructions.pyx:899:41: Cannot assign type 'dict_keys object' to 'list object'`, so that branch now uses the same `list(self.state_stacks.keys())` as the Python 3 one.
@@ -626,7 +651,7 @@ Also covers audit ID `executor-root-to-nonroot-state-migration`.
 
 #### `katrain-chardet-major-version`
 
-- **Review (2026-11-06):** `required`. Full Ceres's actual KaTrain dependencies still include chardet 6.0.0.post1. Selected/latest [KaTrain f4981cf9 pyproject.toml:23](https://github.com/sanderland/katrain/blob/f4981cf905cece90085ce4e3967415d0c16d525f/pyproject.toml#L23) still requires >=5.2.0,<6, so the version-relaxation gate remains unmet. No non-UTF-8 game-file import was exercised.
+- **Review (2026-11-15):** `required`. Nothing material changed: full Ceres’s KaTrain `1.20.0` still depends on chardet `6.0.0.post1`, while [selected/latest KaTrain](https://github.com/sanderland/katrain/blob/f4981cf905cece90085ce4e3967415d0c16d525f/pyproject.toml#L23) requires <6. Keep the relaxation; non-UTF-8 SGF/NGF/GIB import remains unexercised.
 
 - **Where:** `packages/katrain/default.nix` (`pythonRelaxDeps` for `chardet`).
 - **Why:** KaTrain requires `chardet>=5.2.0,<6` ([pyproject L23](https://github.com/sanderland/katrain/blob/f4981cf905cece90085ce4e3967415d0c16d525f/pyproject.toml#L23)); root nixpkgs ships 6.0.0.post1.
@@ -635,7 +660,7 @@ Also covers audit ID `executor-root-to-nonroot-state-migration`.
 
 #### `katrain-bundled-katago-appimage`
 
-- **Review (2026-11-06):** `required`. Selected/latest [KaTrain v1.20.0/f4981cf9](https://github.com/sanderland/katrain/tree/f4981cf905cece90085ce4e3967415d0c16d525f/katrain/KataGo) still contains an ELF with the AppImage type-2 AI header. The already-built full-Ceres selection's extracted KataGo has DT_NEEDED libzip.so.4; selected libzip 1.11.4 provides libzip.so.5 instead. This confirms that extraction and the retained ABI library are still relevant. No OpenCL analysis/move runtime proof was produced.
+- **Review (2026-11-15):** `required`. Nothing material changed: [selected/latest KaTrain `f4981cf9`](https://github.com/sanderland/katrain/tree/f4981cf905cece90085ce4e3967415d0c16d525f/katrain/KataGo) still bundles a type-2 AppImage. The existing selected output’s engine requires libOpenCL.so.1 and libzip.so.4; selected libzip `1.11.4` supplies soname 5. Retain extraction and the bundled ABI library; OpenCL analysis and move proof remain missing.
 
 - **Where:** `packages/katrain/default.nix` (extract bundled OpenCL KataGo AppImage, keep its `libzip.so.4`, drop Windows assets).
 - **Why:** avoids FUSE/AppRun assumptions in the sandbox; nixpkgs libzip has another soname. Keeps upstream's engine rather than silently switching to nixpkgs KataGo.
@@ -645,7 +670,7 @@ Also covers audit ID `executor-root-to-nonroot-state-migration`.
 
 #### `katrain-opencl-test-exclusion`
 
-- **Review (2026-11-06):** `required`. Selected/latest [KaTrain f4981cf9 tests/test_ai.py](https://github.com/sanderland/katrain/blob/f4981cf905cece90085ce4e3967415d0c16d525f/tests/test_ai.py#L17-L20) still skips test_ai_strategies in CI because there is no OpenCL, and constructs KataGoEngine in the test. Full Ceres's package still excludes only that test. There is no selected hermetic/CPU-backed replacement; no check-phase or GPU runtime run was made.
+- **Review (2026-11-15):** `required`. Nothing material changed: [selected/latest KaTrain test](https://github.com/sanderland/katrain/blob/f4981cf905cece90085ce4e3967415d0c16d525f/tests/test_ai.py#L16-L19) still requires KataGo/OpenCL and skips itself in upstream CI. The selected package excludes only test_ai_strategies. No hermetic replacement, package check-phase run or GPU runtime proof was established.
 
 Also covers audit ID `package-katrain-opencl-test`.
 
@@ -656,7 +681,7 @@ Also covers audit ID `package-katrain-opencl-test`.
 
 #### `whiteboard-angle-runpath`
 
-- **Review (2026-11-06):** `required`. Full Ceres now selects Whiteboard 0.5.1, also [latest release, source 8c348e98](https://github.com/devdotfast/whiteboard/releases/tag/v0.5.1). The exact selected DEB's original libGLESv2.so has no RPATH/RUNPATH and contains libEGL.so.1/libGL.so.1 loader names. The already-built selected package's same library has libglvnd 1.7.0 on RUNPATH after the local appendRunpaths. The native library-resolution gate remains unmet; no canvas runtime check was made.
+- **Review (2026-11-15):** `required`. Selected/latest Whiteboard advanced to [0.5.2/03d373ab](https://github.com/devdotfast/whiteboard/releases/tag/v0.5.2), but the exact selected DEB’s libGLESv2.so still has no RPATH/RUNPATH and contains libEGL.so.1/libGL.so.1 loader names. The existing selected package’s library includes libglvnd 1.7.0 on RUNPATH after the local adaptation. The source/artifact constraint is unchanged; no Wayland canvas runtime proof establishes removal.
 
 - **Where:** `packages/whiteboard/default.nix` (runtime dlopen deps; libglvnd appended to all relevant RUNPATHs).
 - **Why:** bundled ANGLE loads libEGL/libGL itself; `runtimeDependencies` only reaches executables.
@@ -666,7 +691,7 @@ Also covers audit ID `package-katrain-opencl-test`.
 
 #### `whiteboard-cli-desktop-environment`
 
-- **Review (2026-11-06):** `required`. Full Ceres selects Whiteboard 0.5.1 from [8c348e98](https://github.com/devdotfast/whiteboard/blob/8c348e988bf5f91c45a9ad8b0a2748680ac0985f/packages/review/src/review-app-launcher.ts#L312-L346), also latest. Its launcher now clears ELECTRON_RUN_AS_NODE, VSCODE_DEV and VSCODE_CLI itself, but in Electron still launches process.execPath, bypassing the Nix desktop wrapper. Its fallback Linux launcher is /usr/bin/review-desktop. The selected CLI still needs the shared runtime PATH for git/xdg-utils; the complete wrapper contract is not supplied upstream. Keep the record, with only the environment-clearing part now duplicated; cold/warm/direct launch and external-link checks were not run.
+- **Review (2026-11-15):** `required`. Selected Whiteboard is now [0.5.2/03d373ab](https://github.com/devdotfast/whiteboard/blob/03d373ab0bf64ae3e3a5e4e1e592cb4fd173871d/packages/review/src/review-app-launcher.ts#L310-L347). Its exact DEB confirms the same launcher contract as source and live main: environment variables are cleared upstream, but Electron launches process.execPath and the fallback remains /usr/bin/review-desktop. Nothing material changed in the remaining wrapper requirement; retain shared git/xdg-utils PATH and desktop wiring pending cold/warm/direct-launch and external-link checks.
 
 - **Where:** `packages/whiteboard/default.nix` (both wrappers add git/xdg-utils; desktop clears `ELECTRON_RUN_AS_NODE`/`VSCODE_*`; CLI sets `ELECTRON_RUN_AS_NODE`; desktop file `Exec` rewritten).
 - **Why:** the CLI launches the desktop through `process.execPath`, bypassing the desktop wrapper.
@@ -676,7 +701,7 @@ Also covers audit ID `package-katrain-opencl-test`.
 
 #### `nak-network-check-disable`
 
-- **Review (2026-11-06):** `required`. Full Ceres exposes nak 0.22.2, also latest, from [07562de2](https://github.com/fiatjaf/nak/blob/07562de29368755358a2776b43cc26056af66d33/cli_test.go#L165-L180). Its TestReqIdFromRelay and TestReqWithFlagsAfter1 still query public nos.lol. The package retains doCheck=false; no sandbox/offline-only test selection was established, so the broad exclusion stays. No network tests or relay calls were run.
+- **Review (2026-11-15):** `required`. Full Ceres exposes nak `0.22.3`/`a3b1237b`, also latest. Its [selected tests](https://github.com/fiatjaf/nak/blob/a3b1237bb5325a21a01c132fb53bb615789c4242/cli_test.go#L165-L180) still contact public nos.lol. The network constraint is unchanged; doCheck=false remains, and no passing offline-only sandbox selection was established. No tests contacted relays.
 
 Also covers audit ID `package-nak-network-tests`.
 
@@ -687,7 +712,7 @@ Also covers audit ID `package-nak-network-tests`.
 
 #### `cross-architecture-nixos-rebuild-no-reexec`
 
-- **Review (2026-11-06):** `candidate`. The selected full-Ceres nixos-rebuild-ng 26.11 [reexec implementation at root 1d060086](https://github.com/NixOS/nixpkgs/blob/1d060086d60cb76a40cf37109f979d88a5bd6396/pkgs/by-name/ni/nixos-rebuild-ng/src/nixos_rebuild/services.py#L29-L80) already catches failed os.execve, explicitly including another CPU architecture, and re-execs the current local binary. [Live master 3c7fa76e](https://github.com/NixOS/nixpkgs/blob/3c7fa76e7261ee7241a26d2a99151aa95d4cd3e5/pkgs/by-name/ni/nixos-rebuild-ng/src/nixos_rebuild/services.py#L29-L80) retains that fallback. This addresses the recorded incompatible-executable failure at source level. It still builds the target's rebuild derivation before the fallback; no end-to-end x86-to-aarch64 build/deploy proof was produced. Keep the flag pending ceres/juno1 validation and an authorized deployment. The separate --store-path use is outside this candidate; selected __init__.py:365-378 already bypasses reexec when args.store_path is set, so its old lookup rationale does not establish a current need for the flag.
+- **Review (2026-11-15):** `candidate`. Nothing material changed in the source-level finding: [selected root `d5cc6833`](https://github.com/NixOS/nixpkgs/blob/d5cc6833999746cffdfe0598f7bc801a57b887a9/pkgs/by-name/ni/nixos-rebuild-ng/src/nixos_rebuild/services.py#L29-L80) catches an incompatible reexec and restarts the current local binary; live master retains it. It still constructs the target rebuild before fallback. Keep the flag pending Ceres/Juno1 builds and an authorized x86-to-aarch64 deployment without it.
 
 - **Where:** `packages/update/default.nix` (`--no-reexec` for `update --juno<N>`).
 - **Why:** with `--build-host`/`--target-host` on aarch64, re-exec would replace the local x86_64 `nixos-rebuild` with the target's aarch64 binary.
@@ -697,7 +722,7 @@ Also covers audit ID `package-nak-network-tests`.
 
 #### `burn-iso-hybrid-mbr-key-partition`
 
-- **Review (2026-11-06):** `unknown`. The selected ISO resolves to nixos-minimal-26.11.20261103.1d06008-x86_64-linux.iso, but its output /nix/store/jx6nw8h3hi8lrinn0ccmcj7rmq6k5kpg-nixos-minimal-26.11.20261103.1d06008-x86_64-linux.iso is absent. The geometry check therefore could not run under the audit's no-build boundary. [Selected iso-image.nix at root 1d060086](https://github.com/NixOS/nixpkgs/blob/1d060086d60cb76a40cf37109f979d88a5bd6396/nixos/modules/installer/cd-dvd/iso-image.nix#L1023-L1029) still supports hybrid MBR/EFI construction, but that is not partition-geometry proof. Retain the adaptation; no image was built, device written, key exported or runtime boot performed.
+- **Review (2026-11-15):** `unknown`. The exact selected ISO output `/nix/store/83cw8025vpv96n38b6c0kzc9cxg187hh-nixos-minimal-26.11.20261113.d5cc683-x86_64-linux.iso` is absent, so geometry inspection remains blocked under the no-build boundary. [Selected root `d5cc6833` iso-image.nix](https://github.com/NixOS/nixpkgs/blob/d5cc6833999746cffdfe0598f7bc801a57b887a9/nixos/modules/installer/cd-dvd/iso-image.nix#L1023-L1029) still supports hybrid MBR/EFI construction, which is not geometry proof. Nothing changed in the verification outcome; retain the adaptation. No image build, device write, key export or boot occurred.
 
 - **Where:** `packages/burn-iso/default.nix` (settle/unmount, append `SGIATH-KEYS` via `sfdisk` to the hybrid ISO's MBR).
 - **Why:** hybrid GPT/MBR geometry overlaps and the kernel reads the MBR; gptfdisk is unsuitable. No upstream issue; local layout evidence only.
@@ -709,7 +734,7 @@ Also covers audit ID `package-nak-network-tests`.
 
 #### `dgx-spark-nvidia-kernel-cve-2026-98432`
 
-- **Review (2026-11-06):** `unknown`. Input resolution still selects dgx-spark c646a19a and full Juno1 evaluation reports kernel 7.0.14-nvidia. The required security review failed to start with model_unavailable for openai-codex/gpt-daybreak-blue-latest, so live NV-Kernels and inclusion of [Linux fix e3f33b0a](https://github.com/torvalds/linux/commit/e3f33b0a1d89d738e2b913dab519226eaf76e15b) in the fetched source were not revalidated. Retain the backport. The historical static-only/deployment warning remains; this audit provides no kernel build, reboot or vulnerability-remediation proof.
+- **Review (2026-11-15):** `required`. Resolved dgx-spark remains `c646a19a`; full Juno1 selects `7.0.14-nvidia`, NV-Kernels [ae07646a](https://github.com/NVIDIA/NV-Kernels/tree/ae07646a606b3f18707246b0762464452cb40cbe). Both selected destructors still use plain `kfree()` ([af_inet.c](https://github.com/NVIDIA/NV-Kernels/blob/ae07646a606b3f18707246b0762464452cb40cbe/net/ipv4/af_inet.c#L165), [tcp_ipv4.c](https://github.com/NVIDIA/NV-Kernels/blob/ae07646a606b3f18707246b0762464452cb40cbe/net/ipv4/tcp_ipv4.c#L1232)), and derivation inspection confirms the local backport. [Live DGX main c215c456](https://github.com/graham33/nixos-dgx-spark/blob/c215c456a3b0654fb5dc3dd0b5d6b0cc47fc3b30/kernel-configs/nvidia-kernel-source.nix) still selects it. NVIDIA’s [7.0-next 18f0eb33](https://github.com/NVIDIA/NV-Kernels/tree/18f0eb33acddde0398e7b76354ad9840e3192174) now has both RCU frees, while bos-7.0-next `e01bfd69` does not; neither changes the selected-source gate. Retain the backport. No kernel build, deployment, reboot or remediation proof was produced.
 
 - **Where:** `modules/nixos/hardware/dgx-spark.nix` (`boot.kernelPatches`), `modules/nixos/hardware/cve-2026-98432-ipv4-opt-rcu.patch` (the upstream commit, unmodified).
 - **Why:** CVE-2026-98432 is a use-after-free. `inet_sock_destruct()` and `tcp_v4_reqsk_destructor()` free IPv4 options with plain `kfree()` while the SYNACK paths read them under `rcu_read_lock()` only. The patch changes both to `kfree_rcu(..., rcu)`. It goes through `boot.kernelPatches` because the kernel is built inside the upstream module; NixOS appends the patch in the `.override` of `boot.kernelPackages`.
@@ -725,7 +750,7 @@ Records from the security lifecycle audit. Bundled runtimes are invisible to nix
 
 #### `whiteboard-bundled-electron`
 
-- **Review (2026-11-06):** `unknown`. Full Ceres now selects [Whiteboard 0.5.1/8c348e98](https://github.com/devdotfast/whiteboard/releases/tag/v0.5.1), replacing the historically checked 0.2.4. The required security delegate failed to start with model_unavailable for openai-codex/gpt-daybreak-blue-latest. Neither its bundled runtime major nor the corresponding [Electron support deadline](https://releases.electronjs.org/schedule.json) was revalidated. The previous 43/2027-01-05 watch date is 60 days away and is historical, not a verified deadline for 0.5.1. Retain the exception; no current expired or within-30-day deadline can be ruled out from this failed review.
+- **Review (2026-11-15):** `watch`. Full Ceres selects Whiteboard `0.5.2` ([03d373ab](https://github.com/devdotfast/whiteboard/tree/03d373ab0bf64ae3e3a5e4e1e592cb4fd173871d)). Its [package metadata](https://github.com/devdotfast/whiteboard/blob/03d373ab0bf64ae3e3a5e4e1e592cb4fd173871d/apps/review-desktop/code-oss/package.json#L177) and [checksums](https://github.com/devdotfast/whiteboard/blob/03d373ab0bf64ae3e3a5e4e1e592cb4fd173871d/apps/review-desktop/code-oss/build/checksums/electron.txt#L28) select Electron `43.8.6`; a static scan of the already-built selected binary also finds `Electron/43.8.6`. Electron 43 EOL is **2027-01-05** ([schedule](https://releases.electronjs.org/schedule.json)), 51 days away, outside the 30-day warning window. Retain the exception while Electron remains bundled. No build or desktop runtime check was run.
 
 Also covers audit ID `package-whiteboard-bundled-electron`.
 
