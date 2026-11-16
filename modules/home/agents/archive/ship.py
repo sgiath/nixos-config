@@ -3,7 +3,9 @@
 
 Every record is stored verbatim in archive.raw: a JSONL line as written, a
 whole file for JSON documents and tool-output artifacts, a SQLite row as a JSON
-object. Text that is not valid UTF-8 is stored with replacement characters.
+object. A whole file that is not UTF-8 (an image, a PDF) is stored as
+{"base64": ...}, as are SQLite blobs; elsewhere text that is not valid UTF-8 is
+stored with replacement characters.
 
 ClickHouse holds the cursors: each run asks it for the furthest position
 already stored per (source, generation) and sends only what came after, so a
@@ -111,7 +113,15 @@ SOURCES = [
             ".claude-remote/history.jsonl",
         ],
     ),
-    Files("claude", [".claude/projects/**/*.meta.json", ".claude-remote/projects/**/*.meta.json"]),
+    Files(
+        "claude",
+        [
+            f"{root}/projects/{pattern}"
+            for root in (".claude", ".claude-remote")
+            # Full tool outputs the transcripts only reference, and project memory.
+            for pattern in ("**/*.meta.json", "*/*/tool-results/**/*", "*/memory/*.md")
+        ],
+    ),
     # Written by the oh-my-opencode plugin, not by Claude Code.
     Jsonl("opencode-hooks", [".claude/transcripts/*.jsonl"]),
     Rollouts("codex", [".codex", ".codex-remote"]),
@@ -585,7 +595,11 @@ def _ship_files(home, source, cursors, out):
         cursor = cursors.get((name, generation))
         if cursor and cursor[0] == stat.st_mtime_ns:
             continue
-        record = path.read_bytes().decode("utf-8", "replace")
+        data = path.read_bytes()
+        try:
+            record = data.decode("utf-8")
+        except UnicodeDecodeError:  # images, PDFs
+            record = json.dumps(_json_value(data))
         out.add(source.tool, name, generation, "0", stat.st_mtime_ns, record)
 
 

@@ -1,3 +1,4 @@
+import base64
 import gzip
 from compression import zstd
 import json
@@ -165,6 +166,14 @@ class ShipTest(unittest.TestCase):
         os.utime(doc, ns=(doc.stat().st_mtime_ns + 10**9,) * 2)
         self.ship()
         self.assertEqual([r["record"] for r in self.rows("p/s.json")], ['{"items":[]}', '{"items":[1]}'])
+
+    def test_ships_binary_files_losslessly(self):
+        image = b"\x89PNG\r\n\x1a\n\x00\xff"
+        (self.home / "p" / "shot.png").write_bytes(image)
+        self.sources = [ship.Files("claude", ["p/*.png"])]
+        self.ship()
+        record = json.loads(self.rows("p/shot.png")[0]["record"])
+        self.assertEqual(base64.b64decode(record["base64"]), image)
 
     def test_ships_every_database_a_glob_matches(self):
         for name in ("a", "b"):
