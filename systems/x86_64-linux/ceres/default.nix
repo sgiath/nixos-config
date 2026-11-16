@@ -40,6 +40,13 @@
     llama-cpp.enable = true;
     # Off to leave the GPU's VRAM to llama.cpp; qwen-image.nix keeps its setup.
     comfyui.enable = false;
+
+    # Minute-by-minute CPU, memory and I/O history (`sar`), to match a desktop freeze to its
+    # cause after the fact; the default collects every 10 minutes.
+    sysstat = {
+      enable = true;
+      collect-frequency = "*:*:00";
+    };
   };
 
   # Build-signing key for closures pushed to the servers; the public half is
