@@ -38,7 +38,10 @@
   sgiath.programs.blender.enable = false;
 
   sgiath.work = {
-    crazyegg.enable = true;
+    crazyegg = {
+      enable = true;
+      warp.enable = true;
+    };
     remote.enable = true;
   };
 

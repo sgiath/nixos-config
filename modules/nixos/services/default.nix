@@ -3,6 +3,7 @@
     ./agent-archive.nix
     ./audiobookshelf.nix
     ./cliproxyapi.nix
+    ./cloudflare-warp.nix
     ./comfyui.nix
     ./dnd5etools.nix
     ./docker.nix
