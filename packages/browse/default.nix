@@ -6,18 +6,18 @@
 }:
 
 let
-  version = "0.1.0";
+  version = "0.1.4";
 
   # Upstream publishes static musl binaries only to npm; the GitHub release
   # carries just the extension and the Node launcher.
   targets = {
     x86_64-linux = {
       target = "linux-x64-musl";
-      hash = "sha256-K2ix593QQ1lHbdpwaKZVnJTfVuZuhbeWA4YY/GY6EPU=";
+      hash = "sha256-z4slNKGVykA9oK9ZGPMwLBtS90grtchEwFzYy4S5y2Q=";
     };
     aarch64-linux = {
       target = "linux-arm64-musl";
-      hash = "sha256-DyX0t17oen/fhrEWCP3uIjRsW473Q7eAG7sAVmcyV2k=";
+      hash = "sha256-G10evdCa8HrIhVvSA9TJ8PjiTo+5O4RJVVd5h0b9V10=";
     };
   };
 
