@@ -42,10 +42,12 @@
     comfyui.enable = false;
 
     # Minute-by-minute CPU, memory and I/O history (`sar`), to match a desktop freeze to its
-    # cause after the fact; the default collects every 10 minutes.
+    # cause after the fact; the default collects every 10 minutes. `-S XDISK` adds per-disk,
+    # partition and filesystem activity (`sar -d`, `sar -F`), which sadc skips by default.
     sysstat = {
       enable = true;
       collect-frequency = "*:*:00";
+      collect-args = "-S XDISK 1 1";
     };
   };
 
