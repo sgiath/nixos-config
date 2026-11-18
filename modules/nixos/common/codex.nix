@@ -15,8 +15,6 @@ in
     environment.etc."codex/config.toml".source = (pkgs.formats.toml { }).generate "codex-config.toml" {
       # Inference through CLIProxyAPI; `codex --profile daybreak` switches to
       # OpenAI directly (~/.codex/daybreak.config.toml, modules/home/agents/codex.nix).
-      # FIXME: websockets stay off until Responses websocket continuation
-      # through the proxy is tested.
       model_provider = "cliproxy";
       model_providers.cliproxy = {
         name = "CLIProxyAPI";
@@ -24,7 +22,7 @@ in
         env_key = "CLIPROXY_API_KEY";
         wire_api = "responses";
         requires_openai_auth = false;
-        supports_websockets = false;
+        supports_websockets = true;
       };
       # Only logs: otel.sql reads completions and tool results. An omitted
       # metrics_exporter means Statsig, not none. Prompt text and SSE deltas
