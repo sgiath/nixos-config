@@ -1,10 +1,14 @@
 {
   config,
   lib,
+  modulesPath,
   pkgs,
   ...
 }:
 let
+  moduleReadsSrcSrc = lib.hasInfix "piholePackage.src.src.tag" (
+    builtins.readFile (modulesPath + "/services/networking/pihole-ftl.nix")
+  );
   nebula = config.sgiath.nebula;
   # Local records so phones and other non-Nix clients resolve overlay names the
   # same way Nix hosts do via networking.hosts. Records are Nebula IPv4 only;
@@ -70,16 +74,19 @@ in
 
         services.pihole-ftl = {
           enable = true;
-          # FIXME: pihole 6.6 exposes its fetchFromGitHub source as `src`, but the
-          # module still reads `piholePackage.src.src.tag` for /etc/pihole/versions.
-          # Drop this once https://github.com/NixOS/nixpkgs/pull/588606 is in the lock.
-          piholePackage = pkgs.pihole.overrideAttrs (old: {
-            passthru = old.passthru // {
-              src = old.passthru.src // {
-                inherit (old.passthru) src;
+          # The selected module reads `piholePackage.src.src.tag`, but pihole 6.6
+          # exposes its fetchFromGitHub source as `src`. Applies while the module
+          # still has that typo (fixed by NixOS/nixpkgs#588606); see
+          # UPSTREAM-WORKAROUNDS.md#pihole-module-src-tag.
+          piholePackage = lib.mkIf moduleReadsSrcSrc (
+            pkgs.pihole.overrideAttrs (old: {
+              passthru = old.passthru // {
+                src = old.passthru.src // {
+                  inherit (old.passthru) src;
+                };
               };
-            };
-          });
+            })
+          );
           queryLogDeleter.enable = true;
           lists = [
             {

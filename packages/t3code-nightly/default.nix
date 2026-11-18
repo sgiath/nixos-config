@@ -106,9 +106,6 @@ stdenv.mkDerivation (finalAttrs: {
 
   dontConfigure = true;
 
-  # FIXME: upstream packs ARM64 SEAs with a page-alignment workaround
-  # (scripts/lib/linux-arm64-sea.ts); this repack is only exercised on x86_64.
-  # Port it before running the package on aarch64.
   buildPhase = ''
     runHook preBuild
     node --build-sea sea/sea-config.json
@@ -126,8 +123,6 @@ stdenv.mkDerivation (finalAttrs: {
   # real path, so keep the tarball layout intact under libexec. ffi-rs and Koffi
   # pick their glibc builds on glibc, so the musl ones would only fail
   # autoPatchelf.
-  # FIXME: ARM CLI tarballs omit ffi-rs's musl build. Make cleanup tolerate
-  # its absence before building this package natively on aarch64.
   installPhase = ''
     runHook preInstall
 
@@ -187,10 +182,11 @@ stdenv.mkDerivation (finalAttrs: {
     changelog = "https://github.com/pingdotgg/t3code/releases/tag/v${finalAttrs.version}";
     license = lib.licenses.mit;
     sourceProvenance = [ lib.sourceTypes.binaryNativeCode ];
-    platforms = [
-      "x86_64-linux"
-      "aarch64-linux"
-    ];
+    # `node --build-sea` output fails on arm64 kernels with 16 or 64 KiB pages
+    # (https://github.com/nodejs/node/issues/67048). Upstream injects the blob
+    # with postject instead (scripts/lib/linux-arm64-sea.ts); add aarch64-linux
+    # once Node fixes it or the repack does the same.
+    platforms = [ "x86_64-linux" ];
     mainProgram = "t3";
   };
 })

@@ -7,14 +7,16 @@ Status: proposed
 The [agent session archive](../../implemented/architecture/2026-10-14-agent-session-archive.md)
 ships text session records from the main stores and normalizes Claude Code,
 Codex, OpenCode, the Pi family, Cursor, Muse and Grok. Some data is still only
-on its source host or only raw, and every copy of the archive is in the same
-house.
+on its source host or only raw, and no restore from the offsite copy has been
+tried.
 
 ## Proposal
 
-- **Offsite backup.** Sync `/var/backup/agent-archive` (self-contained
-  Parquet files, one per ingest month, closed months immutable) to an offsite
-  target with restic or rclone once one is chosen.
+- **Offsite restore check.** Vesta's nightly restic backup to Hygiea
+  (`systems/x86_64-linux/vesta/offsite-backup.nix`) includes
+  `/var/backup/agent-archive`; restore a closed month's Parquet files from it
+  into scratch tables and compare them with that month of `archive.raw` and
+  `archive.cliproxy`.
 - **Binary assets.** Archive OMP blobs (`~/.omp/agent/blobs/<sha256>`,
   referenced as `blob:sha256:` from sessions) and T3 message attachments
   (`~/.t3/userdata/attachments`), content-addressed so each is stored once.
@@ -24,8 +26,13 @@ house.
   account/rate-limit RPCs.
 - **More normalizers.** T3 (thread titles, runs, provider thread links through
   `nativeThreadRef.nativeId`), Hermes (session/route aggregates only).
-- **Hermes reconciliation.** Re-ship changed sessions' messages, since Hermes
-  has no update stamps.
+- **Hermes reconciliation.** Re-ship changed sessions' messages. Hermes
+  messages have no update stamp, so `ship.py` reads them by `id` and ships each
+  row as first seen; compaction later flips `active` and `compacted` in place.
+  On 2026-11-18, 289 messages that Vesta's `hermes/.hermes/state.db` marks
+  inactive were still active in their latest archived copy. Sessions carry
+  `transcript_revision`, `runtime_revision` and `last_activity_at`, which could
+  select the sessions whose messages to re-read.
 
 ## Alternatives considered
 
@@ -34,7 +41,8 @@ house.
 
 ## Acceptance criteria
 
-- An offsite copy restores into a scratch table identical to `archive.raw`.
+- A closed month restored from the offsite copy matches that month of
+  `archive.raw` and `archive.cliproxy` row for row.
 - Each new normalizer reconciles against independent counts from its source
   store, as the first ones did.
 

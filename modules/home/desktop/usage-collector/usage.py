@@ -209,9 +209,6 @@ def grok_report(email, billing):
     config = billing.get("config") if isinstance(billing, dict) else None
     period = (config or {}).get("currentPeriod")
     if not isinstance(period, dict) or "WEEK" not in str(period.get("type", "")).upper():
-        # FIXME: only the weekly SuperGrok credits view is read. An account
-        # billed monthly (positive `monthlyLimit` on `/v1/billing` without
-        # `format`) shows this error; read that view once such an account exists.
         report["error"] = "no weekly billing period"
         return report
     win = window(7 * 1440 * MINUTE_MS, iso_ms(period.get("end")))
@@ -401,9 +398,6 @@ def muse_fetch(env):
         # The CLI re-mints its key on the next run after a 401.
         if error.code in (401, 403):
             raise ProviderError("login expired") from None
-        # FIXME: a spent quota is refused with 429 and no usage frame, so the
-        # card shows this error instead of which window is spent. Parse the
-        # error body's reset time once a real 429 body has been captured.
         raise ProviderError("quota exhausted" if error.code == 429 else f"responses HTTP {error.code}") from None
     except (urllib.error.URLError, OSError):
         raise ProviderError("responses unreachable") from None

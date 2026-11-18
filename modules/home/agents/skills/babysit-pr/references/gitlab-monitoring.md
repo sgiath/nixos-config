@@ -47,8 +47,11 @@ Authenticate `glab` on the machine running the T3 server, including remote envir
   comment-only wakes. Rate limiting pauses reads. Registration success establishes that a watch is armed,
   not that future notifications or post-merge coverage have been verified.
 
-<!-- FIXME: Revisit the richer-monitor requirement when GitLab exposes per-job checks and approval events to
-     T3, and its watcher provides missing/stalled-pipeline alarms and a post-merge continuation. -->
+<!-- These limits were checked against the release under Evidence. Upstream main at 8cf97b5f (2026-11-18)
+     reads per-stage and downstream-pipeline checks on MR detail reads but still ends the watch at merge.
+     Re-check the limits against the running server after a T3 update; drop the richer-monitor
+     requirement once T3 wakes on individual job and manual-gate states, alarms on missing or stalled
+     pipelines, reports approvals, and continues past merge. -->
 
 ## Evidence
 

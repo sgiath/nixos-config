@@ -59,13 +59,10 @@ in
     }
 
     (lib.mkIf cfg.enable {
-      # FIXME: resolvconf hosts (NetworkManager laptops) need the network's
-      # DHCP DNS among the upstreams for captive portals, both in CoreDNS and in
-      # WARP's private resolv.conf. Enable WARP there once that is built.
       assertions = [
         {
           assertion = !config.networking.resolvconf.enable;
-          message = "services.cloudflare-warp: split DNS is only implemented for hosts with a static resolv.conf";
+          message = "services.cloudflare-warp: split DNS is only implemented for hosts with a static resolv.conf; resolvconf hosts (NetworkManager laptops) would also need the network's DHCP DNS among the upstreams, in CoreDNS and in WARP's private resolv.conf, for captive portals";
         }
       ];
 

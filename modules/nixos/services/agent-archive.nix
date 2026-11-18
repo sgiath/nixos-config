@@ -197,9 +197,8 @@ in
       # ClickHouse, DuckDB, pandas); restore with
       #   clickhouse-client --port 9001 --user archive \
       #     --query 'INSERT INTO archive.raw FORMAT Parquet' < raw-YYYYMM.parquet
-      # FIXME: the copy is on Vesta's root disk, the same machine as the
-      # database. Add an offsite sync of ${backupDir} (restic, rclone) once a
-      # destination is chosen.
+      # Vesta's nightly restic backup to Hygiea includes ${backupDir}
+      # (systems/x86_64-linux/vesta/offsite-backup.nix).
       systemd.services.agent-archive-backup = {
         description = "Agent archive Parquet backup";
         requires = [ "clickhouse.service" ];

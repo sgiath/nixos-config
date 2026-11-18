@@ -15,10 +15,10 @@ let
     hash = "sha256-//yVOsN7LYlyl+nI0WJ/PC5OLCMajY7m7PqJ9fTSxCk=";
   };
 
-  # FIXME: Resolve MCP requires SDK >=1.30,<2 because server.py imports
-  # mcp.server.fastmcp, which SDK 2 removed; nixpkgs ships SDK 2. Build SDK 1
-  # here, not as an override of the 2.x recipe, whose dependencies and tests
-  # do not apply. Remove it when upstream Resolve MCP supports SDK 2.
+  # Resolve MCP's requirements.txt pins mcp <2 (server.py imports
+  # mcp.server.fastmcp, which SDK 2 removed) and nixpkgs ships SDK 2, so SDK 1
+  # is built here; the 2.x recipe's dependencies and tests do not apply. The
+  # build checks the pin; see UPSTREAM-WORKAROUNDS.md#davinci-resolve-mcp-sdk-version.
   mcp = python3.pkgs.buildPythonPackage (finalAttrs: {
     pname = "mcp";
     version = "1.30.0";
@@ -133,6 +133,8 @@ runCommand "davinci-resolve-mcp-${version}"
     };
   }
   ''
+    ${python3.withPackages (ps: [ ps.packaging ])}/bin/python3 ${./check-sdk.py} \
+      ${src}/requirements.txt ${mcp.version} ${python3.pkgs.mcp.version}
     mkdir -p $out/share $out/bin
     cp -r ${src} $out/share/davinci-resolve-mcp
     chmod u+w $out/share/davinci-resolve-mcp

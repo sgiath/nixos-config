@@ -36,7 +36,9 @@ let
   '';
 in
 {
-  # FIXME: Drop this when the kernel carries a quirk for SSID 1a58:2020.
+  # Linux 7.3.4 (and mainline on 2026-11-18) has no quirk for SSID 1a58:2020;
+  # replace the rules, service and resume command once it has one. See
+  # UPSTREAM-WORKAROUNDS.md#pallas-alc298-speaker-init.
   services.udev.extraRules = ''
     SUBSYSTEM=="sound", KERNEL=="hwC*D*", ${ids}, TAG+="systemd", ENV{SYSTEMD_WANTS}+="pallas-speaker-init.service"
     # A runtime-suspended codec is re-initialized on wake and loses the sequence.

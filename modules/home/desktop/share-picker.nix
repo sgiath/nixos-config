@@ -7,28 +7,11 @@
 let
   inherit (config.gtk) theme;
 
-  # FIXME: 0.2.1's hyprland-rs cannot parse Hyprland 0.57 clients/monitors, so
-  # only Region works. Drop once root nixpkgs selects 0.3.1; see
-  # UPSTREAM-WORKAROUNDS.md#preview-share-picker-hyprland-057-ipc.
-  unwrapped = pkgs.hyprland-preview-share-picker.overrideAttrs (
-    final: prev: {
-      version = "0.3.1";
-      src = prev.src.override {
-        tag = "v${final.version}";
-        hash = "sha256-0yn7YG18SC6+h3vkJNDUda/esmBl6U1tu1LHIIXSknc=";
-      };
-      cargoDeps = pkgs.rustPlatform.fetchCargoVendor {
-        inherit (final) pname version src;
-        hash = "sha256-4nd0X6Ii6pbpQgzFCw2yXhl2+C5FyqDsHtbzKNpGW5o=";
-      };
-    }
-  );
-
   # settings.ini names the light variant of the Stylix theme. The theme travels
   # with the wrapper because the picker runs in the portal's environment.
   picker = pkgs.symlinkJoin {
-    inherit (unwrapped) pname version meta;
-    paths = [ unwrapped ];
+    inherit (pkgs.hyprland-preview-share-picker) pname version meta;
+    paths = [ pkgs.hyprland-preview-share-picker ];
     nativeBuildInputs = [ pkgs.makeWrapper ];
     postBuild = ''
       wrapProgram $out/bin/hyprland-preview-share-picker \

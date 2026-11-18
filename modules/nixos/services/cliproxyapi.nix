@@ -16,10 +16,7 @@ let
   # available only to the personal Claude login (Cyber Verification Program).
   # The Remote login excludes it through `excluded_models` in its auth file,
   # set with PATCH /v8/management/credentials/fields.
-  # FIXME: an explicit catalog replaces the remote one the proxy refreshes
-  # every 3 hours, so new upstream models arrive only when the
-  # cliproxy-models input is bumped. Drop `models.catalog` and the input once
-  # upstream lists Mythos.
+  # Evaluation warns when the cliproxy-models input starts listing Mythos.
   upstreamCatalog = lib.importJSON "${inputs.cliproxy-models}/models.json";
   extraClaude = lib.filter (m: !lib.any (u: u.id == m.id) upstreamCatalog.claude) [
     {
@@ -89,6 +86,12 @@ in
     { sgiath.nebula.services = [ "cliproxy" ]; }
 
     (lib.mkIf (config.sgiath.roles.server.enable && cfg.enable) {
+      warnings = lib.optional (extraClaude == [ ]) ''
+        services.cliproxyapi: the cliproxy-models catalog now lists Claude Mythos
+        (router-for-me/models#102). Drop `models.catalog`, extraClaude and the
+        cliproxy-models flake input so the proxy refreshes its catalog itself.
+      '';
+
       sops.secrets = {
         cliproxyapi_management.restartUnits = [
           "cliproxyapi.service"

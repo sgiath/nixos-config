@@ -98,9 +98,6 @@ class Sqlite:
     where: str = "1"
 
 
-# FIXME: the .claude-remote, .codex-remote and .config/remote-agents entries
-# belong to the retired Remote account; drop them once Pallas and Juno1 have
-# shipped and removed those directories (deleted on Ceres and Vesta).
 # Paths are relative to $HOME unless absolute; missing or unreadable ones are
 # skipped, so one list serves every host. Root-only stores (the static Hermes
 # migration copy on Vesta) are archived by running this once as root.
@@ -208,9 +205,6 @@ SOURCES = [
     Sqlite("goose", ".local/share/goose/sessions/sessions.db", "sessions", "id", "CAST(strftime('%s', updated_at) AS INTEGER) * 1000"),
     Sqlite("goose", ".local/share/goose/sessions/sessions.db", "messages", "id", "id"),
     Sqlite("goose", ".local/share/goose/sessions/sessions.db", "usage_ledger", "id", "id"),
-    # FIXME: Hermes has no update stamps: messages and sessions are shipped as
-    # first seen (or ended), later compaction edits are not. Reconcile changed
-    # sessions if the edited versions turn out to matter.
     *(
         source
         for db in (".hermes/state.db", "hermes/.hermes/state.db", "/var/lib/hermes-migration/state/.hermes/state.db")
@@ -527,9 +521,10 @@ def _ship_jsonl(home, source, cursors, out):
         cursor = cursors.get((name, generation))
         if cursor and stat.st_size <= cursor[0]:
             if stat.st_size < cursor[0]:
-                # FIXME: truncated in place (same inode) below what was shipped;
-                # the rewritten content is not shipped. No surveyed tool does this.
-                print(f"{name}: shrank below shipped offset {cursor[0]}, skipped", file=sys.stderr)
+                print(
+                    f"{name}: shrank below shipped offset {cursor[0]}; its rewritten content is not shipped",
+                    file=sys.stderr,
+                )
             continue
         for key, position, record in jsonl_records(path, cursor):
             out.add(source.tool, name, generation, key, position, record)
@@ -562,13 +557,7 @@ def _uncompressed_size(path, stat):
 
 
 def _continues(path, cursor, last):
-    """Whether the file starts with the `cursor[1]` lines shipped up to `cursor[0]`, the last being `last`.
-
-    FIXME: only the last shipped line is compared, so a rewrite that keeps
-    every line length and the last line would be taken as the old content.
-    Codex never rewrites a rollout; comparing every line needs the whole
-    shipped generation from ClickHouse.
-    """
+    """Whether the file has `cursor[1]` lines up to byte `cursor[0]`, the last being `last`."""
     position, lines = cursor[0], int(cursor[1])
     offset = line = 0
     with _open(path) as f:
