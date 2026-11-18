@@ -27,17 +27,20 @@ let
   };
 
   jq = lib.getExe pkgs.jq;
-  # FIXME: the TOML round trip drops comments and cannot carry TOML dates
-  # (the merge then leaves the file alone); fine while Grok's config has none.
-  tomlJson = pkgs.writeShellScript "toml-json" ''
-    exec ${lib.getExe (pkgs.python3.withPackages (ps: [ ps.tomli-w ]))} -c '
-    import json, sys, tomllib, tomli_w
-    if sys.argv[1] == "to-json":
-        json.dump(tomllib.loads(sys.stdin.read()), sys.stdout)
-    else:
-        sys.stdout.write(tomli_w.dumps(json.load(sys.stdin)))
-    ' "$1"
-  '';
+  # toml-json/toml_json.py; its tests run as part of the build.
+  tomlJson =
+    let
+      python = pkgs.python3.withPackages (ps: [
+        ps.tomli-w
+        ps.tomlkit
+      ]);
+    in
+    pkgs.runCommandLocal "toml-json" { } ''
+      PYTHONDONTWRITEBYTECODE=1 ${lib.getExe python} -I -m unittest discover \
+        -s ${./toml-json} -t ${./toml-json}
+      install -Dm755 ${./toml-json/toml_json.py} $out
+      sed -i '1i#!${lib.getExe python} -I' $out
+    '';
 
   # Rewrites ~/<path> with `filter` applied, only when that changes it, and
   # leaves the file alone when it cannot be parsed. $proxy in the filter is
@@ -52,10 +55,10 @@ let
     lib.hm.dag.entryAfter [ "writeBoundary" ] ''
       f="$HOME/${path}"
       old=$(cat "$f" 2>/dev/null || true)
-      if new=$(set -o pipefail; printf '%s' "$old" ${lib.optionalString toml "| ${tomlJson} to-json"} \
+      if new=$(set -o pipefail; ${if toml then ''${tomlJson} to-json "$f"'' else ''printf '%s' "$old"''} \
         | ${jq} -s --argjson proxy ${lib.escapeShellArg (builtins.toJSON overlay)} \
           ${lib.escapeShellArg "(.[0] // {}) | ${filter}"} \
-        ${lib.optionalString toml "| ${tomlJson} from-json"}); then
+        ${lib.optionalString toml ''| ${tomlJson} from-json "$f"''}); then
         if [ "$new" != "$old" ]; then
           run mkdir -p "$(dirname "$f")"
           run ${pkgs.coreutils}/bin/tee "$f" <<<"$new" >/dev/null
@@ -212,9 +215,6 @@ in
         overlay = {
           cliproxy = fx personal defaults.helper;
         };
-        # FIXME: the cliproxy-remote deletion migrates configs from before the
-        # Remote Claude login joined the shared pool; delete it once every
-        # agents host has activated it.
         filter = ''
           .providers = ((.providers // {}) + $proxy)
           | del(.providers["cliproxy-remote"], .models["cliproxy-remote"])
