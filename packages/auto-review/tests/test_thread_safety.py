@@ -7,7 +7,9 @@ from dataclasses import replace
 
 from auto_review.forge.base import ForgeError
 from auto_review.models import Note, Posted, Thread
+from auto_review.engine import Engine
 from auto_review.note import REPLY_MARK
+from auto_review.store import Store
 from auto_review.t3 import T3Error
 from tests.fakes import REPO, change, raw_finding
 from tests.thread_case import ThreadCase
@@ -297,6 +299,14 @@ class ThreadSafetyTest(ThreadCase):
         self.forge.approve = approve
         self.engine.tick()
         self.forge.approve = working
+        self.engine.tick()
+        self.assertEqual(len(self.forge.approvals), 1)
+
+    def test_deferred_approval_survives_a_restart(self):
+        self.deferred()
+        self.store = Store(self.root / "state.db")
+        self.engine = Engine(self.store, lambda: self.config, {"gitlab": self.forge, "github": self.github}, self.t3,
+                             self.fetch, self.runs, self.notify, self.clock)
         self.engine.tick()
         self.assertEqual(len(self.forge.approvals), 1)
 

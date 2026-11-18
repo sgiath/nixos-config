@@ -34,9 +34,9 @@ class Forge(Protocol):
     def mark_reviewed(self, path: str, change: Change) -> None:
         """GitLab: set `me`'s reviewer state to "left comments" unless `me` has unpublished drafts. GitHub: nothing."""
 
-    def request_changes(self, path: str, change: Change) -> None:
+    def request_changes(self, path: str, change: Change) -> str | None:
         """GitLab: set `me`'s reviewer state to "requested changes", with the same drafts guard. GitHub: nothing (a
-        REQUEST_CHANGES review needs a top-level body)."""
+        REQUEST_CHANGES review needs a top-level body). None when the state was set, else why it was not."""
 
     def reply(self, path: str, number: int, thread_id: str, body: str) -> Posted:
         """Reply in the thread `thread_id` (GitLab discussion id, GitHub review-thread node id)."""

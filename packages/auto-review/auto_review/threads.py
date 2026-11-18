@@ -38,10 +38,6 @@ class Applied:
 class Threads:
     def __init__(self, engine):
         self.engine = engine
-        # MRs whose threads are all settled but whose approval waits for a draft or pipeline: rechecked every poll.
-        # FIXME: in memory only, so a restart forgets them until the next settlement or review; persist them if
-        # that happens in practice.
-        self._deferred: set[tuple[str, int]] = set()
 
     # The poll
 
@@ -54,7 +50,7 @@ class Threads:
             repo = settings["repos"].get(repo_id)
             if repo and repo["enabled"]:
                 self.engine._guard(None, lambda r=repo_id, n=number: self._scan(settings, r, n))
-        for repo_id, number in sorted(self._deferred):
+        for repo_id, number in self.engine.store.deferred():
             self.engine._guard(None, lambda r=repo_id, n=number: self.reconsider(r, n))
 
     def _scan(self, settings: dict, repo_id: str, number: int) -> None:
@@ -87,9 +83,8 @@ class Threads:
             if not others:  # the replies were deleted
                 store.update_thread(repo_id, number, item["marker"], seen=None, updated_at=self._now())
             elif not active:
-                # Keyed by every note, the status and the stale judgments: a follow-up left stale is redone.
-                # FIXME: only while an unseen reply exists; a stale follow-up of a pushed fix (no new reply) is not
-                # redone until the next reply or head. Persist "skipped, still to judge" if that shows up in practice.
+                # Keyed by every note, the status and the stale judgments: a follow-up left stale while others'
+                # notes are unjudged is redone.
                 key = digest(notes(thread, me), item["status"], str(item["skips"]))
                 pending.append(f"{others[-1].id}@{key[:8]}")
         if settled:
@@ -245,26 +240,25 @@ class Threads:
         repo; while they wait, or the MR waits for a draft or pipeline, or a read or write failed, the MR is
         rechecked every poll."""
         engine, store = self.engine, self.engine.store
-        key = (repo_id, number)
-        deferred = key in self._deferred
-        self._deferred.add(key)  # until a decision below; a failed read or write is retried on the next poll
+        deferred = (repo_id, number) in store.deferred()
+        store.defer(repo_id, number)  # until a decision below; a failed read or write is retried on the next poll
         settings = engine.settings()
         repo = settings["repos"].get(repo_id)
         if settings["dry_run"] or settings["paused"] or engine.quiet(engine.now())[0] or (repo and not repo["enabled"]):
             return
         row = self._settled_review(settings, repo_id, number)
         if row is None:
-            self._deferred.discard(key)
+            store.undefer(repo_id, number)
             return
         repo = repo_view(settings, repo_id)
         forge, me = engine.forges[row["forge"]], engine.me(row["forge"])
         change = forge.change(row["path"], row["number"], me)
         if moved(row, change):
-            self._deferred.discard(key)
+            store.undefer(repo_id, number)
             return
         if repo["approval"] != "when_clean":
             forge.mark_reviewed(row["path"], change)
-            self._deferred.discard(key)
+            store.undefer(repo_id, number)
             return
         ready = eligibility(replace(change, review_requested=True), repo["rules"], me)
         if row["approved"] or ready.action != "review":
@@ -272,11 +266,11 @@ class Threads:
                 if not deferred:
                     engine.record("info", f"not approving yet: {ready.reason}", review_id=row["id"])
                 return
-            self._deferred.discard(key)
+            store.undefer(repo_id, number)
             return
         forge.approve(row["path"], change)
         store.update(row["id"], approved=True)
-        self._deferred.discard(key)
+        store.undefer(repo_id, number)
         engine.record("info", f"approved at @{row['head_sha'][:8]}: every comment is fixed or answered",
                       review_id=row["id"])
 

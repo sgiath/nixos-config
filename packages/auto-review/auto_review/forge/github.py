@@ -1,6 +1,7 @@
 """GitHub through `gh`, with gh's login (GH_TOKEN from the service's key wrapper)."""
 
 import json
+import logging
 import tempfile
 from urllib.parse import quote
 
@@ -8,13 +9,14 @@ from ..models import Change, Comment, FileDiff, Note, Posted, Thread
 from ..proc import CommandError, concat_pages, run
 from .base import ForgeError
 
+log = logging.getLogger("auto-review")
+
 THREADS_QUERY = (
     "query($owner:String!,$name:String!,$number:Int!,$endCursor:String){repository(owner:$owner,name:$name)"
     "{pullRequest(number:$number){reviewThreads(first:100,after:$endCursor){pageInfo{hasNextPage endCursor}"
-    " nodes{id isResolved comments(first:100){nodes{databaseId author{login} body path line originalLine url}}}}}}}"
+    " nodes{id isResolved comments(first:100){pageInfo{hasNextPage}"
+    " nodes{databaseId author{login} body path line originalLine url}}}}}}}"
 )
-# FIXME: comments(first:100) is not paginated, so a reply after a thread's 100th comment is never seen. Paginate the
-# comments of tracked threads if a review thread that long ever turns up.
 ROOT_COMMENT_QUERY = (
     "query($id:ID!){node(id:$id){... on PullRequestReviewThread{comments(first:1){nodes{databaseId}}}}}"
 )
@@ -26,6 +28,9 @@ PASSED = {"SUCCESS", "NEUTRAL", "SKIPPED"}
 
 class GitHub:
     name = "github"
+
+    def __init__(self):
+        self._unread: set[str] = set()  # review threads already reported as longer than one page of comments
 
     def whoami(self) -> str:
         return self._get("user")["login"]
@@ -88,6 +93,10 @@ class GitHub:
         for page in _json_objects(out):
             for node in page["data"]["repository"]["pullRequest"]["reviewThreads"]["nodes"]:
                 comments = node["comments"]["nodes"]
+                if node["comments"]["pageInfo"]["hasNextPage"] and node["id"] not in self._unread:
+                    self._unread.add(node["id"])
+                    log.warning("review thread %s of %s#%s has more than %s comments; the later ones are not read",
+                                node["id"], path, number, len(comments))
                 first = comments[0] if comments else {}
                 threads.append(
                     Thread(
@@ -123,10 +132,11 @@ class GitHub:
     def mark_reviewed(self, path: str, change: Change) -> None:
         return None
 
-    def request_changes(self, path: str, change: Change) -> None:
-        # FIXME: GitHub requires a review body for REQUEST_CHANGES, which would be a floating comment; the inline
-        # comments stand alone. Change this only if GitHub accepts a body-less REQUEST_CHANGES review.
-        return None
+    def request_changes(self, path: str, change: Change) -> str | None:
+        # GitHub's create-review API requires `body` with event REQUEST_CHANGES, and a body is a general PR comment
+        # (https://docs.github.com/en/rest/pulls/reviews#create-a-review-for-a-pull-request, API 2026-03-10).
+        # Write the review here once GitHub accepts REQUEST_CHANGES without a body.
+        return "GitHub requests changes only with a review body, which would be a general comment"
 
     def approve(self, path: str, change: Change) -> None:
         me = self.whoami().lower()

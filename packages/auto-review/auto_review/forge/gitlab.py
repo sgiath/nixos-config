@@ -94,18 +94,20 @@ class GitLab:
     def mark_reviewed(self, path: str, change: Change) -> None:
         self._set_state(path, change, "reviewed")
 
-    def request_changes(self, path: str, change: Change) -> None:
-        self._set_state(path, change, "requested_changes")
+    def request_changes(self, path: str, change: Change) -> str | None:
+        return None if self._set_state(path, change, "requested_changes") else "you have unpublished drafts"
 
-    def _set_state(self, path: str, change: Change, state: str) -> None:
-        """Publishing with no drafts only sets the state; with drafts pending it would publish sgiath's drafts too."""
+    def _set_state(self, path: str, change: Change, state: str) -> bool:
+        """Publishing with no drafts only sets the state; with drafts pending it would publish sgiath's drafts too, so
+        it is skipped (False)."""
         base = f"{_project(path)}/merge_requests/{change.number}"
         if self._get_all(f"{base}/draft_notes"):
-            return
+            return False
         try:
             self._post(f"{base}/draft_notes/bulk_publish", {"reviewer_state": state})
         except CommandError as error:
             raise ForgeError(f"setting {change.url} to {state}: {error}") from error
+        return True
 
     def approve(self, path: str, change: Change) -> None:
         approvals = self._get(f"{_project(path)}/merge_requests/{change.number}/approvals")

@@ -25,7 +25,8 @@ It replaces the Spain G2N sprint poller in `~/.agents/local/spain-review/`, whic
    adopts the thread carrying that tag instead of creating a second one. The MR/PR is linked to the thread, so T3
    shows its state there and settles the thread when it merges.
 4. **Monitor.** Each poll reads the thread. A thread stopped by a provider usage limit becomes *limited* until the
-   reset T3 reports (or the reset parsed from the message, with its date). New launches on that provider wait for the
+   reset parsed from T3's failure message (with its date); a limit message without a readable reset waits 30
+   minutes, and its warning says so. New launches on that provider wait for the
    reset; afterwards the service sends "continue" to the stopped thread itself. Limited time does not count toward
    `review_timeout_minutes`.
 5. **Decide.** The agent writes `verdict.json` in its run directory. The verdict must name the review id, attempt,
@@ -38,7 +39,9 @@ It replaces the Spain G2N sprint poller in `~/.agents/local/spain-review/`, whic
    UI as *unanchored*. Nothing is ever posted as a general MR comment. On GitLab, sgiath's reviewer state then
    becomes *requested changes* when a posted or already open finding scores at least `request_changes_threshold`,
    else *left comments* when anything was posted (skipped while he has unpublished drafts). GitHub gets no review
-   state: a `REQUEST_CHANGES` review needs a top-level body, which would be a general comment.
+   state: a `REQUEST_CHANGES` review needs a top-level body, which would be a general comment. When a finding
+   reaches `request_changes_threshold` but the forge sets no state (GitHub, or GitLab drafts), the event says
+   "changes not requested" with the reason.
 7. **Approve.** Only under the repo's `approval: when_clean` policy, and only when the verdict is complete, no finding
    reaches the threshold (posted, already open or unanchored), every changed file was read and no prompt injection
    was found. The approval is pinned to the reviewed head SHA.
@@ -53,11 +56,12 @@ launching and posting; running threads are still monitored.
 
 Every comment the service posts is tracked (SQLite `threads`, keyed by its hidden marker) until it is settled.
 
-- **Watching.** Each poll reads the MRs that have an `open` or `disputed` thread. A thread someone resolved on the
+- **Watching.** Each poll reads the MRs that have an `open` or `disputed` thread (on GitHub the first 100 comments
+  of each thread; a longer thread logs a warning once per run). A thread someone resolved on the
   forge becomes `resolved_elsewhere` and is no longer watched; a closed or merged MR closes its threads. sgiath's own
   replies only count as seen. A new or edited reply by anyone else queues one `follow_up` review at the MR's current
   head (`kind: follow_up`, keyed by the newest reply's id and a digest of the thread's notes, status and count of
-  skipped stale judgments, so the same replies never queue twice, while a follow-up left stale is redone), unless a
+  skipped stale judgments, so the same trigger never queues twice, and a follow-up left stale is redone as long as those replies stay unjudged), unless a
   review of that MR
   is active; so does a new head that no normal review will look at (review no longer requested). Follow-ups do not
   need the review request; they share the queue, limits, pause, quiet hours, cancel and retry with reviews. Only one
@@ -70,7 +74,8 @@ Every comment the service posts is tracked (SQLite `threads`, keyed by its hidde
   retried after a lost response keeps the snapshot the first launch wrote, since T3 may already run an agent on it.
 - **Acting.** A judgment is applied only if the thread is unchanged since the review read it (same notes, compared by
   id, author and body, and same status): a new or edited reply is judged by the next follow-up, and a decision sgiath
-  made meanwhile wins; a skipped judgment queues a new follow-up. Each judgment acts once: a publish retry of the same
+  made meanwhile wins; a skipped judgment is redone by a follow-up only while the thread has notes by people other than sgiath that
+  differ from those last judged; otherwise it waits for the next such reply or head. Each judgment acts once: a publish retry of the same
   attempt (e.g. after a failed post) only reports what it left, so sgiath's later decision stands and a dispute still
   ends the review `needs_attention` with a notification. `fixed`/`answered`: the reply is posted in the thread (short note on top, hidden marker naming
   the thread and a digest of the judged notes, so the same notes never get two replies), then the thread is resolved; from then on the thread counts as fixed, and a
@@ -89,7 +94,7 @@ Every comment the service posts is tracked (SQLite `threads`, keyed by its hidde
   under `approval: when_clean` while the MR is ready under the repo's rules (draft, pipeline; the review request is not
   needed), or the MR is marked reviewed under `never` (clearing an earlier *requested changes* on GitLab). These
   writes wait out pause, dry run, quiet hours and a disabled repo; while they wait, the MR waits for a draft or
-  pipeline, or a write failed, each poll checks again (until a restart). An open thread scoring at least `request_changes_threshold` keeps requesting changes.
+  pipeline, or a write failed, each poll checks again (SQLite `deferred`, so a restart keeps waiting). An open thread scoring at least `request_changes_threshold` keeps requesting changes.
 - Dry run records the judgments' reasoning and writes nothing.
 
 ## Settings and which one wins
@@ -146,7 +151,8 @@ preview. A hidden marker is always appended after the body; the service uses it 
 
 ## Files
 
-- `$XDG_STATE_HOME/auto-review/state.db`: reviews, findings, events (SQLite).
+- `$XDG_STATE_HOME/auto-review/state.db`: reviews, findings, tracked threads, deferred approvals, and the newest
+  5000 events (SQLite).
 - `$XDG_STATE_HOME/auto-review/overrides.json`: UI settings.
 - `$XDG_STATE_HOME/auto-review/runs/<id>-<attempt>/`: MR evidence, brief, verdict for one attempt; never reused.
 
@@ -196,7 +202,9 @@ global keys at the top level and `repos` as an object keyed by repo id; each rep
 ### `PATCH /api/settings`
 
 Body: a partial settings object, deep-merged into the overrides. A `null` value removes that override (the Nix
-default applies again). `{"repos": {"<id>": null}}` removes a UI-added repo, or every override of a Nix repo. A new
+default applies again). On a field whose own `null` means something (`max_launches_per_day`, `note_template`,
+`notify.ntfy_url`, a repo's `threshold`, `request_changes_threshold` and `reviewer`) with a non-null Nix value, that
+reset lands on the Nix value, not on `null`, and a warning event says so: the UI cannot empty a value set in Nix. `{"repos": {"<id>": null}}` removes a UI-added repo, or every override of a Nix repo. A new
 repo needs `forge`, `path`, `checkout` and `t3_project`. Answers `200` with the same shape as `GET /api/settings`,
 or `400 {"error", "field"}` naming the invalid field.
 

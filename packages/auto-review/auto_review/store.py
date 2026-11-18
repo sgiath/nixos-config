@@ -1,5 +1,5 @@
 """SQLite state: reviews (one row per diff key and kind), their findings per attempt, the threads the service
-opened in sgiath's name, provider limits and events."""
+opened in sgiath's name, MRs whose approval is deferred, provider limits and events."""
 
 import json
 import sqlite3
@@ -56,10 +56,12 @@ CREATE TABLE IF NOT EXISTS threads (
   pending TEXT, judged_by TEXT, skips INTEGER NOT NULL DEFAULT 0,
   PRIMARY KEY (repo, number, marker)
 );
+CREATE TABLE IF NOT EXISTS deferred (repo TEXT NOT NULL, number INTEGER NOT NULL, PRIMARY KEY (repo, number));
 """
 # open/disputed threads are watched for replies; the settled ones count as fixed for every later review.
 WATCHED = ("open", "disputed")
 SETTLED = ("fixed", "answered", "accepted")
+EVENTS_KEPT = 5000
 JSON_COLUMNS = ("diff_refs", "not_reviewed", "injection_attempts")
 BOOL_COLUMNS = ("dry_run", "approved", "settled")
 FINDING_COLUMNS = (
@@ -259,8 +261,7 @@ class Store:
             self._db.execute(
                 "INSERT INTO events (at, level, review_id, message) VALUES (?, ?, ?, ?)", (now, level, review_id, message)
             )
-            # FIXME: events are capped by count; a per-age retention would need a setting nobody has asked for.
-            self._db.execute("DELETE FROM events WHERE id <= (SELECT max(id) FROM events) - 5000")
+            self._db.execute("DELETE FROM events WHERE id <= (SELECT max(id) FROM events) - ?", (EVENTS_KEPT,))
 
     def events(self, *, limit: int = 100, review_id: int | None = None) -> list[dict]:
         sql, params = "SELECT at, level, review_id, message FROM events", []
@@ -304,6 +305,19 @@ class Store:
                 f"SELECT DISTINCT repo, number FROM threads WHERE status IN ({', '.join('?' for _ in WATCHED)})"
                 " ORDER BY repo, number", WATCHED).fetchall()
         return [(r[0], r[1]) for r in rows]
+
+    def defer(self, repo: str, number: int) -> None:
+        with self._lock:
+            self._db.execute("INSERT OR IGNORE INTO deferred VALUES (?, ?)", (repo, number))
+
+    def undefer(self, repo: str, number: int) -> None:
+        with self._lock:
+            self._db.execute("DELETE FROM deferred WHERE repo = ? AND number = ?", (repo, number))
+
+    def deferred(self) -> list[tuple[str, int]]:
+        """MRs whose threads are all settled but whose approval or reviewed state still waits: (repo, number)."""
+        with self._lock:
+            return [(r[0], r[1]) for r in self._db.execute("SELECT repo, number FROM deferred ORDER BY repo, number")]
 
     def disputed(self) -> list[dict]:
         with self._lock:

@@ -3,6 +3,7 @@
 import unittest
 from datetime import UTC, datetime
 
+from auto_review import limits
 from auto_review.limits import reset_time
 
 
@@ -18,3 +19,10 @@ class ResetTimeTests(unittest.TestCase):
         now = datetime(2026, 11, 2, 20, 24, tzinfo=UTC)
 
         self.assertEqual(reset_time(message, now), datetime(2026, 11, 3, 19, tzinfo=UTC))
+
+    def test_limit_without_a_readable_reset_has_no_reset_time(self):
+        message = "You've hit your usage limit. Try again later."
+
+        self.assertTrue(limits.is_limit(message))
+        self.assertIsNone(reset_time(message, datetime(2026, 11, 2, 20, 24, tzinfo=UTC)))
+        self.assertFalse(limits.is_limit("thread ended: crashed"))

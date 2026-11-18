@@ -86,3 +86,16 @@ class LinkTest(unittest.TestCase):
                 call.assert_called_once_with("link_pull_request", {
                     "threadId": "thread-7", "url": "https://forge.invalid/7",
                 })
+
+
+class UsageLimitReadTest(unittest.TestCase):
+    def test_a_limit_with_an_impossible_reset_time_is_limited_without_one(self):
+        for message in ("usage limit resets 7:99pm (UTC)", "usage limit resets Feb 31, 7pm (UTC)",
+                        "usage limit resets 25pm (UTC)", "usage limit reached"):
+            with self.subTest(message=message):
+                client = T3Client()
+                with patch.object(client, "_call", side_effect=[
+                        {"thread": {"status": "failed"}},
+                        {"items": [{"type": "error", "text": message}]}]):
+                    state = client.read("thread-1")
+                self.assertEqual((state.status, state.limit_reset), ("limited", None))

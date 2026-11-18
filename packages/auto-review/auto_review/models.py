@@ -178,7 +178,7 @@ class ThreadState:
     """A T3 thread as the service needs it.
 
     `status`: `active` (still working), `completed`, `limited` (stopped by a provider usage limit, `limit_reset`
-    says when it lifts), `failed` (anything else that ended the run), `waiting_input` (asks for an approval nobody
+    says when it lifts, None when the message names no readable time), `failed` (anything else that ended the run), `waiting_input` (asks for an approval nobody
     gives). `idle_since` is when it last changed.
     """
 

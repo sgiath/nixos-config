@@ -4,6 +4,7 @@ GitHub thread_id is the GraphQL review-thread node ID. reply() reads that node
 and uses its first comment's databaseId, never the newest reply's ID.
 """
 import json
+import logging
 import unittest
 from pathlib import Path
 from unittest.mock import patch
@@ -74,3 +75,24 @@ class ThreadForgeTest(unittest.TestCase):
         self.assertIn('graphql',command)
         self.assertIn('resolveReviewThread',command+payload)
         self.assertIn('PRRT_node',command+payload)
+
+    def test_github_logs_a_review_thread_with_unread_comments_once(self):
+        forge = GitHub()
+        page = {'data': {'repository': {'pullRequest': {'reviewThreads': {
+            'pageInfo': {'hasNextPage': False, 'endCursor': 'c1'},
+            'nodes': [{'id': 'PRRT_long', 'isResolved': False, 'comments': {
+                'pageInfo': {'hasNextPage': True},
+                'nodes': [{'databaseId': 1, 'author': {'login': 'alice'}, 'body': 'Bug', 'path': 'a.py', 'line': 3}],
+            }}],
+        }}}}}
+        calls, run = self.capture(page)
+        logging.disable(logging.NOTSET)
+        self.addCleanup(logging.disable, logging.CRITICAL)
+        with patch('auto_review.forge.github.run', side_effect=run), \
+                self.assertLogs('auto-review', level='WARNING') as logs:
+            forge.threads('owner/repo', 7)
+            [thread] = forge.threads('owner/repo', 7)
+        self.assertIn('pageInfo{hasNextPage}', ' '.join(calls[0][0]))
+        self.assertEqual(len(logs.records), 1, 'one warning per thread, not one per poll')
+        self.assertIn('PRRT_long', logs.output[0])
+        self.assertEqual(thread.notes[0].body, 'Bug')

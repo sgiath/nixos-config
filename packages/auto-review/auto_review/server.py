@@ -17,7 +17,7 @@ from urllib.parse import parse_qs, urlparse
 
 from . import note, settings as settings_mod
 from .engine import ActionError, Engine
-from .settings import SettingsError, SettingsFile
+from .settings import SettingsError, SettingsFile, nix_fallbacks
 from .store import ACTIVE, Store
 
 log = logging.getLogger("auto-review")
@@ -329,6 +329,9 @@ def _handler(app: App):
             if not isinstance(body, dict):
                 raise BadRequest("body must be a JSON object")
             app.settings.patch(body)
+            for field, value in nix_fallbacks(body, app.settings.defaults()).items():
+                app.engine.record("warn", f"settings: {field} is back to its Nix value {value!r}; the UI cannot"
+                                          " empty a value set in Nix")
             app.worker.submit("poll")
             return 200, app.settings_view()
 

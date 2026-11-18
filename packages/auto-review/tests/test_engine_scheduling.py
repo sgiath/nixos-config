@@ -260,6 +260,16 @@ class UsageLimitTest(EngineCase):
         self.assertEqual(self.row(review_id)["status"], "failed")
         self.assertEqual(self.t3.settles, [])
 
+    def test_limit_without_a_reset_time_says_the_wait_is_a_guess(self):
+        review_id = self.start()
+        thread_id = self.row(review_id)["thread_id"]
+        self.t3.states[thread_id] = ThreadState("limited", error="usage limit reached")
+        self.engine.tick()
+        self.assertEqual(self.row(review_id)["limited_until"], "2026-11-05T12:30:00Z")
+        [event] = [e for e in self.store.events(review_id=review_id) if "usage limit" in e["message"]]
+        self.assertEqual(event["level"], "warn")
+        self.assertIn("no reset time", event["message"])
+
     def test_limited_review_occupies_a_concurrency_slot(self):
         self.config["max_concurrent"] = 1
         self.limited()

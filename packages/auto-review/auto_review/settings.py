@@ -225,9 +225,25 @@ def _merge(base: dict, extra: dict) -> dict:
     return base
 
 
-# FIXME: `null` in a patch always means "drop the override", so the UI cannot override a non-null Nix value with
-# null (a Nix repo threshold or reviewer back to "use the global one", a Nix daily cap back to unlimited). A
-# distinct "set to null" marker would fix it once such a Nix default exists.
+EMPTIABLE = {("max_launches_per_day",), ("note_template",), ("notify", "ntfy_url")}
+REPO_EMPTIABLE = {"threshold", "request_changes_threshold", "reviewer"}
+
+
+def nix_fallbacks(patch: dict, defaults: dict, path: tuple = ()) -> dict[str, object]:
+    """Fields `patch` resets that have a `null` value of their own (unlimited, built-in, off, the global one) but a
+    non-null Nix value, by dotted name: the reset lands on the Nix value, since the overrides cannot empty it (a
+    `null` in a patch always drops the override)."""
+    found = {}
+    for key, value in patch.items():
+        parts, default = (*path, key), defaults.get(key) if isinstance(defaults, dict) else None
+        emptiable = parts in EMPTIABLE or (len(parts) == 3 and parts[0] == "repos" and key in REPO_EMPTIABLE)
+        if value is None and emptiable and default is not None:
+            found[".".join(parts)] = default
+        elif isinstance(value, dict):
+            found.update(nix_fallbacks(value, default, parts))
+    return found
+
+
 def _patch(base: dict, patch: dict) -> dict:
     for key, value in patch.items():
         if value is None:

@@ -79,7 +79,7 @@ class Publisher:
         if held or dry_run:
             note = f"not posted: {held}" if held else "dry run: nothing posted"
             if dry_run and not held and blocking:
-                note += f", would request changes ({blocking})"
+                note += f", request-changes threshold reached ({blocking})"
             return self._done(row, outcome, note)
 
         if self._changed(settings, row["repo"]):
@@ -183,8 +183,9 @@ class Publisher:
         engine, forge = self.engine, self.engine.forges[row["forge"]]
         try:
             if blocking:
-                forge.request_changes(row["path"], change)
-                engine.record("info", f"requested changes: {blocking}", review_id=row["id"])
+                skipped = forge.request_changes(row["path"], change)
+                engine.record("info", f"changes not requested ({skipped}): {blocking}" if skipped
+                              else f"requested changes: {blocking}", review_id=row["id"])
             else:
                 forge.mark_reviewed(row["path"], change)
         except ForgeError as error:

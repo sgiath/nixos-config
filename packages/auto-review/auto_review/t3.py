@@ -115,8 +115,10 @@ class T3Client:
         if status == "completed":
             return ThreadState("completed", selection=self._selection(thread_id), **common)
         error = self._last_error(thread_id)
-        if status == "failed" and (reset := limits.reset_time(error, datetime.now(UTC))):
-            return ThreadState("limited", limit_reset=reset.strftime("%Y-%m-%dT%H:%M:%SZ"), error=error, **common)
+        if status == "failed" and limits.is_limit(error):
+            reset = limits.reset_time(error, datetime.now(UTC))
+            return ThreadState("limited", limit_reset=reset and reset.strftime("%Y-%m-%dT%H:%M:%SZ"), error=error,
+                               **common)
         return ThreadState("failed", error=error or status, **common)
 
     def send(self, thread_id: str, message: str) -> None:

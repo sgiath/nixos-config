@@ -5,7 +5,8 @@ import unittest
 from pathlib import Path
 from unittest.mock import patch
 
-from auto_review.settings import SettingsError, SettingsFile, apply_patch, effective, repo_view, validate
+from auto_review.settings import (SettingsError, SettingsFile, apply_patch, effective, nix_fallbacks, repo_view,
+                                  validate)
 from tests.fakes import REPO, configuration
 
 
@@ -55,6 +56,16 @@ class SettingsTest(unittest.TestCase):
         self.assertEqual(result["reviewer"], {"model": "ui-model"})
         self.assertEqual(effective(defaults, result)["threshold"], 7)
         self.assertEqual(overrides["threshold"], 9, "patch must not mutate the caller's overrides")
+
+    def test_a_reset_that_cannot_empty_a_nix_value_names_it(self):
+        defaults = configuration("/unused", max_launches_per_day=5)
+        defaults["repos"][REPO]["threshold"] = 40
+        patch = {"max_launches_per_day": None, "threshold": None, "repos": {REPO: {"threshold": None}}}
+        for overrides in ({"max_launches_per_day": 10}, {}):  # a reset applies again when repeated
+            with self.subTest(overrides=overrides):
+                self.assertEqual(apply_patch(overrides, patch, defaults), {})
+        self.assertEqual(nix_fallbacks(patch, defaults), {"max_launches_per_day": 5, f"repos.{REPO}.threshold": 40})
+        self.assertEqual(nix_fallbacks({"repos": {REPO: None}, "notify": {"ntfy_url": None}}, defaults), {})
 
     def test_null_nix_repo_resets_overrides_without_deleting_repo(self):
         defaults = configuration("/unused")

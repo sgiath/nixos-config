@@ -279,7 +279,9 @@ class Engine:
             clock = self._paused_clock(row, now, stopped_at=state.updated_at)
             self.store.update(row["id"], status="limited", limited_until=until, **clock)
             self.store.set_limit(row["provider"], until, state.error or "usage limit")
-            self.record("warn", f"stopped by a usage limit of {row['provider']} until {until}", review_id=row["id"])
+            guess = "" if state.limit_reset else f" (no reset time in the message, so trying again then: {state.error})"
+            self.record("warn", f"stopped by a usage limit of {row['provider']} until {until}{guess}",
+                        review_id=row["id"])
             return None
         if state.status == "completed":
             return self._completed(row, settings, state)

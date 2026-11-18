@@ -3,6 +3,7 @@
 import unittest
 from unittest.mock import patch
 
+from auto_review.forge.github import GitHub
 from auto_review.forge.gitlab import GitLab
 from auto_review.models import Note, Thread
 from auto_review.settings import SettingsError, apply_patch, effective, repo_view, validate
@@ -54,7 +55,7 @@ class GitLabReviewStateTest(unittest.TestCase):
     def test_request_changes_sets_state_without_summary_or_drafts(self):
         forge, item = GitLab(), change()
         with patch.object(forge, "_get_all", return_value=[]) as get, patch.object(forge, "_post") as post:
-            forge.request_changes("team/service", item)
+            self.assertIsNone(forge.request_changes("team/service", item))
         get.assert_called_once_with("projects/team%2Fservice/merge_requests/7/draft_notes")
         post.assert_called_once_with("projects/team%2Fservice/merge_requests/7/draft_notes/bulk_publish",
                                      {"reviewer_state": "requested_changes"})
@@ -69,8 +70,9 @@ class GitLabReviewStateTest(unittest.TestCase):
     def test_request_changes_does_not_publish_personal_drafts(self):
         forge = GitLab()
         with patch.object(forge, "_get_all", return_value=[{"id": 99}]), patch.object(forge, "_post") as post:
-            forge.request_changes("team/service", change())
+            reason = forge.request_changes("team/service", change())
         post.assert_not_called()
+        self.assertIn("drafts", reason)
 
 
 class RequestChangesPublishingTest(EngineCase):
@@ -98,6 +100,20 @@ class RequestChangesPublishingTest(EngineCase):
         self.assertEqual(self.forge.posts, [])
         self.assertEqual(len(self.forge.change_requests), 1, "open score 30 must request changes")
         self.assertEqual(self.forge.marked, [])
+
+    def test_a_change_request_the_forge_skipped_is_not_reported_as_made(self):
+        working = self.forge.request_changes
+
+        def skipped(path, item):
+            working(path, item)
+            return "you have unpublished drafts"
+
+        self.forge.request_changes = skipped
+        review_id = self.start()
+        self.finish(review_id, findings=[raw_finding(frequency=5, severity=6)])
+        messages = [e["message"] for e in self.store.events(review_id=review_id)]
+        self.assertFalse([m for m in messages if m.startswith("requested changes")])
+        self.assertIn("changes not requested (you have unpublished drafts): SR-1 (30)", messages)
 
     def test_posted_score_below_thirty_marks_reviewed(self):
         review_id = self.start()
@@ -147,8 +163,8 @@ class RequestChangesPublishingTest(EngineCase):
         self.assertEqual(self.forge.approvals, [])
         # Completion notes are persisted events, not notifications for a normal finding.
         events = [e["message"].lower() for e in self.store.events(review_id=review_id)]
-        self.assertTrue(any("would" in e and "request changes" in e for e in events),
-                        "dry-run done note must say it would request changes")
+        self.assertTrue(any("request-changes threshold reached (sr-1 (30))" in e for e in events),
+                        "dry-run done note must name the findings at the request-changes threshold")
 
     def test_moved_head_holds_high_finding_without_requesting_changes(self):
         review_id = self.start()
@@ -169,3 +185,11 @@ class RequestChangesPublishingTest(EngineCase):
         self.assertEqual(self.states(review_id), {"SR-1": "posted"})
         self.assertEqual(len(self.forge.change_requests), 1, "recovered high finding must request changes")
         self.assertEqual(self.forge.marked, [])
+
+
+class GitHubReviewStateTest(unittest.TestCase):
+    def test_request_changes_reports_why_it_wrote_nothing(self):
+        with patch("auto_review.forge.github.run") as run:
+            reason = GitHub().request_changes("owner/repo", change(repo="github:owner/repo"))
+        run.assert_not_called()
+        self.assertIn("body", reason)
