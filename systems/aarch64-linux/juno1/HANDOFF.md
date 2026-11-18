@@ -1,4 +1,4 @@
-# juno1 (NVIDIA DGX Spark) — install handoff
+# juno1 (NVIDIA DGX Spark) - install handoff
 
 Written 2026-09-14, before the hardware existed. Pick up here when the Spark
 arrives. Everything below was evaluated (`nix eval` of the toplevel on x86)
@@ -22,7 +22,7 @@ Design decisions already made (don't re-litigate without reason):
 - No `roles.server` (nginx/minecraft/Ceres-cache trust are irrelevant); just `sgiath.enable` + `hardware.dgx-spark.enable`.
 - Podman (upstream, with docker socket compat), not `virtualisation.docker`.
 - nix-daemon `MemoryMax` raised to 96G (128 GB unified memory; the common 24G cap would kill kernel/CUDA builds).
-- `cudaCapabilities` left at upstream `["12.0" "12.1"]` — CUDA-dependent packages build from source instead of hitting the Flox cache. Flip to `[ ]` in `hardware/dgx-spark.nix` if the first build is unbearable.
+- `cudaCapabilities` left at upstream `["12.0" "12.1"]` - CUDA-dependent packages build from source instead of hitting the Flox cache. Flip to `[ ]` in `hardware/dgx-spark.nix` if the first build is unbearable.
 - Kernel is owned by the upstream module; hosts never set `boot.kernelPackages` on juno.
 
 ## Assumptions to verify on the real machine
@@ -59,7 +59,7 @@ sudo dd if=$(echo result/iso/*.iso) of=/dev/sdX bs=1M status=progress && sync
 If `--max-jobs 0` fails (cache miss), either add
 `boot.binfmt.emulatedSystems = [ "aarch64-linux" ]` to ceres temporarily, or
 build the image on any aarch64 box. Do not try to `nix build` juno1's own
-toplevel on Ceres — the NVIDIA kernel is not in any cache for our nixpkgs pin.
+toplevel on Ceres - the NVIDIA kernel is not in any cache for our nixpkgs pin.
 
 ## Install (on the Spark, booted from USB)
 
@@ -123,6 +123,6 @@ in `common/networking.nix`, sign a Nebula cert (`scripts/nebula-sign.sh juno<N>
 10.42.0.1<N> fd51:da00:4788::1<N> compute` and add the peer in `common/nebula.nix`), and repeat the
 SOPS recipient step. `update --juno<N>`
 already accepts any single digit. The ConnectX-7 QSFP ports (`enp1s0f0np0`,
-`enp1s0f1np1`; ignore the `enP2p…` twins) are unconfigured — wire them with
+`enp1s0f1np1`; ignore the `enP2p…` twins) are unconfigured - wire them with
 static `192.168.100.x/24` addresses when the second Spark arrives (see
 upstream `playbooks/connect-two-sparks`, `nccl-two-sparks`).
