@@ -154,9 +154,11 @@
         enable = true;
         keyFile = "/data/matrix-rtc";
         settings = {
-          # FIXME: Set room.auto_create = false to enforce the JWT service's
-          # homeserver restriction on room creation at the SFU too.
           port = 7880;
+          # lk-jwt-service creates rooms for LIVEKIT_FULL_ACCESS_HOMESERVERS
+          # users only; the SFU would otherwise create one for any token
+          # holder (github.com/element-hq/lk-jwt-service#readme).
+          room.auto_create = false;
           rtc = {
             node_ip = config.sgiath.publicIPv4;
             tcp_port = 7881;
