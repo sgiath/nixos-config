@@ -4,7 +4,7 @@ Run script paths relative to the skill directory, not this reference directory.
 
 ## 1-2. Extract transcript + frames
 
-Run the bundled script (path is relative to this skill's directory). It accepts a **`loom.com`/video URL or a local file** — URLs are downloaded with yt-dlp first — then transcribes locally with whisper.cpp (`whisper-cli`), no API key. Defaults: one frame every 4s and a temp output dir:
+Run the bundled script (path is relative to this skill's directory). It accepts a **`loom.com`/video URL or a local file** - URLs are downloaded with yt-dlp first - then transcribes locally with whisper.cpp (`whisper-cli`), no API key. Defaults: one frame every 4s and a temp output dir:
 
 ```bash
 scripts/video_to_evidence.sh "https://www.loom.com/share/<id>"   # a Loom link (or any yt-dlp-supported URL)
@@ -34,15 +34,15 @@ The [yt-dlp authentication options](https://github.com/yt-dlp/yt-dlp#authenticat
 
 ## 3. Read the transcript
 
-Treat the transcript as the primary account of what the user wants. Extract every concrete ask, correction, and decision — not a vague summary. Screen-recording speech is casual and unpunctuated, so read for intent, not literal wording.
+Treat the transcript as the primary account of what the user wants. Extract every concrete ask, correction, and decision - not a vague summary. Screen-recording speech is casual and unpunctuated, so read for intent, not literal wording.
 
 ## 4. Inspect frames
 
-Look at a spread of frames first (skip through them), then zoom into the moments the transcript calls out. Use your multimodal/image tool with a **specific goal** and ask it to **quote exact on-screen text**: labels, values, counts, error messages, URLs. This is where objective evidence lives — the exact number created, the precise wording shown, the actual error — which the narration usually paraphrases or omits.
+Look at a spread of frames first (skip through them), then zoom into the moments the transcript calls out. Use your multimodal/image tool with a **specific goal** and ask it to **quote exact on-screen text**: labels, values, counts, error messages, URLs. This is where objective evidence lives - the exact number created, the precise wording shown, the actual error - which the narration usually paraphrases or omits.
 
 ## 5. Synthesize
 
-Combine the two: the transcript says *what and why*, the frames say *exactly what was on screen*. Reconcile them into a concrete list of findings or requirements, and note where a claim is confirmed by a frame versus only spoken. Then act on it — this is input for real work, not a summarization exercise.
+Combine the two: the transcript says *what and why*, the frames say *exactly what was on screen*. Reconcile them into a concrete list of findings or requirements, and note where a claim is confirmed by a frame versus only spoken. Then act on it - this is input for real work, not a summarization exercise.
 
 ## 6. Clean up
 
@@ -51,12 +51,12 @@ Delete the temp workspace the script created (it prints the path) once you are d
 ## Gotchas
 
 - **You cannot read a video file directly.** Read/file tools cannot decode `.mp4`/`.mov`; always derive audio + frames first with the script (ffmpeg).
-- **Loom links and video URLs go straight to the script.** Pass the `loom.com` URL (or any yt-dlp-supported URL) as the input — the script downloads it with yt-dlp into the workspace, so do not download it separately. `yt-dlp` must be installed for URL inputs.
-- **Loom / exported filenames contain odd characters.** They often include a bracketed id and a Unicode slash `⧸` (U+29F8, not `/`) where the title had `A/B`. Match with a glob (e.g. `ls *"Test Draft"*.mp4`) and always quote the path — do not retype the name by hand.
+- **Loom links and video URLs go straight to the script.** Pass the `loom.com` URL (or any yt-dlp-supported URL) as the input - the script downloads it with yt-dlp into the workspace, so do not download it separately. `yt-dlp` must be installed for URL inputs.
+- **Loom / exported filenames contain odd characters.** They often include a bracketed id and a Unicode slash `⧸` (U+29F8, not `/`) where the title had `A/B`. Match with a glob (e.g. `ls *"Test Draft"*.mp4`) and always quote the path - do not retype the name by hand.
 - **The transcript is the primary signal, not the frames.** The spoken feedback is where the actual ask lives; frames confirm specifics. Do both, but read the transcript first.
 - **Target frames; do not dump them all.** Analyze a spread plus the transcript's hotspots and demand exact quotes. Reading every frame wastes context for little gain.
-- **Transcription is local (whisper.cpp).** `whisper-cli` must be on `PATH` (or set `$WHISPER_CLI`), and the GGML model file must exist (`$WHISPER_MODEL` or `--model`). If the model is missing, transcription fails — use the manual ffmpeg frame extraction below and label the missing narration, or point `--model` at a model you have. The script has no frames-only flag and stops on a missing model before extracting frames.
-- **No file-size or length limit.** Local whisper handles any length; long videos just take longer (GPU-accelerated via Vulkan/Metal/CUDA when the build supports it, otherwise CPU). whisper.cpp needs 16 kHz mono WAV, which the script already produces — do not feed it opus/mp3 re-encoded to save space.
+- **Transcription is local (whisper.cpp).** `whisper-cli` must be on `PATH` (or set `$WHISPER_CLI`), and the GGML model file must exist (`$WHISPER_MODEL` or `--model`). If the model is missing, transcription fails - use the manual ffmpeg frame extraction below and label the missing narration, or point `--model` at a model you have. The script has no frames-only flag and stops on a missing model before extracting frames.
+- **No file-size or length limit.** Local whisper handles any length; long videos just take longer (GPU-accelerated via Vulkan/Metal/CUDA when the build supports it, otherwise CPU). whisper.cpp needs 16 kHz mono WAV, which the script already produces - do not feed it opus/mp3 re-encoded to save space.
 - **Always clean up** the temp workspace when finished.
 
 ## Manual fallback (no script)

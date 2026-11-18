@@ -14,11 +14,11 @@ Worktrunk solves this with **split directive file passing**:
 2. Shell sets `WORKTRUNK_DIRECTIVE_CD_FILE` and `WORKTRUNK_DIRECTIVE_EXEC_FILE`
 3. `wt` binary writes a raw path to the CD file (no shell escaping needed)
 4. `wt` writes shell commands to the EXEC file (only for `--execute`)
-5. Shell reads the CD file with `cd -- "$(< file)"` — no shell parsing
+5. Shell reads the CD file with `cd -- "$(< file)"` - no shell parsing
 6. Shell sources the EXEC file if non-empty
 7. Shell removes both temp files
 
-The split design eliminates shell injection from cd directives — the CD file
+The split design eliminates shell injection from cd directives - the CD file
 holds a raw path that is never parsed as shell.
 
 ## Installation
@@ -37,7 +37,7 @@ eval "$(wt config shell init zsh)"
 # fish (~/.config/fish/config.fish):
 wt config shell init fish | source
 
-# nushell (experimental) — save to vendor autoload directory:
+# nushell (experimental) - save to vendor autoload directory:
 wt config shell init nu | save -f ($nu.default-config-dir | path join vendor/autoload/wt.nu)
 
 # PowerShell ($PROFILE):
@@ -262,5 +262,5 @@ If you see path issues, ensure you're using a recent Git for Windows version.
 
 ## See Also
 
-- `wt config shell --help` — Shell integration commands
-- `wt config show` — View current configuration and status
+- `wt config shell --help` - Shell integration commands
+- `wt config show` - View current configuration and status

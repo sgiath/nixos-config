@@ -2,7 +2,7 @@
 
 Merge current branch into the target branch. Squash & rebase, fast-forward the target branch, remove the worktree.
 
-Unlike `git merge`, this merges the current branch into the target branch — not the target into current. Similar to clicking "Merge pull request" on GitHub, but locally. The target defaults to the default branch.
+Unlike `git merge`, this merges the current branch into the target branch - not the target into current. Similar to clicking "Merge pull request" on GitHub, but locally. The target defaults to the default branch.
 
 ## Examples
 
@@ -41,7 +41,7 @@ Preserve commit history (no squash):
 $ wt merge --no-squash
 ```
 
-Create a merge commit — semi-linear history:
+Create a merge commit - semi-linear history:
 
 ```bash
 $ wt merge --no-ff
@@ -57,24 +57,24 @@ $ wt merge --no-commit
 
 `wt merge` runs these steps:
 
-1. **Commit** — Pre-commit hooks run, then uncommitted changes are committed. Post-commit hooks run in background. Skipped when squashing (the default) — changes are staged during the squash step instead. With `--no-squash`, this is the only commit step.
-2. **Squash** — Combines all commits since target into one (like GitHub's "Squash and merge"). Use `--stage` to control what gets staged: `all` (default), `tracked`, or `none`. A backup ref is saved to `refs/wt-backup/<branch>`. With `--no-squash`, individual commits are preserved.
-3. **Rebase** — Rebases onto target if behind. Skipped if already up-to-date. Conflicts abort immediately.
-4. **Pre-merge hooks** — Hooks run after rebase, before merge. Failures abort. See [`wt hook`](https://worktrunk.dev/hook/).
-5. **Merge** — Fast-forward merge to the target branch. With `--no-ff`, a merge commit is created instead — semi-linear history with rebased commits plus a merge commit. Non-fast-forward merges are rejected.
-6. **Pre-remove hooks** — Hooks run before removing worktree. Failures abort.
-7. **Cleanup** — Removes the worktree and branch. Use `--no-remove` to keep the worktree. When already on the target branch or in the primary worktree, the worktree is preserved.
-8. **Post-remove + post-merge hooks** — Run in background after cleanup.
+1. **Commit** - Pre-commit hooks run, then uncommitted changes are committed. Post-commit hooks run in background. Skipped when squashing (the default) - changes are staged during the squash step instead. With `--no-squash`, this is the only commit step.
+2. **Squash** - Combines all commits since target into one (like GitHub's "Squash and merge"). Use `--stage` to control what gets staged: `all` (default), `tracked`, or `none`. A backup ref is saved to `refs/wt-backup/<branch>`. With `--no-squash`, individual commits are preserved.
+3. **Rebase** - Rebases onto target if behind. Skipped if already up-to-date. Conflicts abort immediately.
+4. **Pre-merge hooks** - Hooks run after rebase, before merge. Failures abort. See [`wt hook`](https://worktrunk.dev/hook/).
+5. **Merge** - Fast-forward merge to the target branch. With `--no-ff`, a merge commit is created instead - semi-linear history with rebased commits plus a merge commit. Non-fast-forward merges are rejected.
+6. **Pre-remove hooks** - Hooks run before removing worktree. Failures abort.
+7. **Cleanup** - Removes the worktree and branch. Use `--no-remove` to keep the worktree. When already on the target branch or in the primary worktree, the worktree is preserved.
+8. **Post-remove + post-merge hooks** - Run in background after cleanup.
 
 Use `--no-commit` to skip committing uncommitted changes and squashing; rebase still runs by default and can rewrite commits unless `--no-rebase` is passed. Useful after preparing commits manually with `wt step commit`. Requires a clean working tree.
 
 ## Local CI
 
-For personal projects, pre-merge hooks open up the possibility of a workflow with much faster iteration — an order of magnitude more small changes instead of fewer large ones.
+For personal projects, pre-merge hooks open up the possibility of a workflow with much faster iteration - an order of magnitude more small changes instead of fewer large ones.
 
 Historically, ensuring tests ran before merging was difficult to enforce locally. Remote CI was valuable for the process as much as the checks: it guaranteed validation happened. `wt merge` brings that guarantee local.
 
-The full workflow: start an agent (one of many) on a task, work elsewhere, return when it's ready. Review the diff, run `wt merge`, move on. Pre-merge hooks validate before merging — if they pass, the branch goes to the default branch and the worktree cleans up.
+The full workflow: start an agent (one of many) on a task, work elsewhere, return when it's ready. Review the diff, run `wt merge`, move on. Pre-merge hooks validate before merging - if they pass, the branch goes to the default branch and the worktree cleans up.
 
 ```toml
 [[pre-merge]]

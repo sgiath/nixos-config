@@ -364,4 +364,3 @@ The tell is the bold label and colon that restates the line. A bold lead-in that
 > The new cache is faster and works with the existing router.
 
 (If the source has a measured delta, use that number: "cut load times from 2.1s to 400ms.")
-

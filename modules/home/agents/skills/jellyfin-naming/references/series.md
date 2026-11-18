@@ -35,7 +35,7 @@ Same optional year / ID rules as movies. TVDB is the show-specific provider: `[t
 
 ## Season folders
 
-- Name them `Season *` — **never** `S01`, `SE01`, `Season1`.
+- Name them `Season *` - **never** `S01`, `SE01`, `Season1`.
 - Pad so every season has the same width: `Season 05`, not `Season 5` next to `Season 10`.
 - Specials: `Season 00`.
 - One numbering scheme per show. Do not mix `Season 1` and `Season 01`.
@@ -56,7 +56,7 @@ Series Name (2021) S01E01 Title.mkv
 | Multi-episode file | `S01E01-E02` |
 | Specials | files in `Season 00`; prefer a descriptive name if the provider has no special metadata |
 | Stacked parts of one episode | `S01E01-part-1.mkv` (see [shared.md](shared.md#multiple-parts)) |
-| Title happens to say "Part 1" | `S02E03 Part 1.mkv` — this is **not** stacking |
+| Title happens to say "Part 1" | `S02E03 Part 1.mkv` - this is **not** stacking |
 
 A multi-episode file (`S01E01-E02`) is shown as one entry with combined metadata. Prefer splitting with MKVToolNix only if the user asked.
 

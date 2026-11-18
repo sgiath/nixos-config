@@ -35,9 +35,9 @@ $ wt config show
 | **User config**    | `~/.config/worktrunk/config.toml` | Worktree path template, LLM commit configs, etc | ✗                  |
 | **Project config** | `.config/wt.toml`                 | Project hooks, dev server URL                   | ✓                  |
 
-Organizations can also deploy a system-wide config file for shared defaults — run `wt config show` for the platform-specific location.
+Organizations can also deploy a system-wide config file for shared defaults - run `wt config show` for the platform-specific location.
 
-**User config** — personal preferences:
+**User config** - personal preferences:
 
 ```toml
 # ~/.config/worktrunk/config.toml
@@ -47,7 +47,7 @@ worktree-path = ".worktrees/{{ branch | sanitize }}"
 command = "CLAUDECODE= MAX_THINKING_TOKENS=0 claude -p --no-session-persistence --model=haiku --tools='' --disable-slash-commands --setting-sources='' --system-prompt=''"
 ```
 
-**Project config** — shared team settings:
+**Project config** - shared team settings:
 
 ```toml
 # .config/wt.toml
@@ -75,17 +75,17 @@ Controls where new worktrees are created.
 
 **Available template variables:**
 
-- `{{ repo_path }}` — absolute path to the repository root (e.g., `/Users/me/code/myproject`. Or for bare repos, the bare directory itself)
-- `{{ repo }}` — repository directory name (e.g., `myproject`)
-- `{{ owner }}` — primary remote owner path (may include subgroups like `group/subgroup`)
-- `{{ branch }}` — raw branch name (e.g., `feature/auth`)
-- `{{ branch | sanitize }}` — filesystem-safe: `/` and `\` become `-` (e.g., `feature-auth`)
-- `{{ branch | sanitize_db }}` — database-safe: lowercase, underscores, hash suffix (e.g., `feature_auth_x7k`)
-- `{{ branch | codename(2) }}` — deterministic friendly name from a ~1.26M-combo pool (e.g., `malleable-opah`)
+- `{{ repo_path }}` - absolute path to the repository root (e.g., `/Users/me/code/myproject`. Or for bare repos, the bare directory itself)
+- `{{ repo }}` - repository directory name (e.g., `myproject`)
+- `{{ owner }}` - primary remote owner path (may include subgroups like `group/subgroup`)
+- `{{ branch }}` - raw branch name (e.g., `feature/auth`)
+- `{{ branch | sanitize }}` - filesystem-safe: `/` and `\` become `-` (e.g., `feature-auth`)
+- `{{ branch | sanitize_db }}` - database-safe: lowercase, underscores, hash suffix (e.g., `feature_auth_x7k`)
+- `{{ branch | codename(2) }}` - deterministic friendly name from a ~1.26M-combo pool (e.g., `malleable-opah`)
 
 **Examples** for repo at `~/code/myproject`, branch `feature/auth`:
 
-Default — sibling directory (`~/code/myproject.feature-auth`):
+Default - sibling directory (`~/code/myproject.feature-auth`):
 
 ```toml
 worktree-path = "{{ repo_path }}/../{{ repo }}.{{ branch | sanitize }}"
@@ -259,7 +259,7 @@ For context:
 - User configs generally apply to all projects.
 - User configs _also_ has a `[projects]` table which holds project-specific settings for the user, such as worktree layout and setting overrides. That's what this section covers.
 
-Entries are keyed by project identifier — `<host>/<owner>/<repo>` derived from the primary remote URL (no `.git` suffix), or the canonical repo path when there is no remote. Run `wt config show` inside the repo to see the identifier for the current project; it appears in the `PROJECT CONFIG` section as `Identifier: …`.
+Entries are keyed by project identifier - `<host>/<owner>/<repo>` derived from the primary remote URL (no `.git` suffix), or the canonical repo path when there is no remote. Run `wt config show` inside the repo to see the identifier for the current project; it appears in the `PROJECT CONFIG` section as `Identifier: …`.
 
 Scalar values (like `worktree-path`) replace the global value; everything else (hooks, aliases, etc.) appends, global first.
 
@@ -274,7 +274,7 @@ step.copy-ignored.exclude = [".repo-local-cache/"]
 aliases.deploy = "make deploy BRANCH={{ branch }}"
 ```
 
-Hooks support all three [hook forms](https://worktrunk.dev/hook/#hook-forms). A table runs multiple commands concurrently; an array-of-tables pipeline runs steps in sequence. The dotted-key examples below are equivalent to the table forms — TOML treats `projects."github.com/user/repo".post-start.server = "..."` and a `[projects."github.com/user/repo".post-start]` table the same way:
+Hooks support all three [hook forms](https://worktrunk.dev/hook/#hook-forms). A table runs multiple commands concurrently; an array-of-tables pipeline runs steps in sequence. The dotted-key examples below are equivalent to the table forms - TOML treats `projects."github.com/user/repo".post-start.server = "..."` and a `[projects."github.com/user/repo".post-start]` table the same way:
 
 ```toml
 # Single command
@@ -303,10 +303,10 @@ Templates use [minijinja](https://docs.rs/minijinja/) syntax.
 
 Available variables:
 
-- `{{ git_diff }}`, `{{ git_diff_stat }}` — diff content
-- `{{ branch }}`, `{{ repo }}` — context
-- `{{ recent_commits }}` — recent commit messages
-- `{{ user_guidance }}`, `{{ project_guidance }}` — rendered append fragments (see [Appending to the prompt](https://worktrunk.dev/config/#appending-to-the-prompt))
+- `{{ git_diff }}`, `{{ git_diff_stat }}` - diff content
+- `{{ branch }}`, `{{ repo }}` - context
+- `{{ recent_commits }}` - recent commit messages
+- `{{ user_guidance }}`, `{{ project_guidance }}` - rendered append fragments (see [Appending to the prompt](https://worktrunk.dev/config/#appending-to-the-prompt))
 
 Default template:
 
@@ -361,8 +361,8 @@ Branch: {{ branch }}
 
 Available variables (in addition to commit template variables):
 
-- `{{ commits }}` — list of commits being squashed
-- `{{ target_branch }}` — merge target branch
+- `{{ commits }}` - list of commits being squashed
+- `{{ target_branch }}` - merge target branch
 
 Default template:
 
@@ -412,7 +412,7 @@ squash-template = """
 
 #### Appending to the prompt [experimental]
 
-`template-append` adds to the prompt instead of replacing it. The value is rendered as its own minijinja template (same variables) and injected into the default templates' `{{ user_guidance }}` slot — a `<user-guidance>` block right after `<style>`. It applies to both commit and squash. Use it for personal preferences without restating the whole template:
+`template-append` adds to the prompt instead of replacing it. The value is rendered as its own minijinja template (same variables) and injected into the default templates' `{{ user_guidance }}` slot - a `<user-guidance>` block right after `<style>`. It applies to both commit and squash. Use it for personal preferences without restating the whole template:
 
 ```toml
 [commit.generation]
@@ -432,7 +432,7 @@ See [`wt hook`](https://worktrunk.dev/hook/) for hook types, execution order, te
 
 # Project Configuration
 
-Project configuration lets teams share repository-specific settings — hooks, dev server URLs, and other defaults. The file lives in `.config/wt.toml` and is typically checked into version control.
+Project configuration lets teams share repository-specific settings - hooks, dev server URLs, and other defaults. The file lives in `.config/wt.toml` and is typically checked into version control.
 
 To create a starter file with commented-out examples, run `wt config create --project`.
 
@@ -467,7 +467,7 @@ hostname = "github.example.com"  # Example: API host (GHE / self-hosted GitLab)
 
 ## Commit-message append [experimental]
 
-Project-wide commit-message conventions appended to the LLM commit and squash prompts inside a `<project-guidance>` block, after the main template's `<style>` section (and after any user `<user-guidance>`). Rendered as a [minijinja](https://docs.rs/minijinja/) template with the same variables as the main commit template (`{{ branch }}`, `{{ git_diff }}`, etc.), so it can reference them directly. The first time the fragment changes, `wt` prompts the user to approve it — the same one-shot gate as project-defined hooks.
+Project-wide commit-message conventions appended to the LLM commit and squash prompts inside a `<project-guidance>` block, after the main template's `<style>` section (and after any user `<user-guidance>`). Rendered as a [minijinja](https://docs.rs/minijinja/) template with the same variables as the main commit template (`{{ branch }}`, `{{ git_diff }}`, etc.), so it can reference them directly. The first time the fragment changes, `wt` prompts the user to approve it - the same one-shot gate as project-defined hooks.
 
 ```toml
 [commit.generation]
@@ -477,7 +477,7 @@ template-append = """
 """
 ```
 
-Only `template-append` is honored from the project file. The LLM command and the main prompt template stay in [user config](https://worktrunk.dev/config/) — they describe per-developer environment (which CLI is installed, which agent the developer prefers). User config has a `[commit.generation] template-append` of its own; it renders into a separate `<user-guidance>` block immediately before this one.
+Only `template-append` is honored from the project file. The LLM command and the main prompt template stay in [user config](https://worktrunk.dev/config/) - they describe per-developer environment (which CLI is installed, which agent the developer prefers). User config has a `[commit.generation] template-append` of its own; it renders into a separate `<user-guidance>` block immediately before this one.
 
 ## Copy-ignored excludes
 
@@ -623,9 +623,9 @@ $ wt config show --full
 
 This tests:
 
-- **CI tool status** — Whether `gh` (GitHub) or `glab` (GitLab) is installed and authenticated
-- **Commit generation** — Whether the LLM command can generate commit messages
-- **Version check** — Whether a newer version is available on GitHub
+- **CI tool status** - Whether `gh` (GitHub) or `glab` (GitLab) is installed and authenticated
+- **Commit generation** - Whether the LLM command can generate commit messages
+- **Version check** - Whether a newer version is available on GitHub
 
 ### Command reference
 
@@ -895,10 +895,10 @@ Without a subcommand, runs `get`. Use `set` to override, or `clear` then `get` t
 
 Worktrunk detects the default branch automatically:
 
-1. **Worktrunk cache** — Checks `git config worktrunk.default-branch`
-2. **Git cache** — Detects primary remote and checks its HEAD (e.g., `origin/HEAD`)
-3. **Remote query** — If not cached, queries `git ls-remote` — typically 100ms–2s
-4. **Local inference** — If no remote, infers from local branches
+1. **Worktrunk cache** - Checks `git config worktrunk.default-branch`
+2. **Git cache** - Detects primary remote and checks its HEAD (e.g., `origin/HEAD`)
+3. **Remote query** - If not cached, queries `git ls-remote` - typically 100ms–2s
+4. **Local inference** - If no remote, infers from local branches
 
 Once detected, the result is cached in `worktrunk.default-branch` for fast access.
 
@@ -944,7 +944,7 @@ Global Options:
 
 Operation and debug logs.
 
-View and manage log files — hook output, command audit trail, and debug diagnostics.
+View and manage log files - hook output, command audit trail, and debug diagnostics.
 
 ### What's logged
 
@@ -952,7 +952,7 @@ Three kinds of logs live in `.git/wt/logs/`:
 
 #### Command log (`commands.jsonl`)
 
-All hook executions and LLM commands are recorded automatically — one JSON object per line. Rotates to `commands.jsonl.old` at 1MB (~2MB total). Fields:
+All hook executions and LLM commands are recorded automatically - one JSON object per line. Rotates to `commands.jsonl.old` at 1MB (~2MB total). Fields:
 
 | Field    | Description                                                            |
 | -------- | ---------------------------------------------------------------------- |
@@ -963,7 +963,7 @@ All hook executions and LLM commands are recorded automatically — one JSON obj
 | `exit`   | Exit code (`null` for background commands)                             |
 | `dur_ms` | Duration in milliseconds (`null` for background commands)              |
 
-The command log appends entries and is not branch-specific — it records all activity across all worktrees.
+The command log appends entries and is not branch-specific - it records all activity across all worktrees.
 
 #### Hook output logs
 
@@ -984,7 +984,7 @@ All `post-*` hooks (post-start, post-switch, post-commit, post-merge) run in the
 | `output.log`    | Running with `-vv`                     |
 | `diagnostic.md` | Running with `-vv` when warnings occur |
 
-`trace.log` mirrors stderr (commands, `[wt-trace]` records, bounded subprocess previews). `output.log` holds the raw uncapped subprocess stdout/stderr bodies. Both are overwritten on each `-vv` run. `diagnostic.md` is a markdown report for pasting into GitHub issues — written only when warnings occur, and inlines `trace.log` (never `output.log`, which can be multi-MB).
+`trace.log` mirrors stderr (commands, `[wt-trace]` records, bounded subprocess previews). `output.log` holds the raw uncapped subprocess stdout/stderr bodies. Both are overwritten on each `-vv` run. `diagnostic.md` is a markdown report for pasting into GitHub issues - written only when warnings occur, and inlines `trace.log` (never `output.log`, which can be multi-MB).
 
 ### Location
 
@@ -992,7 +992,7 @@ All logs are stored in `.git/wt/logs/` (in the main worktree's git directory). A
 
 ### Structured output
 
-`wt config state logs --format=json` emits three arrays — `command_log`, `hook_output`, `diagnostic`. Each entry carries a `file` (relative), `path` (absolute), `size`, and `modified_at` (unix seconds). Hook-output entries additionally expose `branch`, `source` (`user` / `project` / `internal`), `hook_type` (the `post-*` kind, or `null` for internal ops), and `name`. Filter with `jq` to pick out a specific entry.
+`wt config state logs --format=json` emits three arrays - `command_log`, `hook_output`, `diagnostic`. Each entry carries a `file` (relative), `path` (absolute), `size`, and `modified_at` (unix seconds). Hook-output entries additionally expose `branch`, `source` (`user` / `project` / `internal`), `hook_type` (the `post-*` kind, or `null` for internal ops), and `name`. Filter with `jq` to pick out a specific entry.
 
 ### Examples
 
@@ -1144,9 +1144,9 @@ $ wt list
 
 ### Use cases
 
-- **Work status** — `🚧` WIP, `✅` ready for review, `🔥` urgent
-- **Agent tracking** — The [Claude Code](https://worktrunk.dev/claude-code/) plugin sets markers automatically
-- **Notes** — Any short text: `"blocked"`, `"needs tests"`
+- **Work status** - `🚧` WIP, `✅` ready for review, `🔥` urgent
+- **Agent tracking** - The [Claude Code](https://worktrunk.dev/claude-code/) plugin sets markers automatically
+- **Notes** - Any short text: `"blocked"`, `"needs tests"`
 
 ### Storage
 
@@ -1199,7 +1199,7 @@ Global Options:
 
 Custom variables per branch.
 
-Store custom variables per branch. Values are stored as-is — plain strings or JSON.
+Store custom variables per branch. Values are stored as-is - plain strings or JSON.
 
 ### Examples
 
@@ -1250,7 +1250,7 @@ dev = "npm start -- --port {{ vars.config.port }}"
 
 ### Storage format
 
-Stored in git config as `worktrunk.state.<branch>.vars.<key>`. Keys must contain only letters, digits and hyphens — dots conflict with git config's section separator, underscores with its variable name format.
+Stored in git config as `worktrunk.state.<branch>.vars.<key>`. Keys must contain only letters, digits and hyphens - dots conflict with git config's section separator, underscores with its variable name format.
 
 ### Command reference
 

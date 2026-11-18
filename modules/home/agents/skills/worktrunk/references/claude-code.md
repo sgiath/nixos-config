@@ -58,7 +58,7 @@ Gemini loads the extension natively from the repository, so there is no `wt` wra
 
 ## Configuration skill
 
-The plugin includes a skill — documentation the agent can read — covering Worktrunk's configuration system. After installation, the agent can help with:
+The plugin includes a skill - documentation the agent can read - covering Worktrunk's configuration system. After installation, the agent can help with:
 
 - Setting up LLM-generated commit messages
 - Adding project hooks (pre-start, pre-merge, pre-commit)
@@ -82,8 +82,8 @@ $ wt list
 <span class=d>○</span> <span class=d>Showing 4 worktrees, 2 with changes, 2 ahead</span>
 ```
 
-- 🤖 — agent is working
-- 💬 — agent is waiting or idle
+- 🤖 - agent is working
+- 💬 - agent is waiting or idle
 
 The plugin clears the marker when a session ends. A stale marker can remain if the agent process is killed before its session-end hook runs; `wt config state marker clear` removes a marker manually.
 
@@ -103,13 +103,13 @@ Claude Code agents can run in isolated worktrees (`isolation: "worktree"`). By d
 
 ## `/wt-switch-create` command (Claude Code only)
 
-`/wt-switch-create <branch> [<repo>] [-- <task>]` starts work in a fresh worktree without leaving the session. It creates (or re-enters) the named worktrunk worktree — sibling layout `<repo>.<branch>/`, not `.claude/worktrees/` — switches the session's working directory into it, then runs the task there. An optional second token names a different repository to create the worktree in; the task is whatever follows `--` (or, with no `--`, whatever follows the branch). The command rides the same `WorktreeCreate` hook as agent isolation, so the worktree gets worktrunk's naming, hooks, and lifecycle.
+`/wt-switch-create <branch> [<repo>] [-- <task>]` starts work in a fresh worktree without leaving the session. It creates (or re-enters) the named worktrunk worktree - sibling layout `<repo>.<branch>/`, not `.claude/worktrees/` - switches the session's working directory into it, then runs the task there. An optional second token names a different repository to create the worktree in; the task is whatever follows `--` (or, with no `--`, whatever follows the branch). The command rides the same `WorktreeCreate` hook as agent isolation, so the worktree gets worktrunk's naming, hooks, and lifecycle.
 
 On session exit the worktree is offered for removal via the `WorktreeRemove` hook; one with uncommitted changes is kept rather than removed.
 
 ## Statusline (Claude Code only)
 
-`wt list statusline --format=claude-code` outputs a single-line status for the Claude Code statusline. When the CI status cache is stale, this fetches from the network — typically 1–2 seconds — making it suitable for async statuslines but too slow for synchronous shell prompts. If a faster version would be helpful, please [open an issue](https://github.com/max-sixty/worktrunk/issues).
+`wt list statusline --format=claude-code` outputs a single-line status for the Claude Code statusline. When the CI status cache is stale, this fetches from the network - typically 1–2 seconds - making it suitable for async statuslines but too slow for synchronous shell prompts. If a faster version would be helpful, please [open an issue](https://github.com/max-sixty/worktrunk/issues).
 
 <code>~/w/myproject.feature-auth !🤖 @<span style='color:#0a0'>+42</span> <span style='color:#a00'>-8</span> <span style='color:#0a0'>↑3</span> <span style='color:#0a0'>⇡1</span> <span style='color:#0a0'>●</span> | Opus 🌔 65%</code>
 

@@ -29,7 +29,7 @@ $ wt switch --create feature-branch  # Creates worktree, runs setup hooks
 $ wt merge                            # Merges into default branch, cleans up
 ```
 
-No cd back to main — `wt merge` runs from the feature worktree and merges into the target, like GitHub's merge button.
+No cd back to main - `wt merge` runs from the feature worktree and merges into the target, like GitHub's merge button.
 
 What `git worktree` doesn't provide:
 
@@ -45,7 +45,7 @@ Different scopes:
 - **git-town**: Git workflow automation in a single directory
 - **worktrunk**: Multi-worktree management with hooks and status aggregation
 
-These tools can be used together—run git-machete or git-town inside individual worktrees.
+These tools can be used together-run git-machete or git-town inside individual worktrees.
 
 ### vs. Git TUIs (lazygit, gh-dash, etc.)
 
@@ -53,7 +53,7 @@ Git TUIs operate on a single repository. Worktrunk manages multiple worktrees, r
 
 ## Does Worktrunk support stacked branches?
 
-Not natively — stacked-branch workflows are a large design space, so Worktrunk treats them as an extension rather than a built-in. [`worktrunk-sync`](https://github.com/pablospe/worktrunk-sync) is a community tool that auto-detects the branch dependency tree from git history and rebases each branch onto its parent in topological order. Install with `cargo install worktrunk-sync` and run as `wt sync` (via [custom subcommands](https://worktrunk.dev/extending/#custom-subcommands)).
+Not natively - stacked-branch workflows are a large design space, so Worktrunk treats them as an extension rather than a built-in. [`worktrunk-sync`](https://github.com/pablospe/worktrunk-sync) is a community tool that auto-detects the branch dependency tree from git history and rebases each branch onto its parent in topological order. Install with `cargo install worktrunk-sync` and run as `wt sync` (via [custom subcommands](https://worktrunk.dev/extending/#custom-subcommands)).
 
 ## There's an issue with my shell setup
 
@@ -122,7 +122,7 @@ Worktrunk stores small amounts of cache and log data in the repository's `.git/`
 
 None of this is tracked by git or pushed to remotes.
 
-**To remove:** `wt config state clear` removes all worktrunk data — config keys, caches, markers, hints, variables, logs, and stale trash.
+**To remove:** `wt config state clear` removes all worktrunk data - config keys, caches, markers, hints, variables, logs, and stale trash.
 
 ### What Worktrunk does NOT create
 
@@ -151,16 +151,16 @@ Locked worktrees show `⊞` in `wt list`. Neither `git worktree remove` nor `wt 
 
 By default, `wt remove` only deletes branches whose content is already in the default branch. Branches showing `_` (same commit) or `⊂` (integrated) in `wt list` are safe to delete.
 
-For the full algorithm, see [Branch cleanup](https://worktrunk.dev/remove/#branch-cleanup) — it handles squash-merge and rebase workflows where commit history differs but file changes match.
+For the full algorithm, see [Branch cleanup](https://worktrunk.dev/remove/#branch-cleanup) - it handles squash-merge and rebase workflows where commit history differs but file changes match.
 
 Use `-D` to force-delete branches with unmerged changes. Use `--no-delete-branch` to keep the branch regardless of status.
 
 ### Other cleanup
 
-- `wt remove` — in addition to the target worktree, runs a background internal sweep: deletes `.git/wt/trash/` entries older than 24 hours (eventual cleanup for directories orphaned when a previous background removal was interrupted), and terminates (`SIGTERM` then `SIGKILL`) `git fsmonitor--daemon` processes whose worktree no longer exists
-- `wt remove` — terminates the removed worktree's `git fsmonitor--daemon` process. Git starts this per-worktree filesystem-watch daemon when `core.fsmonitor=true`; once its worktree is gone it would leak. Removal sends `git fsmonitor--daemon stop`, then resolves that daemon's PID from its IPC socket and force-terminates it (SIGTERM, then SIGKILL) if it didn't exit. The signal only ever targets the daemon whose socket resolves to the worktree being removed.
-- `wt config state clear` — removes all worktrunk data from `.git/` (config keys, caches, markers, hints, variables, logs, stale trash)
-- `wt config shell uninstall` — removes shell integration from rc files
+- `wt remove` - in addition to the target worktree, runs a background internal sweep: deletes `.git/wt/trash/` entries older than 24 hours (eventual cleanup for directories orphaned when a previous background removal was interrupted), and terminates (`SIGTERM` then `SIGKILL`) `git fsmonitor--daemon` processes whose worktree no longer exists
+- `wt remove` - terminates the removed worktree's `git fsmonitor--daemon` process. Git starts this per-worktree filesystem-watch daemon when `core.fsmonitor=true`; once its worktree is gone it would leak. Removal sends `git fsmonitor--daemon stop`, then resolves that daemon's PID from its IPC socket and force-terminates it (SIGTERM, then SIGKILL) if it didn't exit. The signal only ever targets the daemon whose socket resolves to the worktree being removed.
+- `wt config state clear` - removes all worktrunk data from `.git/` (config keys, caches, markers, hints, variables, logs, stale trash)
+- `wt config shell uninstall` - removes shell integration from rc files
 
 See [What files does Worktrunk create?](#what-files-does-worktrunk-create) for details.
 
@@ -168,10 +168,10 @@ See [What files does Worktrunk create?](#what-files-does-worktrunk-create) for d
 
 Worktrunk runs `git` commands internally and optionally runs `gh` (GitHub) or `glab` (GitLab) for CI status. Beyond that, user-defined commands execute in four contexts:
 
-1. **User hooks** (`~/.config/worktrunk/config.toml`) — Personal automation for all repositories
-2. **Project hooks** (`.config/wt.toml`) — Repository-specific automation
-3. **LLM commands** (`~/.config/worktrunk/config.toml`) — Commit message generation and [branch summaries](https://worktrunk.dev/llm-commits/#branch-summaries)
-4. **--execute flag** — Explicitly provided commands
+1. **User hooks** (`~/.config/worktrunk/config.toml`) - Personal automation for all repositories
+2. **Project hooks** (`.config/wt.toml`) - Repository-specific automation
+3. **LLM commands** (`~/.config/worktrunk/config.toml`) - Commit message generation and [branch summaries](https://worktrunk.dev/llm-commits/#branch-summaries)
+4. **--execute flag** - Explicitly provided commands
 
 User hooks and user aliases don't require approval (you defined them). Commands from project hooks and project aliases require approval on first run. Approved commands are saved to the approvals file (`approvals.toml`). If a command changes, Worktrunk requires new approval.
 
@@ -192,7 +192,7 @@ Use `--yes` to bypass prompts (useful for CI/automation).
 
 ### Command log
 
-All hook executions and LLM commands are recorded in `.git/wt/logs/commands.jsonl` — one JSON object per line. Fields: `ts` (timestamp), `wt` (the wt command that triggered it), `label` (what ran, e.g., `pre-merge user:lint`), `cmd` (shell command), `exit` (exit code, `null` for background), `dur_ms` (duration, `null` for background). The file rotates to `commands.jsonl.old` at 1MB, bounding storage to ~2MB.
+All hook executions and LLM commands are recorded in `.git/wt/logs/commands.jsonl` - one JSON object per line. Fields: `ts` (timestamp), `wt` (the wt command that triggered it), `label` (what ran, e.g., `pre-merge user:lint`), `cmd` (shell command), `exit` (exit code, `null` for background), `dur_ms` (duration, `null` for background). The file rotates to `commands.jsonl.old` at 1MB, bounding storage to ~2MB.
 
 View the log with `wt config state logs get`, or query directly:
 
@@ -210,9 +210,9 @@ Clear with `wt config state logs clear`.
 
 Yes. Core commands, shell integration, and tab completion work in both Git Bash and PowerShell. See [installation](https://worktrunk.dev/worktrunk/#install) for setup details, including avoiding the Windows Terminal `wt` conflict.
 
-**Git for Windows required** — Hooks use bash syntax and execute via Git Bash, so [Git for Windows](https://gitforwindows.org/) must be installed even when PowerShell is the interactive shell.
+**Git for Windows required** - Hooks use bash syntax and execute via Git Bash, so [Git for Windows](https://gitforwindows.org/) must be installed even when PowerShell is the interactive shell.
 
-**`wt switch` interactive picker unavailable** — Uses [skim](https://github.com/skim-rs/skim), which doesn't support Windows. Use `wt list` and `wt switch <branch>` instead.
+**`wt switch` interactive picker unavailable** - Uses [skim](https://github.com/skim-rs/skim), which doesn't support Windows. Use `wt list` and `wt switch <branch>` instead.
 
 ## How does Worktrunk determine the default branch?
 
@@ -251,7 +251,7 @@ cargo test --test integration --features shell-integration-tests
 ## How can I contribute?
 
 - Star the repo
-- Try it out and [open an issue](https://github.com/max-sixty/worktrunk/issues) with feedback — even small annoyances
+- Try it out and [open an issue](https://github.com/max-sixty/worktrunk/issues) with feedback - even small annoyances
 - What worktree friction does Worktrunk not yet solve? [Tell us](https://github.com/max-sixty/worktrunk/issues)
 - Send to a friend
 - Post about it on [X](https://twitter.com/intent/tweet?text=Worktrunk%20%E2%80%94%20CLI%20for%20git%20worktree%20management&url=https%3A%2F%2Fworktrunk.dev), [Reddit](https://www.reddit.com/submit?url=https%3A%2F%2Fworktrunk.dev&title=Worktrunk%20%E2%80%94%20CLI%20for%20git%20worktree%20management), or [LinkedIn](https://www.linkedin.com/sharing/share-offsite/?url=https%3A%2F%2Fworktrunk.dev)

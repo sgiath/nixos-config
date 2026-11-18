@@ -1,5 +1,5 @@
 #!/usr/bin/env bash
-# video_to_evidence.sh — turn a video, screen recording, or video URL into reviewable
+# video_to_evidence.sh - turn a video, screen recording, or video URL into reviewable
 # evidence: a speech transcript (local whisper.cpp) plus periodic frames for on-screen text.
 #
 # Usage:
@@ -27,7 +27,7 @@ umask 077
 
 usage() {
   cat <<'EOF'
-video_to_evidence.sh — turn a video, screen recording, or video URL into reviewable
+video_to_evidence.sh - turn a video, screen recording, or video URL into reviewable
 evidence: a speech transcript (local whisper.cpp) plus periodic frames for on-screen text.
 
 Usage:

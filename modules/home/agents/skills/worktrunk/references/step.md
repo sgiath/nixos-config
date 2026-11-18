@@ -1,6 +1,6 @@
 # wt step
 
-Run individual operations. The building blocks of wt merge — commit, squash, rebase, push — plus standalone utilities.
+Run individual operations. The building blocks of wt merge - commit, squash, rebase, push - plus standalone utilities.
 
 ## Examples
 
@@ -24,26 +24,26 @@ $ wt step push
 
 ## Operations
 
-- [`commit`](#wt-step-commit) — Stage and commit with [LLM-generated message](https://worktrunk.dev/llm-commits/)
-- [`squash`](#wt-step-squash) — Squash all branch commits into one with [LLM-generated message](https://worktrunk.dev/llm-commits/)
-- `rebase` — Rebase onto target branch
-- `push` — Fast-forward target to current branch
-- [`diff`](#wt-step-diff) — Show all changes since branching (committed, staged, unstaged, untracked)
-- [`copy-ignored`](#wt-step-copy-ignored) — Copy gitignored files between worktrees
-- [`eval`](#wt-step-eval) — [experimental] Evaluate a template expression
-- [`for-each`](#wt-step-for-each) — [experimental] Run a command in every worktree
-- [`promote`](#wt-step-promote) — [experimental] Swap a branch into the main worktree
-- [`prune`](#wt-step-prune) — Remove worktrees and branches merged into the default branch
-- [`relocate`](#wt-step-relocate) — [experimental] Move worktrees to expected paths
-- [`tether`](#wt-step-tether) — [experimental] Run a command; kill its whole process tree when its worktree is removed
-- [`<alias>`](https://worktrunk.dev/extending/#aliases) — Run a configured command alias
+- [`commit`](#wt-step-commit) - Stage and commit with [LLM-generated message](https://worktrunk.dev/llm-commits/)
+- [`squash`](#wt-step-squash) - Squash all branch commits into one with [LLM-generated message](https://worktrunk.dev/llm-commits/)
+- `rebase` - Rebase onto target branch
+- `push` - Fast-forward target to current branch
+- [`diff`](#wt-step-diff) - Show all changes since branching (committed, staged, unstaged, untracked)
+- [`copy-ignored`](#wt-step-copy-ignored) - Copy gitignored files between worktrees
+- [`eval`](#wt-step-eval) - [experimental] Evaluate a template expression
+- [`for-each`](#wt-step-for-each) - [experimental] Run a command in every worktree
+- [`promote`](#wt-step-promote) - [experimental] Swap a branch into the main worktree
+- [`prune`](#wt-step-prune) - Remove worktrees and branches merged into the default branch
+- [`relocate`](#wt-step-relocate) - [experimental] Move worktrees to expected paths
+- [`tether`](#wt-step-tether) - [experimental] Run a command; kill its whole process tree when its worktree is removed
+- [`<alias>`](https://worktrunk.dev/extending/#aliases) - Run a configured command alias
 
 ## Command reference
 
 ```
 wt step - Run individual operations
 
-The building blocks of wt merge — commit, squash, rebase, push — plus standalone utilities.
+The building blocks of wt merge - commit, squash, rebase, push - plus standalone utilities.
 
 Usage: wt step [OPTIONS] <COMMAND>
 
@@ -120,7 +120,7 @@ Render the prompt, print the LLM command, generate the message, and exit without
 $ wt step commit --dry-run
 ```
 
-Three sections are printed: the rendered prompt, the shell command that would invoke the LLM, and the message returned. The LLM call still happens — only the commit is skipped.
+Three sections are printed: the rendered prompt, the shell command that would invoke the LLM, and the message returned. The LLM call still happens - only the commit is skipped.
 
 ### Command reference
 
@@ -214,7 +214,7 @@ Render the prompt, print the LLM command, generate the squash message, and exit 
 $ wt step squash --dry-run
 ```
 
-Three sections are printed: the rendered prompt, the shell command that would invoke the LLM, and the message returned. The LLM call still happens — only the squash and commit are skipped.
+Three sections are printed: the rendered prompt, the shell command that would invoke the LLM, and the message returned. The LLM call still happens - only the squash and commit are skipped.
 
 ### Command reference
 
@@ -280,7 +280,7 @@ Global Options:
 
 Show all changes since branching. Includes committed, staged, unstaged, and untracked files.
 
-This is what `wt merge` would include — a single diff against the merge base.
+This is what `wt merge` would include - a single diff against the merge base.
 
 ### Extra git diff arguments
 
@@ -396,24 +396,24 @@ exclude = [".cache/", ".turbo/"]
 - Handles nested `.gitignore` files, global excludes, and `.git/info/exclude`
 - Skips existing files by default (safe to re-run)
 - `--force` overwrites existing files in the destination
-- Always skips built-in excluded directories — VCS metadata (`.bzr/`, `.hg/`, `.jj/`, `.pijul/`, `.sl/`, `.svn/`) and tool-state (`.conductor/`, `.entire/`, `.worktrees/`) — and nested worktrees
+- Always skips built-in excluded directories - VCS metadata (`.bzr/`, `.hg/`, `.jj/`, `.pijul/`, `.sl/`, `.svn/`) and tool-state (`.conductor/`, `.entire/`, `.worktrees/`) - and nested worktrees
 
 ### Performance
 
-Reflink copies share disk blocks until modified — no data is actually copied. For a 14GB `target/` directory:
+Reflink copies share disk blocks until modified - no data is actually copied. For a 14GB `target/` directory:
 
 | Command                           | Time |
 | --------------------------------- | ---- |
 | `cp -R` (full copy)               | 2m   |
 | `cp -Rc` / `wt step copy-ignored` | 20s  |
 
-Uses per-file reflink (like `cp -Rc`) — copy time scales with file count.
+Uses per-file reflink (like `cp -Rc`) - copy time scales with file count.
 
 Use the `post-start` hook so the copy runs in the background. Use `pre-start` instead if subsequent hooks or `--execute` command need the copied files immediately.
 
 ### Background-hook priority (experimental)
 
-When invoked from a background hook pipeline (`post-*` hooks), `wt step copy-ignored` self-lowers its CPU and I/O priority — `taskpolicy -b` on macOS, `nice -n 19` plus `ionice -c 3` on Linux — so it yields to interactive work. Foreground callers (`pre-*` hooks, direct interactive use) run at normal priority so the user isn't waiting on a throttled copy.
+When invoked from a background hook pipeline (`post-*` hooks), `wt step copy-ignored` self-lowers its CPU and I/O priority - `taskpolicy -b` on macOS, `nice -n 19` plus `ionice -c 3` on Linux - so it yields to interactive work. Foreground callers (`pre-*` hooks, direct interactive use) run at normal priority so the user isn't waiting on a throttled copy.
 
 wt signals background-hook context by exporting `WORKTRUNK_FOREGROUND=-1` into every detached hook pipeline; `copy-ignored` inspects that variable on entry. The variable name is experimental and may change.
 
@@ -434,14 +434,14 @@ deps = "ln -sf {{ primary_worktree_path }}/node_modules ."
 
 #### Python
 
-Virtual environments contain absolute paths and can't be copied. Use `uv sync` instead — it's fast enough that copying isn't worth it.
+Virtual environments contain absolute paths and can't be copied. Use `uv sync` instead - it's fast enough that copying isn't worth it.
 
 ### Behavior vs Claude Code on desktop
 
 The `.worktreeinclude` pattern is shared with [Claude Code on desktop](https://code.claude.com/docs/en/desktop), which copies matching files when creating worktrees. Differences:
 
 - worktrunk copies all gitignored files by default; Claude Code requires `.worktreeinclude`
-- worktrunk uses copy-on-write for large directories like `target/` — potentially 30x faster on macOS, 6x on Linux
+- worktrunk uses copy-on-write for large directories like `target/` - potentially 30x faster on macOS, 6x on Linux
 - worktrunk runs as a configurable hook in the worktree lifecycle
 
 ### Command reference
@@ -594,7 +594,7 @@ A summary of successes and failures is shown at the end. Context JSON is piped t
 
 ### Arguments
 
-Arguments after `--` are the program and its arguments — run directly, no shell.
+Arguments after `--` are the program and its arguments - run directly, no shell.
 
 ```bash
 $ wt step for-each -- git status --short
@@ -700,7 +700,7 @@ After:
 
 To restore: `wt step promote main` from anywhere, or just `wt step promote` from the main worktree.
 
-Without an argument, promotes the current branch — or restores the default branch if run from the main worktree.
+Without an argument, promotes the current branch - or restores the default branch if run from the main worktree.
 
 ### Requirements
 
@@ -711,7 +711,7 @@ Without an argument, promotes the current branch — or restores the default bra
 
 Gitignored files (build artifacts, `node_modules/`, `.env`) are swapped along with the branches so each worktree keeps the artifacts that belong to its branch. Files are discovered using the same mechanism as [`copy-ignored`](#wt-step-copy-ignored) and can be filtered with `.worktreeinclude`.
 
-The swap uses `rename()` for each entry — fast regardless of entry size, since only filesystem metadata changes. If the worktree is on a different filesystem from `.git/`, it falls back to reflink copy.
+The swap uses `rename()` for each entry - fast regardless of entry size, since only filesystem metadata changes. If the worktree is on a different filesystem from `.git/`, it falls back to reflink copy.
 
 ### Command reference
 
@@ -761,7 +761,7 @@ Locked worktrees and the main worktree are always skipped. The current worktree 
 
 ### Min-age guard
 
-Worktrees younger than `--min-age` (default: 1 hour) are skipped. This prevents removing a worktree just created from the default branch — it looks "merged" because its branch points at the same commit.
+Worktrees younger than `--min-age` (default: 1 hour) are skipped. This prevents removing a worktree just created from the default branch - it looks "merged" because its branch points at the same commit.
 
 ```bash
 $ wt step prune --min-age=0s     # no age guard
@@ -879,10 +879,10 @@ expected path. Untracked and gitignored files remain at the original location.
 
 ### Skipped worktrees
 
-- **Dirty** (without `--commit`) — use `--commit` to auto-commit first
-- **Locked** — unlock with `git worktree unlock`
-- **Target blocked** (without `--clobber`) — use `--clobber` to backup blocker
-- **Detached HEAD** — no branch to compute expected path
+- **Dirty** (without `--commit`) - use `--commit` to auto-commit first
+- **Locked** - unlock with `git worktree unlock`
+- **Target blocked** (without `--clobber`) - use `--clobber` to backup blocker
+- **Detached HEAD** - no branch to compute expected path
 
 Note: This command is experimental and may change in future versions.
 

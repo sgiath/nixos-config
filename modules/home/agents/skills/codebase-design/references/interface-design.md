@@ -32,7 +32,7 @@ When designing an interface, ask:
 
 ## Principles
 
-- **Depth is a property of the interface, not the implementation.** A deep module can be internally composed of small parts — they just aren't part of the interface. A module can have **internal seams** private to its implementation, but don't expose them through the caller-facing interface just for tests.
+- **Depth is a property of the interface, not the implementation.** A deep module can be internally composed of small parts - they just aren't part of the interface. A module can have **internal seams** private to its implementation, but don't expose them through the caller-facing interface just for tests.
 - **The deletion test.** Imagine deleting the module. If complexity vanishes, it was a pass-through. If complexity reappears across N callers, it was earning its keep.
 - **The interface is the test surface.** Callers and tests cross the same seam. If you want to test *past* the interface, the module is probably the wrong shape.
 - **One production adapter means a hypothetical seam. Two production adapters means a real one.** Don't introduce a seam unless production behaviour actually varies across it. A test-only fake does not justify widening the interface.
@@ -93,6 +93,5 @@ Good interfaces make testing natural:
 ## Rejected framings
 
 - **Depth as ratio of implementation-lines to interface-lines** (Ousterhout): rewards padding the implementation. We use depth-as-leverage instead.
-- **"Interface" as only an Elixir behaviour callback list or a module's public functions**: too narrow — interface here includes every fact a caller must know.
+- **"Interface" as only an Elixir behaviour callback list or a module's public functions**: too narrow - interface here includes every fact a caller must know.
 - **"Boundary"**: overloaded with DDD's bounded context. Say **seam** or **interface**.
-

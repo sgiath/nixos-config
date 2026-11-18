@@ -24,7 +24,7 @@ Give delegated agents task-specific briefs rather than requiring named agent typ
 - External research: official docs, standards, ecosystem changes, benchmarks and primary-source evidence.
 - Codebase research: local implementation patterns, repository constraints and affected files.
 
-1. Investigate the question against **primary sources** — official docs, source code, specs, first-party APIs and academic papers — not a secondary write-up of them. Follow every claim back to the source that owns it.
+1. Investigate the question against **primary sources** - official docs, source code, specs, first-party APIs and academic papers - not a secondary write-up of them. Follow every claim back to the source that owns it.
 2. *Practical tradeoffs* - compare options, risks, edge cases, maintenance cost, and what would be easiest to validate.
 
 Adapt the angles when the question calls for it:

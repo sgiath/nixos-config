@@ -148,6 +148,6 @@ Prefer `cover.jpg` for movies/albums and `folder.jpg` for artist folders.
 
 ## Containers
 
-Common video: `mkv`, `mp4`. Disc folders: `VIDEO_TS`, `BDMV` (no versions, parts, or external tracks). `.iso` is unsupported — remux to `mkv` or extract only if asked.
+Common video: `mkv`, `mp4`. Disc folders: `VIDEO_TS`, `BDMV` (no versions, parts, or external tracks). `.iso` is unsupported - remux to `mkv` or extract only if asked.
 
 Music container exceptions are in [music.md](music.md#containers).

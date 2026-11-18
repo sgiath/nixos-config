@@ -54,7 +54,7 @@ Most common request. See `references/llm-commits.md` for supported tools and exa
 
 2. If none are installed, show supported options from the reference; do not install one.
 
-3. **Determine config change** — Get the exact command from `references/llm-commits.md`
+3. **Determine config change** - Get the exact command from `references/llm-commits.md`
 
    ```toml
    [commit.generation]
@@ -175,7 +175,7 @@ npm run lint --dry-run
 bash -n -c "if [ true ]; then echo ok; fi"
 ```
 
-**Dangerous patterns** — Warn users before creating hooks with:
+**Dangerous patterns** - Warn users before creating hooks with:
 
 - Destructive commands: `rm -rf`, `DROP TABLE`
 - External dependencies: `curl http://...`
@@ -251,12 +251,12 @@ Project hooks and project aliases prompt for approval on first run, so an untrus
 ↳ To skip prompts in CI/CD, add --yes; to pre-approve commands, run wt config approvals add
 ```
 
-Two resolutions exist — pick based on who the agent is running for:
+Two resolutions exist - pick based on who the agent is running for:
 
-- **`wt config approvals add`** — interactive prompt that stores approvals to `~/.config/worktrunk/approvals.toml`. Run once per project; persists across invocations until the command template changes or the project moves. This is the right choice when the human owns the trust decision.
-- **`--yes`** / `-y` — bypasses approval for a single invocation. Appropriate for CI/CD where hook contents are controlled by the pipeline itself.
+- **`wt config approvals add`** - interactive prompt that stores approvals to `~/.config/worktrunk/approvals.toml`. Run once per project; persists across invocations until the command template changes or the project moves. This is the right choice when the human owns the trust decision.
+- **`--yes`** / `-y` - bypasses approval for a single invocation. Appropriate for CI/CD where hook contents are controlled by the pipeline itself.
 
-**When invoked as an agent, stop and escalate to the user** — pre-approval is a security decision about whether this project's hooks should be trusted to run arbitrary commands on their machine. Tell the user to run `wt config approvals add` (or review and re-run with `--yes` if they accept the CI-style one-shot bypass). Don't reach for `--yes` on the user's behalf just to unblock the command.
+**When invoked as an agent, stop and escalate to the user** - pre-approval is a security decision about whether this project's hooks should be trusted to run arbitrary commands on their machine. Tell the user to run `wt config approvals add` (or review and re-run with `--yes` if they accept the CI-style one-shot bypass). Don't reach for `--yes` on the user's behalf just to unblock the command.
 
 ## Advanced: Agent Handoffs
 

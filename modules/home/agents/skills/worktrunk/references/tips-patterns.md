@@ -32,9 +32,9 @@ See [Aliases](https://worktrunk.dev/extending/#aliases) for scoping, approval, a
 
 `wt config state vars` holds state per branch, accessible from templates (`{{ vars.key }}`) and the CLI. Some uses:
 
-- **Coordinate state across pipeline steps** — see [Database per worktree](https://worktrunk.dev/tips-patterns/#database-per-worktree) below for a full recipe
-- **Stick a branch to an environment** — `wt config state vars set env=staging`, then `{{ vars.env | default('dev') }}` in hooks
-- **Parametrize aliases per branch** — see [`wt` aliases above](https://worktrunk.dev/tips-patterns/#wt-aliases)
+- **Coordinate state across pipeline steps** - see [Database per worktree](https://worktrunk.dev/tips-patterns/#database-per-worktree) below for a full recipe
+- **Stick a branch to an environment** - `wt config state vars set env=staging`, then `{{ vars.env | default('dev') }}` in hooks
+- **Parametrize aliases per branch** - see [`wt` aliases above](https://worktrunk.dev/tips-patterns/#wt-aliases)
 
 See [`wt config state vars`](https://worktrunk.dev/config/#wt-config-state-vars) for storage format, JSON support, and reference.
 
@@ -95,11 +95,11 @@ docker run -d --rm \
 db-stop = "docker stop {{ vars.container }} 2>/dev/null || true"
 ```
 
-The first pipeline step derives values from the branch and stores them as vars. The second step references `{{ vars.container }}` and `{{ vars.port }}` — expanded at execution time, after the vars are set. `post-remove` reads the same vars to stop the container.
+The first pipeline step derives values from the branch and stores them as vars. The second step references `{{ vars.container }}` and `{{ vars.port }}` - expanded at execution time, after the vars are set. `post-remove` reads the same vars to stop the container.
 
 The `('db-' ~ branch)` concatenation hashes differently than plain `branch`, so database and dev server ports don't collide. The `sanitize_db` filter produces database-safe identifiers (lowercase, underscores, no leading digits, with a short hash suffix).
 
-The connection string is accessible anywhere — not just in hooks:
+The connection string is accessible anywhere - not just in hooks:
 
 ```bash
 DATABASE_URL=$(wt config state vars get db_url) npm start
@@ -114,7 +114,7 @@ Use [`wt step copy-ignored`](https://worktrunk.dev/step/#wt-step-copy-ignored) t
 copy = "wt step copy-ignored"
 ```
 
-When another hook depends on the copy — for example, copying `node_modules/` before `pnpm install` so the install reuses cached packages — sequence them with a `[[post-start]]` pipeline:
+When another hook depends on the copy - for example, copying `node_modules/` before `pnpm install` so the install reuses cached packages - sequence them with a `[[post-start]]` pipeline:
 
 ```toml
 [[post-start]]
@@ -126,7 +126,7 @@ install = "pnpm install"
 
 Use `pre-start` instead when an `--execute` command needs the copied files immediately.
 
-All gitignored files are copied by default. To limit what gets copied, create `.worktreeinclude` with patterns — files must be both gitignored and listed. See [`wt step copy-ignored`](https://worktrunk.dev/step/#wt-step-copy-ignored) for details.
+All gitignored files are copied by default. To limit what gets copied, create `.worktreeinclude` with patterns - files must be both gitignored and listed. See [`wt step copy-ignored`](https://worktrunk.dev/step/#wt-step-copy-ignored) for details.
 
 ## Manual commit messages
 
@@ -159,8 +159,8 @@ Custom emoji markers show agent state in `wt list`. The [Claude Code](https://wo
 + review-ui      ? ↑  💬              ↑1      ./repo.review-ui
 ```
 
-- `🤖` — Agent is working
-- `💬` — Agent is waiting for input
+- `🤖` - Agent is working
+- `💬` - Agent is waiting for input
 
 Set status manually for any workflow:
 
@@ -202,7 +202,7 @@ Structured output for dashboards, statuslines, and scripts. See [`wt list`](http
 
 ## Reuse `default-branch`
 
-Worktrunk maintains useful state. Default branch [detection](https://worktrunk.dev/config/#wt-config-state-default-branch), for instance, means scripts work on any repo — no need to hardcode `main` or `master`:
+Worktrunk maintains useful state. Default branch [detection](https://worktrunk.dev/config/#wt-config-state-default-branch), for instance, means scripts work on any repo - no need to hardcode `main` or `master`:
 
 ```bash
 git rebase $(wt config state default-branch)
@@ -222,7 +222,7 @@ Reference Taskfile/Justfile/Makefile in hooks:
 
 ## Progressive validation
 
-Split checks across hook types — quick feedback before each commit, expensive suites before merge:
+Split checks across hook types - quick feedback before each commit, expensive suites before merge:
 
 ```toml
 [[pre-commit]]
@@ -238,7 +238,7 @@ build = "npm run build"
 
 ## Target-specific hooks
 
-Branch on `{{ target }}` to vary behavior per merge destination — for example, deploying to production from `main` and staging from a release branch:
+Branch on `{{ target }}` to vary behavior per merge destination - for example, deploying to production from `main` and staging from a release branch:
 
 ```toml
 post-merge = """
@@ -254,7 +254,7 @@ fi
 
 ## Shortcuts
 
-Special arguments work across all commands—see [`wt switch`](https://worktrunk.dev/switch/#shortcuts) for the full list.
+Special arguments work across all commands-see [`wt switch`](https://worktrunk.dev/switch/#shortcuts) for the full list.
 
 ```bash
 wt switch --create hotfix --base=@       # Branch from current HEAD
@@ -320,7 +320,7 @@ tmux send-keys -t "$S:dev.2" 'claude' Enter
 tmux send-keys -t "$S:dev.3" 'npm run frontend' Enter
 
 tmux select-pane -t "$S:dev.0"
-echo "✓ Session '$S' — attach with: tmux attach -t $S"
+echo "✓ Session '$S' - attach with: tmux attach -t $S"
 """
 
 [pre-remove]
@@ -335,7 +335,7 @@ $ wt switch --create feature -x 'tmux attach -t {{ branch | sanitize }}'
 
 ## Xcode DerivedData cleanup
 
-Clean up Xcode's DerivedData when removing a worktree. Each DerivedData directory contains an `info.plist` recording its project path — grep for the worktree path to find and remove the matching build cache:
+Clean up Xcode's DerivedData when removing a worktree. Each DerivedData directory contains an `info.plist` recording its project path - grep for the worktree path to find and remove the matching build cache:
 
 ```toml
 # ~/.config/worktrunk/config.toml
@@ -397,7 +397,7 @@ Follow background hook output in real-time:
 tail -f "$(wt config state logs get --hook=user:post-start:server)"
 ```
 
-The `--hook` format is `source:hook-type:name` — e.g., `project:post-start:build` for project-defined hooks. Use `wt config state logs get` to list all available logs.
+The `--hook` format is `source:hook-type:name` - e.g., `project:post-start:build` for project-defined hooks. Use `wt config state logs get` to list all available logs.
 
 Create an alias for frequent use:
 
@@ -407,7 +407,7 @@ alias wtlog='f() { tail -f "$(wt config state logs get --hook="$1")"; }; f'
 
 ## Bare repository layout
 
-A [bare repository](https://git-scm.com/docs/gitrepository-layout) has no working tree, so all branches — including the default — are [linked worktrees](https://git-scm.com/docs/git-worktree) at equal paths. No branch gets special treatment.
+A [bare repository](https://git-scm.com/docs/gitrepository-layout) has no working tree, so all branches - including the default - are [linked worktrees](https://git-scm.com/docs/git-worktree) at equal paths. No branch gets special treatment.
 
 Cloning a bare repo into `<project>/.git` puts all worktrees under one directory:
 

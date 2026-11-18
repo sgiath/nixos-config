@@ -175,7 +175,7 @@ harness. For Sol in the OpenCode harness it renders exactly as:
 > The assessment and checks below are AI-generated
 > Review model: **gpt-6.2-sol** / **high** / OpenCode harness
 
-**SR-1 · Should fix · open — <short issue title>**
+**SR-1 · Should fix · open - <short issue title>**
 
 <Triggering input or reachable path, the evidence, and its concrete consequence.>
 

@@ -1,6 +1,6 @@
 # Deepening
 
-How to deepen a cluster of shallow modules safely, given its dependencies. Assumes the vocabulary in [SKILL.md](../SKILL.md) — **module**, **interface**, **seam**, **adapter**.
+How to deepen a cluster of shallow modules safely, given its dependencies. Assumes the vocabulary in [SKILL.md](../SKILL.md) - **module**, **interface**, **seam**, **adapter**.
 
 ## Dependency categories
 
@@ -8,7 +8,7 @@ When assessing a candidate for deepening, classify its dependencies. The categor
 
 ### 1. In-process
 
-Pure computation, in-memory state, no I/O. Always deepenable — merge the modules and test through the new interface directly. No adapter needed.
+Pure computation, in-memory state, no I/O. Always deepenable - merge the modules and test through the new interface directly. No adapter needed.
 
 ### 2. Local-substitutable
 
@@ -36,8 +36,8 @@ Third-party services (Stripe, Twilio, etc.) you don't control. Put the integrati
 
 ## Testing strategy: replace, don't stack
 
-- Old unit tests on shallow modules become waste once tests at the deepened module's interface exist — delete them. This applies to pass-through modules being merged; a **layer** that is deep in its own right keeps its own tests (see skill://tdd's test layers reference).
+- Old unit tests on shallow modules become waste once tests at the deepened module's interface exist - delete them. This applies to pass-through modules being merged; a **layer** that is deep in its own right keeps its own tests (see skill://tdd's test layers reference).
 - Write new tests at the deepened module's interface. The **interface is the test surface**.
 - Tests assert on observable outcomes through the interface, not internal state.
-- Tests should survive internal refactors — they describe behaviour, not implementation. If a test has to change when the implementation changes, it's testing past the interface.
+- Tests should survive internal refactors - they describe behaviour, not implementation. If a test has to change when the implementation changes, it's testing past the interface.
 - For external I/O in Elixir, mock the boundary module with Mimic instead of adding dependency injection only for tests.

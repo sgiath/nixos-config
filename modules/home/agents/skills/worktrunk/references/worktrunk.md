@@ -68,15 +68,15 @@ git branch -d feat</td>
 
 **Workflow automation:**
 
-- **[Hooks](https://worktrunk.dev/hook/)** — run commands on create, pre-merge, post-merge, etc
-- **[LLM commit messages](https://worktrunk.dev/llm-commits/)** — generate commit messages from diffs
-- **[Merge workflow](https://worktrunk.dev/merge/)** — squash, rebase, merge, clean up in one command
-- **[Interactive picker](https://worktrunk.dev/switch/#interactive-picker)** — browse worktrees with live diff and log previews
-- **[Copy build caches](https://worktrunk.dev/step/#wt-step-copy-ignored)** — skip cold starts by sharing `target/`, `node_modules/`, etc between worktrees
-- **[`wt list --full`](https://worktrunk.dev/list/#full-mode)** — [CI status](https://worktrunk.dev/list/#ci-status) and [AI-generated summaries](https://worktrunk.dev/list/#llm-summaries) per branch
-- **[PR checkout](https://worktrunk.dev/switch/#pull-requests-and-merge-requests)** — `wt switch pr:123` to jump straight to a PR's branch
-- **[Dev server per worktree](https://worktrunk.dev/tips-patterns/#dev-server-per-worktree)** — `hash_port` template filter gives each worktree a unique port
-- **[Aliases](https://worktrunk.dev/extending/#aliases) & [per-branch variables](https://worktrunk.dev/config/#wt-config-state-vars)** — custom `wt <name>` commands and branch-scoped state for hook templates
+- **[Hooks](https://worktrunk.dev/hook/)** - run commands on create, pre-merge, post-merge, etc
+- **[LLM commit messages](https://worktrunk.dev/llm-commits/)** - generate commit messages from diffs
+- **[Merge workflow](https://worktrunk.dev/merge/)** - squash, rebase, merge, clean up in one command
+- **[Interactive picker](https://worktrunk.dev/switch/#interactive-picker)** - browse worktrees with live diff and log previews
+- **[Copy build caches](https://worktrunk.dev/step/#wt-step-copy-ignored)** - skip cold starts by sharing `target/`, `node_modules/`, etc between worktrees
+- **[`wt list --full`](https://worktrunk.dev/list/#full-mode)** - [CI status](https://worktrunk.dev/list/#ci-status) and [AI-generated summaries](https://worktrunk.dev/list/#llm-summaries) per branch
+- **[PR checkout](https://worktrunk.dev/switch/#pull-requests-and-merge-requests)** - `wt switch pr:123` to jump straight to a PR's branch
+- **[Dev server per worktree](https://worktrunk.dev/tips-patterns/#dev-server-per-worktree)** - `hash_port` template filter gives each worktree a unique port
+- **[Aliases](https://worktrunk.dev/extending/#aliases) & [per-branch variables](https://worktrunk.dev/config/#wt-config-state-vars)** - custom `wt <name>` commands and branch-scoped state for hook templates
 - ...and **[lots more](#next-steps)**
 
 Multiple parallel agents, same simple commands:
@@ -149,7 +149,7 @@ The `@` marks the current worktree. `+` means staged changes, `↑1` means 1 com
 
 When done, either:
 
-**PR workflow** — commit, push, open a PR, merge via GitHub/GitLab, then clean up:
+**PR workflow** - commit, push, open a PR, merge via GitHub/GitLab, then clean up:
 
 ```bash
 wt step commit                    # commit staged changes
@@ -157,7 +157,7 @@ gh pr create                      # or glab mr create
 wt remove                         # after PR is merged
 ```
 
-**Local merge** — squash, rebase onto main, fast-forward merge, clean up:
+**Local merge** - squash, rebase onto main, fast-forward merge, clean up:
 
 ```bash
 $ wt merge main
@@ -192,13 +192,13 @@ The `-x` flag runs a command after switching; arguments after `--` are passed to
   picker](https://worktrunk.dev/switch/#interactive-picker), [Claude Code integration](https://worktrunk.dev/claude-code/), [CI
   status & PR links](https://worktrunk.dev/list/#ci-status)
 - Browse [tips & patterns](https://worktrunk.dev/tips-patterns/) for recipes: aliases, dev servers, databases, agent handoffs, and more
-- [Extending Worktrunk](https://worktrunk.dev/extending/) — customize workflows with hooks & aliases
+- [Extending Worktrunk](https://worktrunk.dev/extending/) - customize workflows with hooks & aliases
 - Run `wt --help` or `wt <command> --help` for quick CLI reference
 
 ## Further reading
 
-- [Claude Code: Best practices for agentic coding](https://www.anthropic.com/engineering/claude-code-best-practices) — Anthropic's official guide, including the worktree pattern
-- [Shipping faster with Claude Code and Git Worktrees](https://incident.io/blog/shipping-faster-with-claude-code-and-git-worktrees) — incident.io's workflow for parallel agents
-- [Git worktree pattern discussion](https://github.com/anthropics/claude-code/issues/1052) — Community discussion in the Claude Code repo
+- [Claude Code: Best practices for agentic coding](https://www.anthropic.com/engineering/claude-code-best-practices) - Anthropic's official guide, including the worktree pattern
+- [Shipping faster with Claude Code and Git Worktrees](https://incident.io/blog/shipping-faster-with-claude-code-and-git-worktrees) - incident.io's workflow for parallel agents
+- [Git worktree pattern discussion](https://github.com/anthropics/claude-code/issues/1052) - Community discussion in the Claude Code repo
 - [@DevOpsToolbox's video on Worktrunk](https://youtu.be/WBQiqr6LevQ?t=345)
-- [git-worktree documentation](https://git-scm.com/docs/git-worktree) — Official git reference
+- [git-worktree documentation](https://git-scm.com/docs/git-worktree) - Official git reference

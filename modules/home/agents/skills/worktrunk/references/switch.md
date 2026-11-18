@@ -16,7 +16,7 @@ $ wt switch pr:123                 # Switch to PR #123's branch
 
 ## Creating a branch
 
-The `--create` flag creates a new branch from `--base` — the default branch unless specified. Without `--create`, the branch must already exist. Switching to a remote branch (e.g., `wt switch feature` when only `origin/feature` exists) creates a local tracking branch.
+The `--create` flag creates a new branch from `--base` - the default branch unless specified. Without `--create`, the branch must already exist. Switching to a remote branch (e.g., `wt switch feature` when only `origin/feature` exists) creates a local tracking branch.
 
 ## Creating worktrees
 
@@ -75,13 +75,13 @@ When called without arguments, `wt switch` opens an interactive picker to browse
 
 <!-- Alt-r (remove worktree) works but is omitted: cursor resets after skim reload (#1695). Add once fixed. See #1881. -->
 
-**Preview tabs** — toggle with number keys:
+**Preview tabs** - toggle with number keys:
 
-1. **HEAD±** — Diff of uncommitted changes
-2. **log** — Recent commits; commits already on the default branch have dimmed hashes
-3. **main…±** — Diff of changes since the merge-base with the default branch
-4. **remote⇅** — Ahead/behind diff vs upstream tracking branch
-5. **summary** — LLM-generated branch summary; requires `[list] summary = true` and `[commit.generation]`
+1. **HEAD±** - Diff of uncommitted changes
+2. **log** - Recent commits; commits already on the default branch have dimmed hashes
+3. **main…±** - Diff of changes since the merge-base with the default branch
+4. **remote⇅** - Ahead/behind diff vs upstream tracking branch
+5. **summary** - LLM-generated branch summary; requires `[list] summary = true` and `[commit.generation]`
 
 **Pager configuration:** The preview panel pipes diff output through git's pager. Override in user config:
 
@@ -111,9 +111,9 @@ Requires `gh` (GitHub) or `glab` (GitLab) CLI to be installed and authenticated.
 
 ## When wt switch fails
 
-- **Branch doesn't exist** — Use `--create`, or check `wt list --branches`
-- **Path occupied** — Another worktree is at the target path; switch to it or remove it
-- **Stale directory** — Use `--clobber` to remove a non-worktree directory at the target path
+- **Branch doesn't exist** - Use `--create`, or check `wt list --branches`
+- **Path occupied** - Another worktree is at the target path; switch to it or remove it
+- **Stale directory** - Use `--clobber` to remove a non-worktree directory at the target path
 
 To change which branch a worktree is on, use `git switch` inside that worktree.
 

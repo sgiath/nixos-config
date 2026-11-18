@@ -70,10 +70,10 @@ Debug steps:
 Move long-running commands to background:
 
 ```toml
-# Before — blocks for minutes
+# Before - blocks for minutes
 pre-start = "npm run build"
 
-# After — fast setup, build in background
+# After - fast setup, build in background
 pre-start = "npm install"
 post-start = "npm run build"
 ```
@@ -110,7 +110,7 @@ done
 
 Sockets listed as bare `fsmonitor--daemon.ipc` (no resolved path) belong to deleted worktrees. `wt remove` reaps these as part of its internal sweep: after the primary removal output, it sends `SIGTERM` (then `SIGKILL` after a short bounded wait) to every `git fsmonitor--daemon` whose socket no longer resolves to a live worktree. That covers daemons orphaned by `wt remove` itself and by paths that bypass it (plain `git worktree remove`, manual `rm -rf`, or a crashed `wt`).
 
-`wt remove` also force-terminates the removed worktree's own daemon as part of the synchronous teardown — it sends `git fsmonitor--daemon stop`, then resolves the daemon's PID from its IPC socket and SIGTERM/SIGKILLs it if it didn't exit. So removing a worktree never leaves a daemon behind, even one that has stopped answering its IPC.
+`wt remove` also force-terminates the removed worktree's own daemon as part of the synchronous teardown - it sends `git fsmonitor--daemon stop`, then resolves the daemon's PID from its IPC socket and SIGTERM/SIGKILLs it if it didn't exit. So removing a worktree never leaves a daemon behind, even one that has stopped answering its IPC.
 
 The residual case both paths deliberately leave is a wedged daemon on a _live_ worktree that is never removed: `git status` in that worktree blocks on the unresponsive IPC, but the daemon still serves a real worktree, so reaping it implicitly is out of scope. Terminate it manually: kill the daemon whose socket path matches the worktree, or `pkill -9 -f 'git fsmonitor--daemon'` and let the next `wt list` respawn the live ones. Disabling fsmonitor globally (`git config --global core.fsmonitor false`) avoids the class of problem entirely at the cost of some `git status` speed on large repos.
 
@@ -139,16 +139,16 @@ When `wt config show` shows the profile line is configured but shell integration
 is "not active", ask the user to run these diagnostics in the same PowerShell
 session:
 
-1. `Get-Command git-wt -All` — shows whether the wrapper Function is loaded
+1. `Get-Command git-wt -All` - shows whether the wrapper Function is loaded
    alongside the Application (exe). If only Application appears, the profile
    didn't define the function (restart shell, or profile load failed).
 
 2. `(Get-Command git-wt -CommandType Function).ScriptBlock | Select-String
-WORKTRUNK` — verifies the wrapper function body sets
+WORKTRUNK` - verifies the wrapper function body sets
    `WORKTRUNK_DIRECTIVE_CD_FILE`. If this doesn't appear, the function is
    incomplete or corrupted.
 
-3. `Get-Command git-wt -CommandType Application | Select-Object Source` — shows
+3. `Get-Command git-wt -CommandType Application | Select-Object Source` - shows
    what the wrapper resolves as `$wtBin`. If empty, the wrapper can't find the
    binary and will fail silently.
 

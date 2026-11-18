@@ -46,7 +46,7 @@ Treat the **library type** as authoritative if the user already pointed at a Mov
 | `S01E02`, `1x02`, `Season 1`, `s01e02-e03` | Series |
 | Single feature + year, no season/episode | Movie |
 | Audio (`flac`/`mp3`/`m4a`/`ogg`/`opus`) grouped as an album | Music |
-| `.mp4` that is audio-only | Music — rename to `.m4a` first |
+| `.mp4` that is audio-only | Music - rename to `.m4a` first |
 | Several video files that are clearly the same title at different resolutions | Movie versions, one folder |
 | `VIDEO_TS/` or `BDMV/` | Movie disc folder; no versions, parts, or external tracks |
 
@@ -79,7 +79,7 @@ Anything that shares the media basename, plus extras/image folders, must follow 
 
 | Kind | Pattern |
 | --- | --- |
-| Subtitles / external audio | `Name.<flags>.<lang>.srt` — see [shared.md](shared.md#external-subtitles-and-audio) |
+| Subtitles / external audio | `Name.<flags>.<lang>.srt` - see [shared.md](shared.md#external-subtitles-and-audio) |
 | NFO | `Name.nfo` |
 | Episode thumb | `Name-thumb.jpg` |
 | Lyrics | `Track.lrc` / `.elrc` / `.txt` |
@@ -103,7 +103,7 @@ Title (year) [tvdbid-79168]
 
 Multiple IDs are allowed. If you cannot verify an id, omit it.
 
-Music identification comes from **embedded tags**, not the filename. If tags are missing or wrong, say so; do not "fix" tags unless asked. If tags are absent, the filename becomes the track title — then name it carefully.
+Music identification comes from **embedded tags**, not the filename. If tags are missing or wrong, say so; do not "fix" tags unless asked. If tags are absent, the filename becomes the track title - then name it carefully.
 
 ## Verification
 
@@ -119,7 +119,7 @@ Report: moved count, skipped/ambiguous items, and any leftover files in the sour
 
 ## Anti-patterns
 
-- Dumping `Movie (2019).mkv` directly in `Movies/` (works sometimes; do not do it — extras, versions, and matching get worse)
+- Dumping `Movie (2019).mkv` directly in `Movies/` (works sometimes; do not do it - extras, versions, and matching get worse)
 - Season folder named `S01`, `Season1`, or `season 1` mixed with `Season 01`
 - Episode files at the show root alongside season folders
 - Two movies or two albums in one folder
