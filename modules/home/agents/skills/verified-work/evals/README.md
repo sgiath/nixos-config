@@ -27,7 +27,7 @@ No service, source checkout from a scenario, or external write is available to t
 ## Run a comparison
 
 Use the host's delegated-task tools and live model catalog. Apply verified-work's routing:
-supporting evaluation delegates use Sol (OpenCode, `cliproxy/gpt-6.1-sol`). Use the same model,
+supporting evaluation delegates use Sol (OpenCode, `cliproxy/gpt-6.2-sol`). Use the same model,
 effort, prompts, steering and tool permissions in both arms. Each actor gets a fresh context and
 one case, with no parent discussion or previous answer. Bound each task and overall run using
 the host's task lifecycle; a timeout is Inconclusive, never Pass. No task may keep running or

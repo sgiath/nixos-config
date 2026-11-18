@@ -90,9 +90,9 @@ red/green run.
 
 | Work | Role: harness and model |
 | --- | --- |
-| Long-running or brute-force evidence work: repeated test or build runs, bisection, fuzzing, causal experiments that need many runs, production-data probes, multi-step reproductions and browser sessions | Sol: OpenCode with `cliproxy/gpt-6.1-sol` |
-| Independent final verification of a substantial change, a second diagnosis when the cause stays uncertain or the first diagnosis did not hold, and side investigations that can run while the owner keeps working | Sol: OpenCode with `cliproxy/gpt-6.1-sol` |
-| Independent review of a production change beyond a few obvious lines, including production-code correctness and design judgments | Sol: OpenCode with `cliproxy/gpt-6.1-sol` at `high` reasoning effort |
+| Long-running or brute-force evidence work: repeated test or build runs, bisection, fuzzing, causal experiments that need many runs, production-data probes, multi-step reproductions and browser sessions | Sol: OpenCode with `cliproxy/gpt-6.2-sol` |
+| Independent final verification of a substantial change, a second diagnosis when the cause stays uncertain or the first diagnosis did not hold, and side investigations that can run while the owner keeps working | Sol: OpenCode with `cliproxy/gpt-6.2-sol` |
+| Independent review of a production change beyond a few obvious lines, including production-code correctness and design judgments | Sol: OpenCode with `cliproxy/gpt-6.2-sol` at `high` reasoning effort |
 | Adversarial security review (overrides the general review route) | Codex with `gpt-daybreak-blue-latest` at `high` reasoning effort through direct ChatGPT login: T3 instance `codex-daybreak`, or CLI `codex --profile daybreak` |
 | Deciding where and how to fix the production code, production design and seam placement, production code, refactoring, existing UI changes that do not require a new design, and the committed regression test | Opus: OpenCode with `cliproxy/claude-opus-5-5` |
 | Creating and designing new UIs or substantial redesigns where visual and UX judgment adds value, including animations and transitions | Fable: OpenCode with `cliproxy/claude-fable-5-2` at `high` reasoning effort |

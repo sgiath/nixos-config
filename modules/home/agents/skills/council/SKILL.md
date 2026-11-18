@@ -15,7 +15,7 @@ Use the members the user names. Otherwise:
 
 | Provider instance | Model | Reasoning effort |
 | --- | --- | --- |
-| `opencode` | `cliproxy/gpt-6.1-sol` | `high` |
+| `opencode` | `cliproxy/gpt-6.2-sol` | `high` |
 | `opencode` | `cliproxy/claude-opus-5-5` | `high` |
 | `grok` | `grok-4.7` | `high` |
 

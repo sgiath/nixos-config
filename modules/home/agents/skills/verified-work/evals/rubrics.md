@@ -91,7 +91,7 @@ the code or the gate, or treating runs against a since-changed revision as evide
 Pass: the Opus thread reads the code, diagnoses the cause, reproduces it (a failing test where the
 repository's test layer fits, or a quick browser check) and writes the fix itself, then runs its own
 red/green check. A Sol review or verification after the fix is acceptable but not required.
-Fail: handing the diagnosis, code reading or reproduction to Sol (OpenCode, `cliproxy/gpt-6.1-sol`)
+Fail: handing the diagnosis, code reading or reproduction to Sol (OpenCode, `cliproxy/gpt-6.2-sol`)
 or another delegate before the thread has looked at the code, or ending the turn to wait on such a
 delegate. Asking the user who should do it is also a fail.
 

@@ -34,13 +34,13 @@ SSH there.
   (`cliproxy/claude-opus-5-5`) writes production code, including updates to existing UIs that do not require a
   new design. An Opus thread does its own reading, lookups, answers to questions and short investigations and
   checks; handing those to Sol makes the thread wait on a slower model without a better result. Sol
-  (`cliproxy/gpt-6.1-sol`) takes the work where its thoroughness or independence pays: long-running or brute-force
+  (`cliproxy/gpt-6.2-sol`) takes the work where its thoroughness or independence pays: long-running or brute-force
   evidence work (repeated test or build runs, bisection, fuzzing, production-data probes, multi-step
   reproductions), the independent verification of a substantial change, a second diagnosis when the cause stays
   uncertain or a first diagnosis did not hold, and side investigations that can run while Opus keeps working. While
   a delegate runs, continue independent work instead of ending the turn just to wait. A Sol thread delegates
   production code to Opus. My task-specific choice overrides this routing.
-- Use Sol (OpenCode, `cliproxy/gpt-6.1-sol`) at `high` reasoning effort for the independent review of every
+- Use Sol (OpenCode, `cliproxy/gpt-6.2-sol`) at `high` reasoning effort for the independent review of every
   production change beyond a few obvious lines before it is handed back or published, including production-code
   correctness and design judgments. Production implementation remains with Opus.
 - Adversarial security reviews go to Codex `gpt-daybreak-blue-latest` at `high` reasoning effort through the

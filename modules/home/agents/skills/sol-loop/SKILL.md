@@ -1,12 +1,12 @@
 ---
 name: sol-loop
-description: "Use when the user says 'sol loop': review the current change with gpt-6.1-sol in the OpenCode harness in rounds, fixing findings until it approves."
+description: "Use when the user says 'sol loop': review the current change with gpt-6.2-sol in the OpenCode harness in rounds, fixing findings until it approves."
 ---
 
 # Sol loop
 
 Review the current change with one reviewer, Sol in the OpenCode harness (T3 provider instance `opencode`, model
-`cliproxy/gpt-6.1-sol`, variant `high`), and loop until it
+`cliproxy/gpt-6.2-sol`, variant `high`), and loop until it
 approves. Resolve the exact model through `orchestrator_capabilities`; if Sol is unavailable, report it and do not
 substitute another model.
 

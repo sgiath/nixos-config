@@ -173,7 +173,7 @@ harness. For Sol in the OpenCode harness it renders exactly as:
 > [!NOTE]
 > Automated review published on behalf of @filip.vavera1
 > The assessment and checks below are AI-generated
-> Review model: **gpt-6.1-sol** / **high** / OpenCode harness
+> Review model: **gpt-6.2-sol** / **high** / OpenCode harness
 
 **SR-1 · Should fix · open — <short issue title>**
 

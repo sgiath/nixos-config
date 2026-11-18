@@ -207,7 +207,7 @@ Body `{"template": "…"}`; renders it with a sample finding. Answers `{"markdow
 ### `GET /api/catalog`
 
 Provider instances, models and efforts T3 offers, for the reviewer pickers:
-`[{"provider": "codex", "label": "Codex", "models": [{"id": "gpt-6.1-sol", "label": "gpt-6.1-sol", "efforts": ["low", "medium", "high", "xhigh", "max", "ultra"]}]}]`.
+`[{"provider": "codex", "label": "Codex", "models": [{"id": "gpt-6.2-sol", "label": "gpt-6.2-sol", "efforts": ["low", "medium", "high", "xhigh", "max", "ultra"]}]}]`.
 
 ### `GET /api/reviews?view=active|history|failed&repo=<id>&limit=50&before=<id>`
 
@@ -221,7 +221,7 @@ superseded (newest first). `failed`: failed (newest first). Each item:
   "title": "…", "url": "https://gitlab.com/…/merge_requests/7627", "author": "someone",
   "head_sha": "…40 hex…", "base_sha": "…", "target": "main",
   "status": "running", "outcome": null,
-  "reviewer": {"provider": "codex", "model": "gpt-6.1-sol", "effort": "high"},
+  "reviewer": {"provider": "codex", "model": "gpt-6.2-sol", "effort": "high"},
   "thread_url": "t3-thread://…", "dry_run": false,
   "queued_at": "…", "started_at": "…", "finished_at": null, "elapsed_seconds": 512,
   "limited_until": null, "error": null,
