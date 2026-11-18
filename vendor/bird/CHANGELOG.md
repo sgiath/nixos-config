@@ -8,69 +8,69 @@
 ### Fixed
 - Nix builds use pnpm 11 and refreshed dependency hashes for the updated lockfile; TypeScript 7 explicitly loads Node types.
 
-## 0.8.0 — 2026-01-19
+## 0.8.0 - 2026-01-19
 
 ### Added
-- `bookmarks` thread expansion controls (`--expand-root-only`, `--author-chain`, `--author-only`, `--full-chain-only`, `--include-ancestor-branches`, `--include-parent`, `--thread-meta`, `--sort-chronological`) for richer context exports (#55) — thanks @kkretschmer2.
-- `--chrome-profile-dir` to point at Chromium profile directories or cookie DB files (Arc/Brave/etc) for cookie extraction (#16) — thanks @tekumara.
-- `about` command to report account origin/location metadata (#51) — thanks @pjtf93.
-- `follow`/`unfollow` commands to manage follows (#54) — thanks @citizenlee.
-- Twitter client now supports like/unlike/retweet/unretweet/bookmark via the engagement mixin (#53) — thanks @the-vampiire.
+- `bookmarks` thread expansion controls (`--expand-root-only`, `--author-chain`, `--author-only`, `--full-chain-only`, `--include-ancestor-branches`, `--include-parent`, `--thread-meta`, `--sort-chronological`) for richer context exports (#55) - thanks @kkretschmer2.
+- `--chrome-profile-dir` to point at Chromium profile directories or cookie DB files (Arc/Brave/etc) for cookie extraction (#16) - thanks @tekumara.
+- `about` command to report account origin/location metadata (#51) - thanks @pjtf93.
+- `follow`/`unfollow` commands to manage follows (#54) - thanks @citizenlee.
+- Twitter client now supports like/unlike/retweet/unretweet/bookmark via the engagement mixin (#53) - thanks @the-vampiire.
 
 ### Fixed
 - `bookmarks` expanded JSON now preserves pagination `nextCursor`, and full-chain filtering only includes ancestor branches when requested.
 - Follow/unfollow REST fallback now supports cursor pagination for followers/following (#54).
-- About account live coverage now verifies data extraction paths (#51) — thanks @pjtf93.
+- About account live coverage now verifies data extraction paths (#51) - thanks @pjtf93.
 
 ### Tests
-- Live tests now exercise engagement mutations (opt-in) (#53) — thanks @the-vampiire.
+- Live tests now exercise engagement mutations (opt-in) (#53) - thanks @the-vampiire.
 
-## 0.7.0 — 2026-01-12
+## 0.7.0 - 2026-01-12
 
 ### Added
-- `home` command for the "For You" and "Following" home timelines (#31) — thanks @odysseus0.
-- `news`/`trending` command for Explore tabs with AI-curated headlines (#39) — thanks @aavetis.
-- `user-tweets` command to fetch a user's profile timeline (#34) — thanks @crcatala.
-- `replies` and `thread` now support pagination (`--all`, `--max-pages`, `--cursor`, `--delay`) (#35) — thanks @crcatala.
-- `search` now supports pagination (`--all`, `--max-pages`, `--cursor`) (#42) — thanks @pjtf93.
-- `likes` now supports pagination (`--all`, `--max-pages`, `--cursor`) (#44) — thanks @jsholmes.
-- `list-timeline` now supports pagination (`--all`, `--max-pages`, `--cursor`) (#30) — thanks @zheli.
-- Rich text output now shows article previews, quoted tweets, and media links (#32) — thanks @odysseus0.
-- Long-form article tweets now render rich Draft.js content blocks/entities (#36) — thanks @crcatala.
+- `home` command for the "For You" and "Following" home timelines (#31) - thanks @odysseus0.
+- `news`/`trending` command for Explore tabs with AI-curated headlines (#39) - thanks @aavetis.
+- `user-tweets` command to fetch a user's profile timeline (#34) - thanks @crcatala.
+- `replies` and `thread` now support pagination (`--all`, `--max-pages`, `--cursor`, `--delay`) (#35) - thanks @crcatala.
+- `search` now supports pagination (`--all`, `--max-pages`, `--cursor`) (#42) - thanks @pjtf93.
+- `likes` now supports pagination (`--all`, `--max-pages`, `--cursor`) (#44) - thanks @jsholmes.
+- `list-timeline` now supports pagination (`--all`, `--max-pages`, `--cursor`) (#30) - thanks @zheli.
+- Rich text output now shows article previews, quoted tweets, and media links (#32) - thanks @odysseus0.
+- Long-form article tweets now render rich Draft.js content blocks/entities (#36) - thanks @crcatala.
 
 ### Changed
 - Library typing: `SearchResult` is now a discriminated union (so `error` only exists when `success: false`).
 
 ### Fixed
-- Lists GraphQL feature flags updated to prevent 400s (#27) — thanks @zheli.
-- Lists feature overrides now scope new GraphQL flags correctly (#50) — thanks @ryanh-ai.
-- Tweet detail parsing now tolerates partial GraphQL errors when usable data exists (#48) — thanks @jsholmes.
-- News output now respects `--tweets-per-item`, keeps unique IDs, and parses non-add entry instructions (#39) — thanks @aavetis.
-- Following/followers pagination now guards repeat cursors and standardizes JSON output (#28) — thanks @malpern.
-- Likes pagination now follows cursors and avoids stalling on duplicate pages (#12) — thanks @titouv.
-- macOS cookie extraction now supports Brave keychain storage (#40) — thanks @gakonst.
-- Terminal hyperlinks now sanitize control characters before emitting OSC 8 sequences (#29) — thanks @mafulafunk.
+- Lists GraphQL feature flags updated to prevent 400s (#27) - thanks @zheli.
+- Lists feature overrides now scope new GraphQL flags correctly (#50) - thanks @ryanh-ai.
+- Tweet detail parsing now tolerates partial GraphQL errors when usable data exists (#48) - thanks @jsholmes.
+- News output now respects `--tweets-per-item`, keeps unique IDs, and parses non-add entry instructions (#39) - thanks @aavetis.
+- Following/followers pagination now guards repeat cursors and standardizes JSON output (#28) - thanks @malpern.
+- Likes pagination now follows cursors and avoids stalling on duplicate pages (#12) - thanks @titouv.
+- macOS cookie extraction now supports Brave keychain storage (#40) - thanks @gakonst.
+- Terminal hyperlinks now sanitize control characters before emitting OSC 8 sequences (#29) - thanks @mafulafunk.
 - `pnpm run build:dist` now succeeds after tightening JSON/pagination option typing in tweet output commands.
 
 ### Tests
-- Following: split following/likes tests + cover cursor handling (#33) — thanks @VACInc.
+- Following: split following/likes tests + cover cursor handling (#33) - thanks @VACInc.
 
-## 0.6.0 — 2026-01-05
+## 0.6.0 - 2026-01-05
 
 ### Added
-- Bookmark exports now support pagination (`--all`, `--max-pages`) with retries (#15) — thanks @Nano1337.
-- `lists` + `list-timeline` commands for Twitter Lists (#21) — thanks @harperreed
-- Tweet JSON output now includes media items (photos, videos, GIFs) (#14) — thanks @Hormold
-- Bookmarks can resume pagination from a cursor (#26) — thanks @leonho
-- `unbookmark` command to remove bookmarked tweets (#22) — thanks @mbelinky.
+- Bookmark exports now support pagination (`--all`, `--max-pages`) with retries (#15) - thanks @Nano1337.
+- `lists` + `list-timeline` commands for Twitter Lists (#21) - thanks @harperreed
+- Tweet JSON output now includes media items (photos, videos, GIFs) (#14) - thanks @Hormold
+- Bookmarks can resume pagination from a cursor (#26) - thanks @leonho
+- `unbookmark` command to remove bookmarked tweets (#22) - thanks @mbelinky.
 
 ### Changed
 - Feature flags can be overridden at runtime via `features.json` (refreshable via `query-ids`).
 
 ### Fixed
-- GraphQL feature flags now include `post_ctas_fetch_enabled` to avoid 400s (#38) — thanks @philipp-spiess.
+- GraphQL feature flags now include `post_ctas_fetch_enabled` to avoid 400s (#38) - thanks @philipp-spiess.
 
-## 0.5.1 — 2026-01-01
+## 0.5.1 - 2026-01-01
 
 ### Changed
 - `bird --help` now includes explicit “Shortcuts” and “JSON Output” sections (documents `bird <tweet-id-or-url>` shorthand + `--json`).
@@ -84,7 +84,7 @@
 - Add root help output regression test.
 - Add opt-in live CLI test suite (real GraphQL calls; skipped by default; gated via `BIRD_LIVE=1`).
 
-## 0.5.0 — 2026-01-01
+## 0.5.0 - 2026-01-01
 
 ### Added
 - `likes` command to list your liked tweets (thanks @swairshah).
@@ -100,7 +100,7 @@
 - Search now paginates beyond 20 results when using `-n` (thanks @ryanh-ai).
 - Library exports are now separated from the CLI entrypoint for easier embedding.
 
-## 0.4.1 — 2025-12-31
+## 0.4.1 - 2025-12-31
 
 ### Added
 - `bookmarks` command to list your bookmarked tweets.
@@ -116,7 +116,7 @@
 - Coverage thresholds raised to 90% statements/lines/functions (80% branches).
 - Added targeted Twitter client coverage suites.
 
-## 0.4.0 — 2025-12-26
+## 0.4.0 - 2025-12-26
 
 ### Added
 - Cookie source selection: `--cookie-source safari|chrome|firefox` (repeatable) + `cookieSource` config (string or array).
@@ -127,7 +127,7 @@
 ### Breaking
 - Remove `allowSafari`/`allowChrome`/`allowFirefox` config toggles in favor of `cookieSource` ordering.
 
-## 0.3.0 — 2025-12-26
+## 0.3.0 - 2025-12-26
 
 ### Added
 - Safari cookie extraction (`Cookies.binarycookies`) + `allowSafari` config toggle.
@@ -139,7 +139,7 @@
 ### Tests
 - Enforce coverage thresholds (>= 70% statements/branches/functions/lines) + expand unit coverage for version/output/Twitter client branches.
 
-## 0.2.0 — 2025-12-26
+## 0.2.0 - 2025-12-26
 
 ### Added
 - Output controls: `--plain`, `--no-emoji`, `--no-color` (respects `NO_COLOR`).
@@ -156,7 +156,7 @@
 - `build:dist`: copies `src/lib/query-ids.json` into `dist/lib/query-ids.json` (keeps `dist/` in sync).
 - `--engine graphql`: strict GraphQL-only (disables Sweetistics fallback).
 
-## 0.1.1 — 2025-12-26
+## 0.1.1 - 2025-12-26
 
 ### Changed
 - Engine default now `auto` (GraphQL primary; Sweetistics only on fallback when configured).
@@ -167,7 +167,7 @@
 ### Fixed
 - GraphQL read: rotate TweetDetail query IDs with fallback to avoid 404s.
 
-## 0.1.0 — 2025-12-20
+## 0.1.0 - 2025-12-20
 
 ### Added
 - CLI commands: `tweet`, `reply`, `read`, `replies`, `thread`, `search`, `mentions`, `whoami`, `check`.

@@ -73,7 +73,7 @@ export function createProgram(ctx: CliContext): Command {
     'beforeAll',
     () =>
       `${ctx.colors.banner('bird')} ${ctx.colors.muted(getCliVersion())} ${ctx.colors.subtitle(
-        '— fast X CLI for tweeting, replying, and reading',
+        '- fast X CLI for tweeting, replying, and reading',
       )}`,
   );
 
