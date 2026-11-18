@@ -62,22 +62,11 @@ in
     # The env block turns on OpenTelemetry (with the beta request/tool
     # tracing) to the local collector from archive.nix; Claude Code reads it
     # for every launch, including the ones T3 Code makes through the SDK.
-    # Earlier generations installed a PreToolUse guard that blocked T3 GitLab
-    # MR watches; T3 supports GitLab now, so drop only that command (any store
-    # path), keeping other hooks on the same matcher and leaving settings
-    # without it untouched.
-    # FIXME: delete the migration once every agents host has activated it.
     home.activation.claudeAttribution = lib.hm.dag.entryAfter [ "writeBoundary" ] ''
       f="$HOME/.claude/settings.json"
       old=$(cat "$f" 2>/dev/null || true)
       new=$(printf '%s' "''${old:-"{}"}" | ${lib.getExe pkgs.jq} --argjson env ${lib.escapeShellArg telemetryEnv} \
-        'def guard: (.command? // "") | tostring | endswith("/bin/claude-gitlab-watch-guard");
-         .attribution = {commit: "", pr: ""} | .cleanupPeriodDays = 36500 | .env = ((.env // {}) + $env)
-         | if any(.hooks.PreToolUse[]?.hooks[]?; guard) then
-             .hooks.PreToolUse |= map(.hooks |= map(select(guard | not)) | select(.hooks | length > 0))
-             | if .hooks.PreToolUse == [] then del(.hooks.PreToolUse) else . end
-             | if .hooks == {} then del(.hooks) else . end
-           else . end')
+        '.attribution = {commit: "", pr: ""} | .cleanupPeriodDays = 36500 | .env = ((.env // {}) + $env)')
       if [ "$new" != "$old" ]; then
         run mkdir -p "$(dirname "$f")"
         run ${pkgs.coreutils}/bin/tee "$f" <<<"$new" >/dev/null
