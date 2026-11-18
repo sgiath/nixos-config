@@ -17,9 +17,16 @@ SSH there.
 - Prefer boring, direct code and deletion over speculative abstractions or dependencies. 
   For internal API replacements, migrate callers and remove the old path rather than 
   keeping a compatibility layer; preserve required external compatibility.
-- Avoid stopgaps meant to be replaced. If a deliberate simplification has a known ceiling, 
-  leave a `FIXME:` naming the limitation and what would justify changing it. If the repository's
-  lint rejects FIXME tags, use its documented form for known limitations instead.
+- Avoid stopgaps meant to be replaced. A comment is not a fix and nothing enforces it: never leave a `FIXME:`,
+  `TODO:` or prose comment that records a known defect, justifies a workaround in our own code, or describes a
+  ceiling. Handle a limitation or defect you find, in this order:
+  1. Fix it when the fix is small, including every sibling instance of a bug you are fixing.
+  2. Otherwise make it enforce itself: a type, assertion, test, lint rule, or a runtime error or log at the
+     ceiling (raise on unsupported input, log when a result is truncated).
+  3. Otherwise record it in `.agents/notes/proposed/`, or report it where the repository has no notes.
+  Comments stay only for non-obvious behavior forced by something we cannot change (an upstream package, vendor
+  API, protocol or platform): name the constraint and its version or link, and the condition for removing the
+  code. No speculative "add X if needed" comments.
 - Keep implementation modules around 500 lines or less when a cohesive split exists; test 
   files may be longer.
 - For bug fixes and new behavior, write the test first, run it and see it fail, then implement;
@@ -154,8 +161,8 @@ blocker (`~/nixos/modules/home/work/aws.nix`).
 
 ## Scope
 
-Implement the requested behavior completely. Fix unrelated issues only when they block it; otherwise record a
-small finding as a `FIXME:` at the affected code, or a multi-file/architectural finding in `.agents/notes/proposed/`.
+Implement the requested behavior completely. Fix unrelated issues when they block it or the fix is small, in their
+own commit; handle the rest in the order under Preferences (enforce it in code, or a `.agents/notes/proposed/` note).
 For ambiguity, implement the reading best supported by the request and surrounding code, state the assumption,
 and avoid building alternate interpretations.
 

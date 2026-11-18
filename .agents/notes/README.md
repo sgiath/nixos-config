@@ -42,7 +42,7 @@ The folder is the classification. Do not repeat it as document metadata or intro
 
 Write or update an Agent Note when future maintainers are likely to revisit a proposal, trade-off, ownership boundary, compatibility contract, security rule, or negative guarantee. Routine local changes and facts already explained by code and canonical documentation do not need a note.
 
-Findings outside the current task are not fixed in that change. A small or routine finding gets a `FIXME:` comment at the affected code instead of a note. A finding whose fix would touch multiple files or change architecture gets a `proposed/` note.
+A small finding outside the current task is fixed in its own commit, as is every sibling instance of a bug the task fixes. A larger one is made to enforce itself where it can (a type, assertion, test, lint rule, or a runtime error or log at the ceiling); a finding whose fix would touch multiple files or change architecture gets a `proposed/` note. Never record a finding as a `FIXME:` or other code comment: nothing enforces a comment, and it reads as a justification for the code it sits on.
 
 Search active notes before creating one. Update the note that owns an existing decision rather than duplicating it. A changed decision gets a new note and cross-links to the old one; factual paths, names, and mechanisms may be updated in an implemented note without changing its rationale.
 
