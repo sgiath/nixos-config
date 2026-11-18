@@ -29,15 +29,10 @@ findings without user relay. When required proof cannot be established or met
 within available scope and access, the owner asks the user how to proceed and
 stops dependent work. A documented limitation is not a waiver.
 
-The user's default role split assigns investigations, brute-force exploration,
-throwaway scripts and executable verification to Codex with `gpt-6.1-sol`.
-Claude with Opus 5.5 judges production design and fix placement, writes
-production code and adds durable regression tests. Claude starts only when the
-cause, the reproduction (including a failing test where one fits) and the
-verification commands are ready. The owner delegates a phase when its own model
-does not match that role, including an Opus owner delegating investigation and
-verification. Task-specific choices override
-these defaults; live discovery resolves provider instances and model IDs.
+The model routing between Opus and Sol is recorded in
+[Opus does its own short work, Sol takes long and independent work](2026-11-18-opus-sol-routing.md),
+which superseded the phase routing first recorded here. Task-specific choices
+override the defaults; live discovery resolves provider instances and model IDs.
 Unavailable required routing needs a user decision rather than silent substitution.
 
 The [plan-driven slice loop](2026-10-05-plan-driven-slice-loop.md) retains its

@@ -30,19 +30,19 @@ SSH there.
   In an unattended scheduled run, the task prompt's authorization replaces asking me: record the blocker with its
   evidence and options, and continue with independent work.
 - Follow `verified-work` model routing. Every role runs in the OpenCode harness (T3 provider instance
-  `opencode`), with the model through CLIProxy and the reasoning effort as its `variant`. Sol
-  (`cliproxy/gpt-6.1-sol`) does all work before and around a production change: code exploration, research,
-  investigation, reproduction including the failing test, throwaway tests and scripts, production-data probes,
-  screenshots and verification. Opus 5.5 (`cliproxy/claude-opus-5-5`) starts only when the cause is established
-  and the reproduction and verification commands are ready; it then decides where and how to fix the production
-  code and writes it. Updates to existing UIs that do not require a new design count as production code. An Opus
-  thread delegates the other phases to Sol instead of doing them itself, however small the change looks; this
-  outranks the harness's advice to do a handful of tool calls yourself. Only my task-specific choice overrides
-  this. A generated brief that relaxes routing quotes that choice; do not invent an exemption for size or
-  deliverable type.
-- When a complicated fix or PR needs an independent review, use Sol (OpenCode, `cliproxy/gpt-6.1-sol`) at
-  `high` reasoning effort for its thorough review, including production-code correctness and design judgments.
-  Production implementation remains with Opus.
+  `opencode`), with the model through CLIProxy and the reasoning effort as its `variant`. Opus 5.5
+  (`cliproxy/claude-opus-5-5`) writes production code, including updates to existing UIs that do not require a
+  new design. An Opus thread does its own reading, lookups, answers to questions and short investigations and
+  checks; handing those to Sol makes the thread wait on a slower model without a better result. Sol
+  (`cliproxy/gpt-6.1-sol`) takes the work where its thoroughness or independence pays: long-running or brute-force
+  evidence work (repeated test or build runs, bisection, fuzzing, production-data probes, multi-step
+  reproductions), the independent verification of a substantial change, a second diagnosis when the cause stays
+  uncertain or a first diagnosis did not hold, and side investigations that can run while Opus keeps working. While
+  a delegate runs, continue independent work instead of ending the turn just to wait. A Sol thread delegates
+  production code to Opus. My task-specific choice overrides this routing.
+- Use Sol (OpenCode, `cliproxy/gpt-6.1-sol`) at `high` reasoning effort for the independent review of every
+  production change beyond a few obvious lines before it is handed back or published, including production-code
+  correctness and design judgments. Production implementation remains with Opus.
 - Adversarial security reviews go to Codex `gpt-daybreak-blue-latest` at `high` reasoning effort through the
   direct ChatGPT login. In T3 use provider instance `codex-daybreak` (Codex Daybreak); in the CLI use
   `codex --profile daybreak`. If that route is unavailable, report the blocker instead of silently falling back

@@ -19,8 +19,9 @@ No service, source checkout from a scenario, or external write is available to t
 | [blocked-gate](prompts/blocked-gate.md) | Preserve the user's authority over unavailable required proof. |
 | [expensive-gate](prompts/expensive-gate.md) | Settle inputs, then measure one fixed commit outside the live checkout. |
 | [harness-controls](prompts/harness-controls.md) | Exercise the whole harness on controls before paid runs. |
-| [small-ui-routing](prompts/small-ui-routing.md) | Route a small bug fix by role instead of by apparent size. |
-| [generated-brief](prompts/generated-brief.md) | Keep generated briefs from inventing a routing exemption. |
+| [small-ui-routing](prompts/small-ui-routing.md) | Keep a small bug fix's investigation in the Opus thread instead of delegating it. |
+| [generated-brief](prompts/generated-brief.md) | Keep generated briefs from restating routing the user never gave. |
+| [long-evidence-routing](prompts/long-evidence-routing.md) | Delegate long repeated runs to Sol and keep working meanwhile. |
 | [unchanged-wake](prompts/unchanged-wake.md) | Post nothing on an unchanged scheduled tick. |
 
 ## Run a comparison
@@ -32,7 +33,7 @@ one case, with no parent discussion or previous answer. Bound each task and over
 the host's task lifecycle; a timeout is Inconclusive, never Pass. No task may keep running or
 write in the scenario's fictional environment.
 
-`small-ui-routing` and `generated-brief` test an Opus thread's routing choice, so their actors run as
+`small-ui-routing`, `generated-brief` and `long-evidence-routing` test an Opus thread's routing choice, so their actors run as
 Opus (OpenCode, `cliproxy/claude-opus-5-5`). `unchanged-wake` also gives the actor the drive snapshot entrypoint.
 
 1. Before editing, freeze the relevant skill catalog and references outside the tracked tree.

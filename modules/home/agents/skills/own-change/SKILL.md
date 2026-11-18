@@ -57,7 +57,7 @@ publication as a completed implementation. A recorded limitation does not waive 
 
 - Follow repository patterns and relevant domain skills. Keep the implementation direct and scoped. Include all affected consumers, cross-app configuration, migrations and necessary companion-repository changes; no unfinished compatibility shim or isolated server change with missing clients.
 - Delegate genuinely independent evidence, reproduction, implementation or verification tasks where useful, with verified-work's handoff record and exact worktree/path ownership. The owning thread collects findings and coordinates fixes and reverification without user relay. Do not let delegates mutate the original checkout.
-- Apply verified-work's role routing, every role in the OpenCode harness: Sol (`cliproxy/gpt-6.1-sol`) does exploration, investigation, reproduction including the failing test, throwaway scripts, verification and CI/review-failure triage, and the independent review of a complicated change at high effort. Opus (`cliproxy/claude-opus-5-5`) takes over only when the cause, reproduction and verification commands are ready, and decides and writes the production change. An Opus owner delegates the other phases to Sol; a Sol owner delegates the production change to Opus.
+- Apply verified-work's role routing, every role in the OpenCode harness: Opus (`cliproxy/claude-opus-5-5`) decides and writes the production change and does its own reading, short investigation, red test and quick checks. Sol (`cliproxy/gpt-6.1-sol`) does long-running or brute-force evidence work, the independent final verification and the independent review of the change at high effort. A Sol owner delegates the production change to Opus. Keep working on independent parts while a delegate runs.
 - Validate the reproduction/check before the fix, then run it against the change. Use skill://diagnosing-bugs when the cause is uncertain and skill://tdd for behavioral tests. Exercise the actual UI for visual changes, new API/CLI behavior and the final integration gate; distinguish injected mechanisms from confirmed natural triggers.
 - Apply verified-work's [runtime contract](../verified-work/references/runtime-checks.md): confirm what code the process
   loaded, preserve agreed checks in verifier briefs, and rerun repaired attempts from a controlled starting state.
@@ -68,8 +68,8 @@ publication as a completed implementation. A recorded limitation does not waive 
   when the preview tools are absent or explicitly unavailable. Keep regression tests for plausible observable
   failures, not tests that merely mirror implementation. Do not claim unrun local e2e or production checks.
 - After behavior is proven, complete in-scope documentation/changelog/generated-artifact updates according to repository conventions and remove throwaway setup. Retain runnable evidence needed for review or handoffs. Review the complete change for missed callers, unnecessary complexity, accidental user edits and secrets.
-- Before publication, obtain an independent read-only review for complicated changes or when repository policy requires
-  it. Use verified-work's [review brief](../verified-work/references/independent-review.md) to examine the request,
+- Before publication, obtain an independent read-only review for a production change beyond a few obvious lines or
+  when repository policy requires it. Use verified-work's [review brief](../verified-work/references/independent-review.md) to examine the request,
   outcome, design and concrete assumptions before correctness. Give findings dispositions and recheck affected gates.
 
 ## 3. Commit and publish

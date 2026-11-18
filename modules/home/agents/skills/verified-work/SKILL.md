@@ -79,18 +79,22 @@ again. New evidence or an answer can reopen the loop.
 
 Unless the user chooses differently for this task, use these roles. Sol, Opus and Fable all run in the OpenCode
 harness (T3 provider instance `opencode`) with the model through CLIProxy and the reasoning effort as its `variant`;
-only the security review uses Codex, because its model is served only by OpenAI directly. Route by role even when the
-current thread could do a phase itself: an Opus thread delegates exploration, investigation, reproduction and
-verification to Sol, and a Sol thread delegates the production change to Opus. Size is no exemption: a one-line
-fix, a small UI change and a documentation change that needs code tracing route the same way. A generated brief that
-relaxes routing quotes the user's instruction; a coordinator must not add its own exemption.
+only the security review uses Codex, because its model is served only by OpenAI directly.
+
+The current thread does the short work in front of it, whatever its model: reading code, lookups, answering
+questions, short investigations, a red test it can write and run in a few minutes, and quick checks. Delegating that
+work costs more than it saves: Sol is slower per step than Opus, and the delegate re-reads what the owner already
+read to write the brief. Delegate a phase when its own role needs another model (production code on a Sol thread),
+or when it fits the Sol rows below. A small fix on an Opus thread can stay in that thread from diagnosis to its own
+red/green run.
 
 | Work | Role: harness and model |
 | --- | --- |
-| Everything that is not production code: code exploration, research, investigation, evidence gathering, causal experiments, brute-force exploration, fuzzing/bisection, reproductions including the failing test that captures the defect, throwaway tests and scripts, production-data probes, screenshots, executable verification, and CI or review-failure triage | Sol: OpenCode with `cliproxy/gpt-6.1-sol` |
-| Independent review of a complicated fix or PR, including production-code correctness and design judgments | Sol: OpenCode with `cliproxy/gpt-6.1-sol` at `high` reasoning effort |
+| Long-running or brute-force evidence work: repeated test or build runs, bisection, fuzzing, causal experiments that need many runs, production-data probes, multi-step reproductions and browser sessions | Sol: OpenCode with `cliproxy/gpt-6.1-sol` |
+| Independent final verification of a substantial change, a second diagnosis when the cause stays uncertain or the first diagnosis did not hold, and side investigations that can run while the owner keeps working | Sol: OpenCode with `cliproxy/gpt-6.1-sol` |
+| Independent review of a production change beyond a few obvious lines, including production-code correctness and design judgments | Sol: OpenCode with `cliproxy/gpt-6.1-sol` at `high` reasoning effort |
 | Adversarial security review (overrides the general review route) | Codex with `gpt-daybreak-blue-latest` at `high` reasoning effort through direct ChatGPT login: T3 instance `codex-daybreak`, or CLI `codex --profile daybreak` |
-| Once the handoff is ready: deciding where and how to fix the production code, production design and seam placement, production code, refactoring, existing UI changes that do not require a new design, and turning the handed-over failing test into the committed regression test | Opus: OpenCode with `cliproxy/claude-opus-5-5` |
+| Deciding where and how to fix the production code, production design and seam placement, production code, refactoring, existing UI changes that do not require a new design, and the committed regression test | Opus: OpenCode with `cliproxy/claude-opus-5-5` |
 | Creating and designing new UIs or substantial redesigns where visual and UX judgment adds value, including animations and transitions | Fable: OpenCode with `cliproxy/claude-fable-5-2` at `high` reasoning effort |
 | The single ship check when review rounds hand open items to the user ([review rounds](references/independent-review.md#run-review-rounds)) | Fable: OpenCode with `cliproxy/claude-fable-5-2` at `high` reasoning effort |
 
@@ -99,23 +103,19 @@ design choices, and to the ship check. Routine UI updates, bug fixes, investigat
 and verification use the general Opus/Sol routing; touching a UI does not route a phase or its descendants to
 Fable.
 
-Sol establishes causes and compares measured alternatives; Opus judges the production change from that
-evidence. Hand work to Opus only when it is ready: the cause is established with evidence, the reproduction
-exists (a failing test in the repository's test layer where one fits, with its red run) and the verification
-commands are written, so the remaining question is where and how to change production code. Opus reads the code it
-needs for that decision and runs the handed-over test and the repository's required checks while writing the
-change. Investigation, exploratory scripts and the final verification go back to Sol. When the diagnosis does
-not hold, Opus reports that to the owner for another Sol investigation instead of investigating itself.
-Exploration scripts stay disposable. Turning one into shipped tooling, or applying an exploratory patch to production,
-is production implementation and belongs to Opus. Sol's thoroughness is also useful when a complicated fix
-or PR needs an independent review: that review can judge production-code correctness and design, not just run
-empirical checks. Opus owns the resulting production changes.
+Sol's value is thoroughness on work that runs long anyway and independence from the author of a change: its
+review can judge production-code correctness and design, not just run empirical checks. When a Sol thread hands
+production code to Opus, the handoff carries the established cause, the reproduction (a failing test in the
+repository's test layer where one fits, with its red run) and the verification commands, so the remaining question
+is where and how to change production code. Exploration scripts stay disposable. Turning one into shipped tooling,
+or applying an exploratory patch to production, is production implementation and belongs to Opus. Opus owns the
+production changes that follow from a review.
 
-The current thread remains the owner regardless of its model. It does a phase directly only when its model
-matches that phase's role; coordination, briefs and instruction or metadata edits need no delegate. When a phase
-requires another model, delegate that bounded phase with its gate, evidence and explicit ownership rather than
-asking the user to move threads. Reuse valid evidence across the handoff; do not repeat investigation merely to
-change providers. Pure instruction/metadata edits and coordination do not require a production-code delegate.
+The current thread remains the owner regardless of its model. Coordination, briefs and instruction or metadata
+edits need no delegate. When a phase requires another model, delegate that bounded phase with its gate, evidence
+and explicit ownership rather than asking the user to move threads. Reuse valid evidence across the handoff; do
+not repeat investigation merely to change providers. While a delegate runs, continue independent work, such as
+the parts of the change its result cannot alter; end the turn to wait only when nothing independent remains.
 
 Resolve provider instances and exact model IDs from `orchestrator_capabilities`; use the requested harness,
 not another one that happens to expose the same model (Sol in Codex or Opus in Claude Code is a substitution). Honor task-specific provider/model/effort overrides

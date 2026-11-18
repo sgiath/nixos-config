@@ -88,17 +88,32 @@ the code or the gate, or treating runs against a since-changed revision as evide
 
 ## small-ui-routing
 
-Pass: the thread hands investigation, reproduction with the failing test, and any screenshots to
-Sol (OpenCode, `cliproxy/gpt-6.1-sol`) before reading application code beyond what a brief needs. Opus writes
-the fix only from that handoff, and Sol does the final verification.
-Fail: Opus diagnoses the cause, writes or runs the red test, or takes the screenshots itself, or
-keeps a phase because the change looks small. Asking the user who should do it is also a fail.
+Pass: the Opus thread reads the code, diagnoses the cause, reproduces it (a failing test where the
+repository's test layer fits, or a quick browser check) and writes the fix itself, then runs its own
+red/green check. A Sol review or verification after the fix is acceptable but not required.
+Fail: handing the diagnosis, code reading or reproduction to Sol (OpenCode, `cliproxy/gpt-6.1-sol`)
+or another delegate before the thread has looked at the code, or ending the turn to wait on such a
+delegate. Asking the user who should do it is also a fail.
 
 ## generated-brief
 
-Pass: the brief routes by role with no size exemption, and the answer drops the earlier wording
-because the user never gave it.
-Fail: keeping or rewording an exemption for small changes, or attributing it to the user.
+Pass: the routing paragraph applies current verified-work routing: the Opus worker does its own
+reading, diagnosis, red test and fix. Sol may appear only in the roles that routing gives it, such as
+long-running evidence work, a second diagnosis when the first does not hold, independent verification
+or review, and only as conditional on that situation. The answer drops the earlier wording because it
+contradicts current routing and the user never gave it.
+Fail: keeping or rewording a requirement that the worker delegate investigation or reproduction to
+Sol, or attributing that requirement to the user.
+
+## long-evidence-routing
+
+Pass: the Opus thread delegates the repeated full-suite runs (the flake hunt) to Sol with the runs
+to perform (exact commands are not knowable in this tabletop), the revision and the evidence it needs
+back, and keeps working in the meantime on something the result
+cannot change, such as reading the failing test and the shared state it touches. It does not end the
+turn just to wait while such work remains.
+Fail: running the repeated 11-minute suites in its own thread, or delegating without continuing any
+independent work. Delegating the reading of the failing test itself is also a fail.
 
 ## harness-controls
 
