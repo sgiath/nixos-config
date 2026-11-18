@@ -171,6 +171,22 @@
         "type": "github"
       }
     },
+    "cliproxy-models": {
+      "flake": false,
+      "locked": {
+        "lastModified": 1794953801,
+        "narHash": "sha256-Cgygwg93KcEPitBCKf4CBb/gTGQkjrdcq2ur8PT9TpA=",
+        "owner": "router-for-me",
+        "repo": "models",
+        "rev": "829b3b7f5cb34ca0c568d753e481ae0e054b206b",
+        "type": "github"
+      },
+      "original": {
+        "owner": "router-for-me",
+        "repo": "models",
+        "type": "github"
+      }
+    },
     "comfyui": {
       "inputs": {
         "flake-parts": "flake-parts",
@@ -1774,6 +1790,7 @@
     "root": {
       "inputs": {
         "btc-clients": "btc-clients",
+        "cliproxy-models": "cliproxy-models",
         "comfyui": "comfyui",
         "continuwuity": "continuwuity",
         "delta": "delta",

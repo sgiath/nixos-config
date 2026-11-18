@@ -71,6 +71,23 @@
       ];
     }
     {
+      # Personal Claude login only (Cyber Verification Program).
+      id = "claude-mythos-5-2";
+      name = "Claude Mythos 5.2";
+      protocol = "messages";
+      context = 1000000;
+      output = 128000;
+      input = [
+        "text"
+        "image"
+      ];
+      effort = [
+        "medium"
+        "high"
+        "xhigh"
+      ];
+    }
+    {
       id = "gpt-6.2-sol";
       name = "GPT-6.2 Sol";
       protocol = "responses";

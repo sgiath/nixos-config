@@ -2,6 +2,7 @@
   config,
   lib,
   pkgs,
+  inputs,
   ...
 }:
 let
@@ -9,6 +10,47 @@ let
   nebula = config.sgiath.nebula;
   host = "cliproxy.sgiath.dev";
   authDir = "/data/cliproxyapi";
+
+  # OAuth accounts serve only the models in CLIProxyAPI's catalog, and
+  # upstream lacks Claude Mythos (router-for-me/models#102). Mythos is
+  # available only to the personal Claude login (Cyber Verification Program).
+  # The Remote login excludes it through `excluded_models` in its auth file,
+  # set with PATCH /v8/management/credentials/fields.
+  # FIXME: an explicit catalog replaces the remote one the proxy refreshes
+  # every 3 hours, so new upstream models arrive only when the
+  # cliproxy-models input is bumped. Drop `models.catalog` and the input once
+  # upstream lists Mythos.
+  upstreamCatalog = lib.importJSON "${inputs.cliproxy-models}/models.json";
+  extraClaude = lib.filter (m: !lib.any (u: u.id == m.id) upstreamCatalog.claude) [
+    {
+      id = "claude-mythos-5-2";
+      object = "model";
+      owned_by = "anthropic";
+      type = "claude";
+      display_name = "Claude Mythos 5.2";
+      context_length = 1000000;
+      max_completion_tokens = 128000;
+      thinking = {
+        zero_allowed = false;
+        dynamic_allowed = true;
+        levels = [
+          "low"
+          "medium"
+          "high"
+          "xhigh"
+          "max"
+        ];
+      };
+      supportedInputModalities = [
+        "text"
+        "image"
+      ];
+      supportedOutputModalities = [ "text" ];
+    }
+  ];
+  catalog = pkgs.writeText "cliproxy-models.json" (
+    builtins.toJSON (upstreamCatalog // { claude = upstreamCatalog.claude ++ extraClaude; })
+  );
 
   # API-key upstreams. CLIProxyAPI does not discover their models, so each
   # one is listed. With routing.force-model-prefix every credential that has
@@ -74,6 +116,8 @@ in
           # account. An OAuth login is confined the same way by a "prefix"
           # in its auth file, set through the management API; none has one.
           routing.force-model-prefix = true;
+
+          models.catalog = "${catalog}";
 
           # One usage record per upstream execution, held up to an hour for
           # cliproxy-usage below.

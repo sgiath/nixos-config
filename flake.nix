@@ -126,6 +126,12 @@
       inputs.nixpkgs.follows = "nixpkgs";
     };
 
+    # CLIProxyAPI's model catalog; services/cliproxyapi.nix adds models to it.
+    cliproxy-models = {
+      url = "github:router-for-me/models";
+      flake = false;
+    };
+
     hermes-agent = {
       url = "github:NousResearch/hermes-agent/v0.23.2";
       inputs.nixpkgs.follows = "nixpkgs";
