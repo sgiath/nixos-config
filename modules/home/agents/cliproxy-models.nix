@@ -71,10 +71,10 @@
       ];
     }
     {
-      id = "gpt-6.1-sol";
-      name = "GPT-6.1 Sol";
+      id = "gpt-6.2-sol";
+      name = "GPT-6.2 Sol";
       protocol = "responses";
-      context = 272000;
+      context = 500000;
       output = 128000;
       input = [
         "text"
@@ -103,8 +103,8 @@
       ];
     }
     {
-      id = "gpt-6-astra";
-      name = "GPT-6 Astra";
+      id = "gpt-6.2-astra";
+      name = "GPT-6.2 Astra";
       protocol = "responses";
       context = 272000;
       output = 128000;

@@ -22,7 +22,7 @@ let
   # Proxy models answer helper calls (titles, summaries, web search,
   # permission review) so no tool falls back to its native account.
   defaults = {
-    model = "gpt-6.1-sol";
+    model = "gpt-6.2-sol";
     helper = "gpt-6-luna";
   };
 
@@ -120,11 +120,10 @@ let
       ) models;
     };
   };
-  # FIXME: the remote/ check replaces Remote models from before the Remote
-  # Claude login joined the shared pool; delete it once every agents host
-  # has activated it (same for the other remote/ migrations below).
+  # Each tool keeps the proxy model the user picked while the catalog still
+  # has it; anything else (another provider, a retired model) gets the default.
   piSettings = model: ''
-    if .defaultProvider == "cliproxy" and ((.defaultModel // "") | startswith("remote/") | not)
+    if .defaultProvider == "cliproxy" and ((.defaultModel // "") | IN($proxy.keys[]))
     then . else .defaultProvider = "cliproxy" | .defaultModel = "${model}" end
   '';
 
@@ -193,7 +192,7 @@ in
           | .share = "disabled"
           | .plugins = ((.plugins // []) - ["-opencode.provider.openai", "-opencode.provider.chatgpt"]
               + ["-opencode.provider.openai", "-opencode.provider.chatgpt"])
-          | .model |= (if type == "string" and startswith("cliproxy/") and (startswith("cliproxy/remote/") | not)
+          | .model |= (if type == "string" and startswith("cliproxy/") and (ltrimstr("cliproxy/") as $m | $proxy.models | has($m))
               then . else "cliproxy/${defaults.model}" end)
           | .policies = [
               {action: "provider.use", resource: "*", effect: "deny"},
@@ -204,7 +203,7 @@ in
 
       piProxy = merge {
         path = ".pi/agent/settings.json";
-        overlay = { };
+        overlay.keys = ids personal;
         filter = piSettings defaults.model;
       };
 
@@ -213,11 +212,15 @@ in
         overlay = {
           cliproxy = fx personal defaults.helper;
         };
+        # FIXME: the cliproxy-remote deletion migrates configs from before the
+        # Remote Claude login joined the shared pool; delete it once every
+        # agents host has activated it.
         filter = ''
           .providers = ((.providers // {}) + $proxy)
           | del(.providers["cliproxy-remote"], .models["cliproxy-remote"])
           | .provider = "cliproxy"
-          | .models.cliproxy |= (if . == null or startswith("remote/") then "${defaults.model}" else . end)
+          | .models.cliproxy |= (if . != null and (. as $m | $proxy.cliproxy.model_metadata | has($m))
+              then . else "${defaults.model}" end)
         '';
       };
 

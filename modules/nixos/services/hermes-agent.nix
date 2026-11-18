@@ -177,7 +177,7 @@ in
               provider = "cliproxy-claude";
             };
             fallback_model = {
-              model = "gpt-6-sol";
+              model = "gpt-6.2-sol";
               provider = "cliproxy-codex";
             };
 
@@ -350,7 +350,7 @@ in
                     }
                     {
                       provider = "cliproxy-codex";
-                      model = "gpt-6-astra";
+                      model = "gpt-6.2-astra";
                       reasoning_effort = "high";
                     }
                     {
