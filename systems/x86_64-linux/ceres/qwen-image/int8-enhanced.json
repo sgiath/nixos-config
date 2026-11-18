@@ -69,7 +69,7 @@
           "slot_index": 0
         }
       ],
-      "title": "CLIPLoader — normal text encoder (CPU)",
+      "title": "CLIPLoader - normal text encoder (CPU)",
       "properties": {
         "Node name for S&R": "CLIPLoader",
         "models": [
@@ -199,7 +199,7 @@
           "slot_index": 0
         }
       ],
-      "title": "TextEncodeQwenImage21 — prompt driven by enhancer",
+      "title": "TextEncodeQwenImage21 - prompt driven by enhancer",
       "properties": {
         "Node name for S&R": "TextEncodeQwenImage21"
       },
@@ -388,7 +388,7 @@
       "mode": 0,
       "inputs": [],
       "outputs": [],
-      "title": "Qwen Image 2.1 INT8 (convrot) + prompt enhancer — notes",
+      "title": "Qwen Image 2.1 INT8 (convrot) + prompt enhancer - notes",
       "properties": {},
       "widgets_values": [
         "# Qwen Image 2.1 INT8 (convrot) + prompt enhancer\n\nSame image pipeline as `qwen-image-2.1-int8.json`: UNET `qwen_image_2.1_int8_convrot`, regular text encoder `qwen3vl_8b_int8_convrot` on **CPU**, VAE BF16, 1024x1024, seed 42 fixed, 25 steps, cfg 1, euler/simple, prefix `Qwen_image_2.1_int8_enhanced`.\n\n**How to use.** Type a short prompt (any language) into *T2I Prompt Rewrite*. Its `positive_prompt` output feeds the `prompt` input of the regular encoder, so the image is generated from the expanded description. The two *Preview as Text* nodes show the rewritten prompt and `parse_ok`: `True` means the enhancer returned valid JSON and the shown text is the extracted `rewritten_prompt`; `False` means the raw model answer was passed through unparsed - re-run with another seed or shorten the prompt. Sampling defaults are upstream's (temperature 1.0, top_p 0.95, top_k 20, presence_penalty 1.5, max_new_tokens 16256, seed 42 fixed); changing any of them re-runs the enhancer. To bypass the enhancer, disconnect `positive_prompt -> prompt` and type into the encoder directly, as in the plain INT8 workflow.\n\n**Cost.** The brown CLIPLoader loads a *second*, separate model: the Comfy-Org prompt-enhancer checkpoint `qwen3.5_9b_qwen_image_2.1_pe_t2i.int8_convrot.safetensors` (Qwen3.5 9B, INT8, ~9.5 GB extra download) with type `qwen_image`, device `default`. `default` lets ComfyUI's model manager place it on the GPU and offload to the CPU as needed alongside the INT8 transformer within the 16 GiB RX 6950 XT and its 5 GiB reserve. Prompt rewriting is autoregressive generation of up to 16256 tokens, so it takes considerably longer than the image itself. The PE loader is *not* the encoder: do not swap the two CLIPLoaders, and leave the regular encoder on `cpu`."
@@ -419,7 +419,7 @@
           "slot_index": 0
         }
       ],
-      "title": "CLIPLoader — PE model (device default = GPU managed, +9.5 GB, NOT the encoder)",
+      "title": "CLIPLoader - PE model (device default = GPU managed, +9.5 GB, NOT the encoder)",
       "properties": {
         "Node name for S&R": "CLIPLoader",
         "models": [
@@ -504,7 +504,7 @@
           "slot_index": 0
         }
       ],
-      "title": "Qwen Image 2.1 — T2I Prompt Rewrite",
+      "title": "Qwen Image 2.1 - T2I Prompt Rewrite",
       "properties": {
         "Node name for S&R": "QwenImage21_T2IPromptRewrite"
       },
@@ -543,7 +543,7 @@
         }
       ],
       "outputs": [],
-      "title": "Preview — rewritten prompt",
+      "title": "Preview - rewritten prompt",
       "properties": {
         "Node name for S&R": "PreviewAny"
       },
@@ -573,7 +573,7 @@
         }
       ],
       "outputs": [],
-      "title": "Preview — parse_ok (JSON parsed?)",
+      "title": "Preview - parse_ok (JSON parsed?)",
       "properties": {
         "Node name for S&R": "PreviewAny"
       },
@@ -683,7 +683,7 @@
   "groups": [
     {
       "id": 1,
-      "title": "1 · Prompt enhancer — PE model on GPU (managed, offloads), autoregressive",
+      "title": "1 · Prompt enhancer - PE model on GPU (managed, offloads), autoregressive",
       "bounding": [
         -230,
         280,
@@ -696,7 +696,7 @@
     },
     {
       "id": 2,
-      "title": "2 · Image generation — unchanged INT8 pipeline (1024x1024, 25 steps, seed 42)",
+      "title": "2 · Image generation - unchanged INT8 pipeline (1024x1024, 25 steps, seed 42)",
       "bounding": [
         870,
         280,
