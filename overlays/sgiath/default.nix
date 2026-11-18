@@ -19,6 +19,15 @@ in
   ksa = pkgs-ksa.ksa;
   factorio-space-age-experimental = pkgs-master.factorio-space-age-experimental;
 
+  # nginx2root (CVE-2026-123007 and others) is fixed in 1.30.7; take it from
+  # master until the selected nixpkgs has it. See
+  # UPSTREAM-WORKAROUNDS.md#nginx-2026-11-security-release.
+  nginxStable =
+    if lib.versionOlder prev.nginxStable.version "1.30.7" then
+      pkgs-master.nginxStable
+    else
+      prev.nginxStable;
+
   # otelcol-contrib 0.155.0 pins cockroachdb/swiss b0f6560f, whose runtime
   # hooks exclude Go 1.27 (undefined hashFn), so build it with Go 1.26. Scoped
   # to 0.155.0: a new release builds with the default Go again; see

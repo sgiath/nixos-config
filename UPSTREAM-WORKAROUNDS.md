@@ -118,6 +118,8 @@ Runtime checks in records are required future checks unless the record's
 
 | ID | Kind | Status | Profile |
 | --- | --- | --- | --- |
+| [`nginx-2026-11-security-release`](#nginx-2026-11-security-release) | security backport | required | vesta |
+| [`sctp-module-block`](#sctp-module-block) | security mitigation | required | all |
 | [`otelcol-contrib-swiss-go127`](#otelcol-contrib-swiss-go127) | temporary fix | required | ceres, pallas, vesta, juno1 |
 | [`llm-agents-codex-aws-lc-openssl-shim`](#llm-agents-codex-aws-lc-openssl-shim) | temporary fix | required | all |
 | [`hermes-agent-node-patchelf`](#hermes-agent-node-patchelf) | temporary fix | required | vesta |
@@ -165,6 +167,16 @@ Runtime checks in records are required future checks unless the record's
 | [`whiteboard-bundled-electron`](#whiteboard-bundled-electron) | security exception | watch | desktop |
 
 ### Flake inputs, overlays and vendoring
+
+#### `nginx-2026-11-security-release`
+
+- **Where:** `overlays/sgiath/default.nix` (`nginxStable` is `pkgs-master.nginxStable` while the selected one is older than 1.30.7). `services.nginx.package` defaults to `nginxStable`; only Vesta enables nginx.
+- **Why:** nginx2root ([Xint write-up](https://xint.io/blog/nginx2root-remote-code-execution)). CVE-2026-123007 (HTTP/2 flow-control window overflow, unauthenticated RCE) and CVE-2026-123633 (HTTP/2 use-after-free when proxying) both apply to Vesta: 22 vhosts set `http2 on`, most proxy to backends, and `193.165.30.198:443` negotiates `h2`. CVE-2026-121810 (HTTP/3), CVE-2026-123634 (resolver with variable `proxy_pass` and `mirror`) and CVE-2026-113425 (mail proxy) need configurations Vesta does not use. 1.30.7 fixes all five, plus CVE-2026-125283 (`try_files` with `alias`).
+- **Upstream:** [nginx security advisories](https://nginx.org/en/security_advisories.html) (not vulnerable: 1.30.7+, 1.31.9+). nixpkgs [f0a5d452](https://github.com/NixOS/nixpkgs/commit/f0a5d452dd) (`nginx: 1.30.6 -> 1.30.7`, master, 2026-11-18).
+- **Selected pin:** root nixpkgs `1a08097f` has 1.30.6; `nixpkgs-master` `c48e80bc` has 1.30.7.
+- **Remove when:** the selected root nixpkgs has `nginxStable` 1.30.7 or newer. The guard then returns upstream's package; delete the overlay attr.
+- **Validate:** `vesta`; `nix eval --raw .#nixosConfigurations.vesta.config.services.nginx.package.version` is 1.30.7 or newer. Runtime: `/proc/<nginx master pid>/exe` is the 1.30.7 store path (a reload does not replace the binary) and the public vhosts still answer over `h2`.
+- **Exercised (2026-11-18):** before the change Vesta evaluated and ran 1.30.6; after it the evaluated `ExecStart` is `nginx-1.30.7`.
 
 #### `otelcol-contrib-swiss-go127`
 
@@ -642,6 +654,15 @@ Also covers audit ID `package-nak-network-tests`.
 - **Remove when:** the NV-Kernels source selected by `inputs.dgx-spark` has `kfree_rcu(..., rcu)` in both destructors. The patch then stops applying and fails the kernel build, which is the prompt to check. Remove the `boot.kernelPatches` entry and the patch file together.
 - **Validate:** `juno1`, including the native build. `nix derivation show` on `.#nixosConfigurations.juno1.config.boot.kernelPackages.kernel.drvPath` lists the patch in `patches`, and patching runs without fuzz. Runtime: after `update --juno1` and a reboot, `/run/booted-system/kernel` and `/run/current-system/kernel` resolve to the same rebuilt kernel, and the host boots with Nebula, RoCE and the GPU working. A switch without a reboot leaves the old kernel running.
 - **Exercised (2026-10-30):** static only. The patches of the evaluated `linux-7.0.14-nvidia` derivation were applied with `--fuzz=0` to the pinned `af_inet.c` and `tcp_ipv4.c`: the unpatched derivation (s5jj8l7a) failed the destructor check and the patched one (rp8zlrpx) passed. The Juno1 toplevel evaluates, its derivation closure selects the patched kernel, the NVIDIA module derivation depends on it, and the upstream module's `overrideAttrs` reference scrubbing is unchanged. The kernel was not built or booted and the bug was not reproduced; Juno1 must be treated as vulnerable until this is deployed and rebooted.
+
+#### `sctp-module-block`
+
+- **Where:** `modules/nixos/common/security.nix` (ungated: `boot.blacklistedKernelModules = [ "sctp" ]` and `install sctp .../false` in `boot.extraModprobeConfig`), so it applies to every host including Hygiea.
+- **Why:** the kernel SCTP send path has a use-after-free/double free (introduced in 4.15) that Xint chained with nginx2root to get root from an nginx worker, including from a container. Details are withheld until a kernel fix exists. Every host has `CONFIG_IP_SCTP=m`, and an unprivileged `socket(..., IPPROTO_SCTP)` autoloads it; the blacklist stops alias autoloading and the `install` line refuses an explicit `modprobe`. Nothing on these hosts uses kernel SCTP (WebRTC data channels run SCTP in userspace).
+- **Upstream:** no kernel patch or CVE published as of 2026-11-18 ([Xint section 6](https://xint.io/blog/nginx2root-remote-code-execution)).
+- **Selected pin:** Vesta 6.18.63 (module present, not loaded on 2026-11-18).
+- **Remove when:** every selected kernel contains the SCTP fix, or keep it permanently since SCTP is unused. Neither unloads an already loaded module; a host with `sctp` in `/sys/module` needs a reboot.
+- **Validate:** `all`; each host's `environment.etc."modprobe.d/nixos.conf".text` contains both lines. Runtime: `sudo modprobe sctp` fails and `/sys/module/sctp` is absent.
 
 #### `pallas-alc298-speaker-init`
 
