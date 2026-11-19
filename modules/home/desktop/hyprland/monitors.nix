@@ -8,6 +8,8 @@
         position = "0x2560";
         scale = 1;
         bitdepth = 10;
+        # Stay in HDR so fullscreen HDR video does not trigger a mode switch blackout.
+        cm = "hdr";
       }
       {
         output = "DP-3";
