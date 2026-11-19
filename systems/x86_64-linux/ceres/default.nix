@@ -61,4 +61,22 @@
   };
 
   nix.settings.secret-key-files = [ config.sops.secrets.nix-signing-key.path ];
+
+  # The firmware reports the placeholder "System Serial Number", so CrazyEgg
+  # approves Ceres by a device certificate instead (device ID
+  # 01a1eb4d-8970-14ea-b5f3-a67ac54426e9, signed by their WARP device CA).
+  sops.secrets = {
+    crazyegg_warp_client_certificate = {
+      sopsFile = ../../../secrets/ceres.yaml;
+      restartUnits = [ "cloudflare-warp.service" ];
+    };
+    crazyegg_warp_client_key = {
+      sopsFile = ../../../secrets/ceres.yaml;
+      restartUnits = [ "cloudflare-warp.service" ];
+    };
+  };
+  services.cloudflare-warp.clientCertificate = {
+    certificate = config.sops.secrets.crazyegg_warp_client_certificate.path;
+    key = config.sops.secrets.crazyegg_warp_client_key.path;
+  };
 }

@@ -49,8 +49,36 @@ let
     ln -s ${warpResolvConf} /etc/resolv.conf
     exec ${cfg.package}/bin/warp-svc
   '';
+
+  # Where CrazyEgg's Linux client-certificate posture check looks, and where
+  # their `scripts/zero-trust csr-install` puts the files on other machines.
+  clientCertDir = "/etc/warp-client-cert-pilot";
 in
 {
+  options.services.cloudflare-warp.clientCertificate = lib.mkOption {
+    type = lib.types.nullOr (
+      lib.types.submodule {
+        options = {
+          certificate = lib.mkOption {
+            type = lib.types.str;
+            description = "Runtime path of the PEM device certificate CrazyEgg signed.";
+          };
+          key = lib.mkOption {
+            type = lib.types.str;
+            description = "Runtime path of the PEM private key the certificate was issued for.";
+          };
+        };
+      }
+    );
+    default = null;
+    description = ''
+      Device certificate for CrazyEgg's client-certificate posture check, for
+      machines whose firmware reports no usable serial number. warp-svc sees
+      the files at ${clientCertDir}/client.pem and client-key.pem in its
+      private /etc.
+    '';
+  };
+
   config = lib.mkMerge [
     {
       services.cloudflare-warp.enable = lib.mkDefault (
@@ -83,6 +111,10 @@ in
           "/etc/machine-id"
           "/etc/passwd"
           "/etc/group"
+        ]
+        ++ lib.optionals (cfg.clientCertificate != null) [
+          "${cfg.clientCertificate.certificate}:${clientCertDir}/client.pem"
+          "${cfg.clientCertificate.key}:${clientCertDir}/client-key.pem"
         ];
         # libc would hand WARP's own lookups (its connectivity check) to the
         # host's nsncd, which resolves through the host resolv.conf and never
