@@ -201,23 +201,6 @@
       ];
     }
     {
-      # Antigravity login.
-      id = "gemini-3.8-flash-high";
-      name = "Gemini 3.8 Flash";
-      protocol = "chat";
-      context = 1048576;
-      output = 65536;
-      input = [
-        "text"
-        "image"
-      ];
-      effort = [
-        "low"
-        "medium"
-        "high"
-      ];
-    }
-    {
       id = "opencode-go/kimi-k3.1-pro";
       name = "Kimi K3.1 Pro (Go)";
       protocol = "chat";
