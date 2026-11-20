@@ -201,6 +201,24 @@
       ];
     }
     {
+      # Antigravity login (Google AI Ultra).
+      id = "gemini-4-neon-xhigh";
+      name = "Gemini 4 Neon";
+      protocol = "chat";
+      context = 1048576;
+      output = 65536;
+      input = [
+        "text"
+        "image"
+      ];
+      effort = [
+        "low"
+        "medium"
+        "high"
+        "xhigh"
+      ];
+    }
+    {
       id = "opencode-go/kimi-k3.1-pro";
       name = "Kimi K3.1 Pro (Go)";
       protocol = "chat";
