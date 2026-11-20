@@ -29,6 +29,8 @@
 
       # agents
       pkgs.llm-agents.grok
+      # `agy`; T3 Code picks it up from PATH as its Antigravity provider.
+      pkgs.llm-agents.antigravity-cli
 
       # tools
       pkgs.llm-agents.qmd
