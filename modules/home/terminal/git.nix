@@ -50,7 +50,6 @@
           ".direnv"
           ".devenv"
           ".elixir_ls"
-          ".expert"
           ".elixir-tools"
           ".omo/"
           ".omp/"
