@@ -52,8 +52,10 @@ host with agents (`modules/home/agents/archive.nix`) ships records to it.
   spans join `agents.requests` by request ID (duration, TTFT); Codex has no
   response IDs in telemetry, so its TTFT joins by session and token counts.
 - **Missed stores are detected, not remembered.** A daily discovery pass on
-  every host walks `$HOME` for JSONL under session-like directories and
-  SQLite databases with populated session or message tables, and alerts via
+  every host walks `$HOME` for JSONL under session-like directories, SQLite
+  databases with populated session or message tables, and populated SQLite
+  databases under session-like directories (Antigravity keeps one per
+  conversation, with no session-named table), and alerts via
   ntfy when one is neither shipped nor explicitly ignored with a reason. The
   first run found stores the initial survey missed (oh-my-pi profiles and
   stats, Goose, OmO memory transcripts, Cursor CLI transcripts, fx).

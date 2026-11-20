@@ -6,7 +6,7 @@ Status: proposed
 
 The [agent session archive](../../implemented/architecture/2026-10-14-agent-session-archive.md)
 ships text session records from the main stores and normalizes Claude Code,
-Codex, OpenCode, the Pi family, Cursor, Muse and Grok. Some data is still only
+Codex, OpenCode, the Pi family, Cursor, Muse, Grok and Antigravity. Some data is still only
 on its source host or only raw, and no restore from the offsite copy has been
 tried.
 
@@ -25,7 +25,10 @@ tried.
   timing metrics. Needs rotation-aware shipping and an allowlist that drops
   account/rate-limit RPCs.
 - **More normalizers.** T3 (thread titles, runs, provider thread links through
-  `nativeThreadRef.nativeId`), Hermes (session/route aggregates only).
+  `nativeThreadRef.nativeId`), Hermes (session/route aggregates only), Zed
+  (`~/.local/share/zed/threads/threads.db`, shipped raw since 2026-11-20: each
+  thread's `data` is zstd-compressed JSON, base64 in `archive.raw`, with
+  `ToolUse` entries, tool results and per-request token usage).
 - **Hermes reconciliation.** Re-ship changed sessions' messages. Hermes
   messages have no update stamp, so `ship.py` reads them by `id` and ships each
   row as first seen; compaction later flips `active` and `compacted` in place.

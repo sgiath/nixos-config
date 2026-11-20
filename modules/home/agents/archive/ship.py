@@ -86,17 +86,21 @@ class Sqlite:
     `path` may be a glob; every matching database is shipped as its own
     source. `position` is a column or expression that grows whenever a row is
     written (or only when it is inserted, when nothing better exists); rows
-    are re-read from the last stored value onward. `where` limits the rows
-    shipped.
+    are re-read from the last stored value onward. With no position (rows
+    changed in place without an update stamp) every row is sent again,
+    versioned by the read's time, whenever the database was written.
+    `where` limits the rows shipped.
     """
 
     tool: str
     path: str
     table: str
     key: str
-    position: str
+    position: str | None
     where: str = "1"
 
+
+ANTIGRAVITY_ROOTS = (".gemini/antigravity-cli", ".t3/userdata/providers/antigravity/*/antigravity-acp")
 
 # Paths are relative to $HOME unless absolute; missing or unreadable ones are
 # skipped, so one list serves every host. Root-only stores (the static Hermes
@@ -196,6 +200,53 @@ SOURCES = [
         "rowid",
         "key IN ('aiService.prompts', 'aiService.generations', 'composer.composerData')",
     ),
+    # Antigravity CLI (`agy`), and the copy T3 Code runs it from. transcript.jsonl
+    # truncates, and chunks/ splits transcript_full.jsonl at 100 KiB.
+    Jsonl(
+        "antigravity",
+        [
+            f"{root}/{store}"
+            for root in ANTIGRAVITY_ROOTS
+            for store in ("brain/*/.system_generated/logs/transcript_full.jsonl", "history.jsonl")
+        ],
+    ),
+    # Full tool outputs the transcripts truncate, and the conversations' artifacts.
+    Files(
+        "antigravity",
+        [
+            f"{root}/brain/*/{pattern}"
+            for root in ANTIGRAVITY_ROOTS
+            for pattern in (".system_generated/steps/*/*", "*")
+        ],
+    ),
+    # One database per conversation holding its steps as protobuf. Rows change
+    # in place and carry no update stamp.
+    *(
+        Sqlite("antigravity", f"{root}/conversations/*.db", table, key, None)
+        for root in ANTIGRAVITY_ROOTS
+        for table, key in (
+            ("trajectory_meta", "trajectory_id"),
+            ("trajectory_metadata_blob", "id"),
+            ("steps", "idx"),
+            ("gen_metadata", "idx"),
+            ("executor_metadata", "idx"),
+            ("parent_references", "idx"),
+            ("battle_mode_infos", "idx"),
+        )
+    ),
+    # Unused conversations carry the zero time (year 1).
+    *(
+        Sqlite(
+            "antigravity",
+            f"{root}/conversation_summaries.db",
+            "conversation_summaries",
+            "conversation_id",
+            "max(0, CAST(unixepoch(last_modified_time, 'subsec') * 1000 AS INTEGER))",
+        )
+        for root in ANTIGRAVITY_ROOTS
+    ),
+    # Zed's agent panel threads; `data` is zstd-compressed JSON.
+    Sqlite("zed", ".local/share/zed/threads/threads.db", "threads", "id", "CAST(unixepoch(updated_at, 'subsec') * 1000 AS INTEGER)"),
     Jsonl("grok", [".grok/sessions/**/*.jsonl", ".config/remote-agents/grok/sessions/**/*.jsonl"]),
     Files("grok", [".grok/sessions/**/summary.json", ".config/remote-agents/grok/sessions/**/summary.json"]),
     # What each Browse agent run executed in the browser, and its result.
@@ -225,8 +276,9 @@ SOURCES = [
 
 
 # --discover looks for agent session stores that SOURCES misses: JSONL files
-# under a session-like directory, and SQLite databases with a session-like
-# table, once they hold data (an installed but unused tool is not reported).
+# under a session-like directory, SQLite databases with a session-like table,
+# and SQLite databases with any table under a session-like directory, once
+# they hold data (an installed but unused tool is not reported).
 # Every hit must be added to SOURCES or listed in IGNORED with a reason.
 SESSION_DIRS = {
     "sessions",
@@ -260,6 +312,10 @@ IGNORED = [
     (".ao/data/ao.db", "AO app projection; its sessions are the OMP and Codex sessions archived natively"),
     (".config/Cursor/User/globalStorage/conversation-search.db", "search index derived from state.vscdb"),
     (".local/share/muse/session-index.db", "index derived from the session logs"),
+    (".local/share/muse/sessions/**/session.peer-history.sqlite3", "index of the session's own session.jsonl"),
+    (".local/share/muse/sessions/**/cron.db", "Muse scheduled prompts, not session records"),
+    (".grok/sessions/session_search.sqlite", "search index derived from the session logs"),
+    (".omo/codegraph/projects/*/codegraph.db", "code graph index, not sessions"),
     (".ipython/profile_default/history.sqlite", "IPython history, not an agent"),
     (".local/share/gajim/*.db", "XMPP client"),
     (".local/share/fractal/**", "Matrix client"),
@@ -282,7 +338,8 @@ IGNORED = [
 SESSION_DB_SUFFIXES = (".db", ".sqlite", ".sqlite3", ".vscdb")
 
 
-def _is_session_db(path):
+def _is_session_db(path, any_table=False):
+    """Whether a session-like table (or with `any_table`, any table) holds rows."""
     try:
         with open(path, "rb") as f:
             if f.read(16) != b"SQLite format 3\0":
@@ -293,7 +350,7 @@ def _is_session_db(path):
             return any(
                 db.execute(f'SELECT 1 FROM "{name}" LIMIT 1').fetchone()
                 for name in tables
-                if name.lower() in SESSION_TABLES
+                if any_table or name.lower() in SESSION_TABLES
             )
         finally:
             db.close()
@@ -325,8 +382,10 @@ def discover(home, sources, ignored=IGNORED):
                 if any(rel.full_match(pattern) for pattern in patterns) or not path.stat().st_size:
                     continue
             elif path.suffix in SESSION_DB_SUFFIXES:
-                store = str(rel)
-                if any(rel.full_match(pattern) for pattern in patterns) or not _is_session_db(path):
+                # One database per session (Antigravity) is reported as its directory.
+                in_session_dir = bool(SESSION_DIRS & set(rel.parts[:-1]))
+                store = str(rel.parent if in_session_dir else rel)
+                if any(rel.full_match(pattern) for pattern in patterns) or not _is_session_db(path, in_session_dir):
                     continue
             else:
                 continue
@@ -365,16 +424,23 @@ def _connect(path):
     return db
 
 
-def sqlite_records(path, source, cursor):
+def sqlite_records(path, source, cursor, read_at=None):
     """Yield (key, position, row as JSON) for rows at or past `cursor`.
 
     Rows sharing the cursor's position are sent again: ones written in the same
     tick may have arrived after it was read, and replacement absorbs repeats.
     The order is read first and rows fetched in chunks, so large tables are
-    never sorted whole.
+    never sorted whole. A source without a position yields every row at
+    `read_at`.
     """
     db = _connect(path)
     try:
+        if source.position is None:
+            rows = db.execute(f"SELECT {source.key} AS _key, * FROM {source.table} WHERE {source.where}")
+            columns = [d[0] for d in rows.description][1:]
+            for key, *values in rows:
+                yield str(key), read_at, json.dumps(dict(zip(columns, map(_json_value, values))), ensure_ascii=False)
+            return
         where = f"({source.where}) AND {source.position} >= ?"
         start = cursor[0] if cursor else 0
         select = f"SELECT {{rowid}} AS _rowid, {source.key} AS _key, {source.position} AS _position, * FROM {source.table}"
@@ -653,7 +719,7 @@ def _ship_database(home, path, sources, cursors, out):
         source_name = f"{name}#{source.table}"
         if source.table not in tables:
             continue
-        for key, position, record in sqlite_records(path, source, cursors.get((source_name, ""))):
+        for key, position, record in sqlite_records(path, source, cursors.get((source_name, "")), read_at):
             out.add(source.tool, source_name, "", key, position, record)
     out.add(sources[0].tool, f"{name}#", "", "read", read_at, "")
 

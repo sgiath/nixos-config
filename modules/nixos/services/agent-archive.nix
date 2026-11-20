@@ -31,6 +31,7 @@ let
     ./agent-archive/cursor.sql
     ./agent-archive/muse.sql
     ./agent-archive/grok.sql
+    ./agent-archive/antigravity.sql
     ./agent-archive/cliproxy.sql
     ./agent-archive/tables.sql
   ];

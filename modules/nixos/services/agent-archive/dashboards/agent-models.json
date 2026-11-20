@@ -531,7 +531,7 @@
     {
       "type": "table",
       "title": "Steps per turn",
-      "description": "Main-agent responses per turn; a turn ends with an end_turn or stop response. Codex, Cursor and Grok record no stop reason.",
+      "description": "Main-agent responses per turn; a turn ends with an end_turn or stop response. Codex, Cursor, Grok and Antigravity record no stop reason.",
       "datasource": {
         "type": "grafana-clickhouse-datasource",
         "uid": "agent-archive"
@@ -546,7 +546,7 @@
           "editorType": "sql",
           "format": 1,
           "queryType": "table",
-          "rawSql": "SELECT\n    tool AS \"Harness\",\n    model AS \"Model\",\n    sum(requests) / nullIf(sum(stops), 0) AS \"Responses per turn\",\n    sum(stops) AS \"Completed turns\",\n    count() AS \"Sessions\"\nFROM\n(\n    SELECT tool, session_id, topK(1)(model)[1] AS model, count() AS requests,\n        countIf(stop_reason IN ('end_turn', 'stop')) AS stops\n    FROM agents.requests\n    WHERE $__timeFilter(ts) AND host IN (${host:singlequote}) AND tool IN (${tool:singlequote}) AND is_subagent = 0 AND tool NOT IN ('codex', 'cursor', 'grok')\n    GROUP BY tool, session_id\n)\nWHERE model IN (${model:singlequote})\nGROUP BY tool, model\nHAVING sum(requests) >= $min_requests\nORDER BY sum(requests) DESC"
+          "rawSql": "SELECT\n    tool AS \"Harness\",\n    model AS \"Model\",\n    sum(requests) / nullIf(sum(stops), 0) AS \"Responses per turn\",\n    sum(stops) AS \"Completed turns\",\n    count() AS \"Sessions\"\nFROM\n(\n    SELECT tool, session_id, topK(1)(model)[1] AS model, count() AS requests,\n        countIf(stop_reason IN ('end_turn', 'stop')) AS stops\n    FROM agents.requests\n    WHERE $__timeFilter(ts) AND host IN (${host:singlequote}) AND tool IN (${tool:singlequote}) AND is_subagent = 0 AND tool NOT IN ('codex', 'cursor', 'grok', 'antigravity')\n    GROUP BY tool, session_id\n)\nWHERE model IN (${model:singlequote})\nGROUP BY tool, model\nHAVING sum(requests) >= $min_requests\nORDER BY sum(requests) DESC"
         }
       ],
       "fieldConfig": {

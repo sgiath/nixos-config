@@ -223,6 +223,26 @@ class ShipTest(unittest.TestCase):
         self.ship()
         self.assertEqual(self.inserts, inserts)
 
+    def test_versions_unstamped_rows_by_the_read(self):
+        # Antigravity updates steps in place and records no update stamp.
+        path = self.home / "c.db"
+        db = sqlite3.connect(path)
+        db.execute("CREATE TABLE steps (idx INTEGER PRIMARY KEY, status TEXT)")
+        db.executemany("INSERT INTO steps VALUES (?, ?)", [(0, "DONE"), (1, "RUNNING")])
+        db.commit()
+        self.sources = [ship.Sqlite("antigravity", "c.db", "steps", key="idx", position=None)]
+        self.ship()
+        db.execute("UPDATE steps SET status = 'DONE' WHERE idx = 1")
+        db.commit()
+        db.close()
+        later = time.time_ns() + 10**9
+        os.utime(path, ns=(later, later))
+        self.ship()
+        rows = self.rows("c.db#steps")
+        self.assertEqual([r["key"] for r in rows], ["0", "1", "0", "1"])
+        self.assertLess(rows[1]["position"], rows[3]["position"])
+        self.assertEqual(json.loads(rows[3]["record"])["status"], "DONE")
+
 
 class CodexRolloutTest(unittest.TestCase):
     """Rollout storage changes must preserve the existing archive cursor."""
@@ -367,6 +387,13 @@ class DiscoverTest(unittest.TestCase):
             ship.discover(self.home, sources, ignored=[]),
             {".newagent/sessions/2026": 2, ".otheragent/state.db": 1},
         )
+
+    def test_reports_databases_in_a_session_directory_as_one_store(self):
+        # Antigravity keeps one database per conversation, with no session-named table.
+        self.database(".newagent/conversations/a.db", "steps", rows=1)
+        self.database(".newagent/conversations/b.db", "steps", rows=2)
+        self.database(".newagent/conversations/empty.db", "steps")
+        self.assertEqual(ship.discover(self.home, [], ignored=[]), {".newagent/conversations": 2})
 
     def test_waits_until_a_store_holds_data(self):
         # A tool installed but never used is reported once it stores something.

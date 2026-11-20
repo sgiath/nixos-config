@@ -35,7 +35,8 @@ UNION ALL SELECT * FROM agents.pi_requests
 UNION ALL SELECT * FROM agents.opencode_requests
 UNION ALL SELECT * FROM agents.cursor_requests
 UNION ALL SELECT * FROM agents.muse_requests
-UNION ALL SELECT * FROM agents.grok_requests;
+UNION ALL SELECT * FROM agents.grok_requests
+UNION ALL SELECT * FROM agents.antigravity_requests;
 
 -- Model-issued tool calls. request_id is empty where the tool does not link
 -- calls to responses (Codex).
@@ -65,7 +66,8 @@ UNION ALL SELECT * FROM agents.opencode_tool_calls
 UNION ALL SELECT * FROM agents.opencode_hook_tool_calls
 UNION ALL SELECT * FROM agents.cursor_tool_calls
 UNION ALL SELECT * FROM agents.muse_tool_calls
-UNION ALL SELECT * FROM agents.grok_tool_calls;
+UNION ALL SELECT * FROM agents.grok_tool_calls
+UNION ALL SELECT * FROM agents.antigravity_tool_calls;
 
 -- Shell commands as executed: one row per command, including each command a
 -- Codex code-mode script ran.
@@ -103,7 +105,9 @@ WHERE (tool = 'claude' AND name = 'Bash')
     OR (tool = 'cursor' AND name = 'run_terminal_cmd')
     OR (tool = 'grok' AND name = 'run_terminal_command')
 UNION ALL
-SELECT * FROM agents.codex_commands;
+SELECT * FROM agents.codex_commands
+UNION ALL
+SELECT * FROM agents.antigravity_commands;
 
 CREATE VIEW agents.sessions AS
 SELECT
