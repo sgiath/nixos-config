@@ -32,7 +32,6 @@ in
         ];
       };
       channel.enable = false;
-      optimise.automatic = true;
       gc = {
         automatic = false;
         dates = "08:00";
