@@ -32,18 +32,22 @@ let
         done
         echo null
       }
-      nvme() {
-        local h
-        for h in /sys/class/nvme/"$1"/hwmon*; do
-          reading "$h/temp1_input" 1000
-          return
+      # Controller names change between boots, so drives are keyed by serial.
+      nvme_temps() {
+        local n h serial out=""
+        for n in /sys/class/nvme/nvme*; do
+          read -r serial < "$n/serial"
+          for h in "$n"/hwmon*; do
+            out+="''${out:+,}\"$serial\":$(reading "$h/temp1_input" 1000)"
+          done
         done
+        echo "{$out}"
       }
 
       max="$(commit max_commit_ms)"
       echo 0 > "$fs/commit_stats"
 
-      printf '{"ts":"%s","boot_id":"%s","commits":%s,"total_commit_ms":%s,"max_commit_ms":%s,"discardable_bytes":%s,"discardable_extents":%s,"cpu_some_us":%s,"io_some_us":%s,"io_full_us":%s,"memory_some_us":%s,"memory_full_us":%s,"cpu_tctl_c":%s,"gpu_junction_c":%s,"gpu_mem_c":%s,"gpu_power_w":%s,"nvme0_c":%s,"nvme1_c":%s,"nvme2_c":%s}\n' \
+      printf '{"ts":"%s","boot_id":"%s","commits":%s,"total_commit_ms":%s,"max_commit_ms":%s,"discardable_bytes":%s,"discardable_extents":%s,"cpu_some_us":%s,"io_some_us":%s,"io_full_us":%s,"memory_some_us":%s,"memory_full_us":%s,"cpu_tctl_c":%s,"gpu_junction_c":%s,"gpu_mem_c":%s,"gpu_power_w":%s,"nvme_c":%s}\n' \
         "$(date -u +%FT%TZ)" "$(cat /proc/sys/kernel/random/boot_id)" \
         "$(commit commits)" "$(commit total_commit_ms)" "$max" \
         "$(cat "$fs/discard/discardable_bytes")" "$(cat "$fs/discard/discardable_extents")" \
@@ -51,7 +55,7 @@ let
         "$(hwmon k10temp temp1_input 1000)" \
         "$(hwmon amdgpu temp2_input 1000)" "$(hwmon amdgpu temp3_input 1000)" \
         "$(hwmon amdgpu power1_average 1000000)" \
-        "$(nvme nvme0)" "$(nvme nvme1)" "$(nvme nvme2)" \
+        "$(nvme_temps)" \
         >> /var/lib/health-stats/samples.jsonl
     '';
   };
