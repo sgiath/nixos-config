@@ -45,8 +45,23 @@ let
       supportedOutputModalities = [ "text" ];
     }
   ];
+  # The Antigravity login (Google AI Ultra) is used for Gemini 4 Neon only.
+  # The proxy publishes an Antigravity model when it is both in this catalog
+  # and in the account's fetchAvailableModels list, so this is an allowlist:
+  # the Claude and other Gemini models Google also serves stay unrouted.
+  antigravityModels = [ "gemini-4-neon-xhigh" ];
+  antigravity = lib.filter (m: lib.elem m.id antigravityModels) upstreamCatalog.antigravity;
   catalog = pkgs.writeText "cliproxy-models.json" (
-    builtins.toJSON (upstreamCatalog // { claude = upstreamCatalog.claude ++ extraClaude; })
+    builtins.toJSON (
+      upstreamCatalog
+      // {
+        claude = upstreamCatalog.claude ++ extraClaude;
+        antigravity =
+          assert lib.assertMsg (lib.length antigravity == lib.length antigravityModels)
+            "services.cliproxyapi: the cliproxy-models catalog lacks an Antigravity model in ${toString antigravityModels}";
+          antigravity;
+      }
+    )
   );
 
   # API-key upstreams. CLIProxyAPI does not discover their models, so each
