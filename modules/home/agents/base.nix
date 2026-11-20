@@ -61,6 +61,10 @@
       enable = true;
       package = pkgs.llm-agents.antigravity-cli;
       enableMcpIntegration = true;
+      # ~/.gemini/AGENTS.md and ~/.gemini/antigravity-cli/skills; T3 Code
+      # symlinks both into its own Antigravity profile (GEMINI_HOME).
+      context.AGENTS = ./AGENTS.md;
+      skills = ./skills;
       # `agy mcp add/disable` replace mcp_config.json with a regular file, which
       # would break a read-only Home Manager symlink; merge into a writable file.
       mutableSettings = true;
