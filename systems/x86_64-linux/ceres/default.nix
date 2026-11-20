@@ -1,6 +1,7 @@
 { config, ... }:
 {
   imports = [
+    ./btrfs-stats.nix
     ./hardware.nix
     ./offsite-prune.nix
     ./qwen-image.nix
