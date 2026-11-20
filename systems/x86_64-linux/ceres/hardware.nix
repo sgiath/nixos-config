@@ -28,8 +28,6 @@
       ];
     };
     kernelPackages = pkgs.linuxPackages_xanmod_latest;
-    # AMD Zen sensors
-    extraModulePackages = [ config.boot.kernelPackages.zenpower ];
     kernelParams = [ "amd_pstate=active" ];
 
     # Docker and Podman create and delete host-side veths constantly. Each

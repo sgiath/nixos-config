@@ -89,7 +89,7 @@ shells/default/default.nix        # dev/update toolchain
 
 - One baseline: `common` (NixOS and HM) holds everything every machine gets, gated on `sgiath.enable`.
 - Hardware is one-of: `sgiath.hardware.gpu`/`boot` are enums, `razer` and `dgx-spark` toggles; pick values, never stack modules. `boot.kernelPackages` is set per host in `systems/<arch>/<host>/hardware.nix` (the DGX Spark module sets it for `juno<N>`); `common/` never picks a kernel.
-- Shared modules must evaluate on `aarch64-linux` too: CPU/GPU-vendor modules (`zenpower`) belong in the host's `hardware.nix`; x86-only variants (ROCm, x86 binary blobs) are gated on `pkgs.stdenv.hostPlatform.isx86_64` or the desktop role.
+- Shared modules must evaluate on `aarch64-linux` too: CPU/GPU-vendor modules (`kvm-amd`) belong in the host's `hardware.nix`; x86-only variants (ROCm, x86 binary blobs) are gated on `pkgs.stdenv.hostPlatform.isx86_64` or the desktop role.
 - Roles are additive: `desktop`, `laptop`, `server`, `gaming` under `sgiath.roles.<role>.enable`; a host enables any combination.
 - Services hook `services.<name>.enable` uniformly, whether the option is upstream or declared locally in `modules/nixos/services/<name>.nix`.
 - Sites are nginx vhosts under `sgiath.sites.<name>.enable`, one file per site in `modules/nixos/sites/`.
