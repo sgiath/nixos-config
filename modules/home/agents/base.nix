@@ -29,8 +29,6 @@
 
       # agents
       pkgs.llm-agents.grok
-      # `agy`; T3 Code picks it up from PATH as its Antigravity provider.
-      pkgs.llm-agents.antigravity-cli
 
       # tools
       pkgs.llm-agents.qmd
@@ -56,6 +54,16 @@
           args = [ "mcp" ];
         };
       };
+    };
+
+    # `agy`; T3 Code picks it up from PATH as its Antigravity provider.
+    programs.antigravity-cli = {
+      enable = true;
+      package = pkgs.llm-agents.antigravity-cli;
+      enableMcpIntegration = true;
+      # `agy mcp add/disable` replace mcp_config.json with a regular file, which
+      # would break a read-only Home Manager symlink; merge into a writable file.
+      mutableSettings = true;
     };
   };
 }
