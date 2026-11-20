@@ -52,7 +52,16 @@
 
   services = {
     nfs.server.enable = false;
-    fstrim.enable = true;
+    # The btrfs root mounts with the kernel's default discard=async, so a
+    # weekly fstrim only re-trims unallocated space (13 min, 325 GiB).
+    fstrim.enable = false;
+    # The NVMe scheduler is "none", so the unit's idle IO class has no effect.
+    btrfs.autoScrub = {
+      enable = true;
+      interval = "monthly";
+      fileSystems = [ "/" ];
+      limit = "500M";
+    };
   };
 
   networking = {
