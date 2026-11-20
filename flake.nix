@@ -49,7 +49,7 @@
       inputs.hyprland.follows = "hyprland";
     };
 
-    noctalia.url = "github:noctalia-dev/noctalia/v5.5.0";
+    noctalia.url = "github:noctalia-dev/noctalia/v5.6.0";
 
     btc-clients = {
       url = "github:emmanuelrosa/btc-clients-nix";
