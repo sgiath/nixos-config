@@ -23,8 +23,8 @@ in
     home = {
       packages = [
         pkgs.llm-agents.codex
-      ]
-      ++ (lib.optionals config.sgiath.roles.desktop.enable [ pkgs.llm-agents.chatgpt ]);
+      ];
+      # ++ (lib.optionals config.sgiath.roles.desktop.enable [ pkgs.llm-agents.chatgpt ]);
       file.".codex/AGENTS.md".source = ./AGENTS.md;
       # `codex --profile daybreak`: Daybreak Blue is served only by OpenAI
       # itself (the proxy has no route for it), so this profile uses the
