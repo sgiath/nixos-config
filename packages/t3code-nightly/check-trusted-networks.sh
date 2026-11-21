@@ -9,15 +9,15 @@ assertTrustedNetworks() {
   echo '{"linkedEnvironmentsEnabled":true}' > "$home/t3/userdata/settings.json"
 
   # "-" stands for an empty list.
-  linkError() {
+  linkOutput() {
     T3CODE_TRUSTED_NETWORKS=${1#-} HOME=$home T3CODE_HOME=$home/t3 \
-      timeout 60 "$t3" environment link "$2" --pairing-code check 2>&1 | grep -m1 'PeerLinkError' || true
+      timeout 60 "$t3" environment link "$2" --pairing-code check 2>&1 | tail -n 5 || true
   }
 
   while read -r trusted url; do
-    out=$(linkError "$trusted" "$url")
+    out=$(linkOutput "$trusted" "$url")
     if [[ $out != *"is plain http"* ]]; then
-      echo "ERROR: $url was not refused with T3CODE_TRUSTED_NETWORKS=$trusted: $out" >&2
+      printf 'ERROR: %s was not refused with T3CODE_TRUSTED_NETWORKS=%s:\n%s\n' "$url" "$trusted" "$out" >&2
       return 1
     fi
   done <<'EOF'
@@ -29,9 +29,9 @@ ceres.t3.invalid http://ceres.t3.invalid.:9
 EOF
 
   while read -r trusted url; do
-    out=$(linkError "$trusted" "$url")
+    out=$(linkOutput "$trusted" "$url")
     if [[ $out != *"did not answer"* ]]; then
-      echo "ERROR: $url was refused with T3CODE_TRUSTED_NETWORKS=$trusted: $out" >&2
+      printf 'ERROR: %s was refused with T3CODE_TRUSTED_NETWORKS=%s:\n%s\n' "$url" "$trusted" "$out" >&2
       return 1
     fi
   done <<'EOF'
