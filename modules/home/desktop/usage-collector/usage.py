@@ -1,23 +1,32 @@
 #!/usr/bin/env python3
 """Subscription usage for the Quickshell usage panel.
 
-Codex, Claude and Grok accounts are read through CLIProxyAPI's management
-API: its credential list names every logged-in account, and its api-call
-forwards a fixed usage GET with that account's token, which the proxy keeps
-fresh. Nothing here refreshes, mints or writes credentials. Muse keeps its own
-native login (it is not routed through the proxy, and the proxy can only get
-its quota by minting a key), read through the usage frame of a minimal
-response made with its CLI's key.
+Codex and Claude accounts are read straight from CLIProxyAPI's credential
+listing (`quota` and `model_quotas`, passively captured from upstream response
+headers) so active accounts never touch upstream usage endpoints. Only when
+the proxy has no unexpired observation (for instance an idle account after a
+restart) does it fall back to `api-call`, backed by a local cache and 429
+backoff so Anthropic's `/api/oauth/usage` is not hammered.
+
+Gemini (Antigravity) and Grok accounts are not passively observed by the
+proxy, so each uses one fixed `api-call` with the account's token, which the
+proxy keeps fresh. Nothing here refreshes, mints or writes credentials. Muse
+keeps its own native login (it is not routed through the proxy, and the proxy
+can only get its quota by minting a key), read through the usage frame of a
+minimal response made with its CLI's key.
 
 Prints one JSON document: {generatedAt, reports: [{provider, metadata,
 limits, error?}]}. A limit's `amount.used` is null when the provider names a
 window without saying how much of it is used; that is unknown, not zero.
 """
 
+import email.utils
 import json
+import math
 import os
 import re
 import sys
+import tempfile
 import threading
 import time
 import urllib.error
@@ -27,6 +36,12 @@ from pathlib import Path
 
 MINUTE_MS = 60 * 1000
 EPOCH = datetime(1970, 1, 1, tzinfo=timezone.utc)
+
+FALLBACK_TTL_MS = 30 * MINUTE_MS
+FALLBACK_STALE_MAX_MS = 6 * 60 * MINUTE_MS
+FALLBACK_BACKOFF_MIN_MS = 15 * MINUTE_MS
+FALLBACK_BACKOFF_MAX_MS = 60 * MINUTE_MS
+CACHE_RETENTION_MS = 7 * 1440 * MINUTE_MS
 
 
 class ProviderError(Exception):
@@ -93,11 +108,70 @@ def limit(id, label, win, amount):
 
 
 def number(value):
-    return value if isinstance(value, (int, float)) and not isinstance(value, bool) else None
+    if isinstance(value, (int, float)) and not isinstance(value, bool) and math.isfinite(value):
+        return value
+    return None
+
+
+def parse_float(value):
+    if isinstance(value, (int, float)) and not isinstance(value, bool):
+        return float(value) if math.isfinite(value) else None
+    if isinstance(value, str):
+        try:
+            parsed = float(value.strip())
+        except ValueError:
+            return None
+        return parsed if math.isfinite(parsed) else None
+    return None
 
 
 def slug(text):
     return re.sub(r"[^a-z0-9]+", "-", text.lower()).strip("-")
+
+
+def now_ms():
+    return int(time.time() * 1000)
+
+
+def iso_ms(value):
+    try:
+        dt = datetime.fromisoformat(value)
+    except (TypeError, ValueError):
+        return 0
+    if dt.tzinfo is None:
+        dt = dt.replace(tzinfo=timezone.utc)
+    return (dt - EPOCH) // timedelta(milliseconds=1)
+
+
+def account_email(account):
+    return account.get("email") or account.get("label")
+
+
+def observations(account):
+    """Passive `(observed_ms, model_id, lowercase_signals)` snapshots from a credential entry."""
+    found = []
+
+    def add(obs, model_id):
+        if not isinstance(obs, dict):
+            return
+        raw = obs.get("signals")
+        if not isinstance(raw, dict) or not raw:
+            return
+        signals = {k.lower(): v for k, v in raw.items() if isinstance(k, str)}
+        if signals:
+            found.append((iso_ms(obs.get("observed_at")), model_id, signals))
+
+    add(account.get("quota"), None)
+    model_quotas = account.get("model_quotas")
+    if isinstance(model_quotas, dict):
+        for model_id, obs in model_quotas.items():
+            if isinstance(model_id, str):
+                add(obs, model_id)
+    return found
+
+
+def latest_observed_ms(account):
+    return max((obs_ms for obs_ms, _, _ in observations(account)), default=0)
 
 
 # Codex
@@ -131,14 +205,100 @@ def codex_report(email, usage):
     }
 
 
+CODEX_BASE = re.compile(r"^x-codex-(primary|secondary)-(used-percent|window-minutes|reset-at|reset-after-seconds)$")
+CODEX_SCOPED = re.compile(r"^x-codex-([a-z0-9-]+)-(primary|secondary)-(used-percent|window-minutes|reset-at|reset-after-seconds)$")
+CODEX_LIMIT_NAME = re.compile(r"^x-codex-([a-z0-9-]+)-limit-name$")
+
+
+def codex_signals_report(account, now=None):
+    """Build a Codex report from CLIProxyAPI's passive `X-Codex-*` observations.
+
+    Returns None when the proxy has no unexpired window for the account.
+    """
+    now = now_ms() if now is None else now
+    obs_list = observations(account)
+    if not obs_list:
+        return None
+
+    plan_type, plan_at = None, -1
+    merged = {}  # row_id -> (rank, obs_ms, name, fields)
+    for obs_ms, _, signals in obs_list:
+        plan = signals.get("x-codex-plan-type")
+        if isinstance(plan, str) and plan.strip() and obs_ms >= plan_at:
+            plan_type, plan_at = plan.strip(), obs_ms
+
+        limit_names = {}
+        buckets = {}  # (ns, slot) -> {field: value}
+        for key, value in signals.items():
+            if m := CODEX_LIMIT_NAME.match(key):
+                if isinstance(value, str) and value.strip():
+                    limit_names[m.group(1)] = value.strip()
+            elif m := CODEX_BASE.match(key):
+                buckets.setdefault((None, m.group(1)), {})[m.group(2)] = value
+            elif m := CODEX_SCOPED.match(key):
+                ns = m.group(1)
+                if ns != "credits":
+                    buckets.setdefault((ns, m.group(2)), {})[m.group(3)] = value
+
+        for (ns, slot), fields in buckets.items():
+            if ns is None:
+                row_id, name = f"openai-codex:{slot}", None
+            else:
+                name = limit_names.get(ns) or ns.removeprefix("additional-").replace("-", " ").title()
+                if not slug(name):
+                    continue
+                row_id = f"openai-codex:{slug(name)}:{slot}"
+            mins = parse_float(fields.get("window-minutes"))
+            rank = (obs_ms, 1 if mins and mins > 0 else 0, 1 if "used-percent" in fields else 0)
+            if row_id not in merged or rank > merged[row_id][0]:
+                merged[row_id] = (rank, obs_ms, name, fields)
+
+    if plan_type is None:
+        id_token = account.get("id_token")
+        if isinstance(id_token, dict) and isinstance(id_token.get("plan_type"), str):
+            plan_type = id_token["plan_type"].strip() or None
+
+    def order_key(row_id):
+        if row_id == "openai-codex:primary":
+            return (0, row_id)
+        if row_id == "openai-codex:secondary":
+            return (1, row_id)
+        return (2, row_id)
+
+    limits = []
+    for row_id in sorted(merged, key=order_key):
+        _, obs_ms, name, fields = merged[row_id]
+        mins = parse_float(fields.get("window-minutes"))
+        if not mins or mins <= 0:
+            continue
+        duration = int(mins) * MINUTE_MS
+        reset_s = parse_float(fields.get("reset-at"))
+        reset_after = parse_float(fields.get("reset-after-seconds"))
+        if reset_s and reset_s > 0:
+            resets_at = int(reset_s * 1000)
+        elif reset_after and reset_after > 0 and obs_ms > 0:
+            resets_at = obs_ms + int(reset_after * 1000)
+        else:
+            resets_at = 0
+        if resets_at > 0 and resets_at <= now:
+            continue
+        if resets_at == 0 and (obs_ms <= 0 or now - obs_ms >= duration):
+            continue
+        used = parse_float(fields.get("used-percent"))
+        win = window(duration, resets_at)
+        label = win["label"] if name is None else f"{name} {win['label']}"
+        limits.append(limit(row_id, label, win, percent(used)))
+
+    if not limits:
+        return None
+    return {
+        "provider": "openai-codex",
+        "metadata": {"email": account_email(account), "planType": plan_type},
+        "limits": limits,
+    }
+
+
 # Claude
-
-
-def iso_ms(value):
-    try:
-        return (datetime.fromisoformat(value) - EPOCH) // timedelta(milliseconds=1)
-    except (TypeError, ValueError):
-        return 0
 
 
 # Account-wide buckets: `get_usage` key, the `limits[]` kind that mirrors it,
@@ -194,6 +354,141 @@ def claude_report(account, response):
     return report
 
 
+CLAUDE_SIGNAL = re.compile(r"^anthropic-ratelimit-unified-(5h|7d(?:_[a-z0-9_]+)?)-(utilization|reset|status)$")
+CLAUDE_MODEL_FAMILY = re.compile(r"^claude-([a-z]+)(?:-|$)")
+
+
+def claude_scoped_name(suffix, model_id):
+    if suffix == "oi":
+        if isinstance(model_id, str) and (m := CLAUDE_MODEL_FAMILY.match(model_id.lower())):
+            return m.group(1).title()
+        return "Overage Included"
+    return suffix.replace("_", " ").title()
+
+
+def claude_signals_report(account, now=None):
+    """Build a Claude report from CLIProxyAPI's passive `Anthropic-Ratelimit-Unified-*` signals.
+
+    Merges `quota` and every `model_quotas` entry by newest `observed_at` per
+    window so model-scoped buckets (like `7d_oi` on Fable) stay visible even
+    when a later request used another model. Returns None when no unexpired
+    window is present.
+    """
+    now = now_ms() if now is None else now
+    obs_list = observations(account)
+    if not obs_list:
+        return None
+
+    merged = {}  # win_key -> (rank, obs_ms, model_id, fields)
+    for obs_ms, model_id, signals in obs_list:
+        by_window = {}
+        for key, value in signals.items():
+            if m := CLAUDE_SIGNAL.match(key):
+                by_window.setdefault(m.group(1), {})[m.group(2)] = value
+        for win_key, fields in by_window.items():
+            rank = (obs_ms, 1 if model_id else 0, 1 if "utilization" in fields else 0)
+            if win_key not in merged or rank > merged[win_key][0]:
+                merged[win_key] = (rank, obs_ms, model_id, fields)
+
+    def order_key(win_key):
+        if win_key == "5h":
+            return (0, win_key)
+        if win_key == "7d":
+            return (1, win_key)
+        return (2, win_key)
+
+    limits = []
+    for win_key in sorted(merged, key=order_key):
+        _, obs_ms, model_id, fields = merged[win_key]
+        duration = 5 * 60 * MINUTE_MS if win_key == "5h" else 7 * 1440 * MINUTE_MS
+        reset_s = parse_float(fields.get("reset"))
+        resets_at = int(reset_s * 1000) if reset_s and reset_s > 0 else 0
+        if resets_at > 0 and resets_at <= now:
+            continue
+        if resets_at == 0 and (obs_ms <= 0 or now - obs_ms >= duration):
+            continue
+        util = parse_float(fields.get("utilization"))
+        status = str(fields.get("status") or "").strip().lower()
+        if util is not None and util >= 0:
+            used = round(util * 100, 6)
+        elif status == "rejected":
+            used = 100
+        else:
+            used = None
+        if win_key == "5h":
+            row_id, label = "anthropic:5h", "Claude 5 Hour"
+        elif win_key == "7d":
+            row_id, label = "anthropic:7d", "Claude 7 Day"
+        else:
+            name = claude_scoped_name(win_key.removeprefix("7d_"), model_id)
+            row_id, label = f"anthropic:7d:{slug(name)}", f"Claude 7 Day ({name})"
+        limits.append(limit(row_id, label, window(duration, resets_at), percent(used)))
+
+    if not limits:
+        return None
+    return {
+        "provider": "anthropic",
+        "metadata": {"email": account_email(account), "planType": None},
+        "limits": limits,
+    }
+
+
+# Gemini (Antigravity)
+
+ANTIGRAVITY_WINDOWS = {
+    "5h": (5 * 60 * MINUTE_MS, "5 Hour"),
+    "five-hour": (5 * 60 * MINUTE_MS, "5 Hour"),
+    "five_hour": (5 * 60 * MINUTE_MS, "5 Hour"),
+    "daily": (1440 * MINUTE_MS, "24 Hour"),
+    "day": (1440 * MINUTE_MS, "24 Hour"),
+    "1d": (1440 * MINUTE_MS, "24 Hour"),
+    "24h": (1440 * MINUTE_MS, "24 Hour"),
+    "weekly": (7 * 1440 * MINUTE_MS, "7 Day"),
+    "week": (7 * 1440 * MINUTE_MS, "7 Day"),
+    "7d": (7 * 1440 * MINUTE_MS, "7 Day"),
+    "1w": (7 * 1440 * MINUTE_MS, "7 Day"),
+}
+
+
+def antigravity_report(email, summary):
+    """Body of daily-cloudcode-pa.googleapis.com/v1internal:retrieveUserQuotaSummary."""
+    report = {"provider": "google-gemini", "metadata": {"email": email, "planType": None}, "limits": []}
+    groups = summary.get("groups") if isinstance(summary, dict) else None
+    if not isinstance(groups, list) or not groups:
+        report["error"] = "no quota groups"
+        return report
+
+    for group in groups:
+        if not isinstance(group, dict):
+            continue
+        raw_name = str(group.get("displayName") or group.get("display_name") or "").strip()
+        group_name = re.sub(r"\s+models$", "", raw_name, flags=re.IGNORECASE) or raw_name
+        rows = []
+        for bucket in group.get("buckets") or []:
+            if not isinstance(bucket, dict):
+                continue
+            win_spec = ANTIGRAVITY_WINDOWS.get(str(bucket.get("window") or "").strip().lower())
+            if win_spec is None:
+                continue
+            duration, win_label = win_spec
+            resets = iso_ms(bucket.get("resetTime") or bucket.get("reset_time"))
+            remaining = number(bucket.get("remainingFraction"))
+            if remaining is None:
+                remaining = number(bucket.get("remaining_fraction"))
+            used = round((1.0 - remaining) * 100, 6) if remaining is not None and 0 <= remaining <= 1 else None
+            win = window(duration, resets)
+            bucket_id = str(bucket.get("bucketId") or bucket.get("bucket_id") or "").strip()
+            row_id = f"google-gemini:{slug(bucket_id)}" if slug(bucket_id) else f"google-gemini:{slug(group_name) or 'quota'}:{win['id']}"
+            label = f"{group_name} {win_label}" if group_name else win_label
+            rows.append((duration, limit(row_id, label, win, percent(used))))
+        rows.sort(key=lambda item: item[0])
+        report["limits"].extend(row for _, row in rows)
+
+    if not report["limits"]:
+        report["error"] = "no quota buckets"
+    return report
+
+
 # Grok
 
 GROK_PRODUCTS = {"GrokBuild": "Grok Build", "Api": "API"}
@@ -233,33 +528,184 @@ class NoRedirect(urllib.request.HTTPRedirectHandler):
         return None
 
 
+# Fallback cache for passive-observation providers (never stores credentials).
+
+
+def cache_path(env):
+    if "SGIATH_USAGE_CACHE" in env:
+        raw = env["SGIATH_USAGE_CACHE"].strip()
+        return Path(raw).expanduser() if raw else None
+    xdg = env.get("XDG_CACHE_HOME", "").strip()
+    if xdg:
+        return Path(xdg).expanduser() / "sgiath-usage" / "fallback.json"
+    home = env.get("HOME", "").strip()
+    if home:
+        return Path(home).expanduser() / ".cache" / "sgiath-usage" / "fallback.json"
+    return None
+
+
+def prune_expired(report, now):
+    """Drop windows whose reset time has already passed; None when every original window expired."""
+    if not isinstance(report, dict) or report.get("error"):
+        return None
+    limits = report.get("limits")
+    if not isinstance(limits, list):
+        return None
+    kept = []
+    for row in limits:
+        if not isinstance(row, dict):
+            continue
+        resets = number((row.get("window") or {}).get("resetsAt"))
+        if resets and 0 < resets <= now:
+            continue
+        kept.append(row)
+    if limits and not kept:
+        return None
+    return {**report, "limits": kept}
+
+
+def retry_after_ms(headers, now):
+    """Parse an upstream Retry-After header from CLIProxyAPI's api-call reply."""
+    if not isinstance(headers, dict):
+        return None
+    raw = None
+    for key, values in headers.items():
+        if isinstance(key, str) and key.lower() == "retry-after":
+            raw = values[0] if isinstance(values, list) and values else values
+            break
+    if not isinstance(raw, str) or not raw.strip():
+        return None
+    seconds = parse_float(raw)
+    if seconds is not None:
+        return max(0, int(seconds * 1000))
+    try:
+        dt = email.utils.parsedate_to_datetime(raw.strip())
+    except (TypeError, ValueError):
+        return None
+    if dt.tzinfo is None:
+        dt = dt.replace(tzinfo=timezone.utc)
+    return max(0, (dt - EPOCH) // timedelta(milliseconds=1) - now)
+
+
+class FallbackCache:
+    """Thread-safe JSON cache of non-secret usage reports and 429 backoff windows."""
+
+    def __init__(self, path):
+        self.path = path
+        self._lock = threading.Lock()
+        self._data = self._load()
+
+    def _load(self):
+        if self.path is None:
+            return {}
+        try:
+            raw = json.loads(self.path.read_text())
+        except (OSError, ValueError):
+            return {}
+        return raw if isinstance(raw, dict) else {}
+
+    def _save(self, now):
+        if self.path is None:
+            return
+        pruned = {
+            k: v
+            for k, v in self._data.items()
+            if isinstance(v, dict)
+            and (
+                (number(v.get("fetchedAt")) or 0) > now - CACHE_RETENTION_MS
+                or (number(v.get("backoffUntil")) or 0) > now
+            )
+        }
+        self._data = pruned
+        try:
+            self.path.parent.mkdir(parents=True, exist_ok=True, mode=0o700)
+            fd, tmp = tempfile.mkstemp(dir=self.path.parent, prefix=".fallback-")
+            try:
+                os.fchmod(fd, 0o600)
+                with os.fdopen(fd, "w") as handle:
+                    json.dump(self._data, handle)
+                os.replace(tmp, self.path)
+            except BaseException:
+                try:
+                    os.unlink(tmp)
+                except OSError:
+                    pass
+                raise
+        except OSError:
+            pass
+
+    def get(self, auth_index):
+        with self._lock:
+            entry = self._data.get(auth_index)
+            return dict(entry) if isinstance(entry, dict) else {}
+
+    def put(self, auth_index, report, fetched_at, now):
+        with self._lock:
+            self._data[auth_index] = {"fetchedAt": fetched_at, "backoffUntil": 0, "report": report}
+            self._save(now)
+
+    def backoff(self, auth_index, until, now):
+        with self._lock:
+            entry = dict(self._data.get(auth_index) or {})
+            entry["backoffUntil"] = until
+            self._data[auth_index] = entry
+            self._save(now)
+
+
 # CLIProxyAPI
 
 CLIPROXY_URL = "https://cliproxy.sgiath.dev"
 CLIPROXY_KEY_FILE = "/run/secrets/cliproxyapi_management"
+CLAUDE_USER_AGENT = "claude-cli/2.1.329 (external, cli)"
+ANTIGRAVITY_USER_AGENT = "antigravity/hub/2.33.0 (aidev_client; os_type=darwin; arch=arm64; cl=1023160026)"
 
-# Proxy provider -> (report provider, fixed usage GET, its headers, report).
-# Only these URLs are ever sent through api-call: it attaches the account's
-# token to whatever it is given.
+# Proxy provider -> config for reading limits. Only these fixed URLs are ever
+# sent through api-call: it attaches the account's token to whatever it is given.
 USAGE = {
-    "codex": (
-        "openai-codex",
-        "https://chatgpt.com/backend-api/wham/usage",
-        {"Authorization": "Bearer $TOKEN$", "Accept": "application/json"},
-        lambda email, body: codex_report(email, body),
-    ),
-    "claude": (
-        "anthropic",
-        "https://api.anthropic.com/api/oauth/usage",
-        {"Authorization": "Bearer $TOKEN$", "Accept": "application/json", "anthropic-beta": "oauth-2025-04-20"},
-        lambda email, body: claude_report({"email": email}, {"rate_limits_available": True, "rate_limits": body}),
-    ),
-    "xai": (
-        "xai-oauth",
-        "https://cli-chat-proxy.grok.com/v1/billing?format=credits",
-        {"Authorization": "Bearer $TOKEN$", "Accept": "application/json", "X-XAI-Token-Auth": "xai-grok-cli"},
-        lambda email, body: grok_report(email, body),
-    ),
+    "codex": {
+        "provider": "openai-codex",
+        "passive": codex_signals_report,
+        "method": "GET",
+        "url": "https://chatgpt.com/backend-api/wham/usage",
+        "headers": {"Authorization": "Bearer $TOKEN$", "Accept": "application/json"},
+        "parse": lambda account, body: codex_report(account_email(account), body),
+    },
+    "claude": {
+        "provider": "anthropic",
+        "passive": claude_signals_report,
+        "method": "GET",
+        "url": "https://api.anthropic.com/api/oauth/usage",
+        "headers": {
+            "Authorization": "Bearer $TOKEN$",
+            "Accept": "application/json",
+            "User-Agent": CLAUDE_USER_AGENT,
+            "anthropic-beta": "oauth-2025-04-20",
+        },
+        "parse": lambda account, body: claude_report({"email": account_email(account)}, {"rate_limits_available": True, "rate_limits": body}),
+    },
+    "antigravity": {
+        "provider": "google-gemini",
+        "passive": None,
+        "method": "POST",
+        "url": "https://daily-cloudcode-pa.googleapis.com/v1internal:retrieveUserQuotaSummary",
+        "headers": {
+            "Authorization": "Bearer $TOKEN$",
+            "Content-Type": "application/json",
+            "User-Agent": ANTIGRAVITY_USER_AGENT,
+        },
+        "data": lambda account: json.dumps({"project": account["project_id"].strip()})
+        if isinstance(account.get("project_id"), str) and account["project_id"].strip()
+        else "{}",
+        "parse": lambda account, body: antigravity_report(account_email(account), body),
+    },
+    "xai": {
+        "provider": "xai-oauth",
+        "passive": None,
+        "method": "GET",
+        "url": "https://cli-chat-proxy.grok.com/v1/billing?format=credits",
+        "headers": {"Authorization": "Bearer $TOKEN$", "Accept": "application/json", "X-XAI-Token-Auth": "xai-grok-cli"},
+        "parse": lambda account, body: grok_report(account_email(account), body),
+    },
 }
 
 
@@ -289,23 +735,76 @@ class CLIProxy:
             raise ProviderError("cliproxy unreachable") from None
 
     def accounts(self):
-        """(proxy provider, email, auth_index) of every enabled login with a usage reader."""
+        """Enabled credential entries with a usage reader."""
         files = self.request("/v8/management/credentials").get("files") or []
         return [
-            (f["provider"], f.get("email") or f.get("label"), f["auth_index"])
+            f
             for f in files
             if isinstance(f, dict) and f.get("provider") in USAGE and isinstance(f.get("auth_index"), str) and not f.get("disabled")
         ]
 
-    def usage(self, provider, auth_index):
-        _, url, headers, _ = USAGE[provider]
-        reply = self.request("/v8/management/requests/api-call", {"auth_index": auth_index, "method": "GET", "url": url, "header": headers})
+    def api_call(self, account):
+        spec = USAGE[account["provider"]]
+        payload = {
+            "auth_index": account["auth_index"],
+            "method": spec["method"],
+            "url": spec["url"],
+            "header": spec["headers"],
+        }
+        if "data" in spec:
+            payload["data"] = spec["data"](account)
+        return self.request("/v8/management/requests/api-call", payload)
+
+
+def fetch_cliproxy_account(proxy, cache, account, now=None):
+    """Read one CLIProxyAPI account, preferring passive observations over api-call."""
+    now = now_ms() if now is None else now
+    spec = USAGE[account["provider"]]
+    auth_index = account["auth_index"]
+    passive = spec["passive"]
+
+    if passive is not None:
+        observed = passive(account, now)
+        if observed is not None:
+            cache.put(auth_index, observed, latest_observed_ms(account) or now, now)
+            return observed
+
+        entry = cache.get(auth_index)
+        cached = prune_expired(entry.get("report"), now)
+        fetched_at = number(entry.get("fetchedAt")) or 0
+        backoff_until = number(entry.get("backoffUntil")) or 0
+        if cached is not None and now - fetched_at < FALLBACK_TTL_MS:
+            return cached
+        if now < backoff_until:
+            if cached is not None and now - fetched_at < FALLBACK_STALE_MAX_MS:
+                return cached
+            raise ProviderError("usage HTTP 429")
+
+        reply = proxy.api_call(account)
         status = reply.get("status_code")
+        if status == 429:
+            delay = retry_after_ms(reply.get("header"), now)
+            delay = min(FALLBACK_BACKOFF_MAX_MS, max(FALLBACK_BACKOFF_MIN_MS, delay or 0))
+            cache.backoff(auth_index, now + delay, now)
+            if cached is not None and now - fetched_at < FALLBACK_STALE_MAX_MS:
+                return cached
+            raise ProviderError("usage HTTP 429")
         if status in (401, 403):
             raise ProviderError("login expired")
         if status != 200:
             raise ProviderError(f"usage HTTP {status}")
-        return json.loads(reply.get("body") or "null") or {}
+        report = spec["parse"](account, json.loads(reply.get("body") or "null") or {})
+        if not report.get("error"):
+            cache.put(auth_index, report, now, now)
+        return report
+
+    reply = proxy.api_call(account)
+    status = reply.get("status_code")
+    if status in (401, 403):
+        raise ProviderError("login expired")
+    if status != 200:
+        raise ProviderError(f"usage HTTP {status}")
+    return spec["parse"](account, json.loads(reply.get("body") or "null") or {})
 
 
 def cliproxy_fetchers(env):
@@ -321,12 +820,14 @@ def cliproxy_fetchers(env):
         proxy = CLIProxy(env)
         accounts = proxy.accounts()
     except ProviderError as error:
-        return [(USAGE[p][0], unavailable(str(error))) for p in USAGE]
+        return [(USAGE[p]["provider"], unavailable(str(error))) for p in USAGE]
 
-    def fetcher(provider, email, auth_index):
-        return lambda env: USAGE[provider][3](email, proxy.usage(provider, auth_index))
+    cache = FallbackCache(cache_path(env))
 
-    return [(USAGE[p][0], fetcher(p, email, index)) for p, email, index in accounts]
+    def fetcher(account):
+        return lambda env: fetch_cliproxy_account(proxy, cache, account)
+
+    return [(USAGE[a["provider"]]["provider"], fetcher(a)) for a in accounts]
 
 
 # Muse

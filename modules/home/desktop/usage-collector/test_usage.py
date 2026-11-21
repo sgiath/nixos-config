@@ -7,7 +7,8 @@ from pathlib import Path
 
 import usage
 
-WEEK_MS = 7 * 24 * 60 * 60 * 1000
+HOUR_MS = 60 * 60 * 1000
+WEEK_MS = 7 * 24 * HOUR_MS
 
 
 class CodexReportTest(unittest.TestCase):
@@ -38,12 +39,75 @@ class CodexReportTest(unittest.TestCase):
                 {
                     "id": "openai-codex:secondary",
                     "label": "5 hours",
-                    "window": {"id": "5h", "label": "5 hours", "durationMs": 5 * 3600000, "resetsAt": 1792000000000},
+                    "window": {"id": "5h", "label": "5 hours", "durationMs": 5 * HOUR_MS, "resetsAt": 1792000000000},
                     "amount": {"unit": "percent", "used": 100, "limit": 100, "usedFraction": 1.0},
                     "status": "exhausted",
                 },
             ],
         )
+
+    def test_reads_passive_codex_signals_including_scoped_limits(self):
+        now = 1795200000000
+        account = {
+            "provider": "codex",
+            "email": "me@example.com",
+            "quota": {
+                "observed_at": "2026-11-20T18:37:15.929039293Z",
+                "signals": {
+                    "X-Codex-Plan-Type": "pro",
+                    "X-Codex-Primary-Window-Minutes": "10080",
+                    "X-Codex-Primary-Used-Percent": "59",
+                    "X-Codex-Primary-Reset-At": "1795468176",
+                    "X-Codex-Secondary-Window-Minutes": "0",
+                    "X-Codex-Secondary-Used-Percent": "0",
+                },
+            },
+            "model_quotas": {
+                "gpt-5.3-codex-spark": {
+                    "observed_at": "2026-11-20T18:30:00Z",
+                    "signals": {
+                        "X-Codex-Primary-Window-Minutes": "10080",
+                        "X-Codex-Primary-Used-Percent": "55",
+                        "X-Codex-Primary-Reset-At": "1795468176",
+                        "X-Codex-Bengalfox-Limit-Name": "GPT-5.3-Codex-Spark",
+                        "X-Codex-Bengalfox-Primary-Window-Minutes": "300",
+                        "X-Codex-Bengalfox-Primary-Used-Percent": "35",
+                        "X-Codex-Bengalfox-Primary-Reset-After-Seconds": "3600",
+                    },
+                }
+            },
+        }
+
+        report = usage.codex_signals_report(account, now=now)
+
+        self.assertEqual(report["provider"], "openai-codex")
+        self.assertEqual(report["metadata"], {"email": "me@example.com", "planType": "pro"})
+        rows = {row["id"]: row for row in report["limits"]}
+        self.assertEqual(list(rows), ["openai-codex:primary", "openai-codex:gpt-5-3-codex-spark:primary"])
+        self.assertEqual(rows["openai-codex:primary"]["amount"]["usedFraction"], 0.59)
+        self.assertEqual(rows["openai-codex:primary"]["window"]["resetsAt"], 1795468176000)
+        self.assertEqual(rows["openai-codex:gpt-5-3-codex-spark:primary"]["label"], "GPT-5.3-Codex-Spark 5 hours")
+        self.assertEqual(rows["openai-codex:gpt-5-3-codex-spark:primary"]["amount"]["usedFraction"], 0.35)
+        self.assertEqual(
+            rows["openai-codex:gpt-5-3-codex-spark:primary"]["window"]["resetsAt"],
+            usage.iso_ms("2026-11-20T18:30:00Z") + 3600 * 1000,
+        )
+
+    def test_expired_passive_codex_signals_return_none(self):
+        account = {
+            "provider": "codex",
+            "email": "me@example.com",
+            "quota": {
+                "observed_at": "2026-11-10T00:00:00Z",
+                "signals": {
+                    "X-Codex-Primary-Window-Minutes": "10080",
+                    "X-Codex-Primary-Used-Percent": "80",
+                    "X-Codex-Primary-Reset-At": "1795000000",
+                },
+            },
+        }
+
+        self.assertIsNone(usage.codex_signals_report(account, now=1795000000000))
 
 
 class ClaudeReportTest(unittest.TestCase):
@@ -82,7 +146,7 @@ class ClaudeReportTest(unittest.TestCase):
         rows = {row["id"]: row for row in report["limits"]}
         self.assertEqual(list(rows), ["anthropic:5h", "anthropic:7d", "anthropic:7d:fable", "anthropic:7d:nimbus"])
         self.assertEqual(rows["anthropic:5h"]["label"], "Claude 5 Hour")
-        self.assertEqual(rows["anthropic:5h"]["window"]["durationMs"], 5 * 3600000)
+        self.assertEqual(rows["anthropic:5h"]["window"]["durationMs"], 5 * HOUR_MS)
         self.assertEqual(rows["anthropic:5h"]["window"]["resetsAt"], 1791841800000)
         self.assertEqual(rows["anthropic:5h"]["amount"]["usedFraction"], 0.08)
         self.assertEqual(rows["anthropic:7d"]["label"], "Claude 7 Day")
@@ -96,6 +160,157 @@ class ClaudeReportTest(unittest.TestCase):
 
     def test_unavailable_rate_limits_are_an_error_not_an_empty_quota(self):
         report = usage.claude_report({}, {"rate_limits_available": False, "rate_limits": None})
+
+        self.assertEqual(report["limits"], [])
+        self.assertIn("error", report)
+
+    def test_reads_passive_claude_signals_merging_model_quotas_and_ignoring_overage(self):
+        now = 1795200000000
+        account = {
+            "provider": "claude",
+            "email": "work@example.com",
+            "quota": {
+                "observed_at": "2026-11-20T18:37:15.393905554Z",
+                "signals": {
+                    "Anthropic-Ratelimit-Unified-5h-Reset": "1795208400",
+                    "Anthropic-Ratelimit-Unified-5h-Status": "allowed",
+                    "Anthropic-Ratelimit-Unified-5h-Utilization": "0.89",
+                    "Anthropic-Ratelimit-Unified-7d-Reset": "1795719600",
+                    "Anthropic-Ratelimit-Unified-7d-Status": "allowed",
+                    "Anthropic-Ratelimit-Unified-7d-Utilization": "0.47",
+                    "Anthropic-Ratelimit-Unified-Overage-Reset": "1796083200",
+                    "Anthropic-Ratelimit-Unified-Overage-Status": "allowed_warning",
+                    "Anthropic-Ratelimit-Unified-Overage-Utilization": "0.97",
+                },
+            },
+            "model_quotas": {
+                "claude-fable-5-2": {
+                    "observed_at": "2026-11-20T18:34:56.290548541Z",
+                    "signals": {
+                        "Anthropic-Ratelimit-Unified-5h-Reset": "1795208400",
+                        "Anthropic-Ratelimit-Unified-5h-Utilization": "0.88",
+                        "Anthropic-Ratelimit-Unified-7d-Reset": "1795719600",
+                        "Anthropic-Ratelimit-Unified-7d-Utilization": "0.47",
+                        "Anthropic-Ratelimit-Unified-7d_oi-Reset": "1795719600",
+                        "Anthropic-Ratelimit-Unified-7d_oi-Status": "allowed",
+                        "Anthropic-Ratelimit-Unified-7d_oi-Utilization": "0.22",
+                    },
+                },
+                "claude-sonnet-5-5": {
+                    "observed_at": "2026-11-20T18:35:00Z",
+                    "signals": {
+                        "Anthropic-Ratelimit-Unified-7d_sonnet-Reset": "1795719600",
+                        "Anthropic-Ratelimit-Unified-7d_sonnet-Status": "rejected",
+                    },
+                },
+            },
+        }
+
+        report = usage.claude_signals_report(account, now=now)
+
+        self.assertEqual(report["provider"], "anthropic")
+        self.assertEqual(report["metadata"], {"email": "work@example.com", "planType": None})
+        rows = {row["id"]: row for row in report["limits"]}
+        self.assertEqual(list(rows), ["anthropic:5h", "anthropic:7d", "anthropic:7d:fable", "anthropic:7d:sonnet"])
+        self.assertEqual(rows["anthropic:5h"]["amount"]["usedFraction"], 0.89)
+        self.assertEqual(rows["anthropic:5h"]["window"]["resetsAt"], 1795208400000)
+        self.assertEqual(rows["anthropic:7d"]["amount"]["usedFraction"], 0.47)
+        self.assertEqual(rows["anthropic:7d:fable"]["label"], "Claude 7 Day (Fable)")
+        self.assertEqual(rows["anthropic:7d:fable"]["amount"]["usedFraction"], 0.22)
+        self.assertEqual(rows["anthropic:7d:sonnet"]["label"], "Claude 7 Day (Sonnet)")
+        self.assertEqual(rows["anthropic:7d:sonnet"]["amount"]["usedFraction"], 1.0)
+        self.assertEqual(rows["anthropic:7d:sonnet"]["status"], "exhausted")
+
+    def test_passive_claude_signals_drop_expired_windows(self):
+        account = {
+            "provider": "claude",
+            "email": "work@example.com",
+            "quota": {
+                "observed_at": "2026-11-20T18:00:00Z",
+                "signals": {
+                    "Anthropic-Ratelimit-Unified-5h-Reset": "1795208400",
+                    "Anthropic-Ratelimit-Unified-5h-Utilization": "0.89",
+                    "Anthropic-Ratelimit-Unified-7d-Reset": "1795719600",
+                    "Anthropic-Ratelimit-Unified-7d-Utilization": "0.47",
+                },
+            },
+        }
+
+        # After 5h rolled over, 7d stays valid.
+        report = usage.claude_signals_report(account, now=1795210000000)
+        self.assertEqual([r["id"] for r in report["limits"]], ["anthropic:7d"])
+
+        # After 7d also rolled over, passive signals are exhausted -> None.
+        self.assertIsNone(usage.claude_signals_report(account, now=1795720000000))
+
+
+class AntigravityReportTest(unittest.TestCase):
+    def test_normalizes_quota_summary_groups_and_converts_remaining_to_used(self):
+        summary = {
+            "groups": [
+                {
+                    "displayName": "Gemini Models",
+                    "buckets": [
+                        {
+                            "bucketId": "gemini-weekly",
+                            "displayName": "Weekly Limit Remaining",
+                            "window": "weekly",
+                            "resetTime": "2026-11-27T17:14:37Z",
+                            "remainingFraction": 0.9928834,
+                        },
+                        {
+                            "bucketId": "gemini-5h",
+                            "displayName": "Five Hour Limit Remaining",
+                            "window": "5h",
+                            "resetTime": "2026-11-20T22:14:37Z",
+                            "remainingFraction": 0,
+                        },
+                    ],
+                },
+                {
+                    "displayName": "Claude and GPT models",
+                    "buckets": [
+                        {
+                            "bucketId": "3p-weekly",
+                            "window": "weekly",
+                            "resetTime": "2026-11-27T18:37:52Z",
+                            "remainingFraction": 1,
+                        },
+                        {
+                            "bucketId": "3p-5h",
+                            "window": "5h",
+                            "resetTime": "2026-11-20T23:37:52Z",
+                        },
+                    ],
+                },
+            ]
+        }
+
+        report = usage.antigravity_report("me@gmail.com", summary)
+
+        self.assertEqual(report["provider"], "google-gemini")
+        self.assertEqual(report["metadata"], {"email": "me@gmail.com", "planType": None})
+        rows = {row["id"]: row for row in report["limits"]}
+        self.assertEqual(
+            list(rows),
+            ["google-gemini:gemini-5h", "google-gemini:gemini-weekly", "google-gemini:3p-5h", "google-gemini:3p-weekly"],
+        )
+        self.assertEqual(rows["google-gemini:gemini-5h"]["label"], "Gemini 5 Hour")
+        self.assertEqual(rows["google-gemini:gemini-5h"]["window"]["durationMs"], 5 * HOUR_MS)
+        self.assertEqual(rows["google-gemini:gemini-5h"]["amount"]["usedFraction"], 1.0)
+        self.assertEqual(rows["google-gemini:gemini-5h"]["status"], "exhausted")
+        self.assertEqual(rows["google-gemini:gemini-weekly"]["label"], "Gemini 7 Day")
+        self.assertEqual(rows["google-gemini:gemini-weekly"]["window"]["durationMs"], WEEK_MS)
+        self.assertAlmostEqual(rows["google-gemini:gemini-weekly"]["amount"]["usedFraction"], 0.0071166, places=6)
+        self.assertEqual(rows["google-gemini:gemini-weekly"]["status"], "ok")
+        self.assertEqual(rows["google-gemini:3p-5h"]["label"], "Claude and GPT 5 Hour")
+        self.assertIsNone(rows["google-gemini:3p-5h"]["amount"]["used"])
+        self.assertEqual(rows["google-gemini:3p-5h"]["status"], "unknown")
+        self.assertEqual(rows["google-gemini:3p-weekly"]["label"], "Claude and GPT 7 Day")
+        self.assertEqual(rows["google-gemini:3p-weekly"]["amount"]["usedFraction"], 0.0)
+
+    def test_empty_summary_is_an_error(self):
+        report = usage.antigravity_report("me@gmail.com", {"groups": []})
 
         self.assertEqual(report["limits"], [])
         self.assertIn("error", report)
@@ -202,11 +417,10 @@ class CollectTest(unittest.TestCase):
         )
 
 
-
 class CLIProxyTest(unittest.TestCase):
     """Against a local stand-in for CLIProxyAPI's management API."""
 
-    def serve(self, routes):
+    def serve(self, routes, cache_file=None):
         requests = []
 
         class Handler(http.server.BaseHTTPRequestHandler):
@@ -230,34 +444,118 @@ class CLIProxyTest(unittest.TestCase):
         threading.Thread(target=server.serve_forever, daemon=True).start()
         self.addCleanup(server.server_close)
         self.addCleanup(server.shutdown)
-        key = Path(tempfile.mkdtemp()) / "key"
+        tmp = Path(tempfile.mkdtemp())
+        key = tmp / "key"
         key.write_text("management-key\n")
-        env = {"CLIPROXY_MANAGEMENT_URL": f"http://127.0.0.1:{server.server_port}", "CLIPROXY_MANAGEMENT_KEY_FILE": str(key)}
+        env = {
+            "CLIPROXY_MANAGEMENT_URL": f"http://127.0.0.1:{server.server_port}",
+            "CLIPROXY_MANAGEMENT_KEY_FILE": str(key),
+        }
+        if cache_file is not None:
+            env["SGIATH_USAGE_CACHE"] = str(cache_file)
         return env, requests
 
-    def test_every_account_gets_a_card_from_its_fixed_usage_url(self):
+    def test_passive_accounts_skip_api_call_and_antigravity_posts_quota_summary(self):
+        future = int(usage.now_ms() / 1000) + 3600
         files = [
-            {"provider": "claude", "email": "work@example.com", "auth_index": "a1"},
-            {"provider": "claude", "email": "me@example.com", "auth_index": "a2"},
+            {
+                "provider": "claude",
+                "email": "work@example.com",
+                "auth_index": "a1",
+                "quota": {
+                    "observed_at": "2026-11-20T18:30:00Z",
+                    "signals": {
+                        "Anthropic-Ratelimit-Unified-7d-Utilization": "0.42",
+                        "Anthropic-Ratelimit-Unified-7d-Reset": str(future),
+                    },
+                },
+            },
+            {"provider": "claude", "email": "me@example.com", "auth_index": "a2", "quota": {"signals": {}}},
             {"provider": "codex", "email": "me@example.com", "auth_index": "c1", "disabled": True},
+            {"provider": "antigravity", "email": "me@gmail.com", "auth_index": "g1", "project_id": "aicode-consumers"},
             {"provider": "meta", "email": "me@example.com", "auth_index": "m1"},
         ]
-        claude = {"seven_day": {"utilization": 19.0, "resets_at": "2026-11-09T10:00:00+00:00"}}
+        claude_fallback = {"seven_day": {"utilization": 19.0, "resets_at": "2099-11-09T10:00:00+00:00"}}
+        ag_summary = {
+            "groups": [
+                {
+                    "displayName": "Gemini Models",
+                    "buckets": [
+                        {"bucketId": "gemini-weekly", "window": "weekly", "resetTime": "2099-11-27T17:14:37Z", "remainingFraction": 0.9},
+                    ],
+                }
+            ]
+        }
 
         def routes(path, body):
             if path == "/v8/management/credentials":
                 return 200, {"files": files}
-            return 200, {"status_code": 200, "body": json.dumps(claude)}
+            if body["auth_index"] == "g1":
+                return 200, {"status_code": 200, "body": json.dumps(ag_summary)}
+            return 200, {"status_code": 200, "body": json.dumps(claude_fallback)}
 
         env, requests = self.serve(routes)
         reports = usage.collect(usage.cliproxy_fetchers(env), env)["reports"]
 
-        self.assertEqual([(r["provider"], r["metadata"]["email"]) for r in reports], [("anthropic", "work@example.com"), ("anthropic", "me@example.com")])
-        self.assertEqual(reports[0]["limits"][0]["amount"]["usedFraction"], 0.19)
+        self.assertEqual(
+            [(r["provider"], r["metadata"]["email"]) for r in reports],
+            [("anthropic", "work@example.com"), ("anthropic", "me@example.com"), ("google-gemini", "me@gmail.com")],
+        )
+        self.assertEqual(reports[0]["limits"][0]["amount"]["usedFraction"], 0.42)
+        self.assertEqual(reports[1]["limits"][0]["amount"]["usedFraction"], 0.19)
+        self.assertAlmostEqual(reports[2]["limits"][0]["amount"]["usedFraction"], 0.1, places=6)
         self.assertTrue(all(auth == "Bearer management-key" for _, _, auth, _ in requests))
-        calls = [body for _, path, _, body in requests if path == "/v8/management/requests/api-call"]
-        self.assertEqual(sorted(c["auth_index"] for c in calls), ["a1", "a2"])
-        self.assertTrue(all(c["url"] == "https://api.anthropic.com/api/oauth/usage" and c["method"] == "GET" for c in calls))
+
+        # a1 used passive signals (zero api-call); only idle a2 and antigravity g1 used api-call.
+        calls = {body["auth_index"]: body for _, path, _, body in requests if path == "/v8/management/requests/api-call"}
+        self.assertEqual(sorted(calls), ["a2", "g1"])
+        self.assertEqual(calls["a2"]["method"], "GET")
+        self.assertEqual(calls["a2"]["url"], "https://api.anthropic.com/api/oauth/usage")
+        self.assertTrue(calls["a2"]["header"]["User-Agent"].startswith("claude-cli/"))
+        self.assertEqual(calls["g1"]["method"], "POST")
+        self.assertEqual(calls["g1"]["url"], "https://daily-cloudcode-pa.googleapis.com/v1internal:retrieveUserQuotaSummary")
+        self.assertEqual(json.loads(calls["g1"]["data"]), {"project": "aicode-consumers"})
+
+    def test_fallback_cache_avoids_repeated_calls_and_rides_out_429(self):
+        cache_file = Path(tempfile.mkdtemp()) / "fallback.json"
+        files = [{"provider": "claude", "email": "me@example.com", "auth_index": "a2", "quota": {"signals": {}}}]
+        state = {"status": 200, "body": {"seven_day": {"utilization": 54.0, "resets_at": "2099-11-09T10:00:00+00:00"}}, "header": {}}
+
+        def routes(path, body):
+            if path == "/v8/management/credentials":
+                return 200, {"files": files}
+            return 200, {"status_code": state["status"], "header": state["header"], "body": json.dumps(state["body"])}
+
+        env, requests = self.serve(routes, cache_file=cache_file)
+        proxy = usage.CLIProxy(env)
+        cache = usage.FallbackCache(cache_file)
+        t0 = 1795200000000
+
+        # First call populates the cache.
+        r1 = usage.fetch_cliproxy_account(proxy, cache, files[0], now=t0)
+        self.assertEqual(r1["limits"][0]["amount"]["usedFraction"], 0.54)
+        self.assertEqual(sum(1 for _, p, _, _ in requests if "api-call" in p), 1)
+
+        # Within TTL: served from cache with no api-call.
+        r2 = usage.fetch_cliproxy_account(proxy, cache, files[0], now=t0 + 5 * usage.MINUTE_MS)
+        self.assertEqual(r2["limits"][0]["amount"]["usedFraction"], 0.54)
+        self.assertEqual(sum(1 for _, p, _, _ in requests if "api-call" in p), 1)
+
+        # Past TTL with upstream 429: backs off and returns the last known unexpired limits.
+        state.update({"status": 429, "header": {"Retry-After": ["1200"]}, "body": {"error": "rate_limit"}})
+        r3 = usage.fetch_cliproxy_account(proxy, cache, files[0], now=t0 + 35 * usage.MINUTE_MS)
+        self.assertEqual(r3["limits"][0]["amount"]["usedFraction"], 0.54)
+        self.assertEqual(sum(1 for _, p, _, _ in requests if "api-call" in p), 2)
+
+        # During backoff window: does not hit upstream again.
+        r4 = usage.fetch_cliproxy_account(proxy, cache, files[0], now=t0 + 45 * usage.MINUTE_MS)
+        self.assertEqual(r4["limits"][0]["amount"]["usedFraction"], 0.54)
+        self.assertEqual(sum(1 for _, p, _, _ in requests if "api-call" in p), 2)
+
+        # Uncached account hitting 429 raises ProviderError.
+        fresh = {"provider": "claude", "email": "other@example.com", "auth_index": "a9", "quota": {"signals": {}}}
+        with self.assertRaisesRegex(usage.ProviderError, "usage HTTP 429"):
+            usage.fetch_cliproxy_account(proxy, cache, fresh, now=t0 + 45 * usage.MINUTE_MS)
 
     def test_an_expired_login_or_unreachable_proxy_keeps_the_cards(self):
         files = [{"provider": "xai", "email": "me@example.com", "auth_index": "x1"}]
@@ -266,7 +564,7 @@ class CLIProxyTest(unittest.TestCase):
 
         down = {"CLIPROXY_MANAGEMENT_URL": "http://127.0.0.1:9", "CLIPROXY_MANAGEMENT_KEY_FILE": env["CLIPROXY_MANAGEMENT_KEY_FILE"]}
         reports = usage.collect(usage.cliproxy_fetchers(down), down)["reports"]
-        self.assertEqual(reports, [usage.failed(p, "cliproxy unreachable") for p in ("openai-codex", "anthropic", "xai-oauth")])
+        self.assertEqual(reports, [usage.failed(p, "cliproxy unreachable") for p in ("openai-codex", "anthropic", "google-gemini", "xai-oauth")])
 
 
 if __name__ == "__main__":
