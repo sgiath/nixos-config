@@ -42,32 +42,13 @@
     ])
     ++ (lib.optionals config.sgiath.roles.desktop.enable [
       pkgs.llm-agents.grok-bot
-      pkgs.${namespace}.browse
     ]);
 
     programs.mcp = {
       enable = true;
       servers = {
         executor.url = "https://executor.sgiath.dev/mcp";
-        browse = lib.mkIf config.sgiath.roles.desktop.enable {
-          command = lib.getExe pkgs.${namespace}.browse;
-          args = [ "mcp" ];
-        };
       };
-    };
-
-    # `agy`; T3 Code picks it up from PATH as its Antigravity provider.
-    programs.antigravity-cli = {
-      enable = true;
-      package = pkgs.llm-agents.antigravity-cli;
-      enableMcpIntegration = true;
-      # ~/.gemini/AGENTS.md and ~/.gemini/antigravity-cli/skills; T3 Code
-      # symlinks both into its own Antigravity profile (GEMINI_HOME).
-      context.AGENTS = ./AGENTS.md;
-      skills = ./skills;
-      # `agy mcp add/disable` replace mcp_config.json with a regular file, which
-      # would break a read-only Home Manager symlink; merge into a writable file.
-      mutableSettings = true;
     };
   };
 }

@@ -1,6 +1,7 @@
 { lib, ... }:
 {
   imports = [
+    ./antigravity.nix
     ./archive.nix
     ./auto-review.nix
     ./base.nix

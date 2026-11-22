@@ -113,15 +113,15 @@ Prefer directly exposed host tools (including T3 and local Blender tools) and th
 Every other integration, including Slack, lives in `executor`: discover it with executor's tool search instead of
 looking for a direct tool, and search there before declaring a capability unavailable.
 
-When using Browse, call its `status` tool to discover connected browser profiles and select the `browser`
-explicitly when opening a tab (`tabs` with `action: "new"`, or `navigate` without a tab). My profiles are
-`Personal` (Chromium), `CrazyEgg` (Google Chrome), and `Remote` (Google Chrome). Choose the profile from the task
-or repository: CrazyEgg work uses `CrazyEgg`, Remote work uses `Remote`, and personal work uses `Personal`.
-The model provider does not determine the browser profile. Never rely on the default browser or silently
-fall back to another profile. If the intended profile is unavailable, report it; if the choice is unclear,
-ask before using a logged-in profile. Pass the returned `tab` to every page operation (and to `execute`, which
-takes no `browser`). A tab stays in its profile; open a new tab when changing profiles. Tabs in the same
-profile share its logins and cookies. Close the tabs you opened when finished.
+When using Browse (exposed through `executor` as plain browser tools), call its `status` tool to discover
+connected browser profiles and select the `browser` explicitly when opening a tab (`tabs` with `action: "new"`, or
+`navigate` without a tab). My profiles are `Personal` (Chromium), `CrazyEgg` (Google Chrome), and `Remote` (Google
+Chrome). Choose the profile from the task or repository: CrazyEgg work uses `CrazyEgg`, Remote work uses `Remote`,
+and personal work uses `Personal`. The model provider does not determine the browser profile. Never rely on the
+default browser or silently fall back to another profile. If the intended profile is unavailable, report it; if the
+choice is unclear, ask before using a logged-in profile. Pass the returned `tab` to every page operation. A tab
+stays in its profile; open a new tab when changing profiles. Tabs in the same profile share its logins and cookies.
+Close the tabs you opened when finished.
 
 When I ask to use Whiteboard, use the installed dev.fast Whiteboard application through its `whiteboard`
 CLI or MCP tools and load the `whiteboard` skill. Do not substitute a custom website, HTML preview, or
