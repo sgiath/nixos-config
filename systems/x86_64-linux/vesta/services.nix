@@ -22,6 +22,7 @@
     grafana.enable = true;
     hermes-agent.enable = true;
     cliproxyapi.enable = true;
+    browse.enable = true;
     executor.enable = true;
     opencode.enable = true;
   };

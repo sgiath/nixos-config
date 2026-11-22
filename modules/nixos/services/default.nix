@@ -2,6 +2,7 @@
   imports = [
     ./agent-archive.nix
     ./audiobookshelf.nix
+    ./browse.nix
     ./cliproxyapi.nix
     ./cloudflare-warp.nix
     ./comfyui.nix
