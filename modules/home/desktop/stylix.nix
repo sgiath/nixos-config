@@ -39,6 +39,11 @@ in
             package = pkgs.noto-fonts-emoji-blob-bin;
           };
         };
+
+        # https://github.com/nix-community/stylix/issues/2556: home-manager
+        # removed programs.wayprompt after nixpkgs dropped wayprompt. Remove
+        # once stylix drops the wayprompt target.
+        targets.wayprompt.enable = false;
       };
     })
   ];
