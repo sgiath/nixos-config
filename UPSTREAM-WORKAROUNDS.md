@@ -141,7 +141,6 @@ Runtime checks in records are required future checks unless the record's
 | [`quickshell-store-theme-restart`](#quickshell-store-theme-restart) | compatibility | unverified | desktop |
 | [`quickshell-hyprland-workspace-address`](#quickshell-hyprland-workspace-address) | compatibility | required | desktop |
 | [`hex-model-service-selection`](#hex-model-service-selection) | temporary fix | required | desktop |
-| [`hex-serial-tests`](#hex-serial-tests) | test exception | required | desktop |
 | [`gaming-gtk2-broken-allowance`](#gaming-gtk2-broken-allowance) | compatibility | required | ceres |
 | [`tmux-sessionizer-session-target`](#tmux-sessionizer-session-target) | temporary fix | candidate | all |
 | [`pihole-first-run-setup-retry`](#pihole-first-run-setup-retry) | temporary fix | required | vesta |
@@ -399,16 +398,6 @@ Common runtime check for every ComfyUI record: `systemctl show comfyui.service -
 - **Remove when:** the selected module's generated `hex-model` command requests the declared model on an empty support directory, or applies settings before the service starts. Remove the `ExecStart` override and the `inherit` entries only it uses.
 - **Validate:** `desktop`; evaluate `home-manager.users.sgiath.systemd.user.services.hex-model.Service.ExecStart` through `nixosConfigurations.ceres`, then run it with an empty `HEX_APPLICATION_SUPPORT_DIR` and a blocked `HTTPS_PROXY`: it must print `Installing Whisper large-v3-turbo` and exit non-zero. Runtime: on a first activation `hex-model` installs that model and `hex model status` reports it installed.
 - **Exercised (2026-10-31):** with an empty support directory and a proxy on `127.0.0.1:9`, upstream's generated `hex-install-model` printed `Installing Parakeet Unified English (731 MB)`; the evaluated Ceres command printed `Installing Whisper large-v3-turbo` and failed at the proxy with a non-zero exit, which is what `Restart=on-failure` retries. No model was downloaded and the unit was not activated.
-
-#### `hex-serial-tests`
-
-- **Where:** `modules/home/desktop/hex.nix` (`programs.hex.package` set to the input's `hex` with `dontUseCargoParallelTests = true`).
-- **Why:** `rune_ui::tests::history_stats_button_opens_and_closes_the_dialog` enables Stats through process-global Labs state, and History's poll (`src/rune_ui/history.rs`) closes the dialog whenever the global flag reads off. Other tests publish Labs settings concurrently, so under parallel `cargo test` the dialog can close during the test's settling frames and the checkPhase fails. Serial tests keep every check. Setting `RUST_TEST_THREADS` does not work: the nixpkgs Cargo check hook overwrites it.
-- **Upstream:** introduced by [1d026a43](https://github.com/anomalyco/hex/commit/1d026a43dd2fb4c693462c3224b7e02e9716ee4f) (#1478, 2026-11-07); no issue or PR. `dev` b5b5a271 still has it.
-- **Selected pin:** hex b5b5a271; the test and the poll are identical at a87adee5, which passed by chance.
-- **Remove when:** upstream isolates Labs state per test (or the poll reads the fixture's settings), and the package builds with parallel tests several times in a row.
-- **Validate:** `desktop`; without the override, `nix build --rebuild` of the hex derivation fails intermittently at that assertion; with it the build passes.
-- **Exercised (2026-11-17):** at b5b5a271 the test passed 5/5 alone, failed in the full suite with 32 threads and in a retry of the failed derivation (2705 passed, 1 failed), and passed with one thread (2707 passed) and with `dontUseCargoParallelTests` in the Nix sandbox (2706 passed).
 
 ### Gaming (Ceres)
 
@@ -749,3 +738,4 @@ Fix together with the next change touching the file; behavior must not change.
 | `primp-system-library-inputs` | 2026-11-18 | `pythonPackagesExtensions` entry removed: root `1a08097f` lists `pkg-config`, `aws-lc` and `zstd-c`. Ceres `python3Packages.primp` (pytest and import check) and the toplevels build. |
 | `llm-agents-hermes-nemo-relay-aws-lc`, `hermes-agent-exact-pin-relax` | 2026-11-18 | `llm-agents.hermes-agent` and `hermes-desktop` overrides removed: llm-agents `aca6bfb2` gives nemo-relay `pkg-config`, `aws-lc` and `zstd` (`packages/hermes-agent/package.nix` lines 83-88) and relaxes `markdown` and `prompt_toolkit` (lines 671-677). Ceres `llm-agents.hermes-agent` and `hermes-desktop` build; the interactive CLI remains unchecked. |
 | `preview-share-picker-hyprland-057-ipc` | 2026-11-18 | Override removed: root `1a08097f` selects `hyprland-preview-share-picker` 0.3.1 with the same source hash. The dark wrapper and absolute `region.command` stay. Ceres/Pallas toplevels build; a ScreenCast request with Outputs/Windows thumbnails remains to be checked after activation. |
+| `hex-serial-tests` | 2026-11-21 | Override removed: hex `96b4f365` (`nix/package.nix` lines 257-261) now sets `dontUseCargoParallelTests = true` itself. The unmodified `hex-3.4.0` (3020 passed, 0 failed) and both Ceres and Pallas toplevels build cleanly. |

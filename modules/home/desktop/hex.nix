@@ -1,8 +1,6 @@
 {
   config,
-  inputs,
   lib,
-  pkgs,
   ...
 }:
 
@@ -18,11 +16,6 @@ in
       language = "en";
       installModel = true;
       settings.shortcut_mode = "toggle";
-      # Parallel tests race on process-global Labs state; see
-      # UPSTREAM-WORKAROUNDS.md#hex-serial-tests.
-      package = inputs.hex.packages.${pkgs.stdenv.hostPlatform.system}.hex.overrideAttrs {
-        dontUseCargoParallelTests = true;
-      };
     };
 
     # The service starts before the settings are applied, so a bare `model install`
