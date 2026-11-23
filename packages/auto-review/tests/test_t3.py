@@ -1,6 +1,7 @@
 import unittest
 from unittest.mock import patch
 
+from auto_review.publish import harness
 from auto_review.t3 import T3Client, T3Error
 from auto_review.models import Selection
 from tests.fakes import SELECTION
@@ -74,6 +75,34 @@ class LaunchIdentityTest(unittest.TestCase):
         [launch] = [c for c in call.call_args_list if c.args[0] == "t3_thread_launch"]
         self.assertEqual(launch.args[1]["modelSelection"]["options"], [{"id": "variant", "value": "high"}])
         self.assertEqual(catalog[0]["models"][0]["efforts"], ["low", "high"])
+
+
+    def test_antigravity_effort_goes_in_its_thought_level_option(self):
+        client = T3Client()
+        antigravity = {"providerInstanceId": "antigravity", "canRunChildTask": True, "models": [
+            {"id": "gemini-4-neon", "options": [{"id": "thought_level", "values": ["low", "high", "xhigh"]}]},
+        ]}
+        responses = {
+            "t3_thread_list": {"threads": []},
+            "orchestrator_capabilities": {"providers": [antigravity]},
+            "t3_thread_launch": {"threadId": "new"},
+        }
+        selection = Selection("antigravity", "gemini-4-neon", "xhigh")
+        with patch.object(client, "_call", side_effect=lambda tool, args: responses[tool]) as call:
+            client.launch(project="project-a", title="Review MR 7", message="Review brief",
+                          selection=selection, client_request_id=self.request_id)
+            catalog = client.catalog()
+        [launch] = [c for c in call.call_args_list if c.args[0] == "t3_thread_launch"]
+        self.assertEqual(launch.args[1]["modelSelection"]["options"], [{"id": "thought_level", "value": "xhigh"}])
+        self.assertEqual(catalog[0]["models"][0]["efforts"], ["low", "high", "xhigh"])
+
+
+class HarnessNameTest(unittest.TestCase):
+    def test_native_providers_map_to_their_harness_names(self):
+        self.assertEqual(harness("claudeAgent"), "Claude Code harness")
+        self.assertEqual(harness("codex"), "Codex harness")
+        self.assertEqual(harness("antigravity"), "Antigravity harness")
+        self.assertEqual(harness("grok"), "Grok harness")
 
 
 class LinkTest(unittest.TestCase):

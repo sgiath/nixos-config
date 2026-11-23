@@ -300,6 +300,10 @@ def harness(provider: str) -> str:
         return "Claude Code harness"
     if provider.startswith("codex"):
         return "Codex harness"
+    if provider.startswith("antigravity"):
+        return "Antigravity harness"
+    if provider.startswith("grok"):
+        return "Grok harness"
     if provider.startswith("opencode"):
         return "OpenCode harness"
     return provider

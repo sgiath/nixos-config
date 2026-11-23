@@ -14,6 +14,12 @@ class SettingsTest(unittest.TestCase):
     def test_empty_configuration_uses_threshold_five(self):
         self.assertEqual(effective({}, {})["threshold"], 5)
 
+    def test_default_reviewer_uses_native_codex_sol(self):
+        self.assertEqual(
+            effective({}, {})["reviewer"],
+            {"provider": "codex", "model": "gpt-6.2-sol", "effort": "high"},
+        )
+
     def test_overrides_win_per_field_and_preserve_siblings(self):
         result = effective({"threshold": 7, "reviewer": {"model": "nix-model", "effort": "high"}},
                            {"threshold": 9, "reviewer": {"effort": "xhigh"}})

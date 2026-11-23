@@ -178,8 +178,8 @@ in
     reviewer = mkOption {
       type = reviewer;
       default = {
-        provider = "opencode";
-        model = "cliproxy/claude-opus-5-5";
+        provider = "codex";
+        model = "gpt-6.2-sol";
         effort = "high";
       };
     };
