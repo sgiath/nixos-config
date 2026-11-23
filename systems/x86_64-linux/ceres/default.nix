@@ -1,6 +1,8 @@
 { config, ... }:
 {
   imports = [
+    ./btrfs-scrub.nix
+    ./gpu-fan.nix
     ./hardware.nix
     ./health-stats.nix
     ./offsite-prune.nix
