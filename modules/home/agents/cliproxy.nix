@@ -5,13 +5,12 @@
   ...
 }:
 let
-  # OpenCode 2, Pi, fx and Grok use CLIProxyAPI for inference with the
-  # CLIPROXY_API_KEY every host exports; Claude Code and Codex are set up in
-  # claude.nix, codex.nix and modules/nixos/common/codex.nix, Muse keeps its
-  # native Meta login (the proxy has no Muse model catalog). Each tool
-  # rewrites its own config, so activation merges the proxy part into it and
-  # resets the default model only when it no longer points at the proxy. The
-  # tools' saved native logins stay in place.
+  # OpenCode 2, Pi and fx use CLIProxyAPI for inference with the
+  # CLIPROXY_API_KEY every host exports; Claude Code is set up in claude.nix
+  # (sharing multiple Claude subscriptions), while Codex, Grok, Antigravity
+  # and Muse use their native logins directly. Each tool below rewrites its
+  # own config, so activation merges the proxy part into it and resets the
+  # default model only when it no longer points at the proxy.
   url = config.sgiath.agents.cliproxyUrl;
   keyEnv = "CLIPROXY_API_KEY";
   catalog = import ./cliproxy-models.nix;
@@ -27,38 +26,22 @@ let
   };
 
   jq = lib.getExe pkgs.jq;
-  # toml-json/toml_json.py; its tests run as part of the build.
-  tomlJson =
-    let
-      python = pkgs.python3.withPackages (ps: [
-        ps.tomli-w
-        ps.tomlkit
-      ]);
-    in
-    pkgs.runCommandLocal "toml-json" { } ''
-      PYTHONDONTWRITEBYTECODE=1 ${lib.getExe python} -I -m unittest discover \
-        -s ${./toml-json} -t ${./toml-json}
-      install -Dm755 ${./toml-json/toml_json.py} $out
-      sed -i '1i#!${lib.getExe python} -I' $out
-    '';
 
   # Rewrites ~/<path> with `filter` applied, only when that changes it, and
   # leaves the file alone when it cannot be parsed. $proxy in the filter is
-  # `overlay`; `toml` files go through JSON.
+  # `overlay`.
   merge =
     {
       path,
       overlay,
       filter,
-      toml ? false,
     }:
     lib.hm.dag.entryAfter [ "writeBoundary" ] ''
       f="$HOME/${path}"
       old=$(cat "$f" 2>/dev/null || true)
-      if new=$(set -o pipefail; ${if toml then ''${tomlJson} to-json "$f"'' else ''printf '%s' "$old"''} \
+      if new=$(set -o pipefail; printf '%s' "$old" \
         | ${jq} -s --argjson proxy ${lib.escapeShellArg (builtins.toJSON overlay)} \
-          ${lib.escapeShellArg "(.[0] // {}) | ${filter}"} \
-        ${lib.optionalString toml ''| ${tomlJson} from-json "$f"''}); then
+          ${lib.escapeShellArg "(.[0] // {}) | ${filter}"}); then
         if [ "$new" != "$old" ]; then
           run mkdir -p "$(dirname "$f")"
           run ${pkgs.coreutils}/bin/tee "$f" <<<"$new" >/dev/null
@@ -146,36 +129,6 @@ let
       supports_vision = lib.elem "image" m.input;
     });
   };
-
-  grokBackend = {
-    messages = "messages";
-    responses = "responses";
-    chat = "chat_completions";
-  };
-  grok = models: {
-    keys = ids models;
-    model = byId models (m: {
-      inherit (m) name;
-      model = m.id;
-      base_url = "${url}/v1";
-      env_key = keyEnv;
-      api_backend = grokBackend.${m.protocol};
-      context_window = m.context;
-      max_completion_tokens = m.output;
-    });
-  };
-  # Keep a proxy model the user picked; replace anything else.
-  grokPick = slot: fallback: ".${slot} |= (if IN($proxy.keys[]) then . else \"${fallback}\" end)";
-  grokFilter = main: d: ''
-    .model = ((.model // {}) + $proxy.model)
-    | .models.allowed_models = $proxy.keys
-    | .models |= (${grokPick "default" main}
-        | ${grokPick "web_search" d.helper}
-        | ${grokPick "session_summary" d.helper}
-        | ${grokPick "image_description" d.helper}
-        | ${grokPick "prompt_suggestion" d.helper})
-    | .ui |= ((. // {}) | ${grokPick "fork_secondary_model" d.model})
-  '';
 in
 {
   config = lib.mkIf config.sgiath.agents.enable {
@@ -222,13 +175,6 @@ in
           | .models.cliproxy |= (if . != null and (. as $m | $proxy.cliproxy.model_metadata | has($m))
               then . else "${defaults.model}" end)
         '';
-      };
-
-      grokProxy = merge {
-        path = ".grok/config.toml";
-        toml = true;
-        overlay = grok personal;
-        filter = grokFilter "grok-4.7" defaults;
       };
     };
   };

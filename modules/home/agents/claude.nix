@@ -24,11 +24,51 @@ let
     CLAUDE_CODE_EVEN_MORE_DANGEROUSLY_SKIP_PERMISSIONS = "1";
   };
 
-  # Inference through CLIProxyAPI with the shared proxy key. The helper wins
-  # over the saved claude.ai login, which stays in place for rollback.
+  # Inference through CLIProxyAPI so the two Claude subscriptions rotate and
+  # Mythos routes to the personal login. The helper wins over the saved
+  # claude.ai login, which stays in place for rollback.
   proxySettings = builtins.toJSON {
     env.ANTHROPIC_BASE_URL = config.sgiath.agents.cliproxyUrl;
     apiKeyHelper = "${lib.getExe apiKeyWrapper} ${pkgs.coreutils}/bin/printenv CLIPROXY_API_KEY";
+  };
+
+  # T3 Code's bundled claudeAgent catalog omits Mythos, and Claude Code's
+  # supportedModels() does not advertise it under a custom ANTHROPIC_BASE_URL.
+  # Registering it in customModels with its effort descriptor exposes it on
+  # claudeAgent directly; CLIProxyAPI routes it to the personal Claude login.
+  mythosT3Model = {
+    slug = "claude-mythos-5-2";
+    name = "Claude Mythos 5.2";
+    capabilities.optionDescriptors = [
+      {
+        id = "effort";
+        label = "Reasoning";
+        type = "select";
+        options = [
+          {
+            id = "low";
+            label = "Low";
+          }
+          {
+            id = "medium";
+            label = "Medium";
+            isDefault = true;
+          }
+          {
+            id = "high";
+            label = "High";
+          }
+          {
+            id = "xhigh";
+            label = "Extra High";
+          }
+          {
+            id = "max";
+            label = "Max";
+          }
+        ];
+      }
+    ];
   };
 
 in
@@ -83,5 +123,55 @@ in
         run ${pkgs.coreutils}/bin/tee "$f" <<<"$new" >/dev/null
       fi
     '';
+
+    # settings.json is app-owned (T3 reloads it on change): add Mythos when
+    # absent, and ensure a bare string or partial Mythos entry has an effort
+    # descriptor while preserving any custom name and sibling descriptors.
+    home.activation.t3codeClaudeMythos = lib.mkIf config.services.t3code.enable (
+      lib.hm.dag.entryAfter [ "writeBoundary" ] ''
+        settings="$HOME/.t3/userdata/settings.json"
+        current='{}'
+        [[ -f $settings ]] && current=$(cat "$settings")
+        if ${lib.getExe pkgs.jq} -e 'type == "object"' <<<"$current" >/dev/null 2>&1; then
+          if ! ${lib.getExe pkgs.jq} -e '(.providerInstances.claudeAgent.config.customModels // []) | any(type == "object" and .slug == "claude-mythos-5-2" and ((.capabilities.optionDescriptors? | type) == "array") and (.capabilities.optionDescriptors | any(type == "object" and .id == "effort")))' <<<"$current" >/dev/null; then
+            updated=$(${lib.getExe pkgs.jq} --argjson model ${lib.escapeShellArg (builtins.toJSON mythosT3Model)} '
+              .providerInstances //= {}
+              | .providerInstances.claudeAgent //= {driver: "claudeAgent", enabled: true, config: {}}
+              | .providerInstances.claudeAgent.config //= {}
+              | .providerInstances.claudeAgent.config.customModels = (
+                  (.providerInstances.claudeAgent.config.customModels // []) as $list
+                  | if ($list | any((if type == "string" then . else .slug? end) == "claude-mythos-5-2")) then
+                      $list | map(
+                        if . == "claude-mythos-5-2" then $model
+                        elif (type == "object" and .slug == "claude-mythos-5-2") then
+                          ($model + . + {
+                            name: (.name // $model.name),
+                            capabilities: ((.capabilities // {}) + {
+                              optionDescriptors: ($model.capabilities.optionDescriptors + ((.capabilities.optionDescriptors? | if type == "array" then . else [] end) | map(select((type == "object" and .id == "effort") | not))))
+                            })
+                          })
+                        else . end
+                      )
+                    else
+                      $list + [$model]
+                    end
+                )
+            ' <<<"$current")
+            if [[ -v DRY_RUN ]]; then
+              echo "Would register claude-mythos-5-2 in claudeAgent.config.customModels in $settings"
+            else
+              # Replaced by rename so T3's watcher never reads a partial file;
+              # mktemp keeps the file private like T3's own writes.
+              mkdir -p "$(dirname "$settings")"
+              tmp=$(mktemp "$settings.XXXXXX")
+              printf '%s\n' "$updated" >"$tmp"
+              mv "$tmp" "$settings"
+            fi
+          fi
+        else
+          echo "claude: cannot parse $settings; leaving claudeAgent customModels unchanged" >&2
+        fi
+      ''
+    );
   };
 }

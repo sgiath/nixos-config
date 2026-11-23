@@ -6,24 +6,14 @@
 }:
 let
   # Codex's system config layer, below ~/.codex/config.toml which Codex
-  # itself rewrites. The local collector on :4318 is the HM otel-agent
-  # service (modules/home/agents/archive.nix).
+  # itself rewrites. Codex uses its native OpenAI login in ~/.codex/auth.json.
+  # The local collector on :4318 is the HM otel-agent service
+  # (modules/home/agents/archive.nix).
   agents = config.home-manager.users.sgiath.sgiath.agents;
 in
 {
   config = lib.mkIf (config.sgiath.enable && agents.enable) {
     environment.etc."codex/config.toml".source = (pkgs.formats.toml { }).generate "codex-config.toml" {
-      # Inference through CLIProxyAPI; `codex --profile daybreak` switches to
-      # OpenAI directly (~/.codex/daybreak.config.toml, modules/home/agents/codex.nix).
-      model_provider = "cliproxy";
-      model_providers.cliproxy = {
-        name = "CLIProxyAPI";
-        base_url = "${agents.cliproxyUrl}/v1";
-        env_key = "CLIPROXY_API_KEY";
-        wire_api = "responses";
-        requires_openai_auth = false;
-        supports_websockets = true;
-      };
       # Only logs: otel.sql reads completions and tool results. An omitted
       # metrics_exporter means Statsig, not none. Prompt text and SSE deltas
       # stay off (modules/nixos/services/agent-archive/otel-policy.nix).

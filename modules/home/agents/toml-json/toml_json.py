@@ -1,4 +1,4 @@
-"""TOML <-> JSON for the activation merges in cliproxy.nix.
+"""TOML <-> JSON for the activation merge in grok.nix.
 
 `to-json FILE` prints FILE's TOML as JSON. `from-json FILE` reads the merged
 JSON on stdin and prints FILE's TOML with only the changed values replaced,

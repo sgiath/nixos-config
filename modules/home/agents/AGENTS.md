@@ -36,36 +36,49 @@ SSH there.
   gate cannot be established or met, ask me how to proceed; do not silently weaken it or proceed past it.
   In an unattended scheduled run, the task prompt's authorization replaces asking me: record the blocker with its
   evidence and options, and continue with independent work.
-- Follow `verified-work` model routing. Every role runs in the OpenCode harness (T3 provider instance
-  `opencode`), with the model through CLIProxy and the reasoning effort as its `variant`. Opus 5.5
-  (`cliproxy/claude-opus-5-5`) writes production code, including updates to existing UIs that do not require a
-  new design. An Opus thread does its own reading, lookups, answers to questions and short investigations and
-  checks; handing those to Sol makes the thread wait on a slower model without a better result. Sol
-  (`cliproxy/gpt-6.2-sol`) takes the work where its thoroughness or independence pays: long-running or brute-force
-  evidence work (repeated test or build runs, bisection, fuzzing, production-data probes, multi-step
-  reproductions), the independent verification of a substantial change, a second diagnosis when the cause stays
-  uncertain or a first diagnosis did not hold, and side investigations that can run while Opus keeps working. While
-  a delegate runs, continue independent work instead of ending the turn just to wait. A Sol thread delegates
-  production code to Opus. My task-specific choice overrides this routing.
-- Use Sol (OpenCode, `cliproxy/gpt-6.2-sol`) at `high` reasoning effort for the independent review of every
-  production change beyond a few obvious lines before it is handed back or published, including production-code
-  correctness and design judgments. Production implementation remains with Opus.
-- Adversarial security reviews go to Codex `gpt-daybreak-blue-latest` at `high` reasoning effort through the
-  direct ChatGPT login. In T3 use provider instance `codex-daybreak` (Codex Daybreak); in the CLI use
-  `codex --profile daybreak`. If that route is unavailable, report the blocker instead of silently falling back
-  to another model. If Daybreak refuses a round on cybersecurity grounds, record the refusal, do not reword the brief
-  or switch models to get past it, and do not block independent work on it. A required security review that no
-  model completed is reported as skipped, not passed.
-- When any model refuses a request on cybersecurity grounds (in this thread, a delegate or a review round),
-  automatically retry the same request once on Codex Daybreak (`gpt-daybreak-blue-latest`, `high`, the route
-  above) with the brief unchanged, without asking me first. Record the original refusal and which model
-  completed the work. If Daybreak also refuses or is unavailable, report that and continue independent work.
-- Use Fable (OpenCode, `cliproxy/claude-fable-5-2`) at `high` reasoning effort sparingly, for creating and
-  designing new UIs or substantial redesigns where its visual and UX judgment adds value, including animations
-  and transitions. Limit its work to the design and implementation that requires those choices. Routine UI
-  updates, bug fixes, investigation, testing, screenshots, review and verification follow the general routing
-  above; UI involvement alone is not a reason to use Fable or spawn a Fable subagent. The one exception in review is the single read-only
-  Fable ship check that runs when review rounds hand disputed or leftover findings to me.
+- Always run every subscription's models through its native harness, never through a third-party harness
+  (OpenCode, Pi, fx) or another provider's harness:
+  - OpenAI models in **Codex** (T3 `codex`, option `reasoningEffort`)
+  - Anthropic models in **Claude Code** (T3 `claudeAgent`, option `effort`)
+  - Gemini models in **Antigravity** (T3 `antigravity`, option `thought_level`)
+  - Grok models in **Grok** (T3 `grok`, option `reasoningEffort`)
+- Follow `verified-work` model routing. **Gemini 4 Neon** (Antigravity, `gemini-4-neon`) is the default general
+  and production-code model; **Opus 5.5** (Claude Code, `claude-opus-5-5`) is its peer when a thread already runs
+  on Opus or when I pick it. Both handle production code, including updates to existing UIs that do not require a
+  new design, as well as their own reading, lookups, answers to questions, short investigations, quick red tests
+  and checks; handing short work to Sol makes the thread wait on a slower model without a better result. **Sol**
+  (Codex, `gpt-6.2-sol`) takes thorough or independent work: long-running or brute-force evidence work (repeated
+  test or build runs, bisection, fuzzing, production-data probes, multi-step reproductions, throwaway tests to
+  prove a claim), independent verification of a substantial change, a second diagnosis when the cause stays
+  uncertain or a first diagnosis did not hold, and side investigations that can run while the owner keeps working.
+  While a delegate runs, continue independent work instead of ending the turn just to wait. A Sol thread delegates
+  production code to Gemini 4 Neon (or Opus 5.5 when chosen). My task-specific choice overrides this routing.
+- Use **Sol** (Codex, `gpt-6.2-sol`) at `high` reasoning effort for the independent review of every production
+  change beyond a few obvious lines before it is handed back or published, including production-code correctness
+  and design judgments. Production implementation remains with Gemini 4 Neon or Opus 5.5.
+- Use **Fable 5.2** (Claude Code, `claude-fable-5-2`, `high` effort) and **Astra** (Codex, `gpt-6.2-astra`,
+  `high` reasoning effort) for coming up with and consulting on plans and complex design decisions. Also use Fable
+  sparingly for creating and designing new UIs or substantial redesigns where its visual and UX judgment adds
+  value, including animations and transitions; limit its work to the design and implementation that requires those
+  choices. Routine UI updates, bug fixes, investigation, testing, screenshots, review and verification follow the
+  general routing above; UI involvement alone is not a reason to use Fable. Fable also runs the single read-only
+  ship check when review rounds hand disputed or leftover findings to me.
+- Security reviews use cybersecurity-enabled models: **Mythos 5.2** (Claude Code, `claude-mythos-5-2`, `high`
+  effort) for cybersecurity-sensitive plans and complex security-critical code, and **Daybreak Blue** (Codex,
+  `gpt-daybreak-blue-latest`, `high` reasoning effort; CLI `codex -m gpt-daybreak-blue-latest`) for routine
+  adversarial security reviews. If the required route is unavailable, report the blocker instead of silently
+  falling back to another model. If a security-enabled model refuses a round on cybersecurity grounds, record the
+  refusal, do not reword the brief or switch models to get past it, and do not block independent work on it. A
+  required security review that no model completed is reported as skipped, not passed.
+- When any non-security model refuses a request on cybersecurity grounds (in this thread, a delegate or a review
+  round), automatically retry the same request once with the brief unchanged, without asking me first: use
+  **Mythos 5.2** (`claudeAgent`, `claude-mythos-5-2`, `high`) for sensitive plans or complex code and **Daybreak
+  Blue** (`codex`, `gpt-daybreak-blue-latest`, `high`) for routine checks. Record the original refusal and which
+  model completed the work. If that model also refuses or is unavailable, report that and continue independent
+  work.
+- **Grok 4.7** (Grok, `grok-4.7`, `high` reasoning effort) is weaker as a primary coder or sole reviewer, but
+  useful in `council` or when a separate model family might catch something OpenAI, Anthropic and Google models
+  missed.
 - Long-running jobs should expose start, useful progress, completion, and diagnosable 
   failures without noisy routine logging.
 - Every wait has a timeout. Wait on builds and downloads with one blocking command or a monitor that
