@@ -65,6 +65,9 @@ Short requests in Opus threads should return to minutes rather than tens of minu
 reviews, verification and long evidence work. More changes get an independent Sol review, which adds about
 six minutes per round on those changes. The decision supersedes the phase routing recorded in
 [Verifiable steps and agent ownership](2026-10-10-verifiable-agent-work.md); the rest of that note stands.
+Its OpenCode harness and Opus-only default are in turn superseded by
+[Native harnesses and updated model routing](2026-11-23-native-harnesses-and-model-routing.md), while the
+short-work-in-thread vs long-work-to-Sol split remains.
 
 Revisit with the same queries if Sol's per-call latency approaches Opus's, or if Opus-only investigations
 start missing causes that Sol would have found.

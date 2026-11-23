@@ -167,13 +167,13 @@ If publication fails, return the finding and concrete failure; do not claim it w
 ## Published finding comment
 
 Begin every comment with this note, using the actual author, model, effort, and
-harness. For Sol in the OpenCode harness it renders exactly as:
+harness. For Sol in the Codex harness it renders exactly as:
 
 ```markdown
 > [!NOTE]
 > Automated review published on behalf of @filip.vavera1
 > The assessment and checks below are AI-generated
-> Review model: **gpt-6.2-sol** / **high** / OpenCode harness
+> Review model: **gpt-6.2-sol** / **high** / Codex harness
 
 **SR-1 · Should fix · open - <short issue title>**
 
@@ -188,7 +188,7 @@ harness. For Sol in the OpenCode harness it renders exactly as:
 ```
 
 The model name and effort in the example are not defaults: substitute the session's
-actual values, including the actual harness (e.g. Claude Code). Use `not exposed`
+actual values, including the actual harness (e.g. Claude Code, Antigravity). Use `not exposed`
 for unavailable metadata. When reusing an assessment, retain its original reviewing
 model in the attribution note and record updater provenance in hidden metadata.
 Do not add visible Reviewed diff, Reviewed at, Assessment, global scope/verification,

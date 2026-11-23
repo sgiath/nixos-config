@@ -25,7 +25,7 @@ Manual audit only. It never runs automatically at session start or on its own.
 
 ## Security records
 
-Delegate security-exception records and any credential- or secret-handling question to a Codex subagent using `gpt-daybreak-blue-latest` at `high` reasoning effort through the direct ChatGPT login: provider instance `codex-daybreak` in T3, or `codex --profile daybreak` in the CLI. Give it the record, its pins, and these rules. Never print or commit secrets, and never reset production state. If that route is unavailable or the review is refused on cybersecurity grounds, keep the record `unknown` and record the reason; do not switch models or reword the brief to get past a refusal.
+Delegate routine security-exception records to a Codex subagent using `gpt-daybreak-blue-latest` at `high` reasoning effort (T3 provider instance `codex`, CLI `codex -m gpt-daybreak-blue-latest`), and complex security-critical or credential-handling records to Claude Code using `claude-mythos-5-2` at `high` effort (T3 provider instance `claudeAgent`, CLI `claude --model claude-mythos-5-2`). Give it the record, its pins, and these rules. Never print or commit secrets, and never reset production state. If that route is unavailable or the review is refused on cybersecurity grounds, keep the record `unknown` and record the reason; do not switch models or reword the brief to get past a refusal.
 
 ## Report
 

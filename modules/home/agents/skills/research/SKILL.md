@@ -12,9 +12,9 @@ Split independent research angles between subagents when useful; keep a narrow l
 
 Use fresh context, not forked context, unless the user explicitly asks otherwise. Delegated researchers should inspect sources directly instead of relying on the main conversation history.
 
-Apply skill://verified-work's model routing to research: the current thread gathers short evidence itself; use Sol
-(OpenCode, `cliproxy/gpt-6.2-sol`) for long or brute-force evidence gathering and for independent research angles
-that can run in parallel; use Opus (OpenCode, `cliproxy/claude-opus-5-5`) for production-design judgments when
+Apply skill://verified-work's model routing to research, always using each provider's native harness: the current thread gathers short evidence itself; use Sol
+(Codex, `gpt-6.2-sol`) for long or brute-force evidence gathering, throwaway proofs, and independent research angles
+that can run in parallel; use Fable 5.2 (Claude Code, `claude-fable-5-2`, `high`) or Astra (Codex, `gpt-6.2-astra`, `high`) for plan and architecture consultation, and Gemini 4 Neon (Antigravity, `gemini-4-neon`) or Opus 5.5 (Claude Code, `claude-opus-5-5`) for production-design judgments when
 those are requested. Preserve the research-only scope.
 In T3, discover models through `orchestrator_capabilities` and use native subagents where supported or `delegate_task`
 for cross-provider/T3-owned work. Supply the question, source pointers and output contract explicitly. Retain async

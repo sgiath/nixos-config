@@ -27,14 +27,14 @@ No service, source checkout from a scenario, or external write is available to t
 ## Run a comparison
 
 Use the host's delegated-task tools and live model catalog. Apply verified-work's routing:
-supporting evaluation delegates use Sol (OpenCode, `cliproxy/gpt-6.2-sol`). Use the same model,
+supporting evaluation delegates use Sol (Codex, `gpt-6.2-sol`). Use the same model,
 effort, prompts, steering and tool permissions in both arms. Each actor gets a fresh context and
 one case, with no parent discussion or previous answer. Bound each task and overall run using
 the host's task lifecycle; a timeout is Inconclusive, never Pass. No task may keep running or
 write in the scenario's fictional environment.
 
-`small-ui-routing`, `generated-brief` and `long-evidence-routing` test an Opus thread's routing choice, so their actors run as
-Opus (OpenCode, `cliproxy/claude-opus-5-5`). `unchanged-wake` also gives the actor the drive snapshot entrypoint.
+`small-ui-routing`, `generated-brief` and `long-evidence-routing` test an implementation thread's routing choice, so their actors run as
+Gemini 4 Neon (Antigravity, `gemini-4-neon`) or Opus 5.5 (Claude Code, `claude-opus-5-5`). `unchanged-wake` also gives the actor the drive snapshot entrypoint.
 
 1. Before editing, freeze the relevant skill catalog and references outside the tracked tree.
    Preserve the source revision and any dirty patch. After editing, freeze the candidate too.

@@ -74,13 +74,14 @@ Fold new findings, production data, stakeholder input or a changed order into th
 ## `/drive @<plan-dir>`: start or resume
 
 The thread where this runs is the driver thread. It holds no implementation code; coordination evidence lives in
-the state directory so a fresh thread with the same command continues correctly. Run one tick, then only if its finish step still requires future coordination,
-create or retain a `schedule_task` bound to this thread, structured
+the state directory so a fresh thread with the same command continues correctly. Run one tick, then let its Finish
+step manage the tick schedule. Keep at most one interval `schedule_task` per plan, bound to this thread, structured
 `schedule: {type: "interval", everyMs: 900000}`, with the prompt `Run one drive tick for @<plan-dir> (skill drive,
 section Tick). If plan-status reports "changed": false and the thread has no open inbox items, end the turn at once
-with no text.` Keep exactly one schedule per plan: list scheduled tasks first and reuse an existing one. Retain
-its ID, use a stable creation retry key, and report the returned cadence and next run time when creating it. Do not
-recreate a schedule after the tick stopped for completion or user answers. PR waits belong to each
+with no text.` List scheduled tasks first and reuse an existing one via `scheduledTaskId` (`enabled: true` to resume,
+`enabled: false` to pause). Retain its ID, use a stable creation retry key, and report the returned cadence and next
+run time when creating or resuming it. Create or enable the interval schedule only while active automated work is
+running; pause it whenever nothing is running (step 10), and delete it only on completion. PR waits belong to each
 worker's persistent watcher. End the turn after the tick; do not keep a shell sleep/poll loop alive.
 
 ## Tick
@@ -96,7 +97,7 @@ worker's persistent watcher. End the turn after the tick; do not keep a shell sl
    status, latest run, item count and pending requests. When `workers` is null, find them with `t3_thread_list`
    (`titleContains: "<topic> NN"`). After the tick has acted on every change, run
    `scripts/plan-status <absolute-plan-dir> --record`; a tick that stops before recording sees the same changes
-   again. A user message in the driver thread is handled in that turn, followed by a tick. That tick does not end on `"changed": false`: read `scripts/plan-status <absolute-plan-dir> --full` instead and skip `--record`. Apply verified-work's role routing, every role in the OpenCode harness: production workers use Opus (`cliproxy/claude-opus-5-5`) and do their own short investigation and checks; long-running evidence work, independent final verification and the independent review of each slice's diff (including design judgments, high effort) use Sol (`cliproxy/gpt-6.2-sol`); Fable only for new UI designs and the review rounds' single ship check. Honor task-specific overrides and the user's effort choice for workers and descendants.
+   again. A user message in the driver thread is handled in that turn, followed by a tick. That tick does not end on `"changed": false`: read `scripts/plan-status <absolute-plan-dir> --full` instead and skip `--record`. Apply verified-work's role routing, every model in its native harness: production workers default to Gemini 4 Neon (Antigravity, `antigravity` / `gemini-4-neon`) or Opus 5.5 (Claude Code, `claudeAgent` / `claude-opus-5-5`) when chosen and do their own short investigation and checks; long-running evidence work, throwaway proof tests, independent final verification and independent review of each slice's diff (including design judgments, `reasoningEffort: high`) use Sol (Codex, `codex` / `gpt-6.2-sol`); Fable 5.2 (`claudeAgent` / `claude-fable-5-2`) and Astra (`codex` / `gpt-6.2-astra`) consult on plans/complex design; Fable handles new UI designs and the review rounds' single ship check; Mythos 5.2 (`claudeAgent` / `claude-mythos-5-2`) and Daybreak Blue (`codex` / `gpt-daybreak-blue-latest`) handle security reviews. Honor task-specific overrides and the user's effort choice for workers and descendants.
    Read `gates/NN.md` for every slice with a worker, PR or delivered dependency, regardless of its delivery status.
    Refresh records from relevant worker messages/artifacts. For an older plan without records, recover applicable
    evidence from its owners rather than assuming a merge proves the gate or rerunning valid checks blindly.
@@ -177,10 +178,22 @@ worker's persistent watcher. End the turn after the tick; do not keep a shell sl
 9. **Traps**: after a slice is done, read `traps.md`. When it holds the same trap twice, or every five finished slices, propose permanent fixes the way the `retro` skill does (check, reviewer rule, steering edit, skill change, tooling), each with the exact file it touches, in one decision item. Skip traps that already have a `decided` line. Apply nothing; the user picks. Record each decision in `traps.md` as `- <date> decided: <trap> -> applied <commit>` or `-> declined`, and never propose a declined fix again.
 10. **Finish**: when `complete` is true, verify `gates/NN.md` and `final-gate.md` against current applicable evidence before claiming
     the Goal is complete; `plan-status` tracks delivery, not behavioral proof. If a required gate is unmet and cannot
-    be met, ask the user how to proceed. Delete the schedule when no independent work remains and the plan only
-    waits for that answer; do not recreate it on the same tick. When all required gates pass, delete the schedule,
-    post a summary (slices, PRs, user-approved limitations) and the trap proposals. When nothing is running, in review
-    or waiting for deploy and the plan only waits for user answers, delete the schedule too; the reply wakes the driver.
+    be met, ask the user how to proceed. When all required gates pass, delete the schedule (`delete_scheduled_task`),
+    post a summary (slices, PRs, user-approved limitations) and the trap proposals. Otherwise manage the interval
+    schedule based on whether automated work is active (apply this after every tick and after handling a worker or user
+    message):
+    - **Active work exists** (at least one worker is `running`, `preparing`, `queued` or `starting`, or `waiting` on
+      live child work, an unready PR's CI/review watcher or a running repository monitor; or a `merged` slice has a
+      `deploy_check` in `plan.md` to poll): create the interval schedule if none exists, or resume it (`schedule_task`
+      with `scheduledTaskId` and `enabled: true`) if paused.
+    - **Nothing automated is running** (the plan waits only on the user — answers, merges of ready PRs, manual deploys
+      or migrations without `deploy_check`, runbooks, closed-slice choices, unachievable gates — or on external
+      prerequisites): pause the interval schedule (`schedule_task` with `scheduledTaskId` and `enabled: false`), or do
+      not create one yet. A user reply, `/inbox` response or worker message wakes the driver and resumes it when work
+      starts again.
+    - **Timed check while idle** (for example, a post-deploy soak check due at a specific time with nothing else
+      running): keep the recurring interval schedule paused and create a one-shot `schedule_task` (`{type: "once",
+      runAt}`) for that check time instead of polling every 15 minutes.
 
 Keep driver messages to one line per event. A tick whose `plan-status` output is unchanged and whose thread has no
 open inbox items posts nothing. Every other tick ends with the inbox line, the output of `bin/inbox count --thread

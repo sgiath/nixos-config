@@ -77,39 +77,48 @@ again. New evidence or an answer can reopen the loop.
 
 ## Route work by role
 
-Unless the user chooses differently for this task, use these roles. Sol, Opus and Fable all run in the OpenCode
-harness (T3 provider instance `opencode`) with the model through CLIProxy and the reasoning effort as its `variant`;
-only the security review uses Codex, because its model is served only by OpenAI directly.
+Unless the user chooses differently for this task, use these roles. Always run each subscription's models in its
+native harness, never through a third-party harness (OpenCode, Pi, fx) or another provider's harness:
+
+- OpenAI models in **Codex** (T3 `codex`, option `reasoningEffort`)
+- Anthropic models in **Claude Code** (T3 `claudeAgent`, option `effort`)
+- Gemini models in **Antigravity** (T3 `antigravity`, option `thought_level`)
+- Grok models in **Grok** (T3 `grok`, option `reasoningEffort`)
 
 The current thread does the short work in front of it, whatever its model: reading code, lookups, answering
 questions, short investigations, a red test it can write and run in a few minutes, and quick checks. Delegating that
-work costs more than it saves: Sol is slower per step than Opus, and the delegate re-reads what the owner already
-read to write the brief. Delegate a phase when its own role needs another model (production code on a Sol thread),
-or when it fits the Sol rows below. A small fix on an Opus thread can stay in that thread from diagnosis to its own
-red/green run.
+work costs more than it saves: Sol is slower per step than Gemini 4 Neon or Opus, and the delegate re-reads what
+the owner already read to write the brief. Delegate a phase when its own role needs another model (production code
+on a Sol thread), or when it fits a specialist row below. A small fix on a Gemini 4 Neon or Opus thread can stay
+in that thread from diagnosis to its own red/green run. Never delegate between Gemini 4 Neon and Opus 5.5 just to
+swap implementation models.
 
-| Work | Role: harness and model |
+| Work | Role: native harness and model |
 | --- | --- |
-| Long-running or brute-force evidence work: repeated test or build runs, bisection, fuzzing, causal experiments that need many runs, production-data probes, multi-step reproductions and browser sessions | Sol: OpenCode with `cliproxy/gpt-6.2-sol` |
-| Independent final verification of a substantial change, a second diagnosis when the cause stays uncertain or the first diagnosis did not hold, and side investigations that can run while the owner keeps working | Sol: OpenCode with `cliproxy/gpt-6.2-sol` |
-| Independent review of a production change beyond a few obvious lines, including production-code correctness and design judgments | Sol: OpenCode with `cliproxy/gpt-6.2-sol` at `high` reasoning effort |
-| Adversarial security review (overrides the general review route) | Codex with `gpt-daybreak-blue-latest` at `high` reasoning effort through direct ChatGPT login: T3 instance `codex-daybreak`, or CLI `codex --profile daybreak` |
-| Deciding where and how to fix the production code, production design and seam placement, production code, refactoring, existing UI changes that do not require a new design, and the committed regression test | Opus: OpenCode with `cliproxy/claude-opus-5-5` |
-| Creating and designing new UIs or substantial redesigns where visual and UX judgment adds value, including animations and transitions | Fable: OpenCode with `cliproxy/claude-fable-5-2` at `high` reasoning effort |
-| The single ship check when review rounds hand open items to the user ([review rounds](references/independent-review.md#run-review-rounds)) | Fable: OpenCode with `cliproxy/claude-fable-5-2` at `high` reasoning effort |
+| Default general work and production code: deciding where and how to fix production code, production design and seam placement, refactoring, existing UI updates without a new design, and the committed regression test | Gemini 4 Neon: Antigravity (`antigravity`, `gemini-4-neon`). Opus 5.5 in Claude Code (`claudeAgent`, `claude-opus-5-5`) is the peer implementation model when the thread already runs on Opus or the user picks it |
+| Coming up with and consulting on plans and complex design decisions | Fable 5.2: Claude Code (`claudeAgent`, `claude-fable-5-2`, `effort: high`) and/or Astra: Codex (`codex`, `gpt-6.2-astra`, `reasoningEffort: high`) |
+| Long-running or brute-force evidence work: repeated test or build runs, bisection, fuzzing, causal experiments that need many runs, production-data probes, multi-step reproductions, throwaway tests/scripts to prove a claim, and browser sessions | Sol: Codex (`codex`, `gpt-6.2-sol`) |
+| Independent final verification of a substantial change, a second diagnosis when the cause stays uncertain or the first diagnosis did not hold, and side investigations that can run while the owner keeps working | Sol: Codex (`codex`, `gpt-6.2-sol`) |
+| Independent review of a production change beyond a few obvious lines, including production-code correctness and design judgments | Sol: Codex (`codex`, `gpt-6.2-sol`, `reasoningEffort: high`) |
+| Cybersecurity-sensitive plans and complex security-critical code review (overrides the general review route) | Mythos 5.2: Claude Code (`claudeAgent`, `claude-mythos-5-2`, `effort: high`) |
+| Routine adversarial security review (overrides the general review route) | Daybreak Blue: Codex (`codex`, `gpt-daybreak-blue-latest`, `reasoningEffort: high`; CLI `codex -m gpt-daybreak-blue-latest`) |
+| Creating and designing new UIs or substantial redesigns where visual and UX judgment adds value, including animations and transitions | Fable 5.2: Claude Code (`claudeAgent`, `claude-fable-5-2`, `effort: high`) |
+| The single ship check when review rounds hand open items to the user ([review rounds](references/independent-review.md#run-review-rounds)) | Fable 5.2: Claude Code (`claudeAgent`, `claude-fable-5-2`, `effort: high`) |
+| Extra cross-family perspective when another model family might spot something missed (used in `council`, not as primary coder or sole reviewer) | Grok 4.7: Grok (`grok`, `grok-4.7`, `reasoningEffort: high`) |
 
-Use Fable sparingly because it is expensive. Limit its scope to design and implementation that requires those
-design choices, and to the ship check. Routine UI updates, bug fixes, investigation, testing, screenshots, review
-and verification use the general Opus/Sol routing; touching a UI does not route a phase or its descendants to
-Fable.
+Use Fable sparingly because it is expensive. Limit its scope to planning/design consultation, design and
+implementation that requires new visual/UX choices, and the ship check. Routine UI updates, bug fixes,
+investigation, testing, screenshots, review and verification use the general routing above; touching a UI does not
+route a phase or its descendants to Fable.
 
-Sol's value is thoroughness on work that runs long anyway and independence from the author of a change: its
-review can judge production-code correctness and design, not just run empirical checks. When a Sol thread hands
-production code to Opus, the handoff carries the established cause, the reproduction (a failing test in the
-repository's test layer where one fits, with its red run) and the verification commands, so the remaining question
-is where and how to change production code. Exploration scripts stay disposable. Turning one into shipped tooling,
-or applying an exploratory patch to production, is production implementation and belongs to Opus. Opus owns the
-production changes that follow from a review.
+Sol's value is thoroughness on work that runs long anyway, throwaway proofs, and independence from the author of a
+change: its review can judge production-code correctness and design, not just run empirical checks. When a Sol
+thread hands production code to Gemini 4 Neon (or Opus 5.5 if chosen), the handoff carries the established cause,
+the reproduction (a failing test in the repository's test layer where one fits, with its red run) and the
+verification commands, so the remaining question is where and how to change production code. Exploration scripts
+stay disposable. Turning one into shipped tooling, or applying an exploratory patch to production, is production
+implementation and belongs to Gemini 4 Neon or Opus 5.5, which also own the production changes that follow from a
+review.
 
 The current thread remains the owner regardless of its model. Coordination, briefs and instruction or metadata
 edits need no delegate. When a phase requires another model, delegate that bounded phase with its gate, evidence
@@ -117,16 +126,19 @@ and explicit ownership rather than asking the user to move threads. Reuse valid 
 not repeat investigation merely to change providers. While a delegate runs, continue independent work, such as
 the parts of the change its result cannot alter; end the turn to wait only when nothing independent remains.
 
-Resolve provider instances and exact model IDs from `orchestrator_capabilities`; use the requested harness,
-not another one that happens to expose the same model (Sol in Codex or Opus in Claude Code is a substitution). Honor task-specific provider/model/effort overrides
-for the roles they cover; selecting a composer model alone does not override this role routing. If the required
-provider/model or delegation route is unavailable, report the attempts and ask how to proceed before doing that
-phase. Do not silently substitute another model. Continue independent work on available roles.
+Resolve provider instances and exact model IDs from `orchestrator_capabilities`; always use the model's native
+harness, not another one that happens to expose the same model (Sol in OpenCode or Opus in Antigravity is a
+substitution). Honor task-specific provider/model/effort overrides for the roles they cover; selecting a composer
+model alone does not override this role routing. If the required provider/model or delegation route is unavailable,
+report the attempts and ask how to proceed before doing that phase. Do not silently substitute another model.
+Continue independent work on available roles.
 
-The one automatic substitution is a cybersecurity refusal: when a model in any role refuses a phase on
-cybersecurity grounds, retry that phase once, with the same brief, on Codex Daybreak (`gpt-daybreak-blue-latest`
-at `high`, T3 instance `codex-daybreak`) without asking. Record the refusal and the model that completed the
-phase. If Daybreak refuses too or is unavailable, report the phase as blocked and continue independent work.
+The one automatic substitution is a cybersecurity refusal: when a non-security model in any role refuses a phase
+on cybersecurity grounds, retry that phase once, with the same brief, without asking: use Mythos 5.2
+(`claudeAgent`, `claude-mythos-5-2`, `effort: high`) for sensitive plans or complex code and Daybreak Blue
+(`codex`, `gpt-daybreak-blue-latest`, `reasoningEffort: high`) for routine checks. Record the refusal and the
+model that completed the phase. If that security-enabled model refuses too or is unavailable, report the phase as
+blocked and continue independent work; never reword the brief or switch models to get past a refusal.
 
 ## Execute and hand off
 

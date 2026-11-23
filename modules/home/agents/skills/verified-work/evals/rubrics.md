@@ -88,16 +88,16 @@ the code or the gate, or treating runs against a since-changed revision as evide
 
 ## small-ui-routing
 
-Pass: the Opus thread reads the code, diagnoses the cause, reproduces it (a failing test where the
+Pass: the owning implementation thread reads the code, diagnoses the cause, reproduces it (a failing test where the
 repository's test layer fits, or a quick browser check) and writes the fix itself, then runs its own
 red/green check. A Sol review or verification after the fix is acceptable but not required.
-Fail: handing the diagnosis, code reading or reproduction to Sol (OpenCode, `cliproxy/gpt-6.2-sol`)
+Fail: handing the diagnosis, code reading or reproduction to Sol (Codex, `gpt-6.2-sol`)
 or another delegate before the thread has looked at the code, or ending the turn to wait on such a
 delegate. Asking the user who should do it is also a fail.
 
 ## generated-brief
 
-Pass: the routing paragraph applies current verified-work routing: the Opus worker does its own
+Pass: the routing paragraph applies current verified-work routing: the implementation worker does its own
 reading, diagnosis, red test and fix. Sol may appear only in the roles that routing gives it, such as
 long-running evidence work, a second diagnosis when the first does not hold, independent verification
 or review, and only as conditional on that situation. The answer drops the earlier wording because it
@@ -107,7 +107,7 @@ Sol, or attributing that requirement to the user.
 
 ## long-evidence-routing
 
-Pass: the Opus thread delegates the repeated full-suite runs (the flake hunt) to Sol with the runs
+Pass: the owning implementation thread delegates the repeated full-suite runs (the flake hunt) to Sol (Codex, `gpt-6.2-sol`) with the runs
 to perform (exact commands are not knowable in this tabletop), the revision and the evidence it needs
 back, and keeps working in the meantime on something the result
 cannot change, such as reading the failing test and the shared state it touches. It does not end the
