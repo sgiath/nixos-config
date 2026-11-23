@@ -159,6 +159,7 @@ Runtime checks in records are required future checks unless the record's
 | [`davinci-resolve-mcp-sdk-version`](#davinci-resolve-mcp-sdk-version) | compatibility | required | ceres |
 | [`t3code-nightly-trusted-networks`](#t3code-nightly-trusted-networks) | security exception | required | ceres, pallas, vesta |
 | [`t3code-nightly-arm64-sea-page-size`](#t3code-nightly-arm64-sea-page-size) | compatibility | required | package only (aarch64 refused) |
+| [`t3code-antigravity-mcp-config`](#t3code-antigravity-mcp-config) | compatibility | required | ceres, pallas, vesta |
 | [`cross-architecture-nixos-rebuild-no-reexec`](#cross-architecture-nixos-rebuild-no-reexec) | compatibility | candidate | ceres, juno1 |
 | [`burn-iso-hybrid-mbr-key-partition`](#burn-iso-hybrid-mbr-key-partition) | compatibility | unknown | iso |
 | [`dgx-spark-nvidia-kernel-cve-2026-98432`](#dgx-spark-nvidia-kernel-cve-2026-98432) | security backport | required | juno1 |
@@ -490,6 +491,16 @@ Also covers audit ID `executor-root-to-nonroot-state-migration`.
 - **Exercised (2026-10-01):** `scripts/update-executor.sh --dry-run` → "already at 1.6.10".
 - **Remove when:** upstream guarantees a matching image for every release, or the updater design changes deliberately. Matching versions today are not enough.
 - **Validate:** `vesta`; runtime: deployed image tag and Executor health after switch.
+
+#### `t3code-antigravity-mcp-config`
+
+- **Where:** `modules/home/agents/antigravity.nix` (`home.file` links `~/.t3/userdata/providers/antigravity/<sha256("antigravity")>/config/mcp_config.json` to the same immutable store file as `~/.gemini/config/mcp_config.json` when `services.t3code.enable` and native immutable Antigravity MCP config are active; `home.activation.t3codeAntigravityMcp` runs between `writeBoundary` and `linkGeneration` to keep missing T3 private directories `0700` and drop `agy`'s empty placeholder before linking).
+- **Why:** T3 Code launches `agy acp` against an isolated `--gemini-dir ~/.t3/userdata/providers/antigravity/<sha256(instanceId)>`, and `linkAntigravityUserConfig` in [`apps/server/src/provider/antigravityAuthSupport.ts`](https://github.com/pingdotgg/t3code/blob/856b105fa23f9cb9fdd49a8f102cb66a71b78265/apps/server/src/provider/antigravityAuthSupport.ts#L256-L288) symlinks only `AGENTS.md`, `GEMINI.md`, `config/skills.json`, and the two `skills` directories from `~/.gemini`, omitting `config/mcp_config.json` ("Private GEMINI_HOME isolates credentials/hooks/MCP"). T3 exposes no `homePath` or user MCP server setting for Antigravity, so T3 Antigravity threads only see the injected `t3-code` server and cannot reach Executor. Side effect: [`isAntigravityTextGenerationAvailable`](https://github.com/pingdotgg/t3code/blob/856b105fa23f9cb9fdd49a8f102cb66a71b78265/apps/server/src/textGeneration/AntigravityTextGeneration.ts#L71-L105) disables Antigravity system text generation on profiles with non-empty `mcp_config.json` (Ceres currently uses Claude for `textGenerationModelSelection` and `sourceControlWriterModelSelection`).
+- **Upstream:** no issue filed; checked against nightly `0.1.12-nightly.20261123.5151` ([`856b105f`](https://github.com/pingdotgg/t3code/commit/856b105fa23f9cb9fdd49a8f102cb66a71b78265), 2026-11-23).
+- **Selected pin:** `packages/t3code-nightly/sources.json` `0.1.12-nightly.20261123.5151` (`856b105f`).
+- **Remove when:** T3 Code either links `~/.gemini/config/mcp_config.json` into its Antigravity profile or exposes native MCP server / profile-path configuration for Antigravity; switch to that setting and drop the `home.file` link and `t3codeAntigravityMcp` activation block.
+- **Validate:** `ceres`, `pallas`, `vesta` (and `juno1` eval confirming omission when `services.t3code.enable` is false); runtime: start a new Antigravity thread in T3 Code and confirm Executor MCP tools load alongside `t3-code`.
+- **Exercised (2026-11-23):** isolated `agy acp --gemini-dir <tmp> --app-data-dir antigravity-acp` with T3's env (`AGY_ACP_FORCE_FILE_STORAGE=1`, `AGY_CLI_DISABLE_AUTO_UPDATE=1`, `BROWSER=false`) and `<tmp>/config/mcp_config.json` symlinked to the Nix-generated store file completed migration, kept the symlink intact, spawned `mcp-remote`, and populated `antigravity-acp/mcp/executor/` with all 7 Executor tools. Full Ceres, Pallas and Vesta builds and Juno1 eval passed; `mutableSettings = true` and empty `mcpServers` overrides evaluated cleanly; activation snippet verified across fresh, 0-byte, empty-JSON, custom-config and symlink fixtures.
 
 ### Local packages and scripts
 
