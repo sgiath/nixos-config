@@ -120,6 +120,10 @@ in
         # host's nsncd, which resolves through the host resolv.conf and never
         # reaches WARP's proxy; WARP then reconnects in a loop.
         InaccessiblePaths = [ "/run/nscd" ];
+        # warp-svc writes DEBUG to stdout with no setting to lower it (about
+        # 100k journal lines a day on Ceres) and keeps its full log in
+        # /var/log/cloudflare-warp, so the journal keeps warnings and errors.
+        LogFilterPatterns = "WARN|ERROR|panicked";
       };
 
       services.coredns = {
