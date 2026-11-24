@@ -71,6 +71,46 @@ let
     ];
   };
 
+  # Exit 0 only when the path is a Nix store symlink or a readable directory
+  # containing at least one Nix store symlink and nothing else, so a backup
+  # holding any user-owned file is moved out of ~/.claude/skills/ instead of
+  # deleted.
+  isStoreOnlyBackupPy = ''
+    import os, sys
+
+    def is_store_link(p):
+        if not os.path.islink(p):
+            return False
+        target = os.readlink(p)
+        return target.startswith("/nix/store/") and os.path.normpath(target).startswith("/nix/store/")
+
+    path = sys.argv[1]
+    if os.path.islink(path):
+        sys.exit(0 if is_store_link(path) else 1)
+    if not os.path.isdir(path):
+        sys.exit(1)
+
+    def on_error(_err):
+        sys.exit(1)
+
+    found_store_link = False
+    for root, dirs, files in os.walk(path, followlinks=False, onerror=on_error):
+        if not dirs and not files:
+            sys.exit(1)
+        for name in dirs:
+            entry = os.path.join(root, name)
+            if os.path.islink(entry):
+                if not is_store_link(entry):
+                    sys.exit(1)
+                found_store_link = True
+        for name in files:
+            entry = os.path.join(root, name)
+            if not is_store_link(entry):
+                sys.exit(1)
+            found_store_link = True
+    sys.exit(0 if found_store_link else 1)
+  '';
+
 in
 {
   config = lib.mkIf config.sgiath.agents.enable {
@@ -84,17 +124,78 @@ in
       skills = ./skills;
     };
 
-    # Whiteboard ships only an amd64 build (base.nix), so other hosts skip the
-    # plugin. This runs before claudeAttribution, which then normalizes the
-    # settings.json Claude rewrote, keeping later activations byte-identical.
-    home.activation.claudeWhiteboard = lib.mkIf pkgs.stdenv.hostPlatform.isx86_64 (
-      lib.hm.dag.entryBetween [ "claudeAttribution" ] [ "writeBoundary" ] ''
-        run ${lib.getExe (pkgs.callPackage ./whiteboard-plugin.nix { })} claude \
-          ${lib.getExe config.programs.claude-code.package} \
-          ${lib.escapeShellArg "${config.home.profileDirectory}/bin/whiteboard"} \
-          "$HOME/.claude"
-      ''
-    );
+    # Remove or evacuate Home Manager backups of the generated MCP plugin
+    # (Claude Code auto-loads every ~/.claude/skills/* directory with a plugin
+    # manifest, so a .backup resurrects removed MCP servers) and uninstall the
+    # previously Nix-installed user-scope whiteboard@devfast plugin (keeping
+    # any saved plugin data) and its user-scope devfast marketplace when no
+    # other @devfast plugin remains. Runs after linkGeneration (which creates
+    # .backup files) and before claudeAttribution (which normalizes
+    # settings.json after Claude edits it).
+    home.activation.claudePluginCleanup =
+      lib.hm.dag.entryBetween [ "claudeAttribution" ] [ "linkGeneration" ]
+        ''
+          backup="$HOME/.claude/skills/claude-code-home-manager.backup"
+          if [[ -e $backup || -L $backup ]]; then
+            if ${lib.escapeShellArg (lib.getExe pkgs.python3)} -I -c ${lib.escapeShellArg isStoreOnlyBackupPy} "$backup" 2>/dev/null; then
+              run rm -rf $VERBOSE_ARG "$backup"
+            else
+              backups_dir="$HOME/.claude/backups"
+              dest="$backups_dir/claude-code-home-manager.backup"
+              if [[ -e $dest || -L $dest ]]; then
+                ts=$(${lib.escapeShellArg (lib.getExe' pkgs.coreutils "date")} +%Y%m%d%H%M%S)
+                dest="$backups_dir/claude-code-home-manager.backup.$ts"
+                i=1
+                while [[ -e $dest || -L $dest ]]; do
+                  dest="$backups_dir/claude-code-home-manager.backup.$ts.$i"
+                  i=$((i + 1))
+                done
+              fi
+              run mkdir -p "$backups_dir"
+              run mv $VERBOSE_ARG "$backup" "$dest"
+              if [[ ! -v DRY_RUN ]]; then
+                echo "Claude: moved non-store $backup to $dest so Claude Code does not load it as a plugin" >&2
+              fi
+            fi
+          fi
+
+          installed="$HOME/.claude/plugins/installed_plugins.json"
+          marketplaces="$HOME/.claude/plugins/known_marketplaces.json"
+          settings="$HOME/.claude/settings.json"
+          claude_exe=${lib.escapeShellArg (lib.getExe config.programs.claude-code.package)}
+          env_exe=${lib.escapeShellArg (lib.getExe' pkgs.coreutils "env")}
+          jq_exe=${lib.escapeShellArg (lib.getExe pkgs.jq)}
+          timeout_exe=${lib.escapeShellArg (lib.getExe' pkgs.coreutils "timeout")}
+
+          if [[ -f $installed ]] && "$jq_exe" -e '(.plugins? | type == "object") and ((.plugins["whiteboard@devfast"] // []) | type == "array" and any(type == "object" and .scope == "user"))' "$installed" >/dev/null 2>&1; then
+            if [[ -v DRY_RUN ]]; then
+              echo "Would uninstall Claude plugin whiteboard@devfast"
+            else
+              if out=$("$env_exe" -u CLAUDE_CONFIG_DIR "$timeout_exe" 60 "$claude_exe" plugin uninstall whiteboard@devfast --scope user --keep-data </dev/null 2>&1); then
+                echo "Claude: uninstalled plugin whiteboard@devfast"
+              else
+                echo "Claude: uninstalling plugin whiteboard@devfast failed; activation continues:" >&2
+                echo "$out" >&2
+              fi
+            fi
+          fi
+
+          if [[ -f $settings && -f $marketplaces ]] \
+            && "$jq_exe" -e 'type == "object" and (.extraKnownMarketplaces? | type == "object") and (.extraKnownMarketplaces.devfast? | type == "object") and (.extraKnownMarketplaces.devfast.source? | type == "object") and .extraKnownMarketplaces.devfast.source.repo? == "devdotfast/whiteboard"' "$settings" >/dev/null 2>&1 \
+            && "$jq_exe" -e 'type == "object" and (.devfast? | type == "object") and (.devfast.source? | type == "object") and .devfast.source.repo? == "devdotfast/whiteboard"' "$marketplaces" >/dev/null 2>&1 \
+            && ( [[ ! -f $installed ]] || "$jq_exe" -e 'type == "object" and ((.plugins // {}) | type == "object" and (keys | all(endswith("@devfast") | not)))' "$installed" >/dev/null 2>&1 ); then
+            if [[ -v DRY_RUN ]]; then
+              echo "Would remove Claude plugin marketplace devfast (user scope)"
+            else
+              if out=$("$env_exe" -u CLAUDE_CONFIG_DIR "$timeout_exe" 60 "$claude_exe" plugin marketplace remove --scope user devfast </dev/null 2>&1); then
+                echo "Claude: removed plugin marketplace devfast (user scope)"
+              else
+                echo "Claude: removing plugin marketplace devfast failed; activation continues:" >&2
+                echo "$out" >&2
+              fi
+            fi
+          fi
+        '';
 
     # Claude rewrites settings.json itself (theme, plugins), so merge the
     # attribution policy into it instead of owning the file.
