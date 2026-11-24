@@ -7,12 +7,12 @@
   ffmpeg,
 }:
 let
-  version = "5.4.0";
+  version = "5.4.3";
   src = fetchFromGitHub {
     owner = "samuelgursky";
     repo = "davinci-resolve-mcp";
     tag = "v${version}";
-    hash = "sha256-9aNfrj+xWSmNMCDlW2xOiXP/hHa0kqaw6xd2ACTsfuQ=";
+    hash = "sha256-DW2eoyKrG3vJjomEY/HEGVrGkDFrLgfkb11XFkz/DBM=";
   };
 
   # Resolve MCP's requirements.txt pins mcp <2 (server.py imports
