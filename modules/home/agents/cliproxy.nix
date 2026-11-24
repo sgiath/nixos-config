@@ -5,17 +5,16 @@
   ...
 }:
 let
-  # OpenCode 2, Pi and fx use CLIProxyAPI for inference with the
-  # CLIPROXY_API_KEY every host exports; Claude Code is set up in claude.nix
-  # (sharing multiple Claude subscriptions), while Codex, Grok, Antigravity
-  # and Muse use their native logins directly. Each tool below rewrites its
-  # own config, so activation merges the proxy part into it and resets the
-  # default model only when it no longer points at the proxy.
+  # Pi and fx use CLIProxyAPI for inference with the CLIPROXY_API_KEY every
+  # host exports; Claude Code is set up in claude.nix (sharing multiple Claude
+  # subscriptions), while Codex, Grok, Antigravity, Muse and OpenCode 2 use
+  # their native logins directly (opencode.nix keeps OpenCode on OpenCode Go
+  # only). Pi uses Home Manager's mutableSettings; fx has no upstream module,
+  # so activation merges the proxy part into its settings.json.
   url = config.sgiath.agents.cliproxyUrl;
   keyEnv = "CLIPROXY_API_KEY";
   catalog = import ./cliproxy-models.nix;
   personal = catalog.personal;
-  ids = map (m: m.id);
   byId = models: f: lib.listToAttrs (map (m: lib.nameValuePair m.id (f m)) models);
 
   # Proxy models answer helper calls (titles, summaries, web search,
@@ -51,36 +50,6 @@ let
       fi
     '';
 
-  opencodePackage = {
-    messages = "@opencode/ai/providers/anthropic-compatible";
-    responses = "@opencode/ai/providers/openai-compatible-responses";
-    chat = "@opencode/ai/providers/openai-compatible";
-  };
-  opencodeModels =
-    models:
-    byId models (m: {
-      inherit (m) name;
-      package = opencodePackage.${m.protocol};
-      # The Messages transport sends authToken as a bearer and apiKey as
-      # x-api-key; it rejects both at once.
-      settings.${if m.protocol == "messages" then "authToken" else "apiKey"} = "{env:${keyEnv}}";
-      limit = { inherit (m) context output; };
-      capabilities.reasoning =
-        if m.effort == [ ] then
-          { supported = false; }
-        else
-          {
-            supported = true;
-            inherit (m) effort;
-          };
-    });
-  opencode = {
-    name = "CLIProxyAPI";
-    package = opencodePackage.responses;
-    settings.baseURL = "${url}/v1";
-    models = opencodeModels personal;
-  };
-
   piApi = {
     messages = "anthropic-messages";
     responses = "openai-responses";
@@ -106,12 +75,6 @@ let
       ) models;
     };
   };
-  # Each tool keeps the proxy model the user picked while the catalog still
-  # has it; anything else (another provider, a retired model) gets the default.
-  piSettings = model: ''
-    if .defaultProvider == "cliproxy" and ((.defaultModel // "") | IN($proxy.keys[]))
-    then . else .defaultProvider = "cliproxy" | .defaultModel = "${model}" end
-  '';
 
   # fx takes the permission reviewer from the provider.
   fx = models: reviewer: {
@@ -132,50 +95,25 @@ let
 in
 {
   config = lib.mkIf config.sgiath.agents.enable {
-    # Pi rewrites settings.json but only reads models.json.
-    home.file.".pi/agent/models.json".text = builtins.toJSON (pi personal);
-
-    home.activation = {
-      opencodeProxy = merge {
-        path = ".config/opencode/opencode.json";
-        overlay = opencode;
-        # Proxy only: deny every provider, allow cliproxy, keep the rest of
-        # the user's policies after them. The native OpenAI/ChatGPT provider
-        # plugins would still refresh their saved logins at startup.
-        filter = ''
-          .providers.cliproxy = $proxy
-          | .update = "disable"
-          | .share = "disabled"
-          | .plugins = ((.plugins // []) - ["-opencode.provider.openai", "-opencode.provider.chatgpt"]
-              + ["-opencode.provider.openai", "-opencode.provider.chatgpt"])
-          | .model |= (if type == "string" and startswith("cliproxy/") and (ltrimstr("cliproxy/") as $m | $proxy.models | has($m))
-              then . else "cliproxy/${defaults.model}" end)
-          | .policies = [
-              {action: "provider.use", resource: "*", effect: "deny"},
-              {action: "provider.use", resource: "cliproxy", effect: "allow"}
-            ] + [(.policies // [])[] | select(.action != "provider.use" or (.resource | IN("*", "cliproxy") | not))]
-        '';
+    programs.pi-coding-agent = {
+      models = pi personal;
+      settings = {
+        defaultProvider = "cliproxy";
+        defaultModel = defaults.model;
       };
+    };
 
-      piProxy = merge {
-        path = ".pi/agent/settings.json";
-        overlay.keys = ids personal;
-        filter = piSettings defaults.model;
+    home.activation.fxProxy = merge {
+      path = ".fx/settings.json";
+      overlay = {
+        cliproxy = fx personal defaults.helper;
       };
-
-      fxProxy = merge {
-        path = ".fx/settings.json";
-        overlay = {
-          cliproxy = fx personal defaults.helper;
-        };
-        filter = ''
-          .providers = ((.providers // {}) + $proxy)
-          | del(.providers["cliproxy-remote"], .models["cliproxy-remote"])
-          | .provider = "cliproxy"
-          | .models.cliproxy |= (if . != null and (. as $m | $proxy.cliproxy.model_metadata | has($m))
-              then . else "${defaults.model}" end)
-        '';
-      };
+      filter = ''
+        .providers = ((.providers // {}) + $proxy)
+        | .provider = "cliproxy"
+        | .models.cliproxy |= (if . != null and (. as $m | $proxy.cliproxy.model_metadata | has($m))
+            then . else "${defaults.model}" end)
+      '';
     };
   };
 }

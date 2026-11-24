@@ -23,6 +23,10 @@ let
 in
 {
   config = lib.mkIf config.sgiath.agents.enable {
-    home.packages = [ pi ];
+    programs.pi-coding-agent = {
+      enable = true;
+      package = pi;
+      mutableSettings = true;
+    };
   };
 }

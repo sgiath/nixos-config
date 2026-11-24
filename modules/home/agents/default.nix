@@ -12,7 +12,6 @@
     ./davinci-resolve-mcp.nix
     ./dsh.nix
     ./fx.nix
-    ./grok.nix
     ./herdr-server.nix
     ./muse-code.nix
     ./opencode.nix
@@ -29,8 +28,9 @@
       description = ''
         CLIProxyAPI on Vesta (modules/nixos/services/cliproxyapi.nix), used with
         CLIPROXY_API_KEY by Claude Code (to share multiple Claude subscriptions
-        and route Mythos) and by non-native proxy clients (OpenCode, Pi, fx).
-        Codex, Grok and Antigravity use their native logins directly.
+        and route Mythos) and by non-native proxy clients (Pi, fx). Codex, Grok,
+        Antigravity and OpenCode (OpenCode Go only) use their native logins
+        directly.
       '';
     };
   };

@@ -270,30 +270,27 @@ class CodexRolloutTest(unittest.TestCase):
         self.assertEqual([r["record"] for r in self.clickhouse.rows],
                          data.decode().splitlines())
 
-    def test_collects_archived_rollouts_in_both_codex_homes(self):
-        for root in (".codex", ".codex-remote"):
-            self.write(f"{root}/archived_sessions/{self.filename}", self.prefix)
+    def test_collects_archived_rollouts(self):
+        self.write(f".codex/archived_sessions/{self.filename}", self.prefix)
         self.ship()
         self.ship()
-        self.assertEqual(len(self.clickhouse.rows), 4)
-        self.assertEqual({r["source"].split("/")[0] for r in self.clickhouse.rows},
-                         {".codex", ".codex-remote"})
+        self.assertEqual(len(self.clickhouse.rows), 2)
+        self.assertEqual({r["source"].split("/")[0] for r in self.clickhouse.rows}, {".codex"})
 
     def test_collects_rollouts_compressed_before_first_shipment(self):
-        for root in (".codex", ".codex-remote"):
-            for directory in ("sessions/2026/11/13", "archived_sessions"):
-                with self.subTest(root=root, directory=directory):
-                    # Each variant starts with an empty archive.
-                    self.clickhouse.rows.clear()
-                    path = self.write(f"{root}/{directory}/{self.filename}.zst",
-                                      zstd.compress(self.prefix))
-                    before = len(self.clickhouse.rows)
-                    self.ship()
-                    self.ship()
-                    self.assertEqual(len(self.clickhouse.rows) - before, 2)
-                    self.assertEqual(self.clickhouse.rows[-1]["position"], len(self.prefix))
-                    self.assertTrue(self.clickhouse.rows[-1]["source"].endswith(".jsonl"))
-                    path.unlink()
+        for directory in ("sessions/2026/11/13", "archived_sessions"):
+            with self.subTest(directory=directory):
+                # Each variant starts with an empty archive.
+                self.clickhouse.rows.clear()
+                path = self.write(f".codex/{directory}/{self.filename}.zst",
+                                  zstd.compress(self.prefix))
+                before = len(self.clickhouse.rows)
+                self.ship()
+                self.ship()
+                self.assertEqual(len(self.clickhouse.rows) - before, 2)
+                self.assertEqual(self.clickhouse.rows[-1]["position"], len(self.prefix))
+                self.assertTrue(self.clickhouse.rows[-1]["source"].endswith(".jsonl"))
+                path.unlink()
 
     def test_move_to_archive_resumes_legacy_cursor_without_replay(self):
         active = f".codex/sessions/2026/11/13/{self.filename}"
@@ -409,13 +406,11 @@ class DiscoverTest(unittest.TestCase):
         self.assertEqual(ship.discover(self.home, [], ignored=ignored), {})
 
     def test_reports_uncovered_codex_archived_and_compressed_rollouts(self):
-        for root in (".codex", ".codex-remote"):
-            self.store(f"{root}/archived_sessions/a.jsonl")
-            self.store(f"{root}/sessions/2026/11/13/b.jsonl.zst", zstd.compress(b'{"type":"session_meta"}\n'))
+        self.store(".codex/archived_sessions/a.jsonl")
+        self.store(".codex/sessions/2026/11/13/b.jsonl.zst", zstd.compress(b'{"type":"session_meta"}\n'))
         self.assertEqual(
             ship.discover(self.home, [], ignored=[]),
-            {".codex/archived_sessions": 1, ".codex/sessions/2026/11/13": 1,
-             ".codex-remote/archived_sessions": 1, ".codex-remote/sessions/2026/11/13": 1},
+            {".codex/archived_sessions": 1, ".codex/sessions/2026/11/13": 1},
         )
 
     def test_does_not_report_a_covered_session_created_during_scan(self):

@@ -111,39 +111,31 @@ SOURCES = [
         "claude",
         [
             ".claude/projects/**/*.jsonl",
-            ".claude-remote/projects/**/*.jsonl",
             # The only record of prompts older than the 30-day transcript cleanup.
             ".claude/history.jsonl",
-            ".claude-remote/history.jsonl",
         ],
     ),
     Files(
         "claude",
         [
-            f"{root}/projects/{pattern}"
-            for root in (".claude", ".claude-remote")
+            f".claude/projects/{pattern}"
             # Full tool outputs the transcripts only reference, and project memory.
             for pattern in ("**/*.meta.json", "*/*/tool-results/**/*", "*/memory/*.md")
         ],
     ),
     # Written by the oh-my-opencode plugin, not by Claude Code.
     Jsonl("opencode-hooks", [".claude/transcripts/*.jsonl"]),
-    Rollouts("codex", [".codex", ".codex-remote"]),
+    Rollouts("codex", [".codex"]),
     Jsonl(
         "codex",
         [
             ".codex/history.jsonl",
-            ".codex-remote/history.jsonl",
             ".codex/session_index.jsonl",
-            ".codex-remote/session_index.jsonl",
         ],
     ),
     # 2025 rollouts: one JSON document per session.
-    Files("codex", [".codex/sessions/*.json", ".codex-remote/sessions/*.json"]),
-    *(
-        Sqlite("codex", f"{root}/state_5.sqlite", "threads", "id", "COALESCE(updated_at_ms, updated_at * 1000)")
-        for root in (".codex", ".codex-remote")
-    ),
+    Files("codex", [".codex/sessions/*.json"]),
+    Sqlite("codex", ".codex/state_5.sqlite", "threads", "id", "COALESCE(updated_at_ms, updated_at * 1000)"),
     # The `event` table repeats every update of these projections; skipped.
     *(
         Sqlite("opencode", db, table, "id", "time_updated")
@@ -247,8 +239,8 @@ SOURCES = [
     ),
     # Zed's agent panel threads; `data` is zstd-compressed JSON.
     Sqlite("zed", ".local/share/zed/threads/threads.db", "threads", "id", "CAST(unixepoch(updated_at, 'subsec') * 1000 AS INTEGER)"),
-    Jsonl("grok", [".grok/sessions/**/*.jsonl", ".config/remote-agents/grok/sessions/**/*.jsonl"]),
-    Files("grok", [".grok/sessions/**/summary.json", ".config/remote-agents/grok/sessions/**/summary.json"]),
+    Jsonl("grok", [".grok/sessions/**/*.jsonl"]),
+    Files("grok", [".grok/sessions/**/summary.json"]),
     # What each Browse agent run executed in the browser, and its result.
     Jsonl("browse", [".local/state/browse/sessions/*/journal.jsonl"]),
     Jsonl("muse", [".local/share/muse/sessions/**/*.jsonl"]),
