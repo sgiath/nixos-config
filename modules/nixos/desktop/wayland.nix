@@ -66,11 +66,6 @@ in
       TTYVTDisallocate = true;
     };
 
-    systemd.user.services.xdg-desktop-portal-hyprland.serviceConfig.UnsetEnvironment = [
-      "QT_QPA_PLATFORMTHEME"
-      "QT_STYLE_OVERRIDE"
-    ];
-
     programs.hyprland = {
       enable = true;
       package = inputs.hyprland.packages.${pkgs.stdenv.hostPlatform.system}.hyprland;

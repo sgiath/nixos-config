@@ -125,7 +125,6 @@ Runtime checks in records are required future checks unless the record's
 | [`hermes-agent-node-patchelf`](#hermes-agent-node-patchelf) | temporary fix | required | vesta |
 | [`hermes-agent-home-mode`](#hermes-agent-home-mode) | compatibility | required | vesta |
 | [`snowfall-flake-utils-plus-deferred-config`](#snowfall-flake-utils-plus-deferred-config) | vendored fork | required | all |
-| [`hyprland-glaze-release-freeze`](#hyprland-glaze-release-freeze) | input pin | candidate | desktop |
 | [`ksa-unmerged-nixpkgs-package`](#ksa-unmerged-nixpkgs-package) | input fork | required | ceres |
 | [`bird-unavailable-upstream-vendoring`](#bird-unavailable-upstream-vendoring) | vendored source | unknown | ceres, vesta |
 | [`comfyui-rocm-int8-probe`](#comfyui-rocm-int8-probe) | temporary fix | dormant | ceres, juno1 |
@@ -135,14 +134,12 @@ Runtime checks in records are required future checks unless the record's
 | [`comfyui-rocm-platform-guard`](#comfyui-rocm-platform-guard) | compatibility | dormant | ceres, juno1 |
 | [`comfyui-qwen-memory-policy`](#comfyui-qwen-memory-policy) | compatibility | dormant | ceres |
 | [`desktop-hyprland-mesa-abi`](#desktop-hyprland-mesa-abi) | ABI | required | desktop |
-| [`portal-qt-theme-isolation`](#portal-qt-theme-isolation) | compatibility | candidate | desktop |
 | [`legacy-wlroots-session-flags`](#legacy-wlroots-session-flags) | compatibility | unverified | desktop |
 | [`satty-floating-hack`](#satty-floating-hack) | compatibility | required | desktop |
 | [`quickshell-store-theme-restart`](#quickshell-store-theme-restart) | compatibility | unverified | desktop |
 | [`quickshell-hyprland-workspace-address`](#quickshell-hyprland-workspace-address) | compatibility | required | desktop |
 | [`hex-model-service-selection`](#hex-model-service-selection) | temporary fix | required | desktop |
 | [`gaming-gtk2-broken-allowance`](#gaming-gtk2-broken-allowance) | compatibility | required | ceres |
-| [`tmux-sessionizer-session-target`](#tmux-sessionizer-session-target) | temporary fix | candidate | all |
 | [`pihole-first-run-setup-retry`](#pihole-first-run-setup-retry) | temporary fix | required | vesta |
 | [`pihole-module-src-tag`](#pihole-module-src-tag) | temporary fix | required | vesta, hygiea |
 | [`searx-json-secret-interpolation`](#searx-json-secret-interpolation) | temporary fix | required | vesta |
@@ -230,18 +227,6 @@ Runtime checks in records are required future checks unless the record's
 - **Remove when:** a selected upstream supports host `nixpkgs.config`, channel overlays/config, registry/input linking and `nix.settings.nix-path`. Then retarget the follows and delete the vendor tree. Merging #163 alone is insufficient; do not move host package policy into a new workaround to accommodate it.
 - **Validate:** `all`; runtime (VM/host): Nix registry, input symlinks, `NIX_PATH`, representative overlaid packages.
 - **Origin:** 26bbf25b (2026-08-09).
-
-#### `hyprland-glaze-release-freeze`
-
-- **Review (2026-11-15):** `candidate`. The original freeze remains absent, as recorded November 6. Full Ceres now selects latest release v0.57.2/`11cbc6c5` with glaze `9.0.0`; [pinned CMake accepts glaze without a version bound](https://github.com/hyprwm/Hyprland/blob/11cbc6c577b84ffb1edf4df3fc5b6128c3ae6947/CMakeLists.txt#L131) (`91f29f23` → pin: ahead 313, behind 0). Reconcile the stale Where/Upstream/comment fields; desktop builds and session/acceleration/portal/plugin runtime proof remain unestablished.
-
-- **Where:** `flake.nix` (`hyprland.url = github:hyprwm/Hyprland/v0.56.1`, comment block above it; `hyprland-plugins` follows it), `scripts/update-inputs.sh` (the `# pin to v0.56.1` marker freezes the updater).
-- **Why:** v0.56.x `CMakeLists.txt:133` requires `find_package(glaze 7...<8 QUIET)` and falls back to network `FetchContent`; root nixpkgs ships glaze 8.4.0. Why v0.56.1 rather than main was chosen (87644f14) is undocumented; do not claim v0.56.1 solves glaze 8.
-- **Upstream:** [Hyprland 91f29f23](https://github.com/hyprwm/Hyprland/commit/91f29f23bb691462f8aa6171b964069aebc37910) removed the limit on main (2026-08-04). [Latest release](https://github.com/hyprwm/Hyprland/releases/latest) v0.56.2 does not contain it.
-- **Stale comment:** `flake.nix` says "Unpinned from v0.56.2"; the input is pinned to v0.56.1. Fix the prose in the same change that next touches this pin.
-- **Side finding:** evaluating the raw `nixosConfigurations.ceres.pkgs.hyprland.version` failed on missing `hyprland-guiutils` (the `default` overlay omits the dependency overlays). Not shown to affect the full systems.
-- **Remove when:** a release whose actual source accepts the selected glaze (or ships a sandbox-safe dependency) exists; verify full Hyprland dependency overlay wiring, keep Mesa/portal/plugins matched, then update the pin and the updater marker.
-- **Validate:** `desktop`; runtime: log in, `hyprctl version`, displays, acceleration, screen sharing, plugins.
 
 #### `ksa-unmerged-nixpkgs-package`
 
@@ -337,16 +322,6 @@ Common runtime check for every ComfyUI record: `systemctl show comfyui.service -
 - **Remove when:** compositor, portal and 64/32-bit Mesa share a coherent package universe (e.g. Hyprland follows root nixpkgs, or its nixpkgs equals root) and the session runs without the override.
 - **Validate:** `desktop`; runtime: running Hyprland and `/run/opengl-driver` paths, no loader/GLIBC errors in journal, accelerated rendering, screen sharing; on Ceres a 32-bit Steam/Proton game.
 
-#### `portal-qt-theme-isolation`
-
-- **Review (2026-11-15):** `candidate`. Nothing material changed since the previous review: selected portal [85450448](https://github.com/hyprwm/xdg-desktop-portal-hyprland/blob/85450448ea40a54ec4f10bd607e68019d8f5cc41/hyprland-share-picker/CMakeLists.txt) still uses hyprtoolkit rather than Qt, and its evaluated inputs contain no Qt. [Current master 705ae6e6](https://github.com/hyprwm/xdg-desktop-portal-hyprland/blob/705ae6e6190a89e6e7687e572b88a9399660b2e8/hyprland-share-picker/CMakeLists.txt) retains that dependency. Removing both environment exclusions still needs desktop builds and monitor/window capture with inherited variables.
-
-- **Where:** `modules/nixos/desktop/wayland.nix` (`xdg-desktop-portal-hyprland` unsets `QT_QPA_PLATFORMTHEME`, `QT_STYLE_OVERRIDE`).
-- **Why:** [INFERENCE] isolates the Qt6 share picker from global Qt theme plugins/styles; no failure or upstream fix recorded.
-- **Upstream:** pinned portal 08d99f72 uses Qt6 widgets; master e87ae782. [xdg-desktop-portal-hyprland#145](https://github.com/hyprwm/xdg-desktop-portal-hyprland/issues/145) closed but about ignored themes, not this isolation.
-- **Remove when:** the selected portal starts and captures with the variables inherited, with intended theming.
-- **Validate:** `desktop`; runtime: browser screen-share picker, capture window/monitor, portal journal clean.
-
 #### `legacy-wlroots-session-flags`
 
 - **Review (2026-11-15):** `unverified`. Both flags remain exported, and neither occurs in [selected Hyprland 11cbc6c5 src](https://github.com/hyprwm/Hyprland/tree/11cbc6c577b84ffb1edf4df3fc5b6128c3ae6947/src). The material conclusion is unchanged: no original failure or complete inventory of other session consumers is established. Retain pending that inventory and AMD/NVIDIA cursor, rendering, hotplug and capture checks without each flag.
@@ -416,17 +391,6 @@ Common runtime check for every ComfyUI record: `systemctl show comfyui.service -
 - **Validate:** `all` (toplevel drvPath evaluation for every host proves the scope; Ceres must evaluate with only the GTK2 warning); `ceres` build. Runtime: start Lutris and a Nomifactory instance in Prism with `zulu8`.
 
 ### Terminal, agents and services
-
-#### `tmux-sessionizer-session-target`
-
-- **Review (2026-11-15):** `candidate`. Nothing material changed: the recorded module is absent, no repository Nix source references tmux-sessionizer, and tmux remains disabled in all four profile hosts. Selected [0.6.1/f133e5e0](https://github.com/jrmoulton/tmux-sessionizer/blob/f133e5e018b97a5f6e69d231daa5ff0c2ca372b2/src/tmux.rs#L170-L191) and [live main 335eee11](https://github.com/jrmoulton/tmux-sessionizer/blob/335eee11832f1a23caa52c7f76f34ec972f93beb/src/tmux.rs#L170-L191) still use the unqualified target. Keep pending reconciliation; absence of local callers is not an upstream fix or new collision-runtime proof.
-
-- **Where:** `modules/home/terminal/tmux.nix` (`postPatch` on `tmux-sessionizer`).
-- **Why:** `Tmux::new_window` targets an unqualified session name, which tmux can resolve to a matching worktree window. The patch appends `:`.
-- **Upstream:** [v0.6.1 tmux.rs](https://github.com/jrmoulton/tmux-sessionizer/blob/v0.6.1/src/tmux.rs) and main 15cc6462 still unqualified; latest release v0.6.1 = selected version.
-- **Remove when:** the selected release qualifies the target and the collision scenario passes without the patch. Keep the popup bindings.
-- **Validate:** `all`; runtime: run TMS from the popup in a session containing a window whose name starts with the target session name.
-- **Exercised (2026-10-01):** isolated tmux 3.7c probe: `-t target` failed "index 0 in use", `-t target:` created the window in the right session.
 
 #### `hermes-agent-home-mode`
 
@@ -696,7 +660,7 @@ happens; do not remove them because upstream changed. Group names are stable.
 | --- | --- | --- | --- |
 | `channel-selection` | `master-channel-node26-selection`, `master-channel-factorio-experimental-selection`, `tuios-no-upstream-overlay-adapter` | `overlays/sgiath/default.nix` | Freshness preference (both currently equal root versions) and package-only input adapter. Revisit on freshness-policy change. |
 | `executor-nebula-integrations` | `executor-private-network-access` | `modules/nixos/services/executor.nix`, `modules/home/agents/davinci-resolve-mcp.nix` | The personal self-hosted Executor may call authenticated MCP services on Nebula. `EXECUTOR_ALLOW_LOCAL_NETWORK=true` permits private endpoints; Resolve MCP binds only its Nebula address and requires a runtime bearer token. Revisit if Executor gains a narrower per-integration address allowlist. |
-| `release-pins` | `ordinary-root-release-pins`, `standard-input-follows-and-overlays`, `flake-binary-cache-configuration`, `comfyui-upstream-release-pin` | `flake.nix`, `scripts/update-inputs.sh` | Ordinary tagged/immutable input refs advanced by the release updater, per-input `nixpkgs` follows, module wiring, upstream overlays, and substituter/key preferences. Only `hyprland-glaze-release-freeze` is a pin workaround; Hyprland's nixpkgs not following root is tracked in `desktop-hyprland-mesa-abi`. Trust/cache changes are separate scope. |
+| `release-pins` | `ordinary-root-release-pins`, `standard-input-follows-and-overlays`, `flake-binary-cache-configuration`, `comfyui-upstream-release-pin` | `flake.nix`, `scripts/update-inputs.sh` | Ordinary tagged/immutable input refs advanced by the release updater, per-input `nixpkgs` follows, module wiring, upstream overlays, and substituter/key preferences. Hyprland's nixpkgs not following root is tracked in `desktop-hyprland-mesa-abi`. Trust/cache changes are separate scope. |
 | `bird-product` | `bird-native-linux-chromium-cookie-source`, `bird-standard-pnpm-recipe`, `hermes-bird-vesta-command-adapter` | `vendor/bird/src/lib/cookies.ts`, `vendor/bird/src/lib/chromium-cookies.ts`, `packages/bird/default.nix`, `modules/nixos/services/hermes-bird-vesta.sh` | Required read-only open-Chromium cookie reading (v11 keyring unsupported), normal pnpm recipe, digest command adapter. Credential/security changes need the security model. |
 | `comfyui-product` | `comfyui-cache-registration`, `comfyui-json-repair`, `comfyui-prompt-enhancer-node`, `comfyui-rocm-attention-policy`, `comfyui-bundled-nodes-opt-out`, `comfyui-qwen-service-state`, `comfyui-qwen-workflow-seeding`, `comfyui-qwen-model-downloads` | `flake.nix` nixConfig, `overlays/comfyui/default.nix`, `modules/nixos/services/comfyui.nix`, `systems/x86_64-linux/ceres/qwen-image.nix`, `systems/x86_64-linux/ceres/qwen-image/` | Cache opt-in, enhancer dependency/node pin, ROCm attention policy, node surface, user-owned state, edit-preserving workflow seeding, verified model downloader. `json-repair` migrates with `comfyui-service-overlay-selection`. |
 | `package-recipes` | `local-product-packaging`, `katrain-package-integration-details`, `whiteboard-legacy-alias-removal`, `delta-authenticated-archive-packaging`, `relay-tester-manual-git-hash-refresh`, `quickshell-qtmultimedia-extension`, `quickshell-multimedia-and-qml-tooling` | `packages/`, `modules/home/desktop/quickshell.nix` | Ordinary reproducible packaging, binary relocation, QtMultimedia for video wallpaper. |
@@ -710,7 +674,6 @@ happens; do not remove them because upstream changed. Group names are stable.
 
 Fix together with the next change touching the file; behavior must not change.
 
-- `flake.nix` Hyprland block says "Unpinned from v0.56.2" while pinned to v0.56.1 (see `hyprland-glaze-release-freeze`).
 - `flake.nix` keeps a commented-out `nixpkgs-stable` input; no stable-channel workaround is active. Do not delete transitive lock nodes by name (`retired-stable-channel-comment`).
 - `homes/x86_64-linux/sgiath@ceres/default.nix` says login default stays Noctalia; the evaluated default is `sgiath` (`noctalia-login-comment-stale`).
 - `modules/home/terminal/herdr.nix` comment names Yoru; the parser reads `themes/sgiath.yaml` (`herdr-yoru-comment-stale`).
@@ -750,3 +713,6 @@ Fix together with the next change touching the file; behavior must not change.
 | `llm-agents-hermes-nemo-relay-aws-lc`, `hermes-agent-exact-pin-relax` | 2026-11-18 | `llm-agents.hermes-agent` and `hermes-desktop` overrides removed: llm-agents `aca6bfb2` gives nemo-relay `pkg-config`, `aws-lc` and `zstd` (`packages/hermes-agent/package.nix` lines 83-88) and relaxes `markdown` and `prompt_toolkit` (lines 671-677). Ceres `llm-agents.hermes-agent` and `hermes-desktop` build; the interactive CLI remains unchecked. |
 | `preview-share-picker-hyprland-057-ipc` | 2026-11-18 | Override removed: root `1a08097f` selects `hyprland-preview-share-picker` 0.3.1 with the same source hash. The dark wrapper and absolute `region.command` stay. Ceres/Pallas toplevels build; a ScreenCast request with Outputs/Windows thumbnails remains to be checked after activation. |
 | `hex-serial-tests` | 2026-11-21 | Override removed: hex `96b4f365` (`nix/package.nix` lines 257-261) now sets `dontUseCargoParallelTests = true` itself. The unmodified `hex-3.4.0` (3020 passed, 0 failed) and both Ceres and Pallas toplevels build cleanly. |
+| `hyprland-glaze-release-freeze` | 1544288d | The v0.56.1 pin and updater marker were already removed when `flake.nix` moved to Hyprland v0.57.x (currently `v0.57.2`/`11cbc6c5`, whose CMake accepts glaze without a version bound). Desktop toplevels build cleanly and Ceres runs Hyprland v0.57.2. |
+| `tmux-sessionizer-session-target` | ea43ce72 | Removed together with `modules/home/terminal/tmux.nix`; tmux and `tmux-sessionizer` are no longer installed or configured on any host. |
+| `portal-qt-theme-isolation` | 2026-11-24 | `UnsetEnvironment` (`QT_QPA_PLATFORMTHEME`, `QT_STYLE_OVERRIDE`) removed from `modules/nixos/desktop/wayland.nix`: selected `xdg-desktop-portal-hyprland` (`85450448`) uses `hyprtoolkit` with zero Qt libraries in its transitive closure and no references to either variable, and `share-picker.nix` uses GTK `hyprland-preview-share-picker`. Ceres and Pallas toplevels build cleanly; live screen-share check remains for deployment. |
