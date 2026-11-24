@@ -21,24 +21,6 @@
         configPath = "${config.xdg.configHome}/mozilla/firefox";
         profiles.default.path = "l5hqlmby.default";
       };
-
-      # https://librewolf.net/docs/settings/
-      librewolf.enable = false;
-
-      qutebrowser = {
-        enable = false;
-        searchEngines = {
-          DEFAULT = "https://search.sgiath.dev/search?q={}";
-        };
-        quickmarks = {
-          nixpkgs = "https://github.com/NixOS/nixpkgs";
-        };
-        # https://qutebrowser.org/doc/help/settings.html
-        settings = {
-          auto_save.session = true;
-          colors.webpage.darkmode.enabled = true;
-        };
-      };
     };
 
     stylix.targets = {

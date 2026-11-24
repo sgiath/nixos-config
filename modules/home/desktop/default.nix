@@ -4,6 +4,7 @@
     ./role.nix
     ./chromium.nix
     ./clipboard.nix
+    ./files.nix
     ./hex.nix
     ./hokum.nix
     ./hyprland.nix
@@ -13,7 +14,6 @@
     ./shell.nix
     ./stylix.nix
     ./wayscriber.nix
-    ./yazi.nix
   ];
 
   options.sgiath = {

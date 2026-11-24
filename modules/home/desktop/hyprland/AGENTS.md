@@ -20,7 +20,7 @@ Hyprland implementation shards imported by `modules/home/desktop/hyprland.nix`; 
 - Parent module sets `wayland.windowManager.hyprland.configType = "lua"`; keep settings compatible with Home Manager's Hyprland Lua serializer.
 - Stylix targets for Hyprland/fuzzel are disabled in the parent; do not assume Stylix owns this styling.
 - Workspace rules are monitor-specific and tuned for `ceres`; avoid generalizing without checking host config.
-- Hyprland-adjacent modules outside this directory (`clipboard.nix`, `yazi.nix`) gate on `sgiath.roles.desktop.enable`.
+- Hyprland-adjacent modules outside this directory (`clipboard.nix`, `files.nix`) gate on `sgiath.roles.desktop.enable`.
 
 ## ANTI-PATTERNS
 

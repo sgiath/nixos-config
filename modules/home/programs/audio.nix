@@ -11,8 +11,5 @@
       pavucontrol
       alsa-scarlett-gui
     ];
-    services.easyeffects = {
-      enable = false;
-    };
   };
 }
