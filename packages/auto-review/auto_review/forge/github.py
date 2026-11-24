@@ -129,7 +129,7 @@ class GitHub:
             posted.append(Posted(comment.finding_id, str(created["id"]), created["html_url"]))
         return posted
 
-    def mark_reviewed(self, path: str, change: Change) -> None:
+    def mark_reviewed(self, path: str, change: Change) -> str | None:
         return None
 
     def request_changes(self, path: str, change: Change) -> str | None:

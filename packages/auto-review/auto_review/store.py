@@ -58,9 +58,9 @@ CREATE TABLE IF NOT EXISTS threads (
 );
 CREATE TABLE IF NOT EXISTS deferred (repo TEXT NOT NULL, number INTEGER NOT NULL, PRIMARY KEY (repo, number));
 """
-# open/disputed threads are watched for replies; the settled ones count as fixed for every later review.
+# open/disputed threads are watched for replies; the settled ones count as decided for every later review.
 WATCHED = ("open", "disputed")
-SETTLED = ("fixed", "answered", "accepted")
+SETTLED = ("fixed", "answered", "accepted", "resolved_elsewhere")
 EVENTS_KEPT = 5000
 JSON_COLUMNS = ("diff_refs", "not_reviewed", "injection_attempts")
 BOOL_COLUMNS = ("dry_run", "approved", "settled")
@@ -98,6 +98,7 @@ class Store:
         self._migrate()
         self._db.executescript(SCHEMA)
         self._backfill_threads()
+        self._defer_resolved_elsewhere()
 
     def _migrate(self) -> None:
         """Databases from before follow-ups have a reviews UNIQUE without kind/trigger; SQLite cannot change a
@@ -127,6 +128,33 @@ class Store:
                  row["review_id"], row["attempt"], row["finding_id"],
                  row["remote_id"] if row["forge"] == "gitlab" else None),
             )
+
+    def _defer_resolved_elsewhere(self) -> None:
+        """One-time upgrade backfill: earlier versions marked externally resolved threads `resolved_elsewhere` and
+        saved third-party `already_open`/`already_resolved` findings without deferring approval. Queue those MRs
+        once so the first poll rechecks them."""
+        if self._db.execute("SELECT 1 FROM meta WHERE key = 'deferred_resolved_elsewhere'").fetchone():
+            return
+        self._db.executescript(
+            "BEGIN;"
+            "INSERT OR IGNORE INTO deferred (repo, number)"
+            " SELECT DISTINCT r.repo, r.number FROM reviews r"
+            " WHERE r.id = ("
+            "   SELECT max(r2.id) FROM reviews r2"
+            "   WHERE r2.repo = r.repo AND r2.number = r.number AND r2.kind = 'review' AND r2.status = 'done'"
+            " )"
+            " AND r.approved = 0"
+            " AND NOT EXISTS (SELECT 1 FROM threads t WHERE t.repo = r.repo AND t.number = r.number"
+            "                 AND t.status IN ('open', 'disputed'))"
+            " AND ("
+            "   EXISTS (SELECT 1 FROM threads t WHERE t.repo = r.repo AND t.number = r.number"
+            "           AND t.status = 'resolved_elsewhere')"
+            "   OR EXISTS (SELECT 1 FROM findings f WHERE f.review_id = r.id AND f.attempt = r.attempt"
+            "              AND f.state IN ('already_open', 'already_resolved'))"
+            " );"
+            "INSERT OR IGNORE INTO meta VALUES ('deferred_resolved_elsewhere', '1');"
+            "COMMIT;"
+        )
 
     def instance_id(self) -> str:
         """A random id of this database, created once: T3 thread titles carry it, so a thread started for review 1
@@ -217,6 +245,16 @@ class Store:
                 "SELECT * FROM findings WHERE review_id = ? AND attempt = ? ORDER BY rowid", (review_id, attempt)
             ).fetchall()
         return [dict(r) for r in rows]
+
+    def had_open_findings(self, repo: str, number: int) -> bool:
+        """Whether any attempt of any review of this MR recorded a posted or already-open finding."""
+        with self._lock:
+            row = self._db.execute(
+                "SELECT 1 FROM findings f JOIN reviews r ON r.id = f.review_id"
+                " WHERE r.repo = ? AND r.number = ? AND f.state IN ('posted', 'already_open') LIMIT 1",
+                (repo, number),
+            ).fetchone()
+        return row is not None
 
     def update_finding(self, review_id: int, attempt: int, finding_id: str, **fields) -> None:
         assignments = ", ".join(f"{name} = ?" for name in fields)
@@ -331,8 +369,16 @@ class Store:
     def update_thread(self, repo: str, number: int, key: str, **fields) -> None:
         assignments = ", ".join(f"{name} = ?" for name in fields)
         with self._lock:
-            self._db.execute(f"UPDATE threads SET {assignments} WHERE repo = ? AND number = ? AND marker = ?",
-                             (*fields.values(), repo, number, key))
+            self._db.execute("BEGIN")
+            try:
+                self._db.execute(f"UPDATE threads SET {assignments} WHERE repo = ? AND number = ? AND marker = ?",
+                                 (*fields.values(), repo, number, key))
+                if fields.get("status") in SETTLED:
+                    self._db.execute("INSERT OR IGNORE INTO deferred VALUES (?, ?)", (repo, number))
+                self._db.execute("COMMIT")
+            except BaseException:
+                self._db.execute("ROLLBACK")
+                raise
 
     def import_legacy(self, row: dict) -> bool:
         """Insert a finished review from the old poller; False when its key exists."""

@@ -28,16 +28,19 @@ from .store import ACTIVE, SETTLED, WATCHED
 
 @dataclass
 class Applied:
-    """What applying a verdict's judgments did: disputed and failed threads as readable lines, settled count."""
+    """What applying a verdict's judgments did: disputed and failed threads as readable lines, settled count, and
+    the forge thread ids resolved by this call."""
 
     disputed: list[str] = field(default_factory=list)
     errors: list[str] = field(default_factory=list)
     settled: int = 0
+    resolved: set[str] = field(default_factory=set)
 
 
 class Threads:
     def __init__(self, engine):
         self.engine = engine
+        self._wait_logged: dict[tuple[str, int], str] = {}
 
     # The poll
 
@@ -64,18 +67,22 @@ class Threads:
                 store.update_thread(repo_id, number, item["marker"], status="closed", updated_at=self._now())
             return
         for row in store.for_mr(repo_id, number):
-            if row["status"] in ACTIVE and row["kind"] == "follow_up" and moved(row, change):
+            if row["status"] in ACTIVE and row["status"] != "launching" and row["kind"] == "follow_up" and moved(row, change):
                 engine._supersede(row, f"superseded by @{change.head_sha[:8]}")
         rows = store.for_mr(repo_id, number)
         active = any(r["status"] in ACTIVE for r in rows)
-        found = self._locate(repo_id, number, tracked, forge.threads(repo["path"], number), me)
+        threads = forge.threads(repo["path"], number)
+        if self.sync_reopened(repo_id, number, threads):
+            tracked = store.threads(repo_id, number, WATCHED)
+        found = self._locate(repo_id, number, tracked, threads, me)
         pending, settled = [], False
         for item in tracked:
             thread = found.get(item["marker"])
             if thread is None:
                 continue
             if thread.resolved:
-                settled = self._resolved(item, thread, me) or settled
+                self._resolved(item, thread, me)
+                settled = True
                 continue
             others = [n for n in notes(thread, me) if n.author.casefold() != me.casefold()]
             if digest(others) == (item["seen"] or ""):
@@ -87,11 +94,18 @@ class Threads:
                 # notes are unjudged is redone.
                 key = digest(notes(thread, me), item["status"], str(item["skips"]))
                 pending.append(f"{others[-1].id}@{key[:8]}")
+        remaining = bool(store.threads(repo_id, number, WATCHED))
         if settled:
+            if not remaining:
+                for row in rows:
+                    if row["status"] in ("queued", "running", "limited") and row["kind"] == "follow_up":
+                        engine._supersede(row, "every watched thread was resolved on the forge")
+                rows = store.for_mr(repo_id, number)
+                active = any(r["status"] in ACTIVE for r in rows)
             self.reconsider(repo_id, number)
         # A pushed fix with nobody replying: discovery reviews the new head only while a review is requested.
         new_head = bool(rows) and rows[-1]["head_sha"] != change.head_sha
-        if active or not (pending or (new_head and eligibility(change, repo["rules"], me).action == "skip")):
+        if active or not remaining or not (pending or (new_head and eligibility(change, repo["rules"], me).action == "skip")):
             return
         review_id = store.claim(
             change, forge=repo["forge"], path=repo["path"], selection=Selection(**repo["reviewer"]),
@@ -103,36 +117,42 @@ class Threads:
             engine.record("info", f"queued a follow-up on {reason} in {bundle.ref(repo['forge'], repo['path'], number)}",
                           review_id=review_id)
 
-    def _resolved(self, item: dict, thread: Thread, me: str) -> bool:
+    def _resolved(self, item: dict, thread: Thread, me: str) -> None:
         """Resolved on the forge: by the service itself when a settling write was in flight on the notes the thread
-        still has (its answer was lost; True: settled), else by someone else, and no longer watched."""
+        still has (its answer was lost), else acknowledged as `resolved_elsewhere` so the review can move forward."""
         store = self.engine.store
         status, _, version = (item["pending"] or "").partition("@")
         if status and version == digest(notes(thread, me)):
             store.update_thread(item["repo"], item["number"], item["marker"], status=status, pending=None,
                                 proposed_reply=None, updated_at=self._now())
-            return True
-        store.update_thread(item["repo"], item["number"], item["marker"], status="resolved_elsewhere",
-                            updated_at=self._now())
+            return
+        store.update_thread(item["repo"], item["number"], item["marker"], status="resolved_elsewhere", pending=None,
+                            proposed_reply=None, updated_at=self._now())
         self.engine.record("info", f"{item['finding_id']} of review {item['review_id']} was resolved on the forge;"
-                                   " no longer watched")
-        return False
+                                   " acknowledged", review_id=item["review_id"])
 
     # What a review reads
 
     def snapshot(self, row: dict, threads: list[Thread], me: str) -> tuple[list[dict], list[dict]]:
         """(own, settled) for the run directory: the open/disputed threads still unresolved on the forge, which the
-        reviewer must judge, with every note; and the threads already fixed, answered or accepted, which are
-        decided. `status` and `version` (digest of every note but the service's replies) are what apply() later checks the
-        thread against."""
+        reviewer must judge, with every note; and the threads already fixed, answered, accepted or resolved on the
+        forge, which are decided. `status` and `version` (digest of every note but the service's replies) are what
+        apply() later checks the thread against."""
         store = self.engine.store
+        self.sync_reopened(row["repo"], row["number"], threads)
         tracked = store.threads(row["repo"], row["number"])
         watched = [t for t in tracked if t["status"] in WATCHED]
         found = self._locate(row["repo"], row["number"], watched, threads, me)
         own = []
+        settled = [{"thread_id": t["thread_id"], "finding_id": t["finding_id"], "title": t["title"],
+                    "status": t["status"]} for t in tracked if t["status"] in SETTLED]
         for item in watched:
             thread = found.get(item["marker"])
-            if thread is None or thread.resolved:
+            if thread is None:
+                continue
+            if thread.resolved:
+                settled.append({"thread_id": thread.id, "finding_id": item["finding_id"], "title": item["title"],
+                                "status": "resolved_elsewhere"})
                 continue
             own.append({
                 "thread_id": thread.id, "finding_id": item["finding_id"], "title": item["title"],
@@ -141,8 +161,6 @@ class Threads:
                 "notes": [{"id": n.id, "author": n.author, "body": bundle.AGENT_PROMPT.sub("", n.body)}
                           for n in thread.notes],
             })
-        settled = [{"thread_id": t["thread_id"], "finding_id": t["finding_id"], "title": t["title"],
-                    "status": t["status"]} for t in tracked if t["status"] in SETTLED]
         return own, settled
 
     def settled_ids(self, repo_id: str, number: int) -> frozenset[str]:
@@ -169,11 +187,20 @@ class Threads:
         engine, store = self.engine, self.engine.store
         listed_path = engine.run_dir(row) / "mr/own_threads.json"
         listed = {t["thread_id"]: t for t in json.loads(listed_path.read_text())} if listed_path.exists() else {}
-        tracked = {t["thread_id"]: t for t in store.threads(row["repo"], row["number"]) if t["thread_id"]}
         current = {t.id: t for t in threads}
         forge = engine.forges[row["forge"]]
         attempt = f"{row['id']}:{row['attempt']}"
         result = Applied()
+        if not record_only:
+            watched = store.threads(row["repo"], row["number"], WATCHED)
+            located = self._locate(row["repo"], row["number"], watched, threads, me)
+            for item in watched:
+                thread = located.get(item["marker"])
+                if thread is not None and thread.resolved:
+                    self._resolved(item, thread, me)
+                    result.settled += 1
+            self.sync_reopened(row["repo"], row["number"], threads)
+        tracked = {t["thread_id"]: t for t in store.threads(row["repo"], row["number"]) if t["thread_id"]}
         for judgment in verdict.threads:
             item, read, thread = (tracked.get(judgment.thread_id), listed.get(judgment.thread_id),
                                   current.get(judgment.thread_id))
@@ -221,6 +248,7 @@ class Threads:
                 update(status=judgment.status, pending=None, seen=seen, proposed_reply=None,
                        reasoning=judgment.reasoning)
                 result.settled += 1
+                result.resolved.add(judgment.thread_id)
                 engine.record("info", f"{label} {judgment.status}: replied and resolved", review_id=row["id"])
             elif judgment.status == "disputed":
                 update(status="disputed", pending=None, seen=seen, proposed_reply=judgment.reply,
@@ -233,74 +261,138 @@ class Threads:
 
     def reconsider(self, repo_id: str, number: int) -> None:
         """After threads were settled: when the latest finished review is at the MR's current head, read every file,
-        found no injection, and each of its findings reaching the threshold now sits in a fixed, answered or accepted
-        thread, with no thread of the MR still open or disputed: approve under `when_clean` if the MR is still ready
+        found no injection, and each of its findings reaching the threshold now sits in a settled or resolved thread,
+        with no tracked thread of the MR still open or disputed: approve under `when_clean` if the MR is still ready
         under the repo's rules (draft, pipeline; the review request is not needed), else mark the MR reviewed
         (clears an earlier "requested changes" on GitLab). Writes wait out pause, dry run, quiet hours and a disabled
-        repo; while they wait, or the MR waits for a draft or pipeline, or a read or write failed, the MR is
-        rechecked every poll."""
+        repo; while they wait, or the MR waits for a draft, pipeline, other open threads, GitLab drafts or a failed
+        write, the MR is rechecked every poll."""
         engine, store = self.engine, self.engine.store
-        deferred = (repo_id, number) in store.deferred()
         store.defer(repo_id, number)  # until a decision below; a failed read or write is retried on the next poll
         settings = engine.settings()
         repo = settings["repos"].get(repo_id)
         if settings["dry_run"] or settings["paused"] or engine.quiet(engine.now())[0] or (repo and not repo["enabled"]):
             return
-        row = self._settled_review(settings, repo_id, number)
-        if row is None:
-            store.undefer(repo_id, number)
+        candidate = self._settled_review(settings, repo_id, number)
+        if candidate is None:
+            self._undefer(repo_id, number)
             return
+        row, settled_tracked, external_ids = candidate
         repo = repo_view(settings, repo_id)
         forge, me = engine.forges[row["forge"]], engine.me(row["forge"])
         change = forge.change(row["path"], row["number"], me)
         if moved(row, change):
-            store.undefer(repo_id, number)
+            self._undefer(repo_id, number)
             return
+        if repo["approval"] == "when_clean" and row["approved"]:
+            self._undefer(repo_id, number)
+            return
+        if settled_tracked or external_ids:
+            live = forge.threads(row["path"], row["number"])
+            if self.sync_reopened(repo_id, number, live):
+                self._undefer(repo_id, number)
+                return
+            resolved_ids = {t.id for t in live if t.resolved}
+            if not external_ids.issubset(resolved_ids):
+                self._wait_note(repo_id, number, row["id"], "not approving yet: waiting on other open review threads")
+                return
         if repo["approval"] != "when_clean":
-            forge.mark_reviewed(row["path"], change)
-            store.undefer(repo_id, number)
+            if not self._can_write(settings, repo_id):
+                return
+            if skipped := forge.mark_reviewed(row["path"], change):
+                self._wait_note(repo_id, number, row["id"], f"not marking reviewed yet: {skipped}")
+                return
+            self._undefer(repo_id, number)
             return
         ready = eligibility(replace(change, review_requested=True), repo["rules"], me)
-        if row["approved"] or ready.action != "review":
-            if not row["approved"] and ready.action == "wait":
-                if not deferred:
-                    engine.record("info", f"not approving yet: {ready.reason}", review_id=row["id"])
+        if ready.action != "review":
+            if ready.action == "wait":
+                self._wait_note(repo_id, number, row["id"], f"not approving yet: {ready.reason}")
                 return
-            store.undefer(repo_id, number)
+            self._undefer(repo_id, number)
+            return
+        if not self._can_write(settings, repo_id):
             return
         forge.approve(row["path"], change)
         store.update(row["id"], approved=True)
-        store.undefer(repo_id, number)
-        engine.record("info", f"approved at @{row['head_sha'][:8]}: every comment is fixed or answered",
+        self._undefer(repo_id, number)
+        engine.record("info", f"approved at @{row['head_sha'][:8]}: every comment is settled",
                       review_id=row["id"])
 
-    def _settled_review(self, settings: dict, repo_id: str, number: int) -> dict | None:
-        """The MR's latest finished review when it read everything, found no injection, and each of its findings
-        reaching the current threshold sits in a fixed, answered or accepted thread, with no thread still open or
-        disputed."""
+    def _undefer(self, repo_id: str, number: int) -> None:
+        self._wait_logged.pop((repo_id, number), None)
+        self.engine.store.undefer(repo_id, number)
+
+    def _wait_note(self, repo_id: str, number: int, review_id: int, message: str) -> None:
+        if self._wait_logged.get((repo_id, number)) != message:
+            self._wait_logged[(repo_id, number)] = message
+            self.engine.record("info", message, review_id=review_id)
+
+    def _can_write(self, settings: dict, repo_id: str) -> bool:
+        """Recheck mutable UI settings right before a forge write, just like Publisher._changed."""
+        current = self.engine.settings()
+        if current["paused"] or current["dry_run"] or self.engine.quiet(self.engine.now())[0]:
+            return False
+        repo = current["repos"].get(repo_id)
+        if not repo or not repo["enabled"]:
+            return False
+        return repo["approval"] == settings["repos"][repo_id]["approval"]
+
+    def sync_reopened(self, repo_id: str, number: int, threads: list[Thread]) -> bool:
+        """Reopen any locally settled tracked thread that is unresolved on the forge; True when any reopened."""
+        by_id = {t.id: t for t in threads}
+        reopened = [t for t in self.engine.store.threads(repo_id, number, SETTLED)
+                    if t["thread_id"] in by_id and not by_id[t["thread_id"]].resolved]
+        for item in reopened:
+            self._reopened(item)
+        return bool(reopened)
+
+    def _reopened(self, item: dict) -> None:
+        self.engine.store.update_thread(item["repo"], item["number"], item["marker"], status="open", pending=None,
+                                        proposed_reply=None, updated_at=self._now())
+        self.engine.record("info", f"{item['finding_id']} of review {item['review_id']} was reopened on the forge;"
+                                   " watching again", review_id=item["review_id"])
+
+    def _settled_review(self, settings: dict, repo_id: str, number: int) -> tuple[dict, list[dict], set[str]] | None:
+        """The MR's latest finished review, its settled tracked threads and any external thread ids (`already_open` /
+        `already_resolved` findings not tracked by sgiath) that must be resolved on the forge, when the review read
+        everything, found no injection (nor did a later follow-up on the same head), and has no open/disputed tracked
+        threads or other blocking findings at the current threshold."""
         store = self.engine.store
         if repo_id not in settings["repos"]:
             return None
         threshold = repo_view(settings, repo_id)["threshold"]
-        reviews = [r for r in store.for_mr(repo_id, number) if r["kind"] == "review" and r["status"] == "done"]
+        all_rows = store.for_mr(repo_id, number)
+        reviews = [r for r in all_rows if r["kind"] == "review" and r["status"] == "done"]
         if not reviews or store.threads(repo_id, number, WATCHED):
             return None
         row = reviews[-1]
         if row["dry_run"] or row["not_reviewed"] or row["injection_attempts"]:
             return None
+        row_order = (row["finished_at"] or "", row["id"])
+        if any(
+            r["kind"] == "follow_up" and r["status"] == "done" and r["head_sha"] == row["head_sha"]
+            and (r["finished_at"] or "", r["id"]) > row_order
+            and (r["injection_attempts"] or r["not_reviewed"])
+            for r in all_rows
+        ):
+            return None
         tracked = store.threads(repo_id, number, SETTLED)
-        settled_threads = {t["thread_id"] for t in tracked}
+        settled_threads = {t["thread_id"] for t in tracked if t["thread_id"]}
         settled_findings = {(t["review_id"], t["attempt"], t["finding_id"]) for t in tracked}
+        external_ids: set[str] = set()
         for finding in store.findings(row["id"], row["attempt"]):
             state = finding["state"]
             if state == "settled" or finding["score"] < threshold:
                 continue  # judged by the current threshold, which may have changed since the review
             if state == "posted" and (row["id"], row["attempt"], finding["finding_id"]) in settled_findings:
                 continue
-            if state in ("already_open", "already_resolved") and finding["existing_thread_id"] in settled_threads:
+            if state in ("already_open", "already_resolved") and finding["existing_thread_id"]:
+                if finding["existing_thread_id"] not in settled_threads:
+                    external_ids.add(finding["existing_thread_id"])
                 continue
             return None
-        return row
+        return row, tracked, external_ids
 
     # sgiath's decisions on a disputed thread (explicit actions: like Post anyway they write even in dry run)
 

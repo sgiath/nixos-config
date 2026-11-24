@@ -7,6 +7,7 @@ from .models import Comment, Finding
 from .note import DEFAULT_TEMPLATE, comment_body, marker, own_markers, review_key
 from .rules import eligibility, moved
 from .settings import repo_view
+from .store import SETTLED
 from .threads import Applied
 from .verdict import VerdictError, decide, load
 
@@ -27,6 +28,8 @@ class Publisher:
             return
         if row["repo"] not in settings["repos"]:
             return engine.fail(row, "repo is no longer watched")
+        if not settings["repos"][row["repo"]]["enabled"]:
+            return
         repo = repo_view(settings, row["repo"])
         run_dir = engine.run_dir(row)
         follow_up = row["kind"] == "follow_up"
@@ -54,6 +57,9 @@ class Publisher:
             if not dry_run and self._changed(settings, row["repo"]):
                 return
             applied = engine.threads.apply(row, verdict, threads, me, record_only=dry_run or _unsafe(verdict))
+            if applied.resolved:
+                threads = forge.threads(row["path"], row["number"])
+                engine.threads.sync_reopened(row["repo"], row["number"], threads)
             decision = decide(verdict, threshold=repo["threshold"], index=DiffIndex(bundle.diffs(run_dir)),
                               threads=threads, settled=engine.threads.settled_ids(row["repo"], row["number"]))
         outcome, reason = decision.outcome, decision.reason
@@ -101,8 +107,18 @@ class Publisher:
                 return engine.fail(row, f"approval failed: {error}")
             store.update(row["id"], approved=True)
             engine.record("info", f"approved at @{row['head_sha'][:8]}", review_id=row["id"])
+        needs_defer = (
+            (outcome == "findings" and not posted and not engine.threads.watching(row)
+             and any(p.state == "already_open" for p in decision.placed))
+            or (outcome == "clean" and repo["approval"] != "when_clean"
+                and (applied.settled or any(p.state in ("settled", "already_resolved") for p in decision.placed)
+                     or bool(store.threads(row["repo"], row["number"], SETTLED))
+                     or store.had_open_findings(row["repo"], row["number"])))
+        )
+        if needs_defer:
+            store.defer(row["repo"], row["number"])
         self._done(row, outcome, reason)
-        if applied.settled:
+        if applied.settled or (needs_defer and outcome == "clean"):
             engine.threads.reconsider(row["repo"], row["number"])  # e.g. clears an old "requested changes" under never
 
     def _follow_up(self, row: dict, settings: dict, verdict, change, threads, me: str) -> None:
@@ -238,12 +254,14 @@ class Publisher:
             self.engine.store.update(row["id"], error=None)
 
     def _changed(self, settings: dict, repo_id: str) -> bool:
-        """Whether a write must wait: paused or quiet now, or dry run or the repo's approval policy differ from the
-        settings this decision was made with."""
+        """Whether a write must wait: paused or quiet now, or the repo was disabled, or dry run or the repo's
+        approval policy differ from the settings this decision was made with."""
         current = self.engine.settings()
         if current["paused"] or self.engine.quiet(self.engine.now())[0]:
             return True
         if current["dry_run"] != settings["dry_run"] or repo_id not in current["repos"]:
+            return True
+        if not current["repos"][repo_id]["enabled"]:
             return True
         return current["repos"][repo_id]["approval"] != settings["repos"][repo_id]["approval"]
 

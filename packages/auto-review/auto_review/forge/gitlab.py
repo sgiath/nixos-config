@@ -91,8 +91,8 @@ class GitLab:
             posted.append(Posted(comment.finding_id, created["id"], f"{change.url}#note_{note_id}"))
         return posted
 
-    def mark_reviewed(self, path: str, change: Change) -> None:
-        self._set_state(path, change, "reviewed")
+    def mark_reviewed(self, path: str, change: Change) -> str | None:
+        return None if self._set_state(path, change, "reviewed") else "you have unpublished drafts"
 
     def request_changes(self, path: str, change: Change) -> str | None:
         return None if self._set_state(path, change, "requested_changes") else "you have unpublished drafts"

@@ -31,8 +31,9 @@ class Forge(Protocol):
         """Post each comment on its diff line at `change.head_sha`. GitLab: one discussion each; GitHub: one review
         comment each (a COMMENT review would need a top-level body). Never posts a comment without a position."""
 
-    def mark_reviewed(self, path: str, change: Change) -> None:
-        """GitLab: set `me`'s reviewer state to "left comments" unless `me` has unpublished drafts. GitHub: nothing."""
+    def mark_reviewed(self, path: str, change: Change) -> str | None:
+        """GitLab: set `me`'s reviewer state to "left comments" unless `me` has unpublished drafts. GitHub: nothing.
+        None when the state was set (or not applicable), else why it was skipped."""
 
     def request_changes(self, path: str, change: Change) -> str | None:
         """GitLab: set `me`'s reviewer state to "requested changes", with the same drafts guard. GitHub: nothing (a

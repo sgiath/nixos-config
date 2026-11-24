@@ -8,7 +8,7 @@ from .checkout import CheckoutError, HeadMoved
 from .models import Change, Selection
 from .rules import eligibility, moved
 from .settings import repo_view
-from .store import BUSY
+from .store import ACTIVE, BUSY, WATCHED
 from .t3 import T3Error
 from .threads import write as write_threads
 
@@ -59,10 +59,24 @@ class Launcher:
         follow_up = row["kind"] == "follow_up"  # judges sgiath's own threads, so the review request does not matter
         if reason := moved(row, change) or (None if follow_up else _skip(change, repo, me)):
             if row["status"] == "launching":
-                engine.fail(row, f"before launch: {reason}")
+                adopted = self._adopt(row, repo)
+                if adopted["thread_id"]:
+                    engine._stop(adopted, f"before launch: {reason}")
+                engine.fail(adopted, f"before launch: {reason}")
             else:
                 engine.finish(row, "cancelled", error=f"before launch: {reason}")
                 engine.record("info", f"cancelled before launch: {reason}", review_id=row["id"])
+            return False
+        if follow_up and not engine.store.threads(row["repo"], row["number"], WATCHED):
+            adopted = self._adopt(row, repo)
+            engine._supersede(adopted, "every watched thread was resolved on the forge")
+            return False
+        if follow_up and any(
+            other["id"] != row["id"] and other["kind"] == "review" and other["status"] in ACTIVE
+            for other in engine.store.for_mr(row["repo"], row["number"])
+        ):
+            adopted = self._adopt(row, repo)
+            engine._supersede(adopted, f"superseded by @{change.head_sha[:8]}")
             return False
         if not follow_up and eligibility(change, repo["rules"], me).action == "wait":
             return False
@@ -74,8 +88,8 @@ class Launcher:
         try:
             engine.fetch(Path(repo["checkout"]), row["forge"], change)
         except HeadMoved as error:
-            engine.finish(row, "superseded", error=str(error))
-            engine.record("info", f"head moved while fetching: {error}", review_id=row["id"])
+            adopted = self._adopt(row, repo)
+            engine._supersede(adopted, f"head moved while fetching: {error}")
             return False
         except CheckoutError as error:
             engine.fail(row, f"checkout: {error}")
@@ -117,6 +131,16 @@ class Launcher:
         engine.record("info", f"launched {row['model']}/{row['effort']} thread {launched['thread_id']}", review_id=row["id"])
         engine._link(row, launched["thread_id"])
         return True
+
+    def _adopt(self, row: dict, repo: dict) -> dict:
+        """If a lost launch may already have created a T3 thread, find and record it without starting a new one."""
+        if row["status"] == "launching" and (self.engine.run_dir(row) / "mr/own_threads.json").exists():
+            found = self.engine.t3.find(project=repo["t3_project"], client_request_id=self.engine.request_id(row))
+            if found:
+                self.engine.store.update(row["id"], thread_id=found["thread_id"], run_id=found.get("run_id"),
+                                         thread_url=found.get("url"))
+                return self.engine.store.get(row["id"])
+        return row
 
 
 def _skip(change: Change, repo: dict, me: str) -> str | None:

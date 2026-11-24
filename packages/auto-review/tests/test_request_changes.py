@@ -63,9 +63,16 @@ class GitLabReviewStateTest(unittest.TestCase):
     def test_mark_reviewed_keeps_reviewed_state(self):
         forge = GitLab()
         with patch.object(forge, "_get_all", return_value=[]), patch.object(forge, "_post") as post:
-            forge.mark_reviewed("team/service", change())
+            self.assertIsNone(forge.mark_reviewed("team/service", change()))
         post.assert_called_once_with("projects/team%2Fservice/merge_requests/7/draft_notes/bulk_publish",
                                      {"reviewer_state": "reviewed"})
+
+    def test_mark_reviewed_reports_skipped_with_personal_drafts(self):
+        forge = GitLab()
+        with patch.object(forge, "_get_all", return_value=[{"id": 99}]), patch.object(forge, "_post") as post:
+            reason = forge.mark_reviewed("team/service", change())
+        post.assert_not_called()
+        self.assertIn("drafts", reason)
 
     def test_request_changes_does_not_publish_personal_drafts(self):
         forge = GitLab()
@@ -143,6 +150,67 @@ class RequestChangesPublishingTest(EngineCase):
                                          raw_finding(id="SR-2")])
         self.assertEqual(self.states(review_id), {"SR-1": "already_resolved", "SR-2": "posted"})
         self.assertEqual(self.forge.change_requests, [])
+        self.assertEqual(len(self.forge.marked), 1)
+
+    def test_review_fixing_high_finding_thread_does_not_request_changes(self):
+        from dataclasses import replace as dc_replace
+        from auto_review.models import Posted
+        self.forge.reply = lambda path, number, tid, body: Posted("", "r1", "https://forge.invalid/#r1")
+
+        def resolve(path, number, tid):
+            key = (path, number)
+            self.forge.discussions[key] = [dc_replace(t, resolved=True) if t.id == tid else t
+                                           for t in self.forge.discussions[key]]
+
+        self.forge.resolve = resolve
+        first = self.start()
+        self.finish(first, findings=[raw_finding(frequency=5, severity=6)])
+        self.assertEqual(len(self.forge.change_requests), 1)
+        self.forge.change_requests.clear()
+        second = self.start(change(head_sha="c" * 40))
+        row = self.finish(
+            second,
+            findings=[raw_finding(frequency=5, severity=6, existing_thread_id="note-1")],
+            threads=[dict(thread_id="note-1", status="fixed", reasoning="Fixed in new head.", reply="Fixed now.")],
+        )
+        self.assertEqual(self.states(second), {"SR-1": "settled"})
+        self.assertEqual(self.forge.change_requests, [])
+        self.assertEqual(row["outcome"], "clean")
+        self.assertTrue(row["approved"])
+
+    def test_same_head_retry_under_never_clears_requested_changes_after_resolution(self):
+        from dataclasses import replace as dc_replace
+        self.config["repos"][REPO]["approval"] = "never"
+        review_id = self.start()
+        self.finish(review_id, findings=[raw_finding(frequency=5, severity=6)])
+        self.assertEqual(len(self.forge.change_requests), 1)
+        drafts = [True]
+        original_mark = self.forge.mark_reviewed
+        self.forge.mark_reviewed = lambda path, item: "you have unpublished drafts" if drafts[0] else original_mark(path, item)
+        key = ("team/service", 7)
+        self.forge.discussions[key][0] = dc_replace(self.forge.discussions[key][0], resolved=True)
+        self.engine.tick()
+        self.assertEqual(self.forge.marked, [])
+        # Retry the same review while deferred, then clear drafts before attempt 2 finishes clean.
+        self.engine.retry(review_id)
+        self.until(lambda: self.row(review_id)["status"] == "running", "retry should relaunch")
+        drafts[0] = False
+        self.finish(review_id, findings=[raw_finding(frequency=5, severity=6, existing_thread_id="note-1")])
+        self.assertEqual(len(self.forge.marked), 1)
+
+    def test_clean_empty_same_head_retry_under_never_clears_third_party_requested_changes(self):
+        from dataclasses import replace as dc_replace
+        self.config["repos"][REPO]["approval"] = "never"
+        key = ("team/service", 7)
+        self.forge.discussions[key] = [Thread("other-1", False, (Note("bob", "Severe bug.", "b1"),), "src/new.py", 11)]
+        review_id = self.start()
+        self.finish(review_id, findings=[raw_finding(frequency=5, severity=6, existing_thread_id="other-1")])
+        self.assertEqual(len(self.forge.change_requests), 1)
+        self.assertEqual(self.forge.marked, [])
+        self.engine.retry(review_id)
+        self.until(lambda: self.row(review_id)["status"] == "running", "retry should relaunch")
+        self.forge.discussions[key] = [dc_replace(self.forge.discussions[key][0], resolved=True)]
+        self.finish(review_id, findings=[])
         self.assertEqual(len(self.forge.marked), 1)
 
     def test_unanchored_high_finding_does_not_request_changes(self):

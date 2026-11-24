@@ -2,8 +2,11 @@ import json
 import sqlite3
 import tempfile
 import unittest
+from dataclasses import replace
 from pathlib import Path
 
+from auto_review.engine import Engine
+from auto_review.models import Note, Thread
 from auto_review.settings import CONTRACT
 from auto_review.store import Store
 from auto_review.verdict import load, VerdictError
@@ -160,18 +163,101 @@ class ThreadPublishingTest(ThreadCase):
         self.assertIn('Checked the current implementation.', self.tracked()['reasoning'])
 
     def test_answered_or_accepted_finding_is_settled_and_approvable(self):
-        for status in ('answered', 'accepted'):
+        key = ('team/service', 7)
+        for status in ('answered', 'accepted', 'resolved_elsewhere'):
             with self.subTest(status=status):
                 if not self.forge.posts:
                     self.posted()
                 self.set_status(status)
+                self.forge.discussions[key][0] = replace(self.forge.discussions[key][0], resolved=True)
                 self.config['repos'][REPO]['approval'] = 'when_clean'
-                item = change(head_sha=('c' if status == 'answered' else 'd') * 40)
+                sha = {'answered': 'c', 'accepted': 'd', 'resolved_elsewhere': 'e'}[status] * 40
+                item = change(head_sha=sha)
                 review_id = self.start(item)
+                settled_file = json.loads((self.engine.run_dir(self.row(review_id)) / 'mr/settled_threads.json').read_text())
+                self.assertEqual([t['status'] for t in settled_file], [status])
                 self.finish(review_id, findings=[raw_finding(existing_thread_id='note-1')])
                 self.assertEqual(self.states(review_id)['SR-1'], 'settled')
                 self.assertTrue(self.row(review_id)['approved'])
         self.assertEqual(len(self.forge.posts), 1)
+
+    def test_reopened_settled_thread_is_not_settled_and_blocks_new_review(self):
+        self.posted()
+        key = ('team/service', 7)
+        self.set_status('resolved_elsewhere')
+        # Reopened on the forge (resolved=False): must re-enter own_threads.json, stay open, and block approval.
+        self.forge.discussions[key][0] = replace(self.forge.discussions[key][0], resolved=False)
+        review_id = self.next_review()
+        run_dir = self.engine.run_dir(self.row(review_id))
+        settled_file = json.loads((run_dir / 'mr/settled_threads.json').read_text())
+        own_file = json.loads((run_dir / 'mr/own_threads.json').read_text())
+        self.assertEqual(settled_file, [])
+        self.assertEqual([t['thread_id'] for t in own_file], ['note-1'])
+        self.assertEqual(self.tracked()['status'], 'open')
+        row = self.judgment(review_id, 'open', reply='', findings=[raw_finding(existing_thread_id='note-1')])
+        self.assertEqual(self.states(review_id)['SR-1'], 'already_open')
+        self.assertEqual(self.tracked()['status'], 'open')
+        self.assertEqual(row['outcome'], 'findings')
+        self.assertFalse(row['approved'])
+        self.assertEqual(self.forge.approvals, [])
+
+    def test_upgrade_backfills_deferred_for_existing_resolved_elsewhere_mr(self):
+        review_id, _ = self.posted()
+        key = ('team/service', 7)
+        self.set_status('resolved_elsewhere')
+        self.forge.discussions[key][0] = replace(self.forge.discussions[key][0], resolved=True)
+        self.store._db.execute("DELETE FROM deferred")
+        self.store._db.execute("DELETE FROM meta WHERE key = 'deferred_resolved_elsewhere'")
+        reopened = Store(self.root / 'state.db')
+        engine = Engine(reopened, lambda: self.config, {'gitlab': self.forge, 'github': self.github},
+                        self.t3, self.fetch, self.runs, self.notify, self.clock)
+        self.assertEqual(reopened.deferred(), [(REPO, 7)])
+        engine.tick()
+        self.assertEqual(len(self.forge.approvals), 1)
+        self.assertTrue(reopened.get(review_id)['approved'])
+        self.assertEqual(reopened.deferred(), [])
+
+    def test_upgrade_backfills_deferred_for_legacy_third_party_finding(self):
+        key = ('team/service', 7)
+        self.forge.discussions[key] = [Thread('other-1', False, (Note('bot', 'Open.', 'b1'),), 'src/new.py', 11)]
+        review_id = self.start()
+        self.finish(review_id, findings=[raw_finding(existing_thread_id='other-1')])
+        # Simulate pre-upgrade state: already_open finding stored without a deferred entry, then resolved on forge.
+        self.store._db.execute("DELETE FROM deferred")
+        self.store._db.execute("DELETE FROM meta WHERE key = 'deferred_resolved_elsewhere'")
+        self.forge.discussions[key] = [Thread('other-1', True, (Note('bot', 'Open.', 'b1'),), 'src/new.py', 11)]
+        reopened = Store(self.root / 'state.db')
+        engine = Engine(reopened, lambda: self.config, {'gitlab': self.forge, 'github': self.github},
+                        self.t3, self.fetch, self.runs, self.notify, self.clock)
+        self.assertEqual(reopened.deferred(), [(REPO, 7)])
+        engine.tick()
+        self.assertEqual(len(self.forge.approvals), 1)
+        self.assertTrue(reopened.get(review_id)['approved'])
+        self.assertEqual(reopened.deferred(), [])
+
+    def test_thread_resolved_while_review_runs_is_acknowledged_and_approves(self):
+        self.posted()
+        review_id = self.next_review()
+        key = ('team/service', 7)
+        self.forge.discussions[key][0] = replace(self.forge.discussions[key][0], resolved=True)
+        row = self.judgment(review_id, 'disputed', reply='Still broken.',
+                            findings=[raw_finding(existing_thread_id='note-1')])
+        self.assertEqual(self.tracked()['status'], 'resolved_elsewhere')
+        self.assertEqual(row['outcome'], 'clean')
+        self.assertEqual(self.states(review_id), {'SR-1': 'settled'})
+        self.assertTrue(row['approved'])
+        self.assertEqual(self.forge.replies, [])
+        self.assertEqual(self.notify.calls, [])
+
+    def test_review_with_only_external_resolved_threads_approves(self):
+        key = ('team/service', 7)
+        self.forge.discussions[key] = [Thread('other-1', True, (Note('bot', 'Known issue.', 'b1'),), 'src/new.py', 11)]
+        review_id = self.start()
+        row = self.finish(review_id, findings=[raw_finding(existing_thread_id='other-1')])
+        self.assertEqual(self.states(review_id), {'SR-1': 'already_resolved'})
+        self.assertEqual(row['outcome'], 'clean')
+        self.assertTrue(row['approved'])
+        self.assertEqual(self.forge.posts, [])
 
     def test_open_tracked_thread_blocks_otherwise_clean_review(self):
         self.posted()

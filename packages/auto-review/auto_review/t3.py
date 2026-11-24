@@ -42,6 +42,9 @@ class T3Error(Exception):
 
 
 class T3(Protocol):
+    def find(self, *, project: str, client_request_id: str) -> dict | None:
+        """Return {"thread_id", "run_id", "url"} if a thread for `client_request_id` already exists, else None."""
+
     def launch(self, *, project: str, title: str, message: str, selection: Selection, client_request_id: str) -> dict:
         """Start a thread at the project's root checkout with this model selection and full access. The same
         `client_request_id` replays the first launch. Returns {"thread_id", "run_id", "url"}."""
@@ -75,9 +78,7 @@ class T3Client:
 
     # The T3 interface
 
-    def launch(self, *, project: str, title: str, message: str, selection: Selection, client_request_id: str) -> dict:
-        """T3 replays a `clientRequestId` only within one bearer session, and the bearer rotates; so the title also
-        carries the request id, and a thread already carrying it is adopted instead of starting a second one."""
+    def find(self, *, project: str, client_request_id: str) -> dict | None:
         tag = _title_tag(client_request_id)
         listed = self._call("t3_thread_list", {
             "projectId": project, "titleContains": tag, "includeSubagents": False, "limit": 100,
@@ -88,6 +89,14 @@ class T3Client:
         if existing:
             found = existing[0]
             return {"thread_id": found["threadId"], "run_id": found.get("latestRunId"), "url": found.get("link")}
+        return None
+
+    def launch(self, *, project: str, title: str, message: str, selection: Selection, client_request_id: str) -> dict:
+        """T3 replays a `clientRequestId` only within one bearer session, and the bearer rotates; so the title also
+        carries the request id, and a thread already carrying it is adopted instead of starting a second one."""
+        if found := self.find(project=project, client_request_id=client_request_id):
+            return found
+        tag = _title_tag(client_request_id)
         result = self._call("t3_thread_launch", {
             "projectId": project,
             "title": f"{title} {tag}",

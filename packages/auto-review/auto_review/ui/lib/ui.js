@@ -102,6 +102,8 @@ const FINDING_STATES = {
   would_post: ["would post", true],
   below: ["below threshold", false],
   already_open: ["already open", false],
+  already_resolved: ["already resolved", false],
+  settled: ["settled", false],
   unanchored: ["unanchored", false],
   not_posted: ["not posted", false],
 };

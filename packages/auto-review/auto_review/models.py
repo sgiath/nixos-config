@@ -136,8 +136,9 @@ class Verdict:
 
 @dataclass(frozen=True)
 class Placed:
-    """A finding and what the decision does with it: `post`, `below`, `already_open`, `already_resolved`,
-    `settled` (its thread is one of sgiath's that was fixed or answered), `unanchored`, `not_posted`."""
+    """A finding and what the decision does with it: `post`, `below`, `already_open`, `already_resolved`
+    (resolved on the forge, not blocking), `settled` (one of sgiath's threads already decided, not blocking),
+    `unanchored`, `not_posted`."""
 
     finding: Finding
     state: str
@@ -146,8 +147,8 @@ class Placed:
 
 @dataclass(frozen=True)
 class Decision:
-    """`outcome`: `clean` (nothing reaches the threshold), `findings` (something does and every such finding is
-    posted or already open), `needs_attention` (unanchored findings, unread files or prompt injection)."""
+    """`outcome`: `clean` (no unresolved finding reaches the threshold), `findings` (something does and every such
+    finding is posted or already open), `needs_attention` (unanchored findings, unread files or prompt injection)."""
 
     outcome: str
     reason: str

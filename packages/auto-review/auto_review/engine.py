@@ -361,7 +361,7 @@ class Engine:
                 self.record("info", f"queued {_ref_change(change)} @{change.head_sha[:8]}", review_id=review_id)
             for other in self.store.for_mr(repo_id, number):
                 # A new review also judges sgiath's threads, so it replaces a follow-up of the same head.
-                if other["status"] in ACTIVE and (
+                if other["status"] in ACTIVE and other["status"] != "launching" and (
                     _key(other) != change.key or (review_id and other["kind"] == "follow_up")
                 ):
                     self._supersede(other, f"superseded by @{change.head_sha[:8]}")

@@ -42,9 +42,10 @@ It replaces the Spain G2N sprint poller in `~/.agents/local/spain-review/`, whic
    state: a `REQUEST_CHANGES` review needs a top-level body, which would be a general comment. When a finding
    reaches `request_changes_threshold` but the forge sets no state (GitHub, or GitLab drafts), the event says
    "changes not requested" with the reason.
-7. **Approve.** Only under the repo's `approval: when_clean` policy, and only when the verdict is complete, no finding
-   reaches the threshold (posted, already open or unanchored), every changed file was read and no prompt injection
-   was found. The approval is pinned to the reviewed head SHA.
+7. **Approve.** Only under the repo's `approval: when_clean` policy, and only when the verdict is complete, no
+   unresolved finding reaches the threshold (`posted`, `already_open` or `unanchored`; `settled` and
+   `already_resolved` findings do not block approval), every changed file was read and no prompt injection was found.
+   The approval is pinned to the reviewed head SHA.
 8. **Settle.** With `auto_settle` on, the T3 thread is settled once its comments are posted, or when the review ends
    with nothing to post. A failed review keeps its thread unsettled.
 
@@ -57,8 +58,10 @@ launching and posting; running threads are still monitored.
 Every comment the service posts is tracked (SQLite `threads`, keyed by its hidden marker) until it is settled.
 
 - **Watching.** Each poll reads the MRs that have an `open` or `disputed` thread (on GitHub the first 100 comments
-  of each thread; a longer thread logs a warning once per run). A thread someone resolved on the
-  forge becomes `resolved_elsewhere` and is no longer watched; a closed or merged MR closes its threads. sgiath's own
+  of each thread; a longer thread logs a warning once per run). A thread resolved on the
+  forge (for example by the author deciding not to implement a change) becomes `resolved_elsewhere`, is acknowledged as
+  settled, supersedes any running follow-up when no watched threads remain, and reconsiders approval; a closed or merged
+  MR closes its threads. sgiath's own
   replies only count as seen. A new or edited reply by anyone else queues one `follow_up` review at the MR's current
   head (`kind: follow_up`, keyed by the newest reply's id and a digest of the thread's notes, status and count of
   skipped stale judgments, so the same trigger never queues twice, and a follow-up left stale is redone as long as those replies stay unjudged), unless a
@@ -84,17 +87,20 @@ Every comment the service posts is tracked (SQLite `threads`, keyed by its hidde
   reasoning and the proposed reply, which he can send (thread stays open), accept the author's answer (resolve; it
   counts as fixed) or keep open. These decisions are explicit actions and, like *Post anyway*, write even in dry run.
   A failed reply or resolve turns the thread `disputed` with the error, so it lands in the same section; a resolve
-  whose answer was lost (also after *accept*) is recognised on the next poll and counts as settled, as long as the
-  thread's notes are still the ones judged (else it is `resolved_elsewhere`); a later judgment of the thread drops what
-  the failed settlement intended. A verdict with `status: error` writes nothing, and one that
-  reports injection or lists unread files (`not_reviewed`) only records the judgments and ends `needs_attention`.
-- **Approving.** An open or disputed thread blocks approval of any review of the MR. After a follow-up or an accepted
-  answer settles threads, the latest finished review is reconsidered: if it is at the current head, read every file,
-  found no injection, and each of its findings reaching the current threshold now sits in a settled thread, it is approved
+  whose answer was lost (also after *accept*) is recognised on the next poll and counts as `fixed`/`answered`/`accepted`
+  as long as the thread's notes are still the ones judged (else it is acknowledged as `resolved_elsewhere`); a later
+  judgment of the thread drops what the failed settlement intended. A verdict with `status: error` writes nothing, and
+  one that reports injection or lists unread files (`not_reviewed`) only records the judgments and ends `needs_attention`.
+- **Approving.** An open or disputed thread blocks approval of any review of the MR. After a follow-up, an accepted
+  answer or a resolution on the forge settles threads, the latest finished review is reconsidered: if it is at the
+  current head, read every file, found no injection (nor did a later follow-up on the same head), and each of its
+  findings reaching the current threshold sits in a settled or resolved thread (a settled thread reopened on the forge
+  re-enters watching and blocks approval), it is approved
   under `approval: when_clean` while the MR is ready under the repo's rules (draft, pipeline; the review request is not
   needed), or the MR is marked reviewed under `never` (clearing an earlier *requested changes* on GitLab). These
-  writes wait out pause, dry run, quiet hours and a disabled repo; while they wait, the MR waits for a draft or
-  pipeline, or a write failed, each poll checks again (SQLite `deferred`, so a restart keeps waiting). An open thread scoring at least `request_changes_threshold` keeps requesting changes.
+  writes wait out pause, dry run, quiet hours, a disabled repo, other reviewers' open threads that block the review,
+  GitLab unpublished drafts, a draft MR, a pending pipeline or a failed write: each poll checks again (SQLite
+  `deferred`, so a restart keeps waiting). An open thread scoring at least `request_changes_threshold` keeps requesting changes.
 - Dry run records the judgments' reasoning and writes nothing.
 
 ## Settings and which one wins
@@ -257,9 +263,10 @@ The item above plus `summary` (the agent's), `not_reviewed`, `injection_attempts
 }
 ```
 
-Finding `state`: `posted`, `would_post` (dry run), `below` (under threshold), `already_open`, `settled` (tied to one
-of sgiath's threads that was fixed, answered or accepted), `unanchored`,
-`not_posted` (held: the MR changed before posting, or the reviewer reported text aimed at it).
+Finding `state`: `posted`, `would_post` (dry run), `below` (under threshold), `already_open`, `already_resolved` (tied
+to a thread resolved on the forge; not posted, not blocking), `settled` (tied to one
+of sgiath's threads that was fixed, answered, accepted or resolved on the forge; not posted, not blocking),
+`unanchored`, `not_posted` (held: the MR changed before posting, or the reviewer reported text aimed at it).
 
 ### Actions
 

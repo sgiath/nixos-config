@@ -66,18 +66,19 @@ def decide(verdict: Verdict, *, threshold: int, index: DiffIndex, threads: list[
     """Place every finding:
 
     - `below` when `frequency * severity < threshold`;
-    - `settled` when its `existing_thread_id` is one of sgiath's threads that was fixed or answered (`settled`):
-      decided, never posted again and not blocking;
-    - `already_open` / `already_resolved` when its `existing_thread_id` names an unresolved / resolved thread (not
-      posted again, but it still reaches the threshold, so it blocks approval), `unanchored` when it names no known
-      thread;
-    - `unanchored` when its file/side/line is not a line of the diff;
+    - `settled` when its `existing_thread_id` is one of sgiath's threads that was fixed, answered, accepted or
+      resolved on the forge (`settled`): decided, never posted again and not blocking;
+    - `already_open` when its `existing_thread_id` names an unresolved thread (not posted again, still blocks
+      approval);
+    - `already_resolved` when its `existing_thread_id` names a resolved thread (not posted again, not blocking);
+    - `unanchored` when its `existing_thread_id` names no known thread or its file/side/line is not a line of the
+      diff;
     - otherwise `post`, with its anchor.
 
     An injection attempt holds everything: each `post` becomes `not_posted`. Outcome is `needs_attention` when a
     finding reaching the threshold is unanchored, a file was not reviewed, or injection was found; else `findings`
-    when any finding reaches the threshold; else `clean`. `approvable` is true only for a `clean` outcome of a
-    `complete` verdict. A verdict with `status: error` raises VerdictError.
+    when any finding reaching the threshold is posted or already open; else `clean`. `approvable` is true only for a
+    `clean` outcome of a `complete` verdict. A verdict with `status: error` raises VerdictError.
     """
     if verdict.status == "error":
         raise VerdictError(f"reviewer could not finish: {verdict.error or 'no reason given'}")
@@ -86,7 +87,9 @@ def decide(verdict: Verdict, *, threshold: int, index: DiffIndex, threads: list[
     for finding in verdict.findings:
         if finding.score < threshold:
             placed.append(Placed(finding, "below"))
-        elif finding.existing_thread_id in settled:
+        elif finding.existing_thread_id in settled and (
+            (thread := known.get(finding.existing_thread_id)) is None or thread.resolved
+        ):
             placed.append(Placed(finding, "settled"))
         elif finding.existing_thread_id:
             thread = known.get(finding.existing_thread_id)
@@ -108,10 +111,10 @@ def decide(verdict: Verdict, *, threshold: int, index: DiffIndex, threads: list[
         outcome, reason = "needs_attention", "a finding reaching the threshold has no valid diff line"
     elif verdict.not_reviewed:
         outcome, reason = "needs_attention", f"reviewer did not read: {', '.join(verdict.not_reviewed)}"
-    elif states & {"post", "already_open", "already_resolved"}:
+    elif states & {"post", "already_open"}:
         outcome, reason = "findings", f"findings reach {threshold}"
     else:
-        outcome, reason = "clean", f"no finding reaches {threshold}"
+        outcome, reason = "clean", f"no open finding reaches {threshold}"
     return Decision(outcome, reason, tuple(placed), outcome == "clean" and verdict.status == "complete")
 
 

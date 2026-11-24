@@ -163,6 +163,11 @@ class T3:
         self.links = []
         self.link_failures = 0
 
+    def find(self, *, project, client_request_id):
+        if client_request_id in self.launch_results:
+            return dict(self.launch_results[client_request_id])
+        return None
+
     def launch(self, *, project, title, message, selection, client_request_id):
         self.launches.append(dict(project=project, title=title, message=message,
                                   selection=selection, client_request_id=client_request_id))

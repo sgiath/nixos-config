@@ -161,9 +161,18 @@ class DecisionTest(unittest.TestCase):
         self.assertEqual(decision.to_post(), [])
         self.assertFalse(decision.approvable)
 
-    def test_resolved_thread_at_threshold_blocks_approval_without_duplicate_post(self):
+    def test_resolved_thread_at_threshold_is_clean_and_approvable_without_duplicate_post(self):
         decision = self.decision([finding(existing_thread_id="existing")], [Thread("existing", True, ())])
         self.assertEqual(decision.placed[0].state, "already_resolved")
+        self.assertEqual(decision.to_post(), [])
+        self.assertEqual(decision.outcome, "clean")
+        self.assertTrue(decision.approvable)
+
+    def test_reopened_settled_thread_blocks_approval_as_already_open(self):
+        verdict = Verdict("complete", None, "Reviewed", (finding(existing_thread_id="existing"),), (), ())
+        decision = decide(verdict, threshold=5, index=DiffIndex(DIFFS),
+                          threads=[Thread("existing", False, ())], settled=frozenset({"existing"}))
+        self.assertEqual(decision.placed[0].state, "already_open")
         self.assertEqual(decision.to_post(), [])
         self.assertEqual(decision.outcome, "findings")
         self.assertFalse(decision.approvable)
